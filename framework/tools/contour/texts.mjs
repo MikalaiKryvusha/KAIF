@@ -189,7 +189,10 @@ const EN = {
   // OW4 (2.8, #98): how the voice says a session's name — known words and numbers; an unknown word stays as written
   spoken: { words: [], // pairs [written, spoken] — a dictionary, not a schema: the pack's array is taken whole
     ones: ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'],
-    tens: ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'] },
+    tens: ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'],
+    // 2.10 TK7 (c), origin #165: how the CALL's phrase reaches the engine — empty here: an English engine reads Latin and digits itself;
+    // a pack whose engine does not (Russian) fills `number` · `percent` · `letters` · `translit`, and `speakable()` in review.mjs uses them
+    number: null, percent: null, letters: null, translit: null },
   // the queue without a browser (`--queue --list`) — read by the agent, quoted by the rituals
   list: { waits: (d) => 'waiting ' + d + ' d', shown: (date, ago, t) => 'shown: ' + date + ' — ' + ago + ' d ago (' + t + ')',
     never: 'NEVER SHOWN — the owner does not know this question exists', empty: "The owner's queue is empty — no waiting documents.",
@@ -232,6 +235,33 @@ const EN = {
     partialHead: (n) => 'not recognised: ' + n + ' question-like block(s) — not on this page',
   },
 };
+
+// 2.10, epic TK step TK7 (c) (origin #165): a whole number as the Russian voice says it — nominative, thousands feminine
+// («две тысячи двадцать шесть»); 0 … 999 999, larger numbers digit by digit. The call's phrase is normalised by `speakable()` in
+// review.mjs before ANY engine — the owner's word in the ticket: the engine gets words, never digits.
+const RU_ONES = ['ноль', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять', 'десять', 'одиннадцать', 'двенадцать',
+  'тринадцать', 'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
+const RU_TENS = ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'];
+const RU_HUNDREDS = ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот', 'шестьсот', 'семьсот', 'восемьсот', 'девятьсот'];
+function ruNumber(n) {
+  if (!Number.isFinite(n) || n < 0) return String(n);
+  if (n === 0) return RU_ONES[0];
+  if (n > 999999) return String(n).split('').map((d) => RU_ONES[Number(d)]).join(' ');
+  const upTo999 = (x, fem) => {
+    const h = Math.floor(x / 100), r = x % 100, out = [];
+    if (h) out.push(RU_HUNDREDS[h]);
+    if (r >= 20) { out.push(RU_TENS[Math.floor(r / 10)]); if (r % 10) out.push(fem && r % 10 < 3 ? ['', 'одна', 'две'][r % 10] : RU_ONES[r % 10]); }
+    else if (r) out.push(fem && r < 3 ? ['', 'одна', 'две'][r] : RU_ONES[r]);
+    return out;
+  };
+  const th = Math.floor(n / 1000), rest = n % 1000, out = [];
+  if (th) {
+    const l2 = th % 100, l1 = th % 10;
+    out.push(...upTo999(th, true), l2 >= 11 && l2 <= 19 ? 'тысяч' : l1 === 1 ? 'тысяча' : l1 >= 2 && l1 <= 4 ? 'тысячи' : 'тысяч');
+  }
+  out.push(...upTo999(rest, false));
+  return out.join(' ');
+}
 
 const RU = {
   lang: 'ru',
@@ -294,9 +324,10 @@ const RU = {
   call: {
     notice: (o, p, title) => o + ', сообщение ' + p + ': «' + title + '» — ответа не ждёт, только прочитать. Страница открыта.',
     batch: (o, p, parts) => o + ', накопилось в ' + p + ': ' + parts.join(', ') + '. Страница открыта.',
-    interview: (o, p, kind, title, nWait) => o + ', ' + kind + ' ' + p + ' «' + title + '» ждёт вычитки' +
+    // 2.10 TK7 (c), origin #165 — the owner did not understand «вычитки» in a call: plain words, the customer's language
+    interview: (o, p, kind, title, nWait) => o + ', ' + kind + ' ' + p + ' «' + title + '» ждёт ваших ответов' +
       (nWait ? ': вопросов без ответа ' + nWait : '') + '. Страница открыта.',
-    proofread: (o, p, title) => o + ', ' + p + ' просит вычитку: «' + title + '». Страница открыта.',
+    proofread: (o, p, title) => o + ', ' + p + ' просит прочитать и оставить замечания: «' + title + '». Страница открыта.',
     mockup: (o, p, title) => o + ', ' + p + ' просит отсмотреть макет: «' + title + '». Страница открыта.',
     from: (s) => 'это ' + s, // OW4 (2.8, #98): «<владелец>, это <сессия>. …»
     parts: { docs: (n) => 'документов ' + n, questions: (n) => 'вопросов без ответа ' + n, notices: (n) => 'сообщений непрочитанных ' + n },
@@ -307,9 +338,19 @@ const RU = {
     ['fix', 'фикс'], ['hotfix', 'хотфикс'], ['ops', 'опс'], ['lead', 'лид'], ['manager', 'менеджер'], ['design', 'дизайн'], ['designer', 'дизайнер'],
     ['ui', 'ю ай'], ['api', 'эй пи ай'], ['backend', 'бэкенд'], ['frontend', 'фронтенд'], ['bug', 'баг'], ['release', 'релиз'], ['team', 'тим'],
     ['agent', 'агент'], ['writer', 'райтер'], ['analyst', 'аналитик']],
-    ones: ['ноль', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять', 'десять', 'одиннадцать', 'двенадцать', 'тринадцать',
-      'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'],
-    tens: ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'] },
+    ones: RU_ONES, tens: RU_TENS,
+    // 2.10 TK7 (c), origin #165 — the owner's rule, verbatim in the ticket: «в голосовой движок всё должно передаваться словами на русском
+    // языке - английские транслитирайией, цифры словами, единицы изменения словами». A number — words; a capitalised Latin abbreviation
+    // (up to five letters) — letter by letter; any other Latin word — transliterated (digraphs first, then letters).
+    number: ruNumber,
+    percent: 'процентов',
+    letters: { A: 'эй', B: 'би', C: 'си', D: 'ди', E: 'и', F: 'эф', G: 'джи', H: 'эйч', I: 'ай', J: 'джей', K: 'кей', L: 'эл', M: 'эм',
+      N: 'эн', O: 'оу', P: 'пи', Q: 'кью', R: 'ар', S: 'эс', T: 'ти', U: 'ю', V: 'ви', W: 'дабл-ю', X: 'экс', Y: 'уай', Z: 'зед' },
+    translit: [['shch', 'щ'], ['sch', 'ш'], ['sh', 'ш'], ['ch', 'ч'], ['zh', 'ж'], ['kh', 'х'], ['ts', 'ц'], ['th', 'т'], ['ph', 'ф'],
+      ['ck', 'к'], ['qu', 'кв'], ['ya', 'я'], ['yu', 'ю'], ['yo', 'ё'], ['ee', 'и'], ['oo', 'у'], ['ce', 'се'], ['ci', 'си'], ['cy', 'си'],
+      ['a', 'а'], ['b', 'б'], ['c', 'к'], ['d', 'д'], ['e', 'е'], ['f', 'ф'], ['g', 'г'], ['h', 'х'], ['i', 'и'], ['j', 'дж'], ['k', 'к'],
+      ['l', 'л'], ['m', 'м'], ['n', 'н'], ['o', 'о'], ['p', 'п'], ['q', 'к'], ['r', 'р'], ['s', 'с'], ['t', 'т'], ['u', 'у'], ['v', 'в'],
+      ['w', 'в'], ['x', 'кс'], ['y', 'и'], ['z', 'з']] },
   list: { waits: (d) => 'ждёт ' + d + ' дн.', shown: (date, ago, t) => 'показан: ' + date + ' — ' + ago + ' дн. назад (' + t + ')',
     never: 'НИ РАЗУ НЕ ПОКАЗАН — владелец не знает, что этот вопрос существует', empty: 'Очередь владельца пуста — ждущих документов нет.',
     gate: (n) => 'ГЕЙТ (I42): ни разу не показанных — ' + n + '. Напечатать очередь ≠ донести вопрос; показ — действие агента.',

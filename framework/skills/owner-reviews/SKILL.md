@@ -28,7 +28,7 @@ must see (the header scrolls with the page — the owner's word), the three outc
 call, and the faces and flags of the shipped generator (`.kaif/tools/contour/`, 2.6: interview · notice
 · proofreading · mockup review; parameters are read from `.kaif/kaif.json`, never asked). **Run the
 shipped generator; do not build a contour** (`node .kaif/tools/contour/review.mjs <doc>`) — a project that still runs its own checks it against that
-page before every opening. The 47 invariants below remain the long-form canon behind the page.
+page before every opening. The 48 invariants below remain the long-form canon behind the page.
 
 ## Build order (field-corrected: "ours was worse")
 
@@ -51,7 +51,7 @@ and the lessons, never the files: a copy is a second truth with two places to fi
 
 ## The invariants (normative — a contour without them falls apart)
 
-One number space, I1–I47. I1–I7 are the original core; I8–I36 were each paid for by a field
+One number space, I1–I48. I1–I7 are the original core; I8–I36 were each paid for by a field
 incident in one of three projects running this contour (the tool ate an hour of the owner's work ·
 a show replaced by a file path · an answered question re-asked two days later). I37–I38 name the
 notice class and arrived differently — not after an incident, but on the owner's request that the
@@ -234,8 +234,12 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
 
 - **I32. The call never blocks the contour.** Speech synthesis takes seconds; a synchronous call
   steals them from the page server — the human stares at an empty window instead of questions.
-- **I33. Chain order matters: instant sound → banner → voice.** A parallel launch lays the beep
-  over the speech. Default beeps: 880 Hz/160 ms → 660/160 → 990/260, then the voice.
+- **I33. Chain order matters: banner → ONE sound — silence · beeps · pause · voice.** A parallel launch lays the beep
+  over the speech; a beep played before the voice is synthesised leaves the owner waiting (2.10, origin #165). Default: 1 s of
+  silence (the device wakes up on the first samples), beeps 880 Hz/160 ms → 660/160 → 990/260 at full level, 2 s of pause, then
+  the voice rendered BEFORE playing (the system voice into a file; a rich tool through `--out <wav>`; a tool that renders the
+  beeps itself says `KAIF_VOICE_BEEPS=embedded`). The engine gets words of the deployment language — numbers as words, an
+  abbreviation letter by letter, Latin transliterated (the pack's `spoken` data); `--call --dry-run` prints what it would get.
 - **I34. The sound path must not depend on user OS settings.** Native notifications get muted
   silently with a success exit code; the beep goes through the sound card; delivery is confirmed
   WITH THE HUMAN, never by exit code.
@@ -368,6 +372,12 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   the rescue ring with the answer text, Copy and Retry, and no word about the agent (2.7, court finding D-F2).
   Verified on Edge/Windows; Chrome and macOS take the same flags and are NOT verified — say so. Linux is not supported: the window is not
   raised there, the contour prints the URL.
+- **I48. One page and one voice at a time — the owner's window never runs on a timer.** (2.10, epic TK; origin #169 · #165 —
+  two windows and two voices at once, a page left dead by the agent's edits, servers launched with a 60-second timer, "the same
+  sores from project to project"; two field deployments carried the same local fix.) A LIVE lock of another document refuses a new
+  page — exit 3, `Another page is open: <url> (<doc>, pid N) … close it first`, no window, no call; a lock whose process is gone
+  does not block. A question for the owner while a page is open goes INTO the open document (`/interview`), not onto a second
+  page. `--timeout` on a page with a window refuses before any page (it is automation only, with `--no-open` — I9).
 
 ## The named class: "handling the human's work"
 

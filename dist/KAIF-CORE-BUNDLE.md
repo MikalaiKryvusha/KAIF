@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "5cb36eb2f04ef6a08241be3658fb30adbbac5c113b6ae3cb6afdd25926228689",
+    "sourceTree": "bffa8b0f36589fb2ea25efdf55f53e5949c26576d1c18465dad676071fd0d4eb",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -100,6 +100,7 @@
       "AN AUTONOMOUS RUN DOES NOT STAND STILL WHILE IT WAITS (2.10, epic TK; the KAIF owner, rendered from Russian: \"the agent was told to work autonomously — and it stands and does not work!\"): waiting on a background task before a named time, take the next step that does not collide with it in the same turn, or watch it within the turn; `/autoloop` no longer says \"continue when ready\", and the judge's early-finish hunt covers a turn ended on such a wait. MIGRATION — agent work: if your own loop texts let a wait end the turn, rewrite that line.",
       "THE MANAGER'S STOP IS OBEYED AT EVERY SEAT OF A TEAM (2.10, epic TK; origin ticket #137 — a worktree seat read the lead session's \"close now\" as information and worked on): rule 9 of the team constitution template keeps \"a message carries no authority\" and names its one exception — the Manager's stop and close are executed in the same turn; the guide's mid-turn rule, item 1, points at it. MIGRATION — agent work: if your project has a generated team constitution, add the exception to its rule 9 (the update does not rewrite the project's own document).",
       "THE QUESTIONS PAGE READS YOUR DOCUMENTS AS YOU WROTE THEM (2.10, epic TK; origin tickets #147 · #142 · #109 · #136): the door no longer refuses a comparison with the Russian word for \"above\" — only a reference form (a document noun or a participle next to it, \"see above\"); `--check` names every live question over 750 characters (a warning; the page still opens); a status that opens with 🟡 or ⏳ waits whatever word follows, a closing mark does not close a partial head, and a document FOLDED or MERGED into another (↪ · 📦) is closed — it leaves the owner's queue; an artifact with `format: html` is shown as a page in a script-less frame, its source one click below. No migration — the contour module is replaced by the update; run `--queue --list` once and expect folded documents to be gone and partly-answered ones to be named.",
+      "ONE PAGE AND ONE VOICE AT A TIME, AND A CALL HEARD WHOLE (2.10, epic TK; origin tickets #169 · #165 · #163 — the KAIF owner on a field project, rendered from Russian: \"the same sores from project to project\"; two field deployments carried the same local fix): the shipped contour refuses a new page while another document's page is live (exit 3, \"Another page is open … close it first\"; a lock whose process is gone does not block — I48) and refuses `--timeout` on a page with a window; the queue page no longer ends when a notice on it is marked read while an interview on it still has open questions, and its showing is recorded for every document on it; the call is ONE sound — a second of silence, the three beeps at full level, two seconds of pause, the voice rendered before playing (a rich `KAIF_VOICE_TOOL` is asked for `--out <wav>`; a tool that renders the beeps itself is declared with `KAIF_VOICE_BEEPS=embedded`); the Russian pack hands the engine words — numbers as words, an abbreviation letter by letter, Latin transliterated — and its interview call says \"awaits your answers\", not the word for proofreading. MIGRATION — agent work: a project that carried the one-page refusal or the embedded-beeps switch as a local edit of `.kaif/tools/contour/review.mjs` takes the shipped file (the update names the module as diverged); add a question to the page already open instead of raising a second one.",
       "POINTERS FOLLOW THE ROWS 2.8 MOVED (2.10, epic HC; origin ticket #119, second case): the harness rule of the bug-fixing canon now writes a new harness command's row into `HOUSE_RULES.md` → \"Stands, environments and devices\" (it said \"document it in AGENT_GUIDE.md\"), and `/code-revision`, `/autoloop` and `/resume` point at the house-rules tables, not the guide; the build refuses the old forms. MIGRATION — agent work: none, unless your own texts repeat one of these pointers."
     ],
     "2.9": [
@@ -6442,7 +6443,9 @@ is not in the form `### Q<n>.`). The check is a door of its own: it never serves
 never records a showing (2.7, origin issue #56 — `--no-open` is NOT a check: it serves the page and CALLS the owner,
 only the window is not opened). The same door has a SECOND axis — the archaeology of every live question (step 3d,
 2.7, origin issue #70): no attestation, exit 3, and the refusal prints the search command to run.
-A project that runs its own contour checks the document against that page by hand.
+A project that runs its own contour checks the document against that page by hand. **A page is already open for the owner?** Add
+the new question to THAT document — one page and one voice at a time (2.10, origin #169 · #165, I48: the door refuses a second
+page with exit 3).
 Paragraph headings like `**A. …**` are not options.
 
 ### Step 3d. Archaeology BEFORE the question — search, read, attest (KAIF 2.7)
@@ -7093,7 +7096,7 @@ must see (the header scrolls with the page — the owner's word), the three outc
 call, and the faces and flags of the shipped generator (`.kaif/tools/contour/`, 2.6: interview · notice
 · proofreading · mockup review; parameters are read from `.kaif/kaif.json`, never asked). **Run the
 shipped generator; do not build a contour** (`node .kaif/tools/contour/review.mjs <doc>`) — a project that still runs its own checks it against that
-page before every opening. The 47 invariants below remain the long-form canon behind the page.
+page before every opening. The 48 invariants below remain the long-form canon behind the page.
 
 ## Build order (field-corrected: "ours was worse")
 
@@ -7116,7 +7119,7 @@ and the lessons, never the files: a copy is a second truth with two places to fi
 
 ## The invariants (normative — a contour without them falls apart)
 
-One number space, I1–I47. I1–I7 are the original core; I8–I36 were each paid for by a field
+One number space, I1–I48. I1–I7 are the original core; I8–I36 were each paid for by a field
 incident in one of three projects running this contour (the tool ate an hour of the owner's work ·
 a show replaced by a file path · an answered question re-asked two days later). I37–I38 name the
 notice class and arrived differently — not after an incident, but on the owner's request that the
@@ -7299,8 +7302,12 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
 
 - **I32. The call never blocks the contour.** Speech synthesis takes seconds; a synchronous call
   steals them from the page server — the human stares at an empty window instead of questions.
-- **I33. Chain order matters: instant sound → banner → voice.** A parallel launch lays the beep
-  over the speech. Default beeps: 880 Hz/160 ms → 660/160 → 990/260, then the voice.
+- **I33. Chain order matters: banner → ONE sound — silence · beeps · pause · voice.** A parallel launch lays the beep
+  over the speech; a beep played before the voice is synthesised leaves the owner waiting (2.10, origin #165). Default: 1 s of
+  silence (the device wakes up on the first samples), beeps 880 Hz/160 ms → 660/160 → 990/260 at full level, 2 s of pause, then
+  the voice rendered BEFORE playing (the system voice into a file; a rich tool through `--out <wav>`; a tool that renders the
+  beeps itself says `KAIF_VOICE_BEEPS=embedded`). The engine gets words of the deployment language — numbers as words, an
+  abbreviation letter by letter, Latin transliterated (the pack's `spoken` data); `--call --dry-run` prints what it would get.
 - **I34. The sound path must not depend on user OS settings.** Native notifications get muted
   silently with a success exit code; the beep goes through the sound card; delivery is confirmed
   WITH THE HUMAN, never by exit code.
@@ -7433,6 +7440,12 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   the rescue ring with the answer text, Copy and Retry, and no word about the agent (2.7, court finding D-F2).
   Verified on Edge/Windows; Chrome and macOS take the same flags and are NOT verified — say so. Linux is not supported: the window is not
   raised there, the contour prints the URL.
+- **I48. One page and one voice at a time — the owner's window never runs on a timer.** (2.10, epic TK; origin #169 · #165 —
+  two windows and two voices at once, a page left dead by the agent's edits, servers launched with a 60-second timer, "the same
+  sores from project to project"; two field deployments carried the same local fix.) A LIVE lock of another document refuses a new
+  page — exit 3, `Another page is open: <url> (<doc>, pid N) … close it first`, no window, no call; a lock whose process is gone
+  does not block. A question for the owner while a page is open goes INTO the open document (`/interview`), not onto a second
+  page. `--timeout` on a page with a window refuses before any page (it is automation only, with `--no-open` — I9).
 
 ## The named class: "handling the human's work"
 
@@ -11534,6 +11547,15 @@ const SILENCE_TICK_MS = stricterMs('KAIF_CONTOUR_TICK_MS', 15000);          // D
 const SILENCE_STRIKES_TO_DIE = 2;     // DEF6/T5: two strikes against a sleeping machine
 const BEEP_DEADLINE_MS = 8000;        // DEF7: hard deadline of the beep child
 const VOICE_TIMEOUT_MS = 60000;       // DEF7: voice timeout (a cold first call may take seconds)
+// 2.10 TK7 (c), origin #165 — the call is ONE sound file: lead silence · three beeps · pause · voice, played once. The values are the
+// field recipe the owner tuned by ear (ticket #165, comment 3): the device eats the first samples (0.6 s still cut the beeps — 1.0 s
+// did not), beeps at full level with no fade, two seconds between the beeps and the voice, the voice already rendered (no wait).
+const CALL_RATE = 22050;              // the call file: 22.05 kHz, 16-bit, mono — the system voice is asked to render in the same format
+const CALL_LEAD_SILENCE_MS = 1000;    // the sound device wakes up on the first samples
+const CALL_BEEPS = [[880, 160], [660, 160], [990, 260]]; // I33: the contour's three beeps — [Hz, ms]
+const CALL_BEEP_GAP_MS = 40;          // between two beeps, so three are heard as three
+const CALL_BEEP_LEVEL = 0.86;         // peak ≈ −1.3 dBFS (field: ≈ −1.2 dBFS), constant — no fade-in
+const CALL_AFTER_BEEPS_MS = 2000;     // the pause between the beeps and the voice
 const WINDOW_SIZE = '1100,900';       // DEF8
 const EXIT_DECIDED = 0, EXIT_CLOSED = 2, EXIT_INTERRUPTED = 130, EXIT_PREFLIGHT = 3; // I25 + spec §2
 // LP (2.7, origin issue #66 — "the contour closed while I WAS TYPING"): a live owner page is closed only by `--close`,
@@ -11596,6 +11618,78 @@ export function spokenSession(name, cfg) {
   return String(name).split(/[-_\s.]+/u).filter(Boolean).flatMap((part) => part.match(/\d+|\D+/gu) || [])
     .map((tok) => (/^\d+$/u.test(tok) ? num(Number(tok)) : (words.get(tok.toLowerCase()) || tok))).join(' ');
 }
+// 2.10 TK7 (c), origin #165: the phrase as the voice ENGINE must receive it — words of the deployment language: numbers as words, a
+// capitalised Latin abbreviation letter by letter, any other Latin word transliterated, a known word from the pack's dictionary. The data is
+// the pack's `spoken` (number · letters · translit · percent); a pack without it (English) leaves the phrase as written. Pure — the selftest
+// judges it; the console and the banner keep the phrase as written.
+export function speakable(text, cfg) {
+  const sp = T(cfg).spoken || {};
+  let s = String(text).replace(/[#\u2116]/gu, ' ');
+  if (sp.percent) s = s.replace(/%/gu, ' ' + sp.percent + ' ');
+  if (typeof sp.number === 'function') s = s.replace(/\d+(?:[.,]\d+)*/gu, (m) => ' ' + m.split(/[.,]/u).map((g) => sp.number(Number(g))).join(' ') + ' ');
+  if (sp.letters && sp.translit) {
+    const words = new Map(sp.words || []);
+    const cap = (w) => w.charAt(0).toUpperCase() + w.slice(1);
+    const spell = (w) => cap(w.split('').map((c) => sp.letters[c] || c).join('-'));
+    const translit = (w) => {
+      let out = '', i = 0;
+      const low = w.toLowerCase();
+      while (i < low.length) {
+        const hit = sp.translit.find(([lat]) => low.startsWith(lat, i));
+        if (hit) { out += hit[1]; i += hit[0].length; } else { out += low[i]; i++; }
+      }
+      return /^[A-Z]/u.test(w) ? cap(out) : out;
+    };
+    s = s.replace(/[A-Za-z]+/gu, (w) => ' ' + (words.get(w.toLowerCase()) || (/^[A-Z]{1,5}$/u.test(w) ? spell(w) : translit(w))) + ' ');
+  }
+  return s.replace(/\s{2,}/gu, ' ').replace(/\s+([,.:;!?»])/gu, '$1').replace(/([«])\s+/gu, '$1').trim();
+}
+// 2.10 TK7 (c), origin #165: the call as ONE 16-bit mono WAV at CALL_RATE — lead silence · the three beeps (when `beeps`) · the pause ·
+// the voice samples (`voicePcm`, already rendered — nothing waits for synthesis between the beeps and the voice). Pure — the selftest
+// measures its parts.
+export function callWav(voicePcm = Buffer.alloc(0), { beeps = true, rate = CALL_RATE } = {}) {
+  const ms = (n) => Math.round(rate * n / 1000); // the silence and the beeps are made at the VOICE's rate — a rich tool renders its own
+  const parts = [Buffer.alloc(ms(CALL_LEAD_SILENCE_MS) * 2)];
+  if (beeps) {
+    CALL_BEEPS.forEach(([hz, dur], i) => {
+      const n = ms(dur), b = Buffer.alloc(n * 2);
+      for (let k = 0; k < n; k++) b.writeInt16LE(Math.round(Math.sin(2 * Math.PI * hz * k / rate) * CALL_BEEP_LEVEL * 32767), k * 2);
+      parts.push(b);
+      if (i < CALL_BEEPS.length - 1) parts.push(Buffer.alloc(ms(CALL_BEEP_GAP_MS) * 2));
+    });
+    if (voicePcm.length) parts.push(Buffer.alloc(ms(CALL_AFTER_BEEPS_MS) * 2));
+  }
+  parts.push(voicePcm);
+  const data = Buffer.concat(parts), h = Buffer.alloc(44);
+  h.write('RIFF', 0, 'ascii'); h.writeUInt32LE(36 + data.length, 4); h.write('WAVE', 8, 'ascii'); h.write('fmt ', 12, 'ascii');
+  h.writeUInt32LE(16, 16); h.writeUInt16LE(1, 20); h.writeUInt16LE(1, 22); h.writeUInt32LE(rate, 24); h.writeUInt32LE(rate * 2, 28);
+  h.writeUInt16LE(2, 32); h.writeUInt16LE(16, 34); h.write('data', 36, 'ascii'); h.writeUInt32LE(data.length, 40);
+  return Buffer.concat([h, data]);
+}
+// 2.10 TK7 (c): the composition of the call on this machine, as words — the dry run prints it (the sound itself is judged by the owner's ear)
+export function callShape(env = process.env, win = IS_WIN) {
+  const lead = (CALL_LEAD_SILENCE_MS / 1000).toFixed(1) + ' s silence';
+  const beeps = 'beeps ' + CALL_BEEPS.map(([hz]) => hz).join('/') + ' Hz ' + CALL_BEEPS.map(([, ms]) => ms).join('/') + ' ms, full level';
+  const pause = (CALL_AFTER_BEEPS_MS / 1000).toFixed(1) + ' s pause';
+  if (!win) return 'terminal bell, then the voice (' + (env.KAIF_VOICE_TOOL ? 'KAIF_VOICE_TOOL' : 'system voice') + ')';
+  if (!env.KAIF_VOICE_TOOL) return 'ONE file: ' + lead + ' · ' + beeps + ' · ' + pause + ' · the system voice, rendered before playing';
+  if (env.KAIF_VOICE_BEEPS === 'embedded') return 'KAIF_VOICE_TOOL only — it renders the beeps itself (KAIF_VOICE_BEEPS=embedded)';
+  return 'ONE file: ' + lead + ' · ' + beeps + ' · ' + pause + ' · the voice of KAIF_VOICE_TOOL rendered with --out before playing '
+    + '(a tool without --out: the beeps, then the tool speaks)';
+}
+// the samples and the rate of a 16-bit mono PCM WAV (the system voice renders one at CALL_RATE; a rich tool — at its own rate),
+// or null when the file is another format (stereo, float, compressed) — such a voice is not glued in
+export function pcmOfWav(buf) {
+  if (!buf || buf.length < 12 || buf.toString('ascii', 0, 4) !== 'RIFF' || buf.toString('ascii', 8, 12) !== 'WAVE') return null;
+  let rate = 0;
+  for (let p = 12; p + 8 <= buf.length;) {
+    const id = buf.toString('ascii', p, p + 4), size = buf.readUInt32LE(p + 4);
+    if (id === 'fmt ') rate = buf.readUInt16LE(p + 8) === 1 && buf.readUInt16LE(p + 10) === 1 && buf.readUInt16LE(p + 22) === 16 ? buf.readUInt32LE(p + 12) : 0;
+    if (id === 'data') return rate ? { pcm: buf.subarray(p + 8, Math.min(buf.length, p + 8 + size)), rate } : null;
+    p += 8 + size + (size % 2);
+  }
+  return null;
+}
 // OW4 (2.8, #98): «<owner>, this is <session>. …» — the calling session right after the owner's name, in every call; no session, no change
 // [TESTED: 2026-09-25 20:15–20:24 · selftest «this is dev two»; the origin's dry run named «main» in the Russian pack's words; s22 F — «dev two» /
 //  «main» in the Russian pack on two deployed workspaces; mutant «the name removed» red exactly on its case; report testcases/reports/2026-09-25_ow4-call-names-session.md]
@@ -11611,7 +11705,13 @@ export function introduce(phrase, cfg) {
 export function callDoor(root, text, { dryRun = false, log = console.log } = {}) {
   const cfg = cfgOf(root);
   const phrase = introduce(cfg.callName + ', ' + String(text).trim(), cfg);
-  if (dryRun) { log('CALL' + (cfg.session ? ' · ' + cfg.session : '') + ' (dry run, no sound): ' + phrase); return phrase; }
+  if (dryRun) {
+    log('CALL' + (cfg.session ? ' · ' + cfg.session : '') + ' (dry run, no sound): ' + phrase);
+    // 2.10 TK7 (c), #165: what the engine would get and what the sound would be made of — said, not played
+    log('  spoken: ' + speakable(phrase.replace(/[*_`#>[\]()«»"]/g, ' ').replace(/\s{2,}/g, ' ').trim(), cfg));
+    log('  sound: ' + callShape());
+    return phrase;
+  }
   signalCall(root, phrase, { log });
   return phrase;
 }
@@ -11640,29 +11740,52 @@ export function signalCall(root, rawPhrase, { quiet = null, log = console.log } 
   const cfg = cfgOf(root);
   const isQuiet = quiet === null ? inQuietHours(new Date(), cfg.quietFrom, cfg.quietTo) : quiet;
   log('CALL' + (cfg.session ? ' · ' + cfg.session : '') + ': ' + rawPhrase); // C8: plain text to the console — an exit code does not prove a human heard it; OW4: the session
-  const phrase = rawPhrase.replace(/[*_`#>[\]()«»"]/g, ' ').replace(/\s{2,}/g, ' ').trim(); // no markup in speech
+  // no markup in speech; 2.10 TK7 (c) (#165): the engine gets words of the deployment language — speakable()
+  const phrase = speakable(rawPhrase.replace(/[*_`#>[\]()«»"]/g, ' ').replace(/\s{2,}/g, ' ').trim(), cfg);
   if (isQuiet) { log('Quiet hours (I6) — beeps and voice suppressed; the page is up silently.'); return; }
-  const voice = () => {
-    const lang = cfg.language;
-    const systemVoice = () => {
+  const lang = cfg.language;
+  const dir = tmpDirOf(root);
+  const psq = (p) => String(p).replace(/'/g, "''"); // a PowerShell single-quoted string
+  // TK7 (c): the call file is played ONCE through the sound card (I34), the voice timeout as its deadline (DEF7); never blocks (I32)
+  const play = (wav, then = () => {}) => {
+    mkdirSync(dir, { recursive: true });
+    const file = join(dir, 'call.wav');
+    writeFileSync(file, wav);
+    const p = spawn('powershell.exe', ['-NoProfile', '-Command', "(New-Object System.Media.SoundPlayer '" + psq(file) + "').PlaySync()"],
+      { stdio: 'ignore', timeout: VOICE_TIMEOUT_MS });
+    p.on('exit', () => then());
+    p.on('error', () => { log('CALL: the call sound could not be played (no PowerShell?) — the banner did the call (I36).'); then(); });
+  };
+  // the system voice; on Windows it RENDERS into a file, and the call is one sound: [beeps when `beeps`] + the voice (TK7 (c), #165)
+  const systemVoice = ({ beeps = false } = {}) => {
       if (IS_WIN) {
-        const dir = tmpDirOf(root);
         mkdirSync(dir, { recursive: true });
         const phraseFile = join(dir, 'call-phrase.txt');
         writeFileSync(phraseFile, '\uFEFF' + phrase, 'utf8'); // UTF-8 with BOM — PowerShell reads the encoding by BOM
+        const voiceFile = join(dir, 'call-voice.wav');
+        rmSync(voiceFile, { force: true });
         const pref = process.env.KAIF_SAPI_VOICE || '';
         const ps = spawn('powershell.exe', ['-NoProfile', '-Command',
           'Add-Type -AssemblyName System.Speech; ' +
           '$s = New-Object System.Speech.Synthesis.SpeechSynthesizer; ' +
-          "$c = '" + lang + "'; $pref = '" + pref.replace(/'/g, "''") + "'; " +
+          "$c = '" + lang + "'; $pref = '" + psq(pref) + "'; " +
           '$vs = @($s.GetInstalledVoices() | Where-Object { $_.Enabled -and $_.VoiceInfo.Culture.Name.ToLower().StartsWith($c) }); ' +
           'if ($vs.Count -eq 0) { exit 3 }; ' +
           '$v = @($vs | Where-Object { $_.VoiceInfo.Name -eq $pref }); if ($v.Count -eq 0) { $v = $vs }; ' +
           '$s.SelectVoice($v[0].VoiceInfo.Name); ' +
-          "$s.Speak([IO.File]::ReadAllText('" + phraseFile.replace(/\\/g, '\\\\').replace(/'/g, "''") + "'))"],
+          '$f = New-Object System.Speech.AudioFormat.SpeechAudioFormatInfo(' + CALL_RATE + ', [System.Speech.AudioFormat.AudioBitsPerSample]::Sixteen, ' +
+          '[System.Speech.AudioFormat.AudioChannel]::Mono); ' +
+          "$s.SetOutputToWaveFile('" + psq(voiceFile) + "', $f); " +
+          "$s.Speak([IO.File]::ReadAllText('" + psq(phraseFile) + "')); $s.Dispose()"],
           { stdio: 'ignore', timeout: VOICE_TIMEOUT_MS });
-        ps.on('exit', (code) => { if (code === 3) log('CALL: no system voice of culture "' + lang + '" on this machine — the phrase was not spoken; beeps and banner did the call (I35).'); });
-        ps.on('error', () => log('CALL: system voice — engine not installed; beeps and banner did the call (I36).'));
+        ps.on('exit', (code) => {
+          if (code === 3) log('CALL: no system voice of culture "' + lang + '" on this machine — the phrase was not spoken; beeps and banner did the call (I35).');
+          const v = code === 0 && existsSync(voiceFile) ? pcmOfWav(readFileSync(voiceFile)) : null;
+          if (code === 0 && !v) log('CALL: the system voice rendered no usable sound — beeps and banner did the call (I36).');
+          if (v) play(callWav(v.pcm, { beeps, rate: v.rate }));
+          else if (beeps) play(callWav());
+        });
+        ps.on('error', () => { log('CALL: system voice — engine not installed; beeps and banner did the call (I36).'); if (beeps) play(callWav(Buffer.alloc(0))); });
         return;
       }
       if (IS_MAC) {
@@ -11671,24 +11794,44 @@ export function signalCall(root, rawPhrase, { quiet = null, log = console.log } 
         return;
       }
       log('CALL: system voice — engine not installed on this platform; beeps and banner did the call (I36).');
-    };
-    const tool = process.env.KAIF_VOICE_TOOL;
-    if (!tool) { log('CALL: voice — system voice of culture "' + lang + '" (no KAIF_VOICE_TOOL in the environment, I35).'); systemVoice(); return; }
-    try {
-      log('CALL: voice — ' + (process.env.KAIF_VOICE || 'default') + ' via KAIF_VOICE_TOOL; fallback — system voice of culture "' + lang + '" (I35).');
-      const rich = spawn(process.execPath, [tool, phrase, '--play', '--voice', process.env.KAIF_VOICE || 'default'],
-        { stdio: 'ignore', timeout: VOICE_TIMEOUT_MS });
-      rich.on('exit', (code) => { if (code !== 0) systemVoice(); });
-      rich.on('error', systemVoice);
-    } catch { systemVoice(); }
   };
-  // Beeps — through the sound card (I34), ASCII command, hard deadline DEF7; then the voice.
-  if (IS_WIN) {
-    const beep = spawn('powershell.exe',
-      ['-NoProfile', '-Command', '[console]::beep(880,160);[console]::beep(660,160);[console]::beep(990,260)'],
-      { stdio: 'ignore', timeout: BEEP_DEADLINE_MS });
-    beep.on('exit', voice);
-    beep.on('error', () => { log('CALL: beeps failed (no PowerShell?) — voice next.'); voice(); }); // the signal never drops the contour (I32)
+  // the machine's rich voice tool; when it fails — the system voice, with the beeps only if none were played yet (`fallbackBeeps`)
+  const richVoice = (fallbackBeeps) => {
+    try {
+      const rich = spawn(process.execPath, [process.env.KAIF_VOICE_TOOL, phrase, '--play', '--voice', process.env.KAIF_VOICE || 'default'],
+        { stdio: 'ignore', timeout: VOICE_TIMEOUT_MS });
+      rich.on('exit', (code) => { if (code !== 0) systemVoice({ beeps: fallbackBeeps }); });
+      rich.on('error', () => systemVoice({ beeps: fallbackBeeps }));
+    } catch { systemVoice({ beeps: fallbackBeeps }); }
+  };
+  const toolLine = () => 'CALL: voice — ' + (process.env.KAIF_VOICE || 'default') + ' via KAIF_VOICE_TOOL; fallback — system voice of culture "' + lang + '" (I35).';
+  const voice = () => { // after the terminal bell (no sound-card beeps on this platform)
+    if (!process.env.KAIF_VOICE_TOOL) { log('CALL: voice — system voice of culture "' + lang + '" (no KAIF_VOICE_TOOL in the environment, I35).'); systemVoice(); return; }
+    log(toolLine()); richVoice(false);
+  };
+  if (IS_WIN) { // TK7 (c), #165: the beeps are part of ONE sound file with a lead silence, never a separate beep before a wait
+    if (!process.env.KAIF_VOICE_TOOL) {
+      log('CALL: voice — system voice of culture "' + lang + '" (no KAIF_VOICE_TOOL in the environment, I35); beeps and voice — one sound file.');
+      systemVoice({ beeps: true });
+    } else if (process.env.KAIF_VOICE_BEEPS === 'embedded') { // the tool declares it renders the beeps itself — the contour plays none
+      log(toolLine() + ' The tool renders the beeps itself (KAIF_VOICE_BEEPS=embedded).');
+      richVoice(true);
+    } else { // the tool RENDERS the voice into a file (`--out`), and the call is one sound; a tool without `--out` — the beeps, then it speaks
+      log(toolLine() + ' Rendering the voice first (--out) — beeps and voice in one sound file.');
+      mkdirSync(dir, { recursive: true });
+      const toolFile = join(dir, 'call-voice-tool.wav');
+      rmSync(toolFile, { force: true });
+      const speakAfterBeeps = () => { log('CALL: the voice tool gave no 16-bit mono WAV with --out — the beeps, then the tool speaks (#165).'); play(callWav(), () => richVoice(false)); };
+      try {
+        const r = spawn(process.execPath, [process.env.KAIF_VOICE_TOOL, phrase, '--out', toolFile, '--voice', process.env.KAIF_VOICE || 'default'],
+          { stdio: 'ignore', timeout: VOICE_TIMEOUT_MS });
+        r.on('exit', (code) => {
+          const v = code === 0 && existsSync(toolFile) ? pcmOfWav(readFileSync(toolFile)) : null;
+          if (v) play(callWav(v.pcm, { beeps: true, rate: v.rate })); else speakAfterBeeps();
+        });
+        r.on('error', speakAfterBeeps);
+      } catch { speakAfterBeeps(); }
+    }
   } else {
     try { process.stdout.write('\u0007'); } catch { /* no terminal — nothing to ring */ }
     log('CALL: no sound-card beep on this platform — terminal bell only; voice next.');
@@ -11747,6 +11890,10 @@ export function pendingNotices(root) {
   return readQueue(root)
     .filter((i) => isNoticeItem(i) && !i.readAt && existsSync(resolve(root, i.doc)))
     .map((i) => ({ doc: i.doc, addedAt: i.addedAt }));
+}
+// 2.10 TK7 (b), origin #163: the queue page shows its notices too — the showing (I40) is recorded for EVERY document on it
+export function queueShownDocs(root, docs) {
+  return [...docs.map((d) => d.doc), ...pendingNotices(root).map((n) => n.doc)];
 }
 
 // bugs/125 (2.8): the revision of the QUEUE — what the entry page shows (documents with their unanswered counts, notices). The entry page
@@ -12543,6 +12690,26 @@ function checkLock(root, key) {
     return { ...lock, stale: true };
   }
 }
+// I48 (2.10, epic TK step TK7 (a); origin #169 · #165 part 3 — two windows and two voices at once; the fix two field deployments carried
+// as the same local edit): a page is raised only when no OTHER page of this contour is alive. Returns the live lock of another document
+// (its url · doc · pid) or null. A stale lock (its process gone) does not count — a crashed page never blocks the next one.
+export function otherLivePage(root, key) {
+  const dir = decisionsAbs(root);
+  if (!existsSync(dir)) return null;
+  const own = key.replace(/\.[^.]+$/u, '') + '.lock';
+  for (const f of readdirSync(dir).filter((n) => n.endsWith('.lock') && n !== own).sort()) {
+    const lock = checkLock(root, f.replace(/\.lock$/u, ''));
+    if (lock && !lock.stale) return lock;
+  }
+  return null;
+}
+// I48 (2.10 TK7 (a), origin #169): `--timeout` is automation only (I9) — a page raised in the owner's WINDOW never runs on a timer.
+// Returns the refusal line, or null when the flags are legal (no timeout, or a page served without a window).
+export function timeoutRefusal(args) {
+  if (!args.includes('--timeout') || args.includes('--no-open') || args.includes('--no-serve') || args.includes('--check')) return null;
+  return '✖ --timeout raises the owner\'s window on a timer — refused before any page, sound or call (I48; --timeout is automation only, I9: '
+    + 'use it with --no-open, or raise the owner\'s page in the background with no timeout).';
+}
 
 // ── The server: raise → show → call → wait → record → die (I8) ───────────────────────────────
 // OW6 (2.8): the revision of a document — the hash its page is built from (the text; the base64 of an image)
@@ -12662,6 +12829,14 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
       resolveP({ outcome: 'already-open', url: held.url, exitCode: EXIT_DECIDED });
       return;
     }
+    const other = otherLivePage(root, lockKey); // I48 (2.10 TK7 (a), #169): one page and one voice at a time
+    if (other) {
+      log('Another page is open: ' + other.url + ' (' + (other.doc || '?') + ', pid ' + other.pid + ') — one page at a time (I48): '
+        + 'close it first (' + CLI_NAME + ' ' + (other.doc || '<doc>') + ' --close) or add the question to the open document, then raise this one. '
+        + 'No page raised, no call.');
+      resolveP({ outcome: 'other-open', url: other.url, exitCode: EXIT_PREFLIGHT });
+      return;
+    }
     // #64: the previous run's port, when its process is gone — tried FIRST (same web origin → the draft is restored)
     const stalePort = held && held.stale ? (Number((String(held.url).match(/:(\d+)\/?$/) || [])[1]) || 0) : 0;
     let outcome = null, beaconTimer = null, lastAlive = Date.now(), strikes = 0, tabReported = false;
@@ -12754,6 +12929,15 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
               ok({ ok: true, written: t.kind.notice + ' — ' + doc + withComment });
               outcome = 'notice read';
               const restN = pendingNotices(root).length;
+              // 2.10 TK7 (b), origin #163 (spec §5 lifted to the batch): a notice read on the QUEUE page records and does NOT end the page
+              // while any document on it still has an unanswered question or an unread notice — the batch is one page for N documents
+              const restQ = batch ? pendingDocs(root).filter((d) => d.unanswered > 0).length : 0;
+              if (batch && (restQ > 0 || restN > 0)) {
+                log('Recorded: notice read (' + doc + ', by ' + record.by + withComment + '). Documents with questions left: ' + restQ
+                  + ', unread notices: ' + restN + ' — the page STAYS open, the contour waits (#163).');
+                outcome = null;
+                return;
+              }
               log('Outcome: notice read (' + doc + ', by ' + record.by + withComment + ') — ending the contour (I8).' +
                 (restN > 0 ? ' Unread notices left: ' + restN + ' — restarting the batch is the agent\'s duty.' : ''));
               setTimeout(finish, SERVER_DEATH_MS, EXIT_DECIDED);
@@ -12878,7 +13062,7 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
         if (launcher.endsWith('--app')) checkProfileAccount(root, log); // EXP-0134: a new profile must not have signed in
       }
       if (open) { // I40: the fact of showing — at the moment of the open window
-        const shownRels = batch ? forOwner().map((d) => d.doc) : [relDoc(root, docPath)];
+        const shownRels = batch ? queueShownDocs(root, forOwner()) : [relDoc(root, docPath)];
         recordShown(root, shownRels, batch ? t.transport.batch : t.transport.page);
         log('Shown recorded (I40): ' + shownRels.length + ' doc(s) → ' + cfg.decisionsDir + '/' + SHOWN_FILE);
       }
@@ -13664,8 +13848,10 @@ export async function selftest(log = console.log) {
       && pageShell(cfg, { title: 'T', kind: 'k', heading: '', main: '', questions: [] }).includes('<title>Probe Project · T</title>'),
       'page window title: « · dev2» when the session is named (OW4, #98)');
     const dl = []; const dp = callDoor(root, 'the test phone needs unlocking', { dryRun: true, log: (l) => dl.push(l) });
-    ok(dp === 'Jane Owner aka JO, the test phone needs unlocking' && dl.length === 1 && /^CALL \(dry run, no sound\): Jane Owner aka JO, the test phone/.test(dl[0]),
-      'call door --dry-run: the phrase and the banner line printed, no sound; one workspace — no session named (OW4, #95)');
+    // 2.10 TK7 (c), #165: the dry run also says what the engine would get and the sound's composition — two more lines, still no sound
+    ok(dp === 'Jane Owner aka JO, the test phone needs unlocking' && dl.length === 3 && /^CALL \(dry run, no sound\): Jane Owner aka JO, the test phone/.test(dl[0])
+      && /^ {2}spoken: /.test(dl[1]) && /^ {2}sound: /.test(dl[2]),
+      'call door --dry-run: the phrase, what the engine would get and the sound\'s composition printed, no sound; one workspace — no session named (OW4, #95; TK7 #165)');
     rmSync(join(root, 'ws'), { recursive: true, force: true });
   }
 
@@ -13797,7 +13983,89 @@ export async function selftest(log = console.log) {
   ok(e3 && e3.exitCode === 2 && /page closed after 1 saved answer\(s\) — recorded, nothing lost/.test(e3.outcome || ''),
     'a page closed after a partial save: exit 2 and «closed after 1 saved answer(s) — recorded, nothing lost» (OW6, judge OW10 H6)');
   rmSync(join(root, MD), { force: true });
+  // (7) 2.10 TK7 (a), I48 (origin #169 · #165 part 3): a LIVE lock of another document refuses the page — exit 3, no page, no call;
+  // a lock whose process is gone does not block; --timeout on the owner's window refuses, with --no-open it stays automation
+  writeFileSync(join(root, MD), three);
+  const OLK = lockPath(root, 'interview_other.md');
+  writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: 'http://127.0.0.1:1/', doc: 'interviews/interview_other.md' }) + '\n');
+  const slog7 = [];
+  const e7 = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slog7.push(String(l)) }), sl(3000).then(() => null)]);
+  ok(e7 && e7.exitCode === EXIT_PREFLIGHT && e7.outcome === 'other-open' && /Another page is open: http:\/\/127\.0\.0\.1:1\/ \(interviews\/interview_other\.md/.test(slog7.join('\n'))
+    && !/Page is up/.test(slog7.join('\n')) && !existsSync(lockPath(root, basename(MD))),
+    'TK7 #169: a live page of another document refuses this one — exit 3 «Another page is open … close it first», no page, no lock (I48)');
+  const deadPid = spawnSync(process.execPath, ['-e', '']).pid; // a process that has just ended — its pid is gone
+  writeFileSync(OLK, JSON.stringify({ pid: deadPid, url: 'http://127.0.0.1:1/', doc: 'interviews/interview_other.md' }) + '\n');
+  const slog8 = [];
+  const served8 = serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slog8.push(String(l)) });
+  let url8 = null;
+  for (let i = 0; i < 100 && !url8; i++) { url8 = (slog8.join('\n').match(/Page is up: (http:\/\/127\.0\.0\.1:\d+\/)/) || [])[1] || null; if (!url8) await sl(50); }
+  if (url8) await fetch(url8 + 'closed', { method: 'POST', body: 'doc:unsaved' }).catch(() => null);
+  const e8 = await Promise.race([served8, sl(BEACON_RELOAD_GRACE_MS + 3000).then(() => null)]);
+  ok(!!url8 && !/Another page is open/.test(slog8.join('\n')) && e8 && e8.exitCode !== EXIT_PREFLIGHT,
+    'TK7 #169, control: a lock of another document whose process is GONE does not block — the page rises (I48)');
+  rmSync(OLK, { force: true });
+  rmSync(join(root, MD), { force: true });
+  ok(timeoutRefusal(['interviews/x.md', '--timeout', '60']) !== null && timeoutRefusal(['interviews/x.md', '--no-open', '--silent', '--timeout', '1']) === null
+    && timeoutRefusal(['interviews/x.md']) === null && timeoutRefusal(['interviews/x.md', '--check', '--timeout', '5']) === null,
+    'TK7 #169: --timeout on the owner\'s window refuses; with --no-open (automation), without a timeout and with --check it is legal (I48, I9)');
+  // (8) 2.10 TK7 (b), origin #163: a notice read on the QUEUE page does not end it while an interview on it has open questions;
+  // the showing of the queue page names the notice too
+  writeFileSync(join(root, MD), three);
+  const NT = 'notes/notice_163.md';
+  mkdirSync(join(root, 'notes'), { recursive: true });
+  writeFileSync(join(root, NT), '# Notice\n\nThe recon is done.\n');
+  enqueue(root, NT, { kind: KIND_NOTICE });
+  const shown9 = queueShownDocs(root, pendingDocs(root));
+  const slog9 = [];
+  const served9 = serveContour(root, { batch: true }, { open: false, signal: false, log: (l) => slog9.push(String(l)) });
+  let ended9 = null; served9.then((v) => { ended9 = v; });
+  let url9 = null;
+  for (let i = 0; i < 100 && !url9; i++) { url9 = (slog9.join('\n').match(/Page is up: (http:\/\/127\.0\.0\.1:\d+\/)/) || [])[1] || null; if (!url9) await sl(50); }
+  let r9 = null;
+  if (url9) {
+    const beat9 = setInterval(() => { fetch(url9 + 'alive?i=-1&d=0&s=0').catch(() => {}); }, 200);
+    r9 = await fetch(url9 + 'decide', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ doc: NT, answers: {}, comment: '', read: true, face: 'interview', rev: docRev(root, NT) }) }).then((r) => r.status).catch(() => 0);
+    await sl(SERVER_DEATH_MS + 1500);
+    clearInterval(beat9);
+  }
+  ok(r9 === 200 && ended9 === null && /notice read \(notes\/notice_163\.md.*the page STAYS open/s.test(slog9.join('\n'))
+    && !/ending the contour/.test(slog9.join('\n')) && shown9.includes(MD) && shown9.includes(NT),
+    'TK7 #163: a notice read on the queue page records and the page STAYS while an interview on it has open questions; the showing names both documents');
+  if (url9 && ended9 === null) { try { await fetch(url9 + 'closed', { method: 'POST', body: 'index' }); } catch { /* best effort */ } }
+  await Promise.race([served9, sl(BEACON_RELOAD_GRACE_MS + 3000)]);
+  rmSync(join(root, 'notes'), { recursive: true, force: true });
+  rmSync(join(root, MD), { force: true });
   } // OW6
+
+  { // (9) 2.10 TK7 (c), origin #165: the engine gets words — numbers, abbreviations and Latin words become the pack's words; one sound file
+    const ru = { language: 'ru' }, sp = T(ru).spoken;
+    const said = speakable('Owner, KAIF: interview #010 waits. Vulkan and Blender 2.10, load 80%', ru);
+    const kaif = ['K', 'A', 'I', 'F'].map((c) => sp.letters[c]).join('-');
+    ok(!/[A-Za-z0-9#%]/u.test(said) && said.includes(kaif.charAt(0).toUpperCase() + kaif.slice(1)) && said.includes(' ' + sp.number(10) + ' ')
+      && said.includes(sp.number(2) + ' ' + sp.number(10)) && said.includes(sp.number(80) + ' ' + sp.percent)
+      && sp.number(2026) === sp.number(2000) + ' ' + sp.number(26) && sp.number(1000) !== sp.number(2000) && sp.number(21) === sp.tens[2] + ' ' + sp.ones[1],
+      'TK7 #165: the Russian engine gets no Latin and no digits — an abbreviation letter by letter, a version and a percentage as words, thousands agree');
+    ok(speakable('Owner, KAIF: interview #010 waits.', { language: 'en' }) === 'Owner, KAIF: interview 010 waits.',
+      'TK7 #165, control: a pack without spoken data (English) leaves the words as written');
+    const voice = Buffer.alloc(2 * 300, 1);
+    const wav = callWav(voice), pcm = (pcmOfWav(wav) || {}).pcm;
+    const at = (msAt) => Math.round(CALL_RATE * msAt / 1000);
+    const lead = at(CALL_LEAD_SILENCE_MS), beepN = at(CALL_BEEPS[0][1]);
+    let leadSilent = true; for (let k = 0; k < lead; k++) if (pcm.readInt16LE(k * 2) !== 0) { leadSilent = false; break; }
+    let peak = 0; for (let k = lead; k < lead + beepN; k++) peak = Math.max(peak, Math.abs(pcm.readInt16LE(k * 2)));
+    const expected = lead + CALL_BEEPS.reduce((s, [, ms]) => s + at(ms), 0) + at(CALL_BEEP_GAP_MS) * (CALL_BEEPS.length - 1) + at(CALL_AFTER_BEEPS_MS) + 300;
+    // the threshold is the field's, not this file's constant: 0.6 s of silence still cut the beeps, 1.0 s did not (#165, comment 1)
+    ok(pcm && lead >= CALL_RATE && leadSilent && peak >= Math.floor(CALL_BEEP_LEVEL * 32767) - 1 && pcm.length === expected * 2 && pcm.subarray(pcm.length - 600).equals(voice)
+      && pcmOfWav(callWav()).pcm.length === (expected - at(CALL_AFTER_BEEPS_MS) - 300) * 2,
+      'TK7 #165: the call is ONE file — ' + CALL_LEAD_SILENCE_MS + ' ms of silence, three beeps at full level, the pause, then the voice already rendered');
+    const stereo = Buffer.from(wav); stereo.writeUInt16LE(2, 22);
+    const rich = pcmOfWav(callWav(voice, { rate: 48000 }));
+    ok(pcmOfWav(stereo) === null && rich && rich.rate === 48000 && rich.pcm.subarray(0, 2 * 48000).every((x) => x === 0) && rich.pcm.subarray(rich.pcm.length - 600).equals(voice)
+      && callShape({}, true).startsWith('ONE file') && callShape({ KAIF_VOICE_TOOL: 'x' }, true).startsWith('ONE file')
+      && callShape({ KAIF_VOICE_TOOL: 'x', KAIF_VOICE_BEEPS: 'embedded' }, true).startsWith('KAIF_VOICE_TOOL only'),
+      'TK7 #165: a stereo voice is not glued in; a rich tool\'s voice at its own rate is glued with silence and beeps made at that rate; the dry run names the composition');
+  }
 
   rmSync(root, { recursive: true, force: true });
   log(bad ? 'SELFTEST RED: ' + bad + ' of ' + n : 'contour selftest green: ' + n + ' checks (pre-flight red on the "options as paragraphs" fixture, three faces, records, showing)');
@@ -13817,6 +14085,8 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
     process.exitCode = EXIT_UNKNOWN_FLAG; // exitCode, not exit(): Windows pipes are asynchronous and exit() would drop the line
     return;
   }
+  const timerRefusal = timeoutRefusal(args); // I48 (2.10 TK7 (a), #169): no owner window on a timer
+  if (timerRefusal) { console.error(timerRefusal); process.exitCode = EXIT_PREFLIGHT; return; }
   const docPath = args.find((a, i) => !a.startsWith('--') && !valueFlags.includes(args[i - 1]));
   const opts = {
     open: !args.includes('--no-open'),
@@ -14168,7 +14438,10 @@ const EN = {
   // OW4 (2.8, #98): how the voice says a session's name — known words and numbers; an unknown word stays as written
   spoken: { words: [], // pairs [written, spoken] — a dictionary, not a schema: the pack's array is taken whole
     ones: ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'],
-    tens: ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'] },
+    tens: ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'],
+    // 2.10 TK7 (c), origin #165: how the CALL's phrase reaches the engine — empty here: an English engine reads Latin and digits itself;
+    // a pack whose engine does not (Russian) fills `number` · `percent` · `letters` · `translit`, and `speakable()` in review.mjs uses them
+    number: null, percent: null, letters: null, translit: null },
   // the queue without a browser (`--queue --list`) — read by the agent, quoted by the rituals
   list: { waits: (d) => 'waiting ' + d + ' d', shown: (date, ago, t) => 'shown: ' + date + ' — ' + ago + ' d ago (' + t + ')',
     never: 'NEVER SHOWN — the owner does not know this question exists', empty: "The owner's queue is empty — no waiting documents.",
@@ -14211,6 +14484,33 @@ const EN = {
     partialHead: (n) => 'not recognised: ' + n + ' question-like block(s) — not on this page',
   },
 };
+
+// 2.10, epic TK step TK7 (c) (origin #165): a whole number as the Russian voice says it — nominative, thousands feminine
+// («две тысячи двадцать шесть»); 0 … 999 999, larger numbers digit by digit. The call's phrase is normalised by `speakable()` in
+// review.mjs before ANY engine — the owner's word in the ticket: the engine gets words, never digits.
+const RU_ONES = ['ноль', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять', 'десять', 'одиннадцать', 'двенадцать',
+  'тринадцать', 'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
+const RU_TENS = ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'];
+const RU_HUNDREDS = ['', 'сто', 'двести', 'триста', 'четыреста', 'пятьсот', 'шестьсот', 'семьсот', 'восемьсот', 'девятьсот'];
+function ruNumber(n) {
+  if (!Number.isFinite(n) || n < 0) return String(n);
+  if (n === 0) return RU_ONES[0];
+  if (n > 999999) return String(n).split('').map((d) => RU_ONES[Number(d)]).join(' ');
+  const upTo999 = (x, fem) => {
+    const h = Math.floor(x / 100), r = x % 100, out = [];
+    if (h) out.push(RU_HUNDREDS[h]);
+    if (r >= 20) { out.push(RU_TENS[Math.floor(r / 10)]); if (r % 10) out.push(fem && r % 10 < 3 ? ['', 'одна', 'две'][r % 10] : RU_ONES[r % 10]); }
+    else if (r) out.push(fem && r < 3 ? ['', 'одна', 'две'][r] : RU_ONES[r]);
+    return out;
+  };
+  const th = Math.floor(n / 1000), rest = n % 1000, out = [];
+  if (th) {
+    const l2 = th % 100, l1 = th % 10;
+    out.push(...upTo999(th, true), l2 >= 11 && l2 <= 19 ? 'тысяч' : l1 === 1 ? 'тысяча' : l1 >= 2 && l1 <= 4 ? 'тысячи' : 'тысяч');
+  }
+  out.push(...upTo999(rest, false));
+  return out.join(' ');
+}
 
 const RU = {
   lang: 'ru',
@@ -14273,9 +14573,10 @@ const RU = {
   call: {
     notice: (o, p, title) => o + ', сообщение ' + p + ': «' + title + '» — ответа не ждёт, только прочитать. Страница открыта.',
     batch: (o, p, parts) => o + ', накопилось в ' + p + ': ' + parts.join(', ') + '. Страница открыта.',
-    interview: (o, p, kind, title, nWait) => o + ', ' + kind + ' ' + p + ' «' + title + '» ждёт вычитки' +
+    // 2.10 TK7 (c), origin #165 — the owner did not understand «вычитки» in a call: plain words, the customer's language
+    interview: (o, p, kind, title, nWait) => o + ', ' + kind + ' ' + p + ' «' + title + '» ждёт ваших ответов' +
       (nWait ? ': вопросов без ответа ' + nWait : '') + '. Страница открыта.',
-    proofread: (o, p, title) => o + ', ' + p + ' просит вычитку: «' + title + '». Страница открыта.',
+    proofread: (o, p, title) => o + ', ' + p + ' просит прочитать и оставить замечания: «' + title + '». Страница открыта.',
     mockup: (o, p, title) => o + ', ' + p + ' просит отсмотреть макет: «' + title + '». Страница открыта.',
     from: (s) => 'это ' + s, // OW4 (2.8, #98): «<владелец>, это <сессия>. …»
     parts: { docs: (n) => 'документов ' + n, questions: (n) => 'вопросов без ответа ' + n, notices: (n) => 'сообщений непрочитанных ' + n },
@@ -14286,9 +14587,19 @@ const RU = {
     ['fix', 'фикс'], ['hotfix', 'хотфикс'], ['ops', 'опс'], ['lead', 'лид'], ['manager', 'менеджер'], ['design', 'дизайн'], ['designer', 'дизайнер'],
     ['ui', 'ю ай'], ['api', 'эй пи ай'], ['backend', 'бэкенд'], ['frontend', 'фронтенд'], ['bug', 'баг'], ['release', 'релиз'], ['team', 'тим'],
     ['agent', 'агент'], ['writer', 'райтер'], ['analyst', 'аналитик']],
-    ones: ['ноль', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять', 'десять', 'одиннадцать', 'двенадцать', 'тринадцать',
-      'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'],
-    tens: ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'] },
+    ones: RU_ONES, tens: RU_TENS,
+    // 2.10 TK7 (c), origin #165 — the owner's rule, verbatim in the ticket: «в голосовой движок всё должно передаваться словами на русском
+    // языке - английские транслитирайией, цифры словами, единицы изменения словами». A number — words; a capitalised Latin abbreviation
+    // (up to five letters) — letter by letter; any other Latin word — transliterated (digraphs first, then letters).
+    number: ruNumber,
+    percent: 'процентов',
+    letters: { A: 'эй', B: 'би', C: 'си', D: 'ди', E: 'и', F: 'эф', G: 'джи', H: 'эйч', I: 'ай', J: 'джей', K: 'кей', L: 'эл', M: 'эм',
+      N: 'эн', O: 'оу', P: 'пи', Q: 'кью', R: 'ар', S: 'эс', T: 'ти', U: 'ю', V: 'ви', W: 'дабл-ю', X: 'экс', Y: 'уай', Z: 'зед' },
+    translit: [['shch', 'щ'], ['sch', 'ш'], ['sh', 'ш'], ['ch', 'ч'], ['zh', 'ж'], ['kh', 'х'], ['ts', 'ц'], ['th', 'т'], ['ph', 'ф'],
+      ['ck', 'к'], ['qu', 'кв'], ['ya', 'я'], ['yu', 'ю'], ['yo', 'ё'], ['ee', 'и'], ['oo', 'у'], ['ce', 'се'], ['ci', 'си'], ['cy', 'си'],
+      ['a', 'а'], ['b', 'б'], ['c', 'к'], ['d', 'д'], ['e', 'е'], ['f', 'ф'], ['g', 'г'], ['h', 'х'], ['i', 'и'], ['j', 'дж'], ['k', 'к'],
+      ['l', 'л'], ['m', 'м'], ['n', 'н'], ['o', 'о'], ['p', 'п'], ['q', 'к'], ['r', 'р'], ['s', 'с'], ['t', 'т'], ['u', 'у'], ['v', 'в'],
+      ['w', 'в'], ['x', 'кс'], ['y', 'и'], ['z', 'з']] },
   list: { waits: (d) => 'ждёт ' + d + ' дн.', shown: (date, ago, t) => 'показан: ' + date + ' — ' + ago + ' дн. назад (' + t + ')',
     never: 'НИ РАЗУ НЕ ПОКАЗАН — владелец не знает, что этот вопрос существует', empty: 'Очередь владельца пуста — ждущих документов нет.',
     gate: (n) => 'ГЕЙТ (I42): ни разу не показанных — ' + n + '. Напечатать очередь ≠ донести вопрос; показ — действие агента.',
@@ -19865,7 +20176,7 @@ numbers that must not change. A fact the owner owns carries the owner's provenan
 # INTERACTIVE CONTOUR — the one-page executable contract (KAIF 2.6, epic IC)
 
 <!-- Ships as .kaif/INTERACTIVE_CONTOUR_SPEC.md (bundle-only). This page is the CONTRACT every owner-facing page must satisfy — the shipped generator (.kaif/tools/contour/, 2.6) implements it; a project that still runs its own contour checks it against these lines BEFORE opening a page to the owner.
-The long-form canon (47 invariants, build contract C1–C13, traps T1–T11) stays in the /owner-reviews skill; this page is the part a session can verify in one minute. Origin: field tickets #19 #38 #47 #51 — every one a contour rebuilt per project and broken on its own edge case (a page opened WITHOUT radio buttons because the options were typed as paragraphs).
+The long-form canon (48 invariants, build contract C1–C13, traps T1–T11) stays in the /owner-reviews skill; this page is the part a session can verify in one minute. Origin: field tickets #19 #38 #47 #51 — every one a contour rebuilt per project and broken on its own edge case (a page opened WITHOUT radio buttons because the options were typed as paragraphs).
 This page has a BUDGET (120 lines, judged by the origin's suite s22): a new article is written at the width of the table below, or it pays for its lines by tightening an old one. -->
 
 ## 1. Source document — what the page is built from
@@ -19946,11 +20257,11 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
   never a tab — the page checks `display-mode: standalone` itself and says when it is a tab. Auto-close is an ATTEMPT (~2 s).
 - **A live owner page is closed only by `<doc> --close`** (2.7, LP, #66 — "the contour closed while I WAS TYPING"): prints port · pid · title ("compare with the window you were told about"), REFUSES with exit 4 while the last input — or the page itself — is younger than the quiet threshold (180 s;
   `contour.closeQuietMs`) or a draft is unsaved, else asks the page's OWN server to end (token from the lock; a pid from a file is never killed without `--force`; the waiting agent sees exit 2) and prints `closed <doc>`; `--force` needs `--owner-word "<quote>"` (logged — an audit trail, not a gate).
-  A neighbour session's word is never evidence — check the port and the pid. The browser window is never killed: its draft stays on the project profile.
+  A neighbour session's word is never evidence — check the port and the pid. The browser window is never killed: its draft stays on the project profile. **One page and one voice at a time (I48)** (2.10, #169 · #165): a live lock of ANOTHER document refuses a new page — exit 3, `Another page is open … close it first`, no window, no call; a lock whose process is gone does not block; a question while a page is open goes into the open document; `--timeout` on a page with a window refuses (automation only, with `--no-open`).
 
 ## 6. The call — sound first, voice by language
 
-Beeps 880/160 → 660/160 → 990/260 ms through the sound card, then the banner, then the voice — after the page is up, never before. The voice is chosen by the deployment language (`.kaif/kaif.json` →
+ONE sound, played once (2.10, #165): 1 s of silence (the device wakes up on the first samples), beeps 880/160 → 660/160 → 990/260 ms at full level, 2 s of pause, the voice already rendered (the system voice into a file; a rich tool through `--out <wav>`, else the beeps and then the tool speaks; a tool that renders the beeps itself declares `KAIF_VOICE_BEEPS=embedded`); the banner first — after the page is up, never before. The phrase reaches the engine as words of the deployment language — numbers as words, an abbreviation letter by letter, Latin transliterated (`--call --dry-run` prints what it would get). The voice is chosen by the deployment language (`.kaif/kaif.json` →
 `language`) first, timbre second; when no matching engine exists the call line says so ("system voice — engine not installed") and the contour drops to beeps + banner rather than speaking noise. The
 rich engine is a MACHINE resource reached through the environment (`KAIF_VOICE_TOOL`, `KAIF_VOICE`, `KAIF_SAPI_VOICE`) — never a path inside the project. Quiet hours override every level; the window
 may cross midnight. **The call names the calling session** when the project has more than one workspace («<owner>, this is <session>. …», `CALL · <session>:`, the window title; `KAIF_SESSION_NAME`,

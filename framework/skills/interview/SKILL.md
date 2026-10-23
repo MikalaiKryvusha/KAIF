@@ -192,7 +192,9 @@ is not in the form `### Q<n>.`). The check is a door of its own: it never serves
 never records a showing (2.7, origin issue #56 — `--no-open` is NOT a check: it serves the page and CALLS the owner,
 only the window is not opened). The same door has a SECOND axis — the archaeology of every live question (step 3d,
 2.7, origin issue #70): no attestation, exit 3, and the refusal prints the search command to run.
-A project that runs its own contour checks the document against that page by hand.
+A project that runs its own contour checks the document against that page by hand. **A page is already open for the owner?** Add
+the new question to THAT document — one page and one voice at a time (2.10, origin #169 · #165, I48: the door refuses a second
+page with exit 3).
 Paragraph headings like `**A. …**` are not options.
 
 ### Step 3d. Archaeology BEFORE the question — search, read, attest (KAIF 2.7)

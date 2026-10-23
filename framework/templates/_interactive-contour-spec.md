@@ -1,7 +1,7 @@
 # INTERACTIVE CONTOUR — the one-page executable contract (KAIF 2.6, epic IC)
 
 <!-- Ships as .kaif/INTERACTIVE_CONTOUR_SPEC.md (bundle-only). This page is the CONTRACT every owner-facing page must satisfy — the shipped generator (.kaif/tools/contour/, 2.6) implements it; a project that still runs its own contour checks it against these lines BEFORE opening a page to the owner.
-The long-form canon (47 invariants, build contract C1–C13, traps T1–T11) stays in the /owner-reviews skill; this page is the part a session can verify in one minute. Origin: field tickets #19 #38 #47 #51 — every one a contour rebuilt per project and broken on its own edge case (a page opened WITHOUT radio buttons because the options were typed as paragraphs).
+The long-form canon (48 invariants, build contract C1–C13, traps T1–T11) stays in the /owner-reviews skill; this page is the part a session can verify in one minute. Origin: field tickets #19 #38 #47 #51 — every one a contour rebuilt per project and broken on its own edge case (a page opened WITHOUT radio buttons because the options were typed as paragraphs).
 This page has a BUDGET (120 lines, judged by the origin's suite s22): a new article is written at the width of the table below, or it pays for its lines by tightening an old one. -->
 
 ## 1. Source document — what the page is built from
@@ -82,11 +82,11 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
   never a tab — the page checks `display-mode: standalone` itself and says when it is a tab. Auto-close is an ATTEMPT (~2 s).
 - **A live owner page is closed only by `<doc> --close`** (2.7, LP, #66 — "the contour closed while I WAS TYPING"): prints port · pid · title ("compare with the window you were told about"), REFUSES with exit 4 while the last input — or the page itself — is younger than the quiet threshold (180 s;
   `contour.closeQuietMs`) or a draft is unsaved, else asks the page's OWN server to end (token from the lock; a pid from a file is never killed without `--force`; the waiting agent sees exit 2) and prints `closed <doc>`; `--force` needs `--owner-word "<quote>"` (logged — an audit trail, not a gate).
-  A neighbour session's word is never evidence — check the port and the pid. The browser window is never killed: its draft stays on the project profile.
+  A neighbour session's word is never evidence — check the port and the pid. The browser window is never killed: its draft stays on the project profile. **One page and one voice at a time (I48)** (2.10, #169 · #165): a live lock of ANOTHER document refuses a new page — exit 3, `Another page is open … close it first`, no window, no call; a lock whose process is gone does not block; a question while a page is open goes into the open document; `--timeout` on a page with a window refuses (automation only, with `--no-open`).
 
 ## 6. The call — sound first, voice by language
 
-Beeps 880/160 → 660/160 → 990/260 ms through the sound card, then the banner, then the voice — after the page is up, never before. The voice is chosen by the deployment language (`.kaif/kaif.json` →
+ONE sound, played once (2.10, #165): 1 s of silence (the device wakes up on the first samples), beeps 880/160 → 660/160 → 990/260 ms at full level, 2 s of pause, the voice already rendered (the system voice into a file; a rich tool through `--out <wav>`, else the beeps and then the tool speaks; a tool that renders the beeps itself declares `KAIF_VOICE_BEEPS=embedded`); the banner first — after the page is up, never before. The phrase reaches the engine as words of the deployment language — numbers as words, an abbreviation letter by letter, Latin transliterated (`--call --dry-run` prints what it would get). The voice is chosen by the deployment language (`.kaif/kaif.json` →
 `language`) first, timbre second; when no matching engine exists the call line says so ("system voice — engine not installed") and the contour drops to beeps + banner rather than speaking noise. The
 rich engine is a MACHINE resource reached through the environment (`KAIF_VOICE_TOOL`, `KAIF_VOICE`, `KAIF_SAPI_VOICE`) — never a path inside the project. Quiet hours override every level; the window
 may cross midnight. **The call names the calling session** when the project has more than one workspace («<owner>, this is <session>. …», `CALL · <session>:`, the window title; `KAIF_SESSION_NAME`,
