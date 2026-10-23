@@ -22,9 +22,12 @@
 //   M14 diacritics reach the engine                                     → exactly «TK7b #165: the Russian engine gets no letter»;
 //   M15 the percent word does not agree (texts.mjs)                     → exactly «TK7b #165: the Russian engine gets no letter»;
 //   M16 «1 000 000» read group by group                                 → exactly «TK7b #165: the Russian engine gets no letter»;
-//   M17 the voice lock never holds                                      → exactly «TK7b: one voice at a time».
+//   M17 the voice lock never holds                                      → exactly «TK7b: one voice at a time»;
+//   after the judge of TK7b (judge-tk7b.md, hunts 4–5):
+//   M18 `--list` alone is a no-window door again (a page on a timer)    → exactly «TK7 #169: --timeout»;
+//   M19 a plain space joins ONE group of thousands («#165 100%»)        → exactly «TK7b #165: the Russian engine gets no letter».
 // Plus the Russian phrase of the call, read straight from the pack (the generator stays ASCII — guard 5d): no «вычитки» (#165, comment 1).
-// The selftest runs in quietEnv() (no window, no sound — bugs/116). usage: node tools/sandbox/probes/tk7-contour-mutants.mjs (≈ 1–2 min; alone)
+// The selftest runs in quietEnv() (no window, no sound — bugs/116). usage: node tools/sandbox/probes/tk7-contour-mutants.mjs (≈ 6–7 min; alone)
 import { mkdtempSync, cpSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
@@ -51,6 +54,8 @@ const MUTANTS = [
   { name: 'M14 diacritics reach the engine', file: 'review.mjs', find: "const w = w0.normalize('NFD')", to: "const w = w0, unused = w0.normalize('NFD')", red: ['TK7b #165: the Russian engine gets no letter'] },
   { name: 'M15 the percent word does not agree', file: 'texts.mjs', find: "if (!written) return 'процентов';", to: "return 'процентов';", red: ['TK7b #165: the Russian engine gets no letter'] },
   { name: 'M16 spaced thousands read by groups', file: 'review.mjs', find: "if (typeof sp.number === 'function') s = s.replace(/(?<!", to: 'if (false) s = s.replace(/(?<!', red: ['TK7b #165: the Russian engine gets no letter'] },
+  { name: 'M18 --list alone is a no-window door again', file: 'review.mjs', find: "const NO_WINDOW_FLAGS = ['--no-open', '--no-serve', '--check', '--call',", to: "const NO_WINDOW_FLAGS = ['--no-open', '--no-serve', '--check', '--list', '--call',", red: ['TK7 #169: --timeout'] },
+  { name: 'M19 a plain space joins one group', file: 'review.mjs', find: '|(?: \\d{3}){2,})', to: '|(?: \\d{3})+)', red: ['TK7b #165: the Russian engine gets no letter'] },
   { name: 'M17 the voice lock never holds', file: 'review.mjs', find: 'return l; // a live call holds the voice', to: 'return null;', red: ['TK7b: one voice at a time'] },
 ];
 let bad = 0;

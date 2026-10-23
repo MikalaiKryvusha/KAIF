@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "f6c42ecf480a9cb1860b7d2535c2d96404da6bc690cf5ed6b182a6c9bf9a8264",
+    "sourceTree": "a13dd26eabdca9ad9278c14ab4b90cc44f684a50da2574d489e1e0ffdc9392fd",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -11630,7 +11630,8 @@ export function speakable(text, cfg) {
   let s = String(text).replace(/[#\u2116]/gu, ' ');
   // TK7\u0431 (judge TK7, hunt 5): thousands written with spaces (\u00ab1 000 000\u00bb) are ONE number; the word after a number agrees with it when the
   // pack gives `percent` as a function of the number as written (the Russian pack: one, two\u2013four and five-plus take three forms)
-  if (typeof sp.number === 'function') s = s.replace(/(?<!\d)\d{1,3}(?:[ \u00a0\u202f]\d{3})+(?!\d)/gu, (m) => m.replace(/\D/gu, ''));
+  // a no-break space joins one group, a plain space \u2014 two or more (\u00ab1 000 000\u00bb): \u00ab#165 100%\u00bb stays two numbers (judge TK7b, hunt 5)
+  if (typeof sp.number === 'function') s = s.replace(/(?<!\d)\d{1,3}(?:(?:[\u00a0\u202f]\d{3})+|(?: \d{3}){2,})(?!\d)/gu, (m) => m.replace(/\D/gu, ''));
   if (sp.percent) s = s.replace(/(\d+(?:[.,]\d+)*)?\s*%/gu, (m, num) => (num || '') + ' ' + (typeof sp.percent === 'function' ? sp.percent(num || '') : sp.percent) + ' ');
   if (typeof sp.number === 'function') s = s.replace(/\d+(?:[.,]\d+)*/gu, (m) => ' ' + m.split(/[.,]/u).map((g) => sp.number(Number(g))).join(' ') + ' ');
   if (sp.letters && sp.translit) {
@@ -12777,11 +12778,12 @@ export async function otherLivePage(root, key) {
 // Returns the refusal line, or null when the flags are legal (no timeout, or a page served without a window).
 // TK7b (judge TK7, hunt 3): only a door that SHOWS a page refuses — the list, the call, the waiter, the close, the selftest, the queue file,
 // the marks and the search raise no window; `--timeout 0` is the default (I9: infinite patience) and legal anywhere.
-const NO_WINDOW_FLAGS = ['--no-open', '--no-serve', '--check', '--list', '--call', '--wait', '--close', '--selftest', '--enqueue',
+// `--list` is no door of its own — only `--queue --list` is the list (judge TK7b, hunt 4: `<doc> --list --timeout N` raised a window on a timer)
+const NO_WINDOW_FLAGS = ['--no-open', '--no-serve', '--check', '--call', '--wait', '--close', '--selftest', '--enqueue',
   '--mark-shown', '--mark-implemented', '--mark-withdrawn', '--search'];
 export function timeoutRefusal(args) {
   const at = args.indexOf('--timeout');
-  if (at < 0 || !(Number(args[at + 1]) > 0) || NO_WINDOW_FLAGS.some((f) => args.includes(f))) return null;
+  if (at < 0 || !(Number(args[at + 1]) > 0) || NO_WINDOW_FLAGS.some((f) => args.includes(f)) || (args.includes('--queue') && args.includes('--list'))) return null;
   return '✖ --timeout raises the owner\'s window on a timer — refused before any page, sound or call (I48; --timeout is automation only, I9: '
     + 'use it with --no-open, or raise the owner\'s page in the background with no timeout).';
 }
@@ -14118,7 +14120,8 @@ export async function selftest(log = console.log) {
   rmSync(OLK, { force: true });
   rmSync(join(root, MD), { force: true });
   ok(timeoutRefusal(['interviews/x.md', '--timeout', '60']) !== null && timeoutRefusal(['interviews/x.md', '--no-open', '--silent', '--timeout', '1']) === null
-    && timeoutRefusal(['interviews/x.md']) === null && timeoutRefusal(['interviews/x.md', '--check', '--timeout', '5']) === null,
+    && timeoutRefusal(['interviews/x.md']) === null && timeoutRefusal(['interviews/x.md', '--check', '--timeout', '5']) === null
+    && timeoutRefusal(['interviews/x.md', '--list', '--timeout', '5']) !== null, // judge TK7b, hunt 4: `--list` alone is no door — the page rises
     'TK7 #169: --timeout on the owner\'s window refuses; with --no-open (automation), without a timeout and with --check it is legal (I48, I9)');
   // (8) 2.10 TK7 (b), origin #163: a notice read on the QUEUE page does not end it while an interview on it has open questions;
   // the showing of the queue page names the notice too
@@ -14247,7 +14250,8 @@ export async function selftest(log = console.log) {
     const said2 = speakable('café naïve Zürich: 1%, 3%, 11%, 21%; 1 000 000', ru);
     ok(!/\p{Script=Latin}/u.test(said2) && !/\d/u.test(said2) && said2.includes(sp.number(1) + ' ' + sp.percent('1') + ',') && said2.includes(sp.number(3) + ' ' + sp.percent('3'))
       && said2.includes(sp.number(11) + ' ' + sp.percent('11')) && said2.includes(sp.number(21) + ' ' + sp.percent('21') + ';')
-      && new Set([sp.percent('1'), sp.percent('3'), sp.percent('11')]).size === 3 && said2.endsWith(sp.number(1000000)) && sp.number(1000000).split(' ').length === 2,
+      && new Set([sp.percent('1'), sp.percent('3'), sp.percent('11')]).size === 3 && said2.endsWith(sp.number(1000000)) && sp.number(1000000).split(' ').length === 2
+      && speakable('Ticket #165 100%', ru).includes(sp.number(165) + ' ' + sp.number(100) + ' '), // judge TK7b, hunt 5: two numbers, never one
       'TK7b #165: the Russian engine gets no letter with a diacritic, the percent word agrees with its number, «1 000 000» is one million');
     // TK7b (judge TK7, hunt 7): one voice at a time across processes — a call waits while another call is sounding
     const VL = join(tmpDirOf(root), 'call.voice.json');

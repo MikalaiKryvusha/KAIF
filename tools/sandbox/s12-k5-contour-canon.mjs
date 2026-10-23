@@ -103,8 +103,12 @@ check('красное доказательство: ростер ЛОВИТ вы
 
 // ── 4. Селфтесты инструментов контура (быстрые, без браузера) ──────────────────────────────
 // ТИХО (bugs/116): селфтесты инструментов контура — окно и голос в песочнице невозможны по окружению, не по флагу.
+// Срок — сторож ЗАВИСАНИЯ, не потолок качества: самопроверка контура (три строки списка ниже — одна и та же) с шага TK7б
+// 2.10 идёт ≈ 20 с в одиночку (159 случаев; было 16 с), и под нагрузкой полигона общий QUIET_TIMEOUT_MS (30 с) убивал
+// здоровый прогон — красный «не уложился» дважды за сессию 91 при зелёном своде в одиночку. Втрое больше замера.
+const SELFTEST_TIMEOUT_MS = 3 * 20000;
 const run = (label, args) => {
-  try { execFileSync(process.execPath, args.map((a) => join(ROOT, a) === a ? a : a), { cwd: ROOT, stdio: 'pipe', timeout: QUIET_TIMEOUT_MS, env: quietEnv() }); return true; }
+  try { execFileSync(process.execPath, args.map((a) => join(ROOT, a) === a ? a : a), { cwd: ROOT, stdio: 'pipe', timeout: Math.max(SELFTEST_TIMEOUT_MS, QUIET_TIMEOUT_MS), env: quietEnv() }); return true; }
   catch { return false; }
 };
 // Список — источник истины И для прогона, И для счётчика в итоговой строке (EXP-0025: число
