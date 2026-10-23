@@ -3742,10 +3742,10 @@
       {
         "signature": "## The invariants (normative — a contour without them falls apart)",
         "class": "static",
-        "sha256": "a82d94380ffea7e3ca9da19b1a54f0c2b44c4b908187e5256302cae740aed442",
+        "sha256": "fecdaf8050f4b3cd145e0e14d1de012fcf08d0952dc9b461553d7888730c842f",
         "lines": [
           52,
-          384
+          385
         ]
       },
       {
@@ -3753,8 +3753,8 @@
         "class": "static",
         "sha256": "1edebb7d2168dd526493ddfeac95e106a3be3ece95f3995e3c88a9fce0e6025d",
         "lines": [
-          385,
-          396
+          386,
+          397
         ]
       },
       {
@@ -3762,8 +3762,8 @@
         "class": "static",
         "sha256": "9225ee6511c6030c3bc8d4e222b0e1211f39fa79be309ec4d78f98849955930f",
         "lines": [
-          397,
-          451
+          398,
+          452
         ]
       },
       {
@@ -3771,8 +3771,8 @@
         "class": "static",
         "sha256": "312f6feba4353d40ad090b0c79da84cbd2875c2cf33657dc3519e890ff8536e1",
         "lines": [
-          452,
-          463
+          453,
+          464
         ]
       },
       {
@@ -3780,8 +3780,8 @@
         "class": "static",
         "sha256": "99be6d723cf52bafb9aead06d53919d79656cc54f77d02bc2172cddc56f88c0b",
         "lines": [
-          464,
-          576
+          465,
+          577
         ]
       },
       {
@@ -3789,8 +3789,8 @@
         "class": "static",
         "sha256": "0b9388849b72578dc3226d0d363c54ffed63e371a68e0bab3521c135ac4b7643",
         "lines": [
-          577,
-          610
+          578,
+          611
         ]
       },
       {
@@ -3798,8 +3798,8 @@
         "class": "static",
         "sha256": "a08fe3cdfe221f99dec5f9a3e2abd4dc25605c19368c38fc7d2a09b81f4329bf",
         "lines": [
-          611,
-          626
+          612,
+          627
         ]
       },
       {
@@ -3807,8 +3807,8 @@
         "class": "static",
         "sha256": "7d0c6bca67d53cecfeb0be735c18fd7acee8b75c2a211279529d11811ebd22aa",
         "lines": [
-          627,
-          697
+          628,
+          698
         ]
       },
       {
@@ -3816,8 +3816,8 @@
         "class": "static",
         "sha256": "5e2985ee5e5c92b97244766f1cbec12c8858705acfb102ea9ad54a5153358f3c",
         "lines": [
-          698,
-          722
+          699,
+          723
         ]
       },
       {
@@ -3825,8 +3825,8 @@
         "class": "static",
         "sha256": "d3259396275bf6d9b575b5a97962adca2cf30eb2fbeb6fab635ea95352dcdf65",
         "lines": [
-          723,
-          742
+          724,
+          743
         ]
       },
       {
@@ -3834,8 +3834,8 @@
         "class": "static",
         "sha256": "be35db4b7bc8b4ecbc12cc27278688532723515886e448beeab38c714b716219",
         "lines": [
-          743,
-          754
+          744,
+          755
         ]
       }
     ],
@@ -6113,7 +6113,7 @@
       {
         "signature": "## 5. Process — outcomes, patience, wake-up",
         "class": "static",
-        "sha256": "1b141dd4463896cc16ec10e5019a865f2b7906fe7ce3c18131bf36dd8ba9ff35",
+        "sha256": "17b563ffca20ef74fad4c85482155de37965dbe1d25228975dbb9c89ccb9b996",
         "lines": [
           68,
           86

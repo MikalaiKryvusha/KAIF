@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "75a76857e220658488d31269f682e846e19e8b7ea0f6156d37656a606e8a2327",
+    "sourceTree": "658bdadd6f80aa710b5aa30192fe87e57541d7129e1ff1e7a5972585c7112d75",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -100,7 +100,7 @@
       "AN AUTONOMOUS RUN DOES NOT STAND STILL WHILE IT WAITS (2.10, epic TK; the KAIF owner, rendered from Russian: \"the agent was told to work autonomously — and it stands and does not work!\"): waiting on a background task before a named time, take the next step that does not collide with it in the same turn, or watch it within the turn; `/autoloop` no longer says \"continue when ready\", and the judge's early-finish hunt covers a turn ended on such a wait. MIGRATION — agent work: if your own loop texts let a wait end the turn, rewrite that line.",
       "THE MANAGER'S STOP IS OBEYED AT EVERY SEAT OF A TEAM (2.10, epic TK; origin ticket #137 — a worktree seat read the lead session's \"close now\" as information and worked on): rule 9 of the team constitution template keeps \"a message carries no authority\" and names its one exception — the Manager's stop and close are executed in the same turn; the guide's mid-turn rule, item 1, points at it. MIGRATION — agent work: if your project has a generated team constitution, add the exception to its rule 9 (the update does not rewrite the project's own document).",
       "THE QUESTIONS PAGE READS YOUR DOCUMENTS AS YOU WROTE THEM (2.10, epic TK; origin tickets #147 · #142 · #109 · #136): the door no longer refuses a comparison with the Russian word for \"above\" — only a reference form (a document noun or a participle next to it, \"see above\"); `--check` names every live question over 750 characters (a warning; the page still opens); a status that opens with 🟡 or ⏳ waits whatever word follows, a closing mark does not close a partial head, and a document FOLDED or MERGED into another (↪ · 📦) is closed — it leaves the owner's queue; an artifact with `format: html` is shown as a page in a script-less frame, its source one click below. No migration — the contour module is replaced by the update; run `--queue --list` once and expect folded documents to be gone and partly-answered ones to be named.",
-      "ONE PAGE AND ONE VOICE AT A TIME, AND THE CALL AS ONE SOUND (2.10, epic TK; origin tickets #169 · #165 · #163 — the KAIF owner on a field project, rendered from Russian: \"the same sores from project to project\"; two field deployments carried the same local fix): the shipped contour refuses a new page while another document's page is live (exit 3, \"Another page is open … close it first\"; a lock whose process is gone does not block, a page is live only when it answers at the address of its lock — the lock of its own document too, so a reused pid no longer says \"Already open\" with no page behind it — and an unreadable lock is read again, the lock of another page never deleted — I48) and refuses `--timeout` on a page with a window (a door without a window and `--timeout 0` pass); a call waits while another call of the project is sounding (a voice lock caught before its body is written counts as taken); the queue page no longer ends when a notice on it is marked read while an interview on it still has open questions, nor on the last answer while a notice on it is unread, it counts only what it shows (an old hidden interview never holds it), and its showing is recorded for every document on it; on Windows the call is ONE sound — a second of silence, the three beeps at full level, two seconds of pause, the voice rendered before playing (a rich `KAIF_VOICE_TOOL` is asked for `--out <wav>`; a tool that renders the beeps itself is declared with `KAIF_VOICE_BEEPS=embedded`); the Russian pack hands the engine words — numbers as words (thousands grouped by spaces, commas or dots as one number), an abbreviation letter by letter, Latin transliterated (diacritics folded, and letters with a stroke or a ligature too) — and its interview call says \"awaits your answers\", not the word for proofreading. MIGRATION — agent work: a project that carried the one-page refusal or the embedded-beeps switch as a local edit of `.kaif/tools/contour/review.mjs` takes the shipped file (the update names the module as diverged); add a question to the page already open instead of raising a second one.",
+      "ONE PAGE AND ONE VOICE AT A TIME, AND THE CALL AS ONE SOUND (2.10, epic TK; origin tickets #169 · #165 · #163 — the KAIF owner on a field project, rendered from Russian: \"the same sores from project to project\"; two field deployments carried the same local fix): the shipped contour refuses a new page while another document's page is live (exit 3, \"Another page is open … close it first\"; a lock whose process is gone does not block, a page is live only when the port of its lock accepts a connection — the lock of its own document too, so a reused pid no longer says \"Already open\" with no page behind it, and a page slow to answer is not covered by a second one — and an unreadable lock is read again, the lock of another page never deleted; the waiter, `--close` and the window recovery still judge a lock by its pid — I48) and refuses `--timeout` on a page with a window (a door without a window and `--timeout 0` pass); a call waits while another call of the project is sounding (a voice lock caught before its body is written counts as taken while fresh, never when dated in the future); the queue page no longer ends when a notice on it is marked read while an interview on it still has open questions, nor on the last answer while a notice on it is unread, it counts only what it shows (an old hidden interview never holds it), and its showing is recorded for every document on it; on Windows the call is ONE sound — a second of silence, the three beeps at full level, two seconds of pause, the voice rendered before playing (a rich `KAIF_VOICE_TOOL` is asked for `--out <wav>`; a tool that renders the beeps itself is declared with `KAIF_VOICE_BEEPS=embedded`); the Russian pack hands the engine words — numbers as words (thousands grouped by spaces, commas or dots as one number), an abbreviation letter by letter, Latin transliterated (diacritics and ligatures decomposed, common letters with a stroke folded, any other non-ASCII Latin letter dropped) — and its interview call says \"awaits your answers\", not the word for proofreading. MIGRATION — agent work: a project that carried the one-page refusal or the embedded-beeps switch as a local edit of `.kaif/tools/contour/review.mjs` takes the shipped file (the update names the module as diverged); add a question to the page already open instead of raising a second one.",
       "POINTERS FOLLOW THE ROWS 2.8 MOVED (2.10, epic HC; origin ticket #119, second case): the harness rule of the bug-fixing canon now writes a new harness command's row into `HOUSE_RULES.md` → \"Stands, environments and devices\" (it said \"document it in AGENT_GUIDE.md\"), and `/code-revision`, `/autoloop` and `/resume` point at the house-rules tables, not the guide; the build refuses the old forms. MIGRATION — agent work: none, unless your own texts repeat one of these pointers."
     ],
     "2.9": [
@@ -7444,8 +7444,9 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   two windows and two voices at once, a page left dead by the agent's edits, servers launched with a 60-second timer, "the same
   sores from project to project"; two field deployments carried the same local fix.) A LIVE lock of another document refuses a new
   page — exit 3, `Another page is open: <url> (<doc>, pid N) … close it first`, no window, no call; a lock whose process is gone
-  does not block, and a page is live only when it answers at its lock's address — another document's and its own (a reused pid is
-  no page: no refusal, no "Already open"); an unreadable lock is read again, another page's never deleted. Two pages raised in the same instant may both rise — the lock is written when the page listens
+  does not block, and a page is live only when its lock's port accepts a connection — another document's and its own (a reused pid
+  is no page: no refusal, no "Already open"; a page slow to answer is still live); an unreadable lock is read again, another page's
+  never deleted. The waiter, `--close` and the window recovery still judge a lock by its pid (a known gap). Two pages raised in the same instant may both rise — the lock is written when the page listens
   (a known gap). A question for the owner while a page is open goes INTO the open document (`/interview`), not onto a second
   page. `--timeout` on a page with a window refuses before any page (it is automation only, with `--no-open` — I9); a door with
   no window and `--timeout 0` pass. One voice: a call waits while another call of the project is sounding.
@@ -11492,6 +11493,7 @@ export const tmpDirOf = (root) => join(resolve(root), ...TMP_DIR.split('/'));
 import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync, utimesSync } from 'node:fs';
 import { tmpdir, platform } from 'node:os';
 import { createServer, request as httpRequest } from 'node:http';
+import { connect as netConnect } from 'node:net';
 import { randomBytes } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import { join, resolve, basename, relative, extname } from 'node:path';
@@ -11626,7 +11628,10 @@ export function spokenSession(name, cfg) {
 // the pack's `spoken` (number · letters · translit · percent); a pack without it (English) leaves the phrase as written. Pure — the selftest
 // judges it; the console and the banner keep the phrase as written.
 const LATIN_FOLD = { 'ø': 'o', 'Ø': 'O', 'ł': 'l', 'Ł': 'L', 'ß': 'ss', 'æ': 'ae', 'Æ': 'Ae', 'œ': 'oe', 'Œ': 'Oe', 'đ': 'd', 'Đ': 'D',
-  'þ': 'th', 'Þ': 'Th', 'ı': 'i' };
+  'þ': 'th', 'Þ': 'Th', 'ı': 'i', 'ħ': 'h', 'Ħ': 'H', 'ŧ': 't', 'Ŧ': 'T', 'ð': 'd', 'Ð': 'D', 'ƀ': 'b', 'ƚ': 'l', 'ŋ': 'ng', 'Ŋ': 'Ng' };
+// TK7d (judge TK7c, hunt 6): what is still Latin and not ASCII after NFKD and LATIN_FOLD is dropped — the engine never gets a Latin letter
+// it would read in another language; ligatures («ﬁ» · «ĳ») are split by NFKD itself
+const LATIN_LEFT_RE = /[^\x00-\x7f]/gu;
 const LATIN_FOLD_RE = new RegExp('[' + Object.keys(LATIN_FOLD).join('') + ']', 'gu');
 export function speakable(text, cfg) {
   const sp = T(cfg).spoken || {};
@@ -11655,7 +11660,7 @@ export function speakable(text, cfg) {
     };
     // TK7b: a Latin letter with a diacritic («café», «Zürich») is the letter without it — the engine never gets é · ü
     // TK7c (judge TK7b, hunt 5): letters NFD does not decompose («ø ł ß æ œ đ þ ı») are folded to plain Latin by LATIN_FOLD
-    s = s.replace(/\p{Script=Latin}+/gu, (w0) => { const w = w0.normalize('NFD').replace(/\p{M}/gu, '').replace(LATIN_FOLD_RE, (c) => LATIN_FOLD[c]);
+    s = s.replace(/\p{Script=Latin}+/gu, (w0) => { const w = w0.normalize('NFKD').replace(/\p{M}/gu, '').replace(LATIN_FOLD_RE, (c) => LATIN_FOLD[c]).replace(LATIN_LEFT_RE, '');
       return ' ' + (words.get(w.toLowerCase()) || (/^[A-Z]{1,5}$/u.test(w) ? spell(w) : translit(w))) + ' '; });
   }
   return s.replace(/\s{2,}/gu, ' ').replace(/\s+([,.:;!?»])/gu, '$1').replace(/([«])\s+/gu, '$1').trim();
@@ -11771,12 +11776,15 @@ function callPhraseBare(ctx, cfg) {
 const VOICE_LOCK_FILE = 'call.voice.json';
 const VOICE_LOCK_STALE_MS = 3 * VOICE_TIMEOUT_MS; // the render, the play and a tool's own --play — each under VOICE_TIMEOUT_MS
 const VOICE_WAIT_TICK_MS = 500;
+const VOICE_LOCK_FUTURE_SLACK_MS = 5000; // a file stamped up to this far ahead of the clock is fresh; further ahead — a broken clock, no lock
 export function voiceBusy(root, now = Date.now()) {
   const p = join(tmpDirOf(root), VOICE_LOCK_FILE);
   const l = readJsonOr(p, null);
   // TK7c (judge TK7b, hunt 7): a lock that exists but does not read — taken by `wx`, its body not yet written, or a broken file — holds the
   // voice while it is younger than VOICE_LOCK_STALE_MS by its file time; it is never read as free (that let two calls sound together)
-  if (!l) { let age = Infinity; try { age = now - lstatSync(p).mtimeMs; } catch { /* no file — free */ } return age < VOICE_LOCK_STALE_MS ? { pid: null, unreadable: true } : null; }
+  // TK7d (judge TK7c, hunt 3): a file time in the future is no fresh lock — it would hold the voice until that moment, with no ceiling;
+  // VOICE_LOCK_FUTURE_SLACK_MS forgives the file system stamping a just-written file a few ms after Date.now() (a fresh lock read as free)
+  if (!l) { let age = Infinity; try { age = now - lstatSync(p).mtimeMs; } catch { /* no file — free */ } return age > -VOICE_LOCK_FUTURE_SLACK_MS && age < VOICE_LOCK_STALE_MS ? { pid: null, unreadable: true } : null; }
   if (!l.pid || !(now - Date.parse(l.at) < VOICE_LOCK_STALE_MS)) return null;
   try { process.kill(l.pid, 0); } catch (e) { if (e.code !== 'EPERM') return null; }
   return l; // a live call holds the voice
@@ -12745,11 +12753,13 @@ function decisionWords(d) {
   return parts.join(', ');
 }
 const lockPath = (root, key) => join(decisionsAbs(root), key.replace(/\.[^.]+$/u, '') + '.lock');
-function checkLock(root, key) {
+// TK7d (judge TK7c, hunt 4): an unreadable lock is REMOVED only by the door raising that same document's page (`removeBroken`) — the close
+// and the window recovery read every lock, and deleting a half-written one there removed a live page's lock (the TK7b rule, bypassed)
+function checkLock(root, key, { removeBroken = false } = {}) {
   const p = lockPath(root, key);
   if (!existsSync(p)) return null;
   let lock;
-  try { lock = JSON.parse(stripBom(readFileSync(p, 'utf8'))); } catch { rmSync(p, { force: true }); return null; } // unreadable → gone
+  try { lock = JSON.parse(stripBom(readFileSync(p, 'utf8'))); } catch { if (removeBroken) rmSync(p, { force: true }); return null; } // unreadable → no lock
   try { process.kill(lock.pid, 0); return lock; }                          // alive → the live address (I29)
   catch (e) {
     if (e.code === 'EPERM') return lock;                                   // alive under another user → still live
@@ -12762,7 +12772,7 @@ function checkLock(root, key) {
 // I48 (2.10, epic TK step TK7 (a); origin #169 · #165 part 3 — two windows and two voices at once; the fix two field deployments carried
 // as the same local edit): a page is raised only when no OTHER page of this contour is alive. Returns the live lock of another document
 // (its url · doc · pid) or null. A stale lock (its process gone) does not count — a crashed page never blocks the next one.
-// TK7b (judge TK7, hunt 2): ALIVE means the page ANSWERS at the lock's address — a live pid alone is no proof (Windows reuses pids: a kept
+// TK7b (judge TK7, hunt 2): ALIVE means the page ANSWERS at the lock's address (since TK7d: its port accepts a connection — pageListens) — a live pid alone is no proof (Windows reuses pids: a kept
 // lock of a crashed page whose pid went to a stranger would block every page of the project, and `--close --force` would kill the stranger);
 // a lock of ANOTHER page is never deleted here — an unreadable one is a page rewriting its pulse, read again after LOCK_REREAD_MS (still
 // unreadable — a broken file, it blocks no one and stays). A known gap: two pages raised in the same instant may both rise — the lock is
@@ -12770,8 +12780,7 @@ function checkLock(root, key) {
 // [TESTED: 2026-10-23 10:09 · selftest «TK7b #169» ×2 + mutants M6–M8 red on their cases; the real CLI door (4) — a live pid not answering
 //  does not block, red on the TK7 build; report testcases/reports/2026-10-23_tk7b-judge-findings.md]
 const LOCK_REREAD_MS = 200;
-const LIVENESS_PATH = 'ping';          // any HTTP answer proves a listening page (an unknown route answers 404); /alive is NOT used — it is the owner's pulse
-const LIVENESS_TIMEOUT_MS = 1500;
+const LIVENESS_TIMEOUT_MS = 1500;      // a connect to 127.0.0.1 connects or refuses within milliseconds; the timeout is the no-answer guard
 export async function otherLivePage(root, key) {
   const dir = decisionsAbs(root);
   if (!existsSync(dir)) return null;
@@ -12782,12 +12791,24 @@ export async function otherLivePage(root, key) {
     if (!lock) { await new Promise((r) => setTimeout(r, LOCK_REREAD_MS)); lock = readLock(f); }
     if (!lock || !lock.url) continue;
     if (lock.pid) { try { process.kill(lock.pid, 0); } catch (e) { if (e.code !== 'EPERM') continue; } } // the process is gone
-    if (await pageAnswers(lock)) return lock;
+    if (await pageListens(lock)) return lock;
   }
   return null;
 }
-const pageAnswers = async (lock) => !!(lock && lock.url
-  && (await postLocal(String(lock.url).replace(/\/?$/u, '/') + LIVENESS_PATH, LIVENESS_TIMEOUT_MS)).status);
+// TK7d (judge TK7c, hunt 2): a page is live when its PORT accepts a connection — the kernel accepts into the listen backlog even while the
+// page's event loop is busy, so a live page slow to answer HTTP (the 1.5 s of the TK7b /ping) is never taken for a crashed one and covered by
+// a second page; a crashed page's port refuses at once. A connect that neither connects nor refuses within LIVENESS_TIMEOUT_MS counts as live:
+// a second page over a live one costs the owner's draft, a refusal costs one retry.
+// [TESTED: 2026-10-23 12:40 · selftest «TK7d #169» ×2 + mutants M25–M26 red on their cases; report
+//  testcases/reports/2026-10-23_tk7d-judge-tk7c-caveats.md]
+const pageListens = (lock) => new Promise((res) => {
+  let u; try { u = new URL(String(lock && lock.url)); } catch { res(false); return; }
+  const sock = netConnect({ host: u.hostname, port: Number(u.port) || 80 });
+  const end = (v) => { sock.destroy(); res(v); };
+  sock.setTimeout(LIVENESS_TIMEOUT_MS, () => end(true));
+  sock.once('connect', () => end(true));
+  sock.once('error', () => end(false));
+});
 // TK7c (judge TK7b, hunt 2): the OWN key by the same rule as another page's — a lock caught half-written is read again before checkLock may
 // remove it (a live page rewriting its pulse would get a second window), and a lock whose pid lives but whose address answers nothing is a
 // crashed page's (a reused pid): stale, its port kept for the draft (I29), never «Already open» with no page behind it
@@ -12796,8 +12817,8 @@ const pageAnswers = async (lock) => !!(lock && lock.url
 async function liveOwnLock(root, key) {
   const p = lockPath(root, key);
   if (existsSync(p) && readJsonOr(p, null) === null) await new Promise((r) => setTimeout(r, LOCK_REREAD_MS));
-  const lock = checkLock(root, key);
-  return lock && !lock.stale && !(await pageAnswers(lock)) ? { ...lock, stale: true } : lock;
+  const lock = checkLock(root, key, { removeBroken: true }); // the own key only: a broken own lock is replaced by this page's (TK7d)
+  return lock && !lock.stale && !(await pageListens(lock)) ? { ...lock, stale: true } : lock;
 }
 // I48 (2.10 TK7 (a), origin #169): `--timeout` is automation only (I9) — a page raised in the owner's WINDOW never runs on a timer.
 // Returns the refusal line, or null when the flags are legal (no timeout, or a page served without a window).
@@ -14161,6 +14182,29 @@ export async function selftest(log = console.log) {
   const eF = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogF.push(String(l)) }), sl(3000).then(() => null)]);
   ok(eF && eF.outcome === 'already-open' && /Already open by this contour: /.test(slogF.join('\n')),
     'TK7c #169: the own lock caught half-written is read again — its live page still says «Already open», no second window (I29)');
+  // (7g) TK7d (judge TK7c, hunt 2): a live page SLOW to answer HTTP (its loop busy past the 1.5 s of a /ping) is still live — its port
+  // accepts: the own lock says «Already open», another document's refuses; no second page over a live one
+  const slowPage = createServer(() => { /* accepts, never answers */ });
+  await new Promise((r) => slowPage.listen(0, '127.0.0.1', r));
+  const slowUrl = 'http://127.0.0.1:' + slowPage.address().port + '/';
+  writeFileSync(OWN, JSON.stringify({ pid: process.pid, url: slowUrl, doc: MD }) + '\n');
+  const slogG = [];
+  const eG = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogG.push(String(l)) }), sl(4000).then(() => null)]);
+  rmSync(OWN, { force: true });
+  writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: slowUrl, doc: 'interviews/interview_other.md' }) + '\n');
+  const slogG2 = [];
+  const eG2 = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogG2.push(String(l)) }), sl(4000).then(() => null)]);
+  rmSync(OLK, { force: true });
+  slowPage.closeAllConnections(); await new Promise((r) => slowPage.close(r));
+  ok(eG && eG.outcome === 'already-open' && eG2 && eG2.exitCode === EXIT_PREFLIGHT && !/Page is up/.test(slogG.join('\n') + slogG2.join('\n')),
+    'TK7d #169: a live page slow to answer is live — its port accepts: own lock «Already open», another document\'s refuses, no second page (I29, I48)');
+  // (7h) TK7d (judge TK7c, hunt 4): the window recovery reads every lock and deletes none — a half-written lock of another page stays
+  mkdirSync(profileDir(root), { recursive: true });
+  writeFileSync(BRK, '{"pid": 12');
+  await recoverFromWindow(root, { log: () => {} });
+  const brkKept = existsSync(BRK);
+  rmSync(BRK, { force: true }); rmSync(profileDir(root), { recursive: true, force: true });
+  ok(brkKept, 'TK7d #169: the window recovery does not delete a half-written lock of another page (I48)');
   rmSync(OWN, { force: true });
   await new Promise((r) => otherPage.close(r));
   ok(['--queue --list', '--call x --dry-run', '--wait', 'interviews/x.md --close', '--selftest', 'interviews/x.md --enqueue']
@@ -14325,11 +14369,16 @@ export async function selftest(log = console.log) {
     const old = new Date(Date.now() - 2 * VOICE_LOCK_STALE_MS); utimesSync(VL, old, old);
     await sl(100); const took3 = typeof got3 === 'function';
     if (typeof got3 === 'function') got3();
-    ok(held3 && took3 && !existsSync(VL),
-      'TK7c: an unreadable voice lock holds the voice while fresh and is not deleted; a stale one is taken over (I48)');
+    // TK7d (judge TK7c, hunt 3): an unreadable lock whose file time is in the future holds no one
+    writeFileSync(VL, ''); const later = new Date(Date.now() + 10 * VOICE_LOCK_STALE_MS); utimesSync(VL, later, later);
+    const futureFree = voiceBusy(root) === null; rmSync(VL, { force: true });
+    ok(held3 && took3 && !existsSync(VL) && futureFree,
+      'TK7c: an unreadable voice lock holds the voice while fresh and is not deleted; a stale one is taken over, a future-dated one holds no one (I48)');
     // TK7c (judge TK7b, hunt 5): letters NFD keeps whole, thousands grouped by commas or dots
-    const said3 = speakable('Søren, Łódź, Straße, Ærø: 1,000,000 and 1.000.000; version 2.10, 1,5', ru);
-    ok(!/\p{Script=Latin}/u.test(said3) && !/\d/u.test(said3) && said3.split(sp.number(1000000)).length === 3,
+    const said3 = speakable('Søren, Łódź, Straße, Ærø, Ħal ŧeð ƀar ﬁle ĳs ɛvent: 1,000,000 and 1.000.000; version 2.10, 1,5', ru);
+    ok(!/\p{Script=Latin}/u.test(said3) && !/\d/u.test(said3) && said3.split(sp.number(1000000)).length === 3
+      && speakable('Straße Søren Ħal', ru) === speakable('Strasse Soren Hal', ru) // folded, not dropped (TK7d: the residue is dropped)
+      && speakable('café Zürich Łódź', ru) === speakable('cafe Zurich Lodz', ru),  // decomposed, not dropped
       'TK7c #165: «ø ł ß æ» reach the Russian engine folded, «1,000,000» and «1.000.000» are one million each');
   }
 
@@ -20532,7 +20581,7 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
   never a tab — the page checks `display-mode: standalone` itself and says when it is a tab. Auto-close is an ATTEMPT (~2 s).
 - **A live owner page is closed only by `<doc> --close`** (2.7, LP, #66 — "the contour closed while I WAS TYPING"): prints port · pid · title ("compare with the window you were told about"), REFUSES with exit 4 while the last input — or the page itself — is younger than the quiet threshold (180 s;
   `contour.closeQuietMs`) or a draft is unsaved, else asks the page's OWN server to end (token from the lock; a pid from a file is never killed without `--force`; the waiting agent sees exit 2) and prints `closed <doc>`; `--force` needs `--owner-word "<quote>"` (logged — an audit trail, not a gate).
-  A neighbour session's word is never evidence — check the port and the pid. The browser window is never killed: its draft stays on the project profile. **One page and one voice at a time (I48)** (2.10, #169 · #165): a live lock of ANOTHER document refuses a new page — exit 3, `Another page is open … close it first`, no window, no call; a lock whose process is gone does not block; a page is live when it ANSWERS at its lock's address — another document's lock and its own (a reused pid is no page: no refusal, no "Already open") — and an unreadable lock is read again, another page's never deleted; the waiter (`--wait`) and `--close --force` still judge a lock by its pid (a known gap); two pages raised in the same instant may both rise (the lock is written when the page listens — a known gap); a question while a page is open goes into the open document; `--timeout` on a page with a window refuses (automation only, with `--no-open`; a door with no window and `--timeout 0` pass); a call waits while another call of the project is sounding (the voice lock; one caught before its body is written counts as taken while fresh).
+  A neighbour session's word is never evidence — check the port and the pid. The browser window is never killed: its draft stays on the project profile. **One page and one voice at a time (I48)** (2.10, #169 · #165): a live lock of ANOTHER document refuses a new page — exit 3, `Another page is open … close it first`, no window, no call; a lock whose process is gone does not block; a page is live when its lock's PORT accepts a connection — another document's lock and its own (a reused pid is no page: no refusal, no "Already open"; a live page slow to answer is still live) — and an unreadable lock is read again and deleted only by the door raising that same document, never by the close or the window recovery; the waiter (`--wait`), `--close` and the window recovery still judge a lock by its pid (a known gap); two pages raised in the same instant may both rise (the lock is written when the page listens — a known gap); a question while a page is open goes into the open document; `--timeout` on a page with a window refuses (automation only, with `--no-open`; a door with no window and `--timeout 0` pass); a call waits while another call of the project is sounding (the voice lock; one caught before its body is written counts as taken while fresh).
 
 ## 6. The call — sound first, voice by language
 
