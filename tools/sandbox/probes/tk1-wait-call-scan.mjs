@@ -33,13 +33,16 @@ if (process.argv[2] === '--selftest') {
     prompt('T2', 'go on'), say('T2a', 'The stand needs a password; the work stops without it. Will you give it?'),
     prompt('T3', 'go on'), tool('T3a', 'node tools/review.mjs --call "the stand password"'), say('T3b', 'Called you: the stand needs a password. Will you give it?'),
     prompt('T4', 'work for an hour'), tool('T4a', 'npm run test:core'), result('T4b', 'Command running in background with ID: abc123.'), say('T4c', 'The test run is going.'),
+    // TK7c (session 92): a task the agent STOPPED is no live task — the stop result is its report (session 91: a false red of this probe)
+    prompt('T4s', 'work for an hour'), result('T4sa', 'Command running in background with ID: def456.'),
+    result('T4sb', '{"message":"Successfully stopped task: def456 (npm run test:core)"}'), say('T4sc', 'Stopped the stale run; done.'),
     prompt('T5', 'more'), say('T5a', 'Working.'),
   ].map((r) => JSON.stringify(r)).join('\n') + '\n');
   const r = spawnSync(process.execPath, [fileURLToPath(import.meta.url), fx], { encoding: 'utf8' });
   rmSync(dir, { recursive: true, force: true });
   const out = r.stdout || '';
   const want = [['T1  LEAVE-FOR-OWN-STEP', true], ['T2  WAIT-WITHOUT-CALL', true], ['T3  ', false], ['T4  ENDED-WITH-LIVE-BACKGROUND (1)', true],
-    ['T5  ', false], ['turns judged: 4', true]];
+    ['T4s  ', false], ['T5  ', false], ['turns judged: 5', true]];
   let bad = 0;
   for (const [line, present] of want) { const ok = out.includes(line) === present; if (!ok) bad++; console.log(`${ok ? 'ok  ' : 'FAIL'} ${present ? 'has' : 'lacks'} «${line.trim()}»`); }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
@@ -82,6 +85,7 @@ for (let t = 0; t < LAST; t++) {
     const body = flat(x.message?.content ?? x.attachment ?? x.content ?? '');
     for (const m of body.matchAll(/running in background with ID: (\w+)/g)) launched.add(m[1]);
     for (const m of body.matchAll(/<task-id>(\w+)<\/task-id>/g)) reported.add(m[1]);
+    for (const m of body.matchAll(/Successfully stopped task: (\w+)/g)) reported.add(m[1]); // a stopped task is no live one (session 92)
   }
   if (!lastText) continue;
   judged++;

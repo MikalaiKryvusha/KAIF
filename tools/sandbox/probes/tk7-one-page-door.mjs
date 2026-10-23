@@ -6,7 +6,9 @@
 //   (3) `<doc> --timeout 60` (a window would open) → refused before any page, exit 3, nothing served;
 //   TK7b (judge TK7, hunts 2 and 3):
 //   (4) a live pid whose address does not answer (Windows reuses pids — a crashed page's kept lock) → the page rises, the lock stays;
-//   (5) `--queue --list --timeout 5` — a door without a window → not refused (exit 0), the list printed.
+//   (5) `--queue --list --timeout 5` — a door without a window → not refused (exit 0), the list printed;
+//   TK7c (judge TK7b, hunt 2): (6) the document's OWN lock of a live pid whose address does not answer → the page rises, no «Already open»
+//   (red on the TK7b generator).
 // No window, no sound: --no-open --silent and quietEnv(). Red on the 2.9 generator by construction ((1) and (3) — it has no such refusal)
 // and on the TK7 generator ((4) and (5)) — the mutants of tk7-contour-mutants.mjs prove the cases red one by one.
 // usage: node tools/sandbox/probes/tk7-one-page-door.mjs [<contour dir>]  (≈ 20 s)
@@ -60,6 +62,13 @@ const r4 = door(['--no-open', '--silent', '--timeout', '2']);
 const out4 = (r4.stdout || '') + (r4.stderr || '');
 say(/Page is up: http:\/\/127\.0\.0\.1:\d+\//.test(out4) && !/Another page is open/.test(out4) && existsSync(LOCK),
   '(4) a live pid whose address does not answer (a reused pid) → the page rises (exit ' + r4.status + '), the other lock stays');
+// TK7c (judge TK7b, hunt 2): the same on the document's OWN lock — a reused pid there said «Already open» with no page behind it
+rmSync(LOCK, { force: true });
+writeFileSync(join(root, 'interviews', 'decisions', 'interview_901_probe.lock'), JSON.stringify({ pid: stranger.pid, url, doc: DOC }) + '\n');
+const r6 = door(['--no-open', '--silent', '--timeout', '2']);
+const out6 = (r6.stdout || '') + (r6.stderr || '');
+say(/Page is up: http:\/\/127\.0\.0\.1:\d+\//.test(out6) && !/Already open/.test(out6),
+  '(6) the own lock of a live pid whose address does not answer → the page rises (exit ' + r6.status + '), no «Already open»');
 stranger.kill();
 
 const r5 = run(['--queue', '--list', '--timeout', '5']);

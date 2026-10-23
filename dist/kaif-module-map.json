@@ -3742,7 +3742,7 @@
       {
         "signature": "## The invariants (normative — a contour without them falls apart)",
         "class": "static",
-        "sha256": "58b89329fbfff95d57a0ae677ec35dbbf04f51ef8fd41f4196ac1451a0888ac5",
+        "sha256": "a82d94380ffea7e3ca9da19b1a54f0c2b44c4b908187e5256302cae740aed442",
         "lines": [
           52,
           384
@@ -6113,7 +6113,7 @@
       {
         "signature": "## 5. Process — outcomes, patience, wake-up",
         "class": "static",
-        "sha256": "95528a42f5ebd81fd885d7f84bbfeaac46cadc5295ae981c9d9cd0d84e31eec6",
+        "sha256": "1b141dd4463896cc16ec10e5019a865f2b7906fe7ce3c18131bf36dd8ba9ff35",
         "lines": [
           68,
           86

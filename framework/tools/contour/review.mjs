@@ -36,7 +36,7 @@
 // port · I32 the call never blocks · I33/I34 beeps first · I35/I36 voice by language, honest
 // fallback · I37/I38 notice class · I39 stale queue · I40–I42 the fact of SHOWING · M8 render ≠ show.
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync, utimesSync } from 'node:fs';
 import { tmpdir, platform } from 'node:os';
 import { createServer, request as httpRequest } from 'node:http';
 import { randomBytes } from 'node:crypto';
@@ -172,6 +172,9 @@ export function spokenSession(name, cfg) {
 // capitalised Latin abbreviation letter by letter, any other Latin word transliterated, a known word from the pack's dictionary. The data is
 // the pack's `spoken` (number · letters · translit · percent); a pack without it (English) leaves the phrase as written. Pure — the selftest
 // judges it; the console and the banner keep the phrase as written.
+const LATIN_FOLD = { 'ø': 'o', 'Ø': 'O', 'ł': 'l', 'Ł': 'L', 'ß': 'ss', 'æ': 'ae', 'Æ': 'Ae', 'œ': 'oe', 'Œ': 'Oe', 'đ': 'd', 'Đ': 'D',
+  'þ': 'th', 'Þ': 'Th', 'ı': 'i' };
+const LATIN_FOLD_RE = new RegExp('[' + Object.keys(LATIN_FOLD).join('') + ']', 'gu');
 export function speakable(text, cfg) {
   const sp = T(cfg).spoken || {};
   let s = String(text).replace(/[#\u2116]/gu, ' ');
@@ -179,6 +182,9 @@ export function speakable(text, cfg) {
   // pack gives `percent` as a function of the number as written (the Russian pack: one, two\u2013four and five-plus take three forms)
   // a no-break space joins one group, a plain space \u2014 two or more (\u00ab1 000 000\u00bb): \u00ab#165 100%\u00bb stays two numbers (judge TK7b, hunt 5)
   if (typeof sp.number === 'function') s = s.replace(/(?<!\d)\d{1,3}(?:(?:[\u00a0\u202f]\d{3})+|(?: \d{3}){2,})(?!\d)/gu, (m) => m.replace(/\D/gu, ''));
+  // TK7c (judge TK7b, hunt 5): thousands grouped by commas or dots («1,000,000» · «1.000.000») are ONE number when two or more groups
+  // follow — one group («1,5» · «2.10») stays a decimal or a version, as the space rule above
+  if (typeof sp.number === 'function') s = s.replace(/(?<![\d.,])\d{1,3}([.,])\d{3}(?:\1\d{3})+(?![\d]|[.,]\d)/gu, (m) => m.replace(/\D/gu, ''));
   if (sp.percent) s = s.replace(/(\d+(?:[.,]\d+)*)?\s*%/gu, (m, num) => (num || '') + ' ' + (typeof sp.percent === 'function' ? sp.percent(num || '') : sp.percent) + ' ');
   if (typeof sp.number === 'function') s = s.replace(/\d+(?:[.,]\d+)*/gu, (m) => ' ' + m.split(/[.,]/u).map((g) => sp.number(Number(g))).join(' ') + ' ');
   if (sp.letters && sp.translit) {
@@ -195,7 +201,8 @@ export function speakable(text, cfg) {
       return /^[A-Z]/u.test(w) ? cap(out) : out;
     };
     // TK7b: a Latin letter with a diacritic («café», «Zürich») is the letter without it — the engine never gets é · ü
-    s = s.replace(/\p{Script=Latin}+/gu, (w0) => { const w = w0.normalize('NFD').replace(/\p{M}/gu, '');
+    // TK7c (judge TK7b, hunt 5): letters NFD does not decompose («ø ł ß æ œ đ þ ı») are folded to plain Latin by LATIN_FOLD
+    s = s.replace(/\p{Script=Latin}+/gu, (w0) => { const w = w0.normalize('NFD').replace(/\p{M}/gu, '').replace(LATIN_FOLD_RE, (c) => LATIN_FOLD[c]);
       return ' ' + (words.get(w.toLowerCase()) || (/^[A-Z]{1,5}$/u.test(w) ? spell(w) : translit(w))) + ' '; });
   }
   return s.replace(/\s{2,}/gu, ' ').replace(/\s+([,.:;!?»])/gu, '$1').replace(/([«])\s+/gu, '$1').trim();
@@ -306,12 +313,18 @@ function callPhraseBare(ctx, cfg) {
 // VOICE_LOCK_STALE_MS holds no one.
 // [TESTED: 2026-10-23 10:39 · selftest «TK7b: one voice at a time» (waits · goes · releases · a gone caller holds no one) + mutant M17 red;
 //  the functions only — no sound played; report testcases/reports/2026-10-23_tk7b-judge-findings.md]
+// [TESTED: 2026-10-23 11:47 · TK7c: selftest «TK7c: an unreadable voice lock» (held while fresh, not deleted; stale — taken over) + mutant
+//  M22 red; no sound played; report testcases/reports/2026-10-23_tk7c-judge-caveats.md]
 const VOICE_LOCK_FILE = 'call.voice.json';
 const VOICE_LOCK_STALE_MS = 3 * VOICE_TIMEOUT_MS; // the render, the play and a tool's own --play — each under VOICE_TIMEOUT_MS
 const VOICE_WAIT_TICK_MS = 500;
 export function voiceBusy(root, now = Date.now()) {
-  const l = readJsonOr(join(tmpDirOf(root), VOICE_LOCK_FILE), null);
-  if (!l || !l.pid || !(now - Date.parse(l.at) < VOICE_LOCK_STALE_MS)) return null;
+  const p = join(tmpDirOf(root), VOICE_LOCK_FILE);
+  const l = readJsonOr(p, null);
+  // TK7c (judge TK7b, hunt 7): a lock that exists but does not read — taken by `wx`, its body not yet written, or a broken file — holds the
+  // voice while it is younger than VOICE_LOCK_STALE_MS by its file time; it is never read as free (that let two calls sound together)
+  if (!l) { let age = Infinity; try { age = now - lstatSync(p).mtimeMs; } catch { /* no file — free */ } return age < VOICE_LOCK_STALE_MS ? { pid: null, unreadable: true } : null; }
+  if (!l.pid || !(now - Date.parse(l.at) < VOICE_LOCK_STALE_MS)) return null;
   try { process.kill(l.pid, 0); } catch (e) { if (e.code !== 'EPERM') return null; }
   return l; // a live call holds the voice
 }
@@ -1316,10 +1329,22 @@ export async function otherLivePage(root, key) {
     if (!lock) { await new Promise((r) => setTimeout(r, LOCK_REREAD_MS)); lock = readLock(f); }
     if (!lock || !lock.url) continue;
     if (lock.pid) { try { process.kill(lock.pid, 0); } catch (e) { if (e.code !== 'EPERM') continue; } } // the process is gone
-    const answer = await postLocal(String(lock.url).replace(/\/?$/u, '/') + LIVENESS_PATH, LIVENESS_TIMEOUT_MS);
-    if (answer.status) return lock;
+    if (await pageAnswers(lock)) return lock;
   }
   return null;
+}
+const pageAnswers = async (lock) => !!(lock && lock.url
+  && (await postLocal(String(lock.url).replace(/\/?$/u, '/') + LIVENESS_PATH, LIVENESS_TIMEOUT_MS)).status);
+// TK7c (judge TK7b, hunt 2): the OWN key by the same rule as another page's — a lock caught half-written is read again before checkLock may
+// remove it (a live page rewriting its pulse would get a second window), and a lock whose pid lives but whose address answers nothing is a
+// crashed page's (a reused pid): stale, its port kept for the draft (I29), never «Already open» with no page behind it
+// [TESTED: 2026-10-23 11:48 · selftest «TK7c #169» ×2 + mutants M20–M21 red on their cases; the real CLI door (6) — the own lock of a live
+//  pid not answering raises the page, red on the TK7b build; report testcases/reports/2026-10-23_tk7c-judge-caveats.md]
+async function liveOwnLock(root, key) {
+  const p = lockPath(root, key);
+  if (existsSync(p) && readJsonOr(p, null) === null) await new Promise((r) => setTimeout(r, LOCK_REREAD_MS));
+  const lock = checkLock(root, key);
+  return lock && !lock.stale && !(await pageAnswers(lock)) ? { ...lock, stale: true } : lock;
 }
 // I48 (2.10 TK7 (a), origin #169): `--timeout` is automation only (I9) — a page raised in the owner's WINDOW never runs on a timer.
 // Returns the refusal line, or null when the flags are legal (no timeout, or a page served without a window).
@@ -1440,6 +1465,7 @@ export async function serveContour(root, { docPath = null, batch = false, notice
   }
   // I48: asked BEFORE the page is built (the answer is asynchronous — the other page must answer at its address); used after the own-lock check
   const other = await otherLivePage(root, batch ? '_queue' : basename(docPath));
+  const heldNow = await liveOwnLock(root, batch ? '_queue' : basename(docPath)); // TK7c: the own lock is judged by its address too
   return new Promise((resolveP) => {
     const forOwner = () => ownerDocs(root, { includeStale });
     const build = () => batch ? buildIndexPage(root, forOwner(), pendingNotices(root))
@@ -1449,7 +1475,7 @@ export async function serveContour(root, { docPath = null, batch = false, notice
     const buildDoc = (rel) => (readQueue(root).some((i) => i.doc === rel && isNoticeItem(i)) ? buildNoticePage(root, rel) : buildPage(root, rel));
     const first = build();
     const lockKey = batch ? '_queue' : basename(docPath);
-    const held = checkLock(root, lockKey);
+    const held = heldNow;
     if (held && !held.stale) {
       log('Already open by this contour: ' + held.url + ' (pid ' + held.pid + ') — not raising a second window (I29).');
       resolveP({ outcome: 'already-open', url: held.url, exitCode: EXIT_DECIDED });
@@ -2660,6 +2686,29 @@ export async function selftest(log = console.log) {
   const eD = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogD.push(String(l)) }), sl(3000).then(() => null)]);
   ok(eD && eD.exitCode === EXIT_PREFLIGHT && /Another page is open/.test(slogD.join('\n')),
     'TK7b #169: a lock caught half-written is read again — the live page it belongs to still refuses the second one (I48)');
+  // (7e) TK7c (judge TK7b, hunt 2): the OWN key — a lock whose pid lives but whose address answers nothing (a reused pid) is a crashed
+  // page's: the page rises on it, never «Already open» with no page behind it
+  rmSync(OLK, { force: true });
+  const OWN = lockPath(root, basename(MD));
+  const gonePage = createServer(() => {}); await new Promise((r) => gonePage.listen(0, '127.0.0.1', r));
+  const goneUrl = 'http://127.0.0.1:' + gonePage.address().port + '/'; await new Promise((r) => gonePage.close(r)); // a port nobody listens on
+  writeFileSync(OWN, JSON.stringify({ pid: process.pid, url: goneUrl, doc: MD }) + '\n');
+  const slogE = [];
+  const servedE = serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogE.push(String(l)) });
+  let urlE = null;
+  for (let i = 0; i < 100 && !urlE; i++) { urlE = (slogE.join('\n').match(/Page is up: (http:\/\/127\.0\.0\.1:\d+\/)/) || [])[1] || null; if (!urlE) await sl(50); }
+  if (urlE) await closeByToken(root, basename(MD), urlE);
+  await Promise.race([servedE, sl(3000)]);
+  ok(!!urlE && !/Already open/.test(slogE.join('\n')),
+    'TK7c #169: the own lock of a live pid that does not answer at its address (a reused pid) is no page — the page rises, no «Already open» (I29, I48)');
+  // (7f) TK7c: the OWN lock caught half-written is read again — the live page it belongs to still says «Already open», no second window
+  writeFileSync(OWN, '{"pid": ');
+  setTimeout(() => writeFileSync(OWN, JSON.stringify({ pid: process.pid, url: otherUrl, doc: MD }) + '\n'), 50);
+  const slogF = [];
+  const eF = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogF.push(String(l)) }), sl(3000).then(() => null)]);
+  ok(eF && eF.outcome === 'already-open' && /Already open by this contour: /.test(slogF.join('\n')),
+    'TK7c #169: the own lock caught half-written is read again — its live page still says «Already open», no second window (I29)');
+  rmSync(OWN, { force: true });
   await new Promise((r) => otherPage.close(r));
   ok(['--queue --list', '--call x --dry-run', '--wait', 'interviews/x.md --close', '--selftest', 'interviews/x.md --enqueue']
     .every((a) => timeoutRefusal([...a.split(' '), '--timeout', '5']) === null) && timeoutRefusal(['interviews/x.md', '--timeout', '0']) === null,
@@ -2815,6 +2864,20 @@ export async function selftest(log = console.log) {
     await sl(100); if (typeof got2 === 'function') got2();
     ok(waited && went && released && typeof got2 === 'function' && !existsSync(VL),
       'TK7b: one voice at a time — a call waits while another call is sounding, goes when it ends and gives the lock back; a gone caller\'s lock holds no one (I48)');
+    // TK7c (judge TK7b, hunt 7): a lock that does not read — taken by `wx`, its body not yet written — holds the voice while fresh and is
+    // not deleted; the same file older than the stale window is taken over
+    writeFileSync(VL, '');
+    let got3 = null; whenVoiceFree(root, (rel) => { got3 = rel; }, { tick: 20 });
+    await sl(100); const held3 = got3 === null && existsSync(VL);
+    const old = new Date(Date.now() - 2 * VOICE_LOCK_STALE_MS); utimesSync(VL, old, old);
+    await sl(100); const took3 = typeof got3 === 'function';
+    if (typeof got3 === 'function') got3();
+    ok(held3 && took3 && !existsSync(VL),
+      'TK7c: an unreadable voice lock holds the voice while fresh and is not deleted; a stale one is taken over (I48)');
+    // TK7c (judge TK7b, hunt 5): letters NFD keeps whole, thousands grouped by commas or dots
+    const said3 = speakable('Søren, Łódź, Straße, Ærø: 1,000,000 and 1.000.000; version 2.10, 1,5', ru);
+    ok(!/\p{Script=Latin}/u.test(said3) && !/\d/u.test(said3) && said3.split(sp.number(1000000)).length === 3,
+      'TK7c #165: «ø ł ß æ» reach the Russian engine folded, «1,000,000» and «1.000.000» are one million each');
   }
 
   rmSync(root, { recursive: true, force: true });
