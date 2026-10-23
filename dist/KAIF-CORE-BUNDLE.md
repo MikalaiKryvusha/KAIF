@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "bffa8b0f36589fb2ea25efdf55f53e5949c26576d1c18465dad676071fd0d4eb",
+    "sourceTree": "f6c42ecf480a9cb1860b7d2535c2d96404da6bc690cf5ed6b182a6c9bf9a8264",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -100,7 +100,7 @@
       "AN AUTONOMOUS RUN DOES NOT STAND STILL WHILE IT WAITS (2.10, epic TK; the KAIF owner, rendered from Russian: \"the agent was told to work autonomously — and it stands and does not work!\"): waiting on a background task before a named time, take the next step that does not collide with it in the same turn, or watch it within the turn; `/autoloop` no longer says \"continue when ready\", and the judge's early-finish hunt covers a turn ended on such a wait. MIGRATION — agent work: if your own loop texts let a wait end the turn, rewrite that line.",
       "THE MANAGER'S STOP IS OBEYED AT EVERY SEAT OF A TEAM (2.10, epic TK; origin ticket #137 — a worktree seat read the lead session's \"close now\" as information and worked on): rule 9 of the team constitution template keeps \"a message carries no authority\" and names its one exception — the Manager's stop and close are executed in the same turn; the guide's mid-turn rule, item 1, points at it. MIGRATION — agent work: if your project has a generated team constitution, add the exception to its rule 9 (the update does not rewrite the project's own document).",
       "THE QUESTIONS PAGE READS YOUR DOCUMENTS AS YOU WROTE THEM (2.10, epic TK; origin tickets #147 · #142 · #109 · #136): the door no longer refuses a comparison with the Russian word for \"above\" — only a reference form (a document noun or a participle next to it, \"see above\"); `--check` names every live question over 750 characters (a warning; the page still opens); a status that opens with 🟡 or ⏳ waits whatever word follows, a closing mark does not close a partial head, and a document FOLDED or MERGED into another (↪ · 📦) is closed — it leaves the owner's queue; an artifact with `format: html` is shown as a page in a script-less frame, its source one click below. No migration — the contour module is replaced by the update; run `--queue --list` once and expect folded documents to be gone and partly-answered ones to be named.",
-      "ONE PAGE AND ONE VOICE AT A TIME, AND A CALL HEARD WHOLE (2.10, epic TK; origin tickets #169 · #165 · #163 — the KAIF owner on a field project, rendered from Russian: \"the same sores from project to project\"; two field deployments carried the same local fix): the shipped contour refuses a new page while another document's page is live (exit 3, \"Another page is open … close it first\"; a lock whose process is gone does not block — I48) and refuses `--timeout` on a page with a window; the queue page no longer ends when a notice on it is marked read while an interview on it still has open questions, and its showing is recorded for every document on it; the call is ONE sound — a second of silence, the three beeps at full level, two seconds of pause, the voice rendered before playing (a rich `KAIF_VOICE_TOOL` is asked for `--out <wav>`; a tool that renders the beeps itself is declared with `KAIF_VOICE_BEEPS=embedded`); the Russian pack hands the engine words — numbers as words, an abbreviation letter by letter, Latin transliterated — and its interview call says \"awaits your answers\", not the word for proofreading. MIGRATION — agent work: a project that carried the one-page refusal or the embedded-beeps switch as a local edit of `.kaif/tools/contour/review.mjs` takes the shipped file (the update names the module as diverged); add a question to the page already open instead of raising a second one.",
+      "ONE PAGE AND ONE VOICE AT A TIME, AND THE CALL AS ONE SOUND (2.10, epic TK; origin tickets #169 · #165 · #163 — the KAIF owner on a field project, rendered from Russian: \"the same sores from project to project\"; two field deployments carried the same local fix): the shipped contour refuses a new page while another document's page is live (exit 3, \"Another page is open … close it first\"; a lock whose process is gone does not block, a page is live only when it answers at the address of its lock, an unreadable lock of another page is never deleted — I48) and refuses `--timeout` on a page with a window (a door without a window and `--timeout 0` pass); a call waits while another call of the project is sounding; the queue page no longer ends when a notice on it is marked read while an interview on it still has open questions, nor on the last answer while a notice on it is unread, it counts only what it shows (an old hidden interview never holds it), and its showing is recorded for every document on it; on Windows the call is ONE sound — a second of silence, the three beeps at full level, two seconds of pause, the voice rendered before playing (a rich `KAIF_VOICE_TOOL` is asked for `--out <wav>`; a tool that renders the beeps itself is declared with `KAIF_VOICE_BEEPS=embedded`); the Russian pack hands the engine words — numbers as words, an abbreviation letter by letter, Latin transliterated — and its interview call says \"awaits your answers\", not the word for proofreading. MIGRATION — agent work: a project that carried the one-page refusal or the embedded-beeps switch as a local edit of `.kaif/tools/contour/review.mjs` takes the shipped file (the update names the module as diverged); add a question to the page already open instead of raising a second one.",
       "POINTERS FOLLOW THE ROWS 2.8 MOVED (2.10, epic HC; origin ticket #119, second case): the harness rule of the bug-fixing canon now writes a new harness command's row into `HOUSE_RULES.md` → \"Stands, environments and devices\" (it said \"document it in AGENT_GUIDE.md\"), and `/code-revision`, `/autoloop` and `/resume` point at the house-rules tables, not the guide; the build refuses the old forms. MIGRATION — agent work: none, unless your own texts repeat one of these pointers."
     ],
     "2.9": [
@@ -7444,8 +7444,11 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   two windows and two voices at once, a page left dead by the agent's edits, servers launched with a 60-second timer, "the same
   sores from project to project"; two field deployments carried the same local fix.) A LIVE lock of another document refuses a new
   page — exit 3, `Another page is open: <url> (<doc>, pid N) … close it first`, no window, no call; a lock whose process is gone
-  does not block. A question for the owner while a page is open goes INTO the open document (`/interview`), not onto a second
-  page. `--timeout` on a page with a window refuses before any page (it is automation only, with `--no-open` — I9).
+  does not block, and a page is live only when it answers at its lock's address (a reused pid is no page; another page's unreadable
+  lock is read again, never deleted). Two pages raised in the same instant may both rise — the lock is written when the page listens
+  (a known gap). A question for the owner while a page is open goes INTO the open document (`/interview`), not onto a second
+  page. `--timeout` on a page with a window refuses before any page (it is automation only, with `--no-open` — I9); a door with
+  no window and `--timeout 0` pass. One voice: a call waits while another call of the project is sounding.
 
 ## The named class: "handling the human's work"
 
@@ -11625,7 +11628,10 @@ export function spokenSession(name, cfg) {
 export function speakable(text, cfg) {
   const sp = T(cfg).spoken || {};
   let s = String(text).replace(/[#\u2116]/gu, ' ');
-  if (sp.percent) s = s.replace(/%/gu, ' ' + sp.percent + ' ');
+  // TK7\u0431 (judge TK7, hunt 5): thousands written with spaces (\u00ab1 000 000\u00bb) are ONE number; the word after a number agrees with it when the
+  // pack gives `percent` as a function of the number as written (the Russian pack: one, two\u2013four and five-plus take three forms)
+  if (typeof sp.number === 'function') s = s.replace(/(?<!\d)\d{1,3}(?:[ \u00a0\u202f]\d{3})+(?!\d)/gu, (m) => m.replace(/\D/gu, ''));
+  if (sp.percent) s = s.replace(/(\d+(?:[.,]\d+)*)?\s*%/gu, (m, num) => (num || '') + ' ' + (typeof sp.percent === 'function' ? sp.percent(num || '') : sp.percent) + ' ');
   if (typeof sp.number === 'function') s = s.replace(/\d+(?:[.,]\d+)*/gu, (m) => ' ' + m.split(/[.,]/u).map((g) => sp.number(Number(g))).join(' ') + ' ');
   if (sp.letters && sp.translit) {
     const words = new Map(sp.words || []);
@@ -11640,7 +11646,9 @@ export function speakable(text, cfg) {
       }
       return /^[A-Z]/u.test(w) ? cap(out) : out;
     };
-    s = s.replace(/[A-Za-z]+/gu, (w) => ' ' + (words.get(w.toLowerCase()) || (/^[A-Z]{1,5}$/u.test(w) ? spell(w) : translit(w))) + ' ');
+    // TK7b: a Latin letter with a diacritic («café», «Zürich») is the letter without it — the engine never gets é · ü
+    s = s.replace(/\p{Script=Latin}+/gu, (w0) => { const w = w0.normalize('NFD').replace(/\p{M}/gu, '');
+      return ' ' + (words.get(w.toLowerCase()) || (/^[A-Z]{1,5}$/u.test(w) ? spell(w) : translit(w))) + ' '; });
   }
   return s.replace(/\s{2,}/gu, ' ').replace(/\s+([,.:;!?»])/gu, '$1').replace(/([«])\s+/gu, '$1').trim();
 }
@@ -11678,14 +11686,22 @@ export function callShape(env = process.env, win = IS_WIN) {
     + '(a tool without --out: the beeps, then the tool speaks)';
 }
 // the samples and the rate of a 16-bit mono PCM WAV (the system voice renders one at CALL_RATE; a rich tool — at its own rate),
-// or null when the file is another format (stereo, float, compressed) — such a voice is not glued in
+// or null when the file is another format (stereo, float, compressed) — such a voice is not glued in. TK7b (judge TK7, hunt 5): a file cut
+// inside its `fmt ` chunk is null, never a RangeError (it is read in a child's exit handler — a throw there drops the page's server, I32);
+// a `data` chunk with no samples is no voice (null), so the call says I36 instead of playing the beeps alone in silence
 export function pcmOfWav(buf) {
   if (!buf || buf.length < 12 || buf.toString('ascii', 0, 4) !== 'RIFF' || buf.toString('ascii', 8, 12) !== 'WAVE') return null;
   let rate = 0;
   for (let p = 12; p + 8 <= buf.length;) {
     const id = buf.toString('ascii', p, p + 4), size = buf.readUInt32LE(p + 4);
-    if (id === 'fmt ') rate = buf.readUInt16LE(p + 8) === 1 && buf.readUInt16LE(p + 10) === 1 && buf.readUInt16LE(p + 22) === 16 ? buf.readUInt32LE(p + 12) : 0;
-    if (id === 'data') return rate ? { pcm: buf.subarray(p + 8, Math.min(buf.length, p + 8 + size)), rate } : null;
+    if (id === 'fmt ') {
+      if (size < 16 || p + 24 > buf.length) return null; // a cut format chunk is no format
+      rate = buf.readUInt16LE(p + 8) === 1 && buf.readUInt16LE(p + 10) === 1 && buf.readUInt16LE(p + 22) === 16 ? buf.readUInt32LE(p + 12) : 0;
+    }
+    if (id === 'data') {
+      const pcm = buf.subarray(p + 8, Math.min(buf.length, p + 8 + size));
+      return rate && pcm.length >= 2 ? { pcm, rate } : null; // no samples — no voice
+    }
     p += 8 + size + (size % 2);
   }
   return null;
@@ -11736,6 +11752,38 @@ function callPhraseBare(ctx, cfg) {
 // node script taking `<phrase> --play --voice <name>`; KAIF_VOICE; KAIF_SAPI_VOICE) — never a path
 // inside the project. Without it the contour drops to the system voice of the deployment language
 // (Windows SAPI by culture · macOS `say`), and without that — to beeps + banner, saying so.
+// 2.10 TK7b (judge TK7, hunt 7 — «one voice at a time» held only through one page): ONE VOICE AT A TIME across processes — a page's call and
+// the `--call` of two sessions never sound together. A call takes the voice lock (pid + moment, in the contour's temp folder; created
+// exclusively) and gives it back when its sound has ended; a call that finds it taken waits. A lock whose process is gone or older than
+// VOICE_LOCK_STALE_MS holds no one.
+// [TESTED: 2026-10-23 10:39 · selftest «TK7b: one voice at a time» (waits · goes · releases · a gone caller holds no one) + mutant M17 red;
+//  the functions only — no sound played; report testcases/reports/2026-10-23_tk7b-judge-findings.md]
+const VOICE_LOCK_FILE = 'call.voice.json';
+const VOICE_LOCK_STALE_MS = 3 * VOICE_TIMEOUT_MS; // the render, the play and a tool's own --play — each under VOICE_TIMEOUT_MS
+const VOICE_WAIT_TICK_MS = 500;
+export function voiceBusy(root, now = Date.now()) {
+  const l = readJsonOr(join(tmpDirOf(root), VOICE_LOCK_FILE), null);
+  if (!l || !l.pid || !(now - Date.parse(l.at) < VOICE_LOCK_STALE_MS)) return null;
+  try { process.kill(l.pid, 0); } catch (e) { if (e.code !== 'EPERM') return null; }
+  return l; // a live call holds the voice
+}
+// `then(release)` runs when the voice is free — at once or after the sounding call ends; `release()` gives the lock back (idempotent)
+export function whenVoiceFree(root, then, { tick = VOICE_WAIT_TICK_MS } = {}) {
+  const p = join(tmpDirOf(root), VOICE_LOCK_FILE);
+  try { mkdirSync(tmpDirOf(root), { recursive: true }); } catch { /* the take below says it */ }
+  const take = () => {
+    try { const fd = openSync(p, 'wx'); writeFileSync(fd, JSON.stringify({ pid: process.pid, at: new Date().toISOString() })); closeSync(fd); return true; }
+    catch { return false; }
+  };
+  let released = false;
+  const release = () => { if (!released) { released = true; const l = readJsonOr(p, null); if (l && l.pid === process.pid) rmSync(p, { force: true }); } };
+  const attempt = () => {
+    if (take()) { then(release); return; }
+    if (!voiceBusy(root)) { rmSync(p, { force: true }); if (take()) { then(release); return; } }
+    setTimeout(attempt, tick);
+  };
+  attempt();
+}
 export function signalCall(root, rawPhrase, { quiet = null, log = console.log } = {}) {
   const cfg = cfgOf(root);
   const isQuiet = quiet === null ? inQuietHours(new Date(), cfg.quietFrom, cfg.quietTo) : quiet;
@@ -11746,8 +11794,9 @@ export function signalCall(root, rawPhrase, { quiet = null, log = console.log } 
   const lang = cfg.language;
   const dir = tmpDirOf(root);
   const psq = (p) => String(p).replace(/'/g, "''"); // a PowerShell single-quoted string
+  let done = () => {}; // TK7b: gives the voice lock back — set when the voice is taken, called on every path where the sound has ended
   // TK7 (c): the call file is played ONCE through the sound card (I34), the voice timeout as its deadline (DEF7); never blocks (I32)
-  const play = (wav, then = () => {}) => {
+  const play = (wav, then = () => done()) => {
     mkdirSync(dir, { recursive: true });
     const file = join(dir, 'call.wav');
     writeFileSync(file, wav);
@@ -11784,23 +11833,26 @@ export function signalCall(root, rawPhrase, { quiet = null, log = console.log } 
           if (code === 0 && !v) log('CALL: the system voice rendered no usable sound — beeps and banner did the call (I36).');
           if (v) play(callWav(v.pcm, { beeps, rate: v.rate }));
           else if (beeps) play(callWav());
+          else done();
         });
-        ps.on('error', () => { log('CALL: system voice — engine not installed; beeps and banner did the call (I36).'); if (beeps) play(callWav(Buffer.alloc(0))); });
+        ps.on('error', () => { log('CALL: system voice — engine not installed; beeps and banner did the call (I36).'); if (beeps) play(callWav(Buffer.alloc(0))); else done(); });
         return;
       }
       if (IS_MAC) {
         const say = spawn('say', [phrase], { stdio: 'ignore', timeout: VOICE_TIMEOUT_MS });
-        say.on('error', () => log('CALL: system voice — engine not installed; beeps and banner did the call (I36).'));
+        say.on('exit', () => done());
+        say.on('error', () => { log('CALL: system voice — engine not installed; beeps and banner did the call (I36).'); done(); });
         return;
       }
       log('CALL: system voice — engine not installed on this platform; beeps and banner did the call (I36).');
+      done();
   };
   // the machine's rich voice tool; when it fails — the system voice, with the beeps only if none were played yet (`fallbackBeeps`)
   const richVoice = (fallbackBeeps) => {
     try {
       const rich = spawn(process.execPath, [process.env.KAIF_VOICE_TOOL, phrase, '--play', '--voice', process.env.KAIF_VOICE || 'default'],
         { stdio: 'ignore', timeout: VOICE_TIMEOUT_MS });
-      rich.on('exit', (code) => { if (code !== 0) systemVoice({ beeps: fallbackBeeps }); });
+      rich.on('exit', (code) => { if (code !== 0) systemVoice({ beeps: fallbackBeeps }); else done(); });
       rich.on('error', () => systemVoice({ beeps: fallbackBeeps }));
     } catch { systemVoice({ beeps: fallbackBeeps }); }
   };
@@ -11809,6 +11861,8 @@ export function signalCall(root, rawPhrase, { quiet = null, log = console.log } 
     if (!process.env.KAIF_VOICE_TOOL) { log('CALL: voice — system voice of culture "' + lang + '" (no KAIF_VOICE_TOOL in the environment, I35).'); systemVoice(); return; }
     log(toolLine()); richVoice(false);
   };
+  whenVoiceFree(root, (release) => { done = release; startSound(); }); // TK7b: one voice at a time — wait for a sounding call to end
+  function startSound() {
   if (IS_WIN) { // TK7 (c), #165: the beeps are part of ONE sound file with a lead silence, never a separate beep before a wait
     if (!process.env.KAIF_VOICE_TOOL) {
       log('CALL: voice — system voice of culture "' + lang + '" (no KAIF_VOICE_TOOL in the environment, I35); beeps and voice — one sound file.');
@@ -11836,6 +11890,7 @@ export function signalCall(root, rawPhrase, { quiet = null, log = console.log } 
     try { process.stdout.write('\u0007'); } catch { /* no terminal — nothing to ring */ }
     log('CALL: no sound-card beep on this platform — terminal bell only; voice next.');
     voice();
+  }
   }
 }
 
@@ -12693,20 +12748,40 @@ function checkLock(root, key) {
 // I48 (2.10, epic TK step TK7 (a); origin #169 · #165 part 3 — two windows and two voices at once; the fix two field deployments carried
 // as the same local edit): a page is raised only when no OTHER page of this contour is alive. Returns the live lock of another document
 // (its url · doc · pid) or null. A stale lock (its process gone) does not count — a crashed page never blocks the next one.
-export function otherLivePage(root, key) {
+// TK7b (judge TK7, hunt 2): ALIVE means the page ANSWERS at the lock's address — a live pid alone is no proof (Windows reuses pids: a kept
+// lock of a crashed page whose pid went to a stranger would block every page of the project, and `--close --force` would kill the stranger);
+// a lock of ANOTHER page is never deleted here — an unreadable one is a page rewriting its pulse, read again after LOCK_REREAD_MS (still
+// unreadable — a broken file, it blocks no one and stays). A known gap: two pages raised in the same instant may both rise — the lock is
+// written when the page listens (I48 names it).
+// [TESTED: 2026-10-23 10:09 · selftest «TK7b #169» ×2 + mutants M6–M8 red on their cases; the real CLI door (4) — a live pid not answering
+//  does not block, red on the TK7 build; report testcases/reports/2026-10-23_tk7b-judge-findings.md]
+const LOCK_REREAD_MS = 200;
+const LIVENESS_PATH = 'ping';          // any HTTP answer proves a listening page (an unknown route answers 404); /alive is NOT used — it is the owner's pulse
+const LIVENESS_TIMEOUT_MS = 1500;
+export async function otherLivePage(root, key) {
   const dir = decisionsAbs(root);
   if (!existsSync(dir)) return null;
   const own = key.replace(/\.[^.]+$/u, '') + '.lock';
+  const readLock = (f) => { try { return JSON.parse(stripBom(readFileSync(join(dir, f), 'utf8'))); } catch { return null; } };
   for (const f of readdirSync(dir).filter((n) => n.endsWith('.lock') && n !== own).sort()) {
-    const lock = checkLock(root, f.replace(/\.lock$/u, ''));
-    if (lock && !lock.stale) return lock;
+    let lock = readLock(f);
+    if (!lock) { await new Promise((r) => setTimeout(r, LOCK_REREAD_MS)); lock = readLock(f); }
+    if (!lock || !lock.url) continue;
+    if (lock.pid) { try { process.kill(lock.pid, 0); } catch (e) { if (e.code !== 'EPERM') continue; } } // the process is gone
+    const answer = await postLocal(String(lock.url).replace(/\/?$/u, '/') + LIVENESS_PATH, LIVENESS_TIMEOUT_MS);
+    if (answer.status) return lock;
   }
   return null;
 }
 // I48 (2.10 TK7 (a), origin #169): `--timeout` is automation only (I9) — a page raised in the owner's WINDOW never runs on a timer.
 // Returns the refusal line, or null when the flags are legal (no timeout, or a page served without a window).
+// TK7b (judge TK7, hunt 3): only a door that SHOWS a page refuses — the list, the call, the waiter, the close, the selftest, the queue file,
+// the marks and the search raise no window; `--timeout 0` is the default (I9: infinite patience) and legal anywhere.
+const NO_WINDOW_FLAGS = ['--no-open', '--no-serve', '--check', '--list', '--call', '--wait', '--close', '--selftest', '--enqueue',
+  '--mark-shown', '--mark-implemented', '--mark-withdrawn', '--search'];
 export function timeoutRefusal(args) {
-  if (!args.includes('--timeout') || args.includes('--no-open') || args.includes('--no-serve') || args.includes('--check')) return null;
+  const at = args.indexOf('--timeout');
+  if (at < 0 || !(Number(args[at + 1]) > 0) || NO_WINDOW_FLAGS.some((f) => args.includes(f))) return null;
   return '✖ --timeout raises the owner\'s window on a timer — refused before any page, sound or call (I48; --timeout is automation only, I9: '
     + 'use it with --no-open, or raise the owner\'s page in the background with no timeout).';
 }
@@ -12797,7 +12872,7 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
   });
 }
 
-export function serveContour(root, { docPath = null, batch = false, notice = false, face = 'interview' }, opts = {}) {
+export async function serveContour(root, { docPath = null, batch = false, notice = false, face = 'interview' }, opts = {}) {
   const cfg = cfgOf(root), t = T(cfg);
   const { open = true, signal = true, timeoutMs = 0, log = console.log, includeStale = false } = opts; // I9: default 0 — no timeout
   // A single document with no recognised questions and no outbound is served as a NOTICE automatically
@@ -12814,6 +12889,8 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
       if (cfAuto.unrecognised.length) log(t.check.partial(cfAuto.unrecognised.length));
     } catch { /* an unreadable document fails below with its own voice */ }
   }
+  // I48: asked BEFORE the page is built (the answer is asynchronous — the other page must answer at its address); used after the own-lock check
+  const other = await otherLivePage(root, batch ? '_queue' : basename(docPath));
   return new Promise((resolveP) => {
     const forOwner = () => ownerDocs(root, { includeStale });
     const build = () => batch ? buildIndexPage(root, forOwner(), pendingNotices(root))
@@ -12829,10 +12906,10 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
       resolveP({ outcome: 'already-open', url: held.url, exitCode: EXIT_DECIDED });
       return;
     }
-    const other = otherLivePage(root, lockKey); // I48 (2.10 TK7 (a), #169): one page and one voice at a time
-    if (other) {
+    if (other) { // I48 (2.10 TK7 (a), #169): one page and one voice at a time
+      const closeArg = other.doc === '_queue' ? '--queue' : other.doc || '<doc>'; // TK7b (judge TK7, hunt 2 item 6): the queue page closes by --queue
       log('Another page is open: ' + other.url + ' (' + (other.doc || '?') + ', pid ' + other.pid + ') — one page at a time (I48): '
-        + 'close it first (' + CLI_NAME + ' ' + (other.doc || '<doc>') + ' --close) or add the question to the open document, then raise this one. '
+        + 'close it first (' + CLI_NAME + ' ' + closeArg + ' --close) or add the question to the open document, then raise this one. '
         + 'No page raised, no call.');
       resolveP({ outcome: 'other-open', url: other.url, exitCode: EXIT_PREFLIGHT });
       return;
@@ -12931,7 +13008,8 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
               const restN = pendingNotices(root).length;
               // 2.10 TK7 (b), origin #163 (spec §5 lifted to the batch): a notice read on the QUEUE page records and does NOT end the page
               // while any document on it still has an unanswered question or an unread notice — the batch is one page for N documents
-              const restQ = batch ? pendingDocs(root).filter((d) => d.unanswered > 0).length : 0;
+              // TK7b (judge TK7, hunt 4): counted by what the page SHOWS (forOwner) — an old interview hidden as stale (I39) never holds an empty page
+              const restQ = batch ? forOwner().filter((d) => d.unanswered > 0).length : 0;
               if (batch && (restQ > 0 || restN > 0)) {
                 log('Recorded: notice read (' + doc + ', by ' + record.by + withComment + '). Documents with questions left: ' + restQ
                   + ', unread notices: ' + restN + ' — the page STAYS open, the contour waits (#163).');
@@ -12961,14 +13039,16 @@ export function serveContour(root, { docPath = null, batch = false, notice = fal
             savedInRun += nAns;
             const arts = Object.entries(record.artifacts || {});
             const nApproved = arts.filter(([, a]) => a.status === 'approved').length;
-            const rest = batch ? pendingDocs(root).filter((d) => d.unanswered > 0).length : 0;
+            const rest = batch ? forOwner().filter((d) => d.unanswered > 0).length : 0; // TK7b: what the page shows, as the notice branch
+            const restN = batch ? pendingNotices(root).length : 0; // TK7b (the mirror of #163): an unread notice on the queue page keeps it too
             const artWord = arts.length ? ', outbound decided ' + arts.length + ' (approved ' + nApproved + ')' : '';
             ok({ ok: true, written: doc + ' + decision.json + archive (' + nAns + ' answer(s)' + artWord + ')', more: rest, doc, left, rev: docRev(root, doc) });
             outcome = 'decision recorded';
             const answersWord = decisionWords(record);
             if (arts.length) log('Outbound decision: ' + arts.map(([id, a]) => id + ' — ' + a.status).join(', ') + '. Sending is a separate agent step through a gate that calls the same checkApproval.');
-            if (rest > 0) { // the batch does NOT end on the first document (origin bugs/52)
-              log('Recorded: ' + doc + ' (' + answersWord + ', by ' + record.by + '). Documents left in the queue: ' + rest + ' — the page STAYS open, the contour waits.');
+            if (rest > 0 || restN > 0) { // the batch does NOT end on the first document (origin bugs/52), nor while a notice on it is unread
+              log('Recorded: ' + doc + ' (' + answersWord + ', by ' + record.by + '). Documents left in the queue: ' + rest
+                + (restN > 0 ? ', unread notices: ' + restN : '') + ' — the page STAYS open, the contour waits.');
               outcome = null;
               return;
             }
@@ -13987,10 +14067,15 @@ export async function selftest(log = console.log) {
   // a lock whose process is gone does not block; --timeout on the owner's window refuses, with --no-open it stays automation
   writeFileSync(join(root, MD), three);
   const OLK = lockPath(root, 'interview_other.md');
-  writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: 'http://127.0.0.1:1/', doc: 'interviews/interview_other.md' }) + '\n');
+  // TK7b: a live page ANSWERS at its address — the other page is a listening server here (it was a live pid on a dead port, which a
+  // reused pid also is; that case is now (7c) below and must NOT block)
+  const otherPage = createServer((q, s) => { s.writeHead(404); s.end(); });
+  await new Promise((r) => otherPage.listen(0, '127.0.0.1', r));
+  const otherUrl = 'http://127.0.0.1:' + otherPage.address().port + '/';
+  writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: otherUrl, doc: 'interviews/interview_other.md' }) + '\n');
   const slog7 = [];
   const e7 = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slog7.push(String(l)) }), sl(3000).then(() => null)]);
-  ok(e7 && e7.exitCode === EXIT_PREFLIGHT && e7.outcome === 'other-open' && /Another page is open: http:\/\/127\.0\.0\.1:1\/ \(interviews\/interview_other\.md/.test(slog7.join('\n'))
+  ok(e7 && e7.exitCode === EXIT_PREFLIGHT && e7.outcome === 'other-open' && slog7.join('\n').includes('Another page is open: ' + otherUrl + ' (interviews/interview_other.md')
     && !/Page is up/.test(slog7.join('\n')) && !existsSync(lockPath(root, basename(MD))),
     'TK7 #169: a live page of another document refuses this one — exit 3 «Another page is open … close it first», no page, no lock (I48)');
   const deadPid = spawnSync(process.execPath, ['-e', '']).pid; // a process that has just ended — its pid is gone
@@ -14003,6 +14088,33 @@ export async function selftest(log = console.log) {
   const e8 = await Promise.race([served8, sl(BEACON_RELOAD_GRACE_MS + 3000).then(() => null)]);
   ok(!!url8 && !/Another page is open/.test(slog8.join('\n')) && e8 && e8.exitCode !== EXIT_PREFLIGHT,
     'TK7 #169, control: a lock of another document whose process is GONE does not block — the page rises (I48)');
+  // (7c) TK7b (judge TK7, hunt 2): a LIVE pid whose address does not answer (Windows reuses pids — a crashed page's kept lock) does not
+  // block, and a broken lock file of another page blocks no one and is NOT deleted
+  writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: 'http://127.0.0.1:1/', doc: 'interviews/interview_other.md' }) + '\n');
+  const BRK = lockPath(root, 'interview_broken.md');
+  writeFileSync(BRK, '{"pid": 12');
+  const slogC = [];
+  const servedC = serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogC.push(String(l)) });
+  let urlC = null;
+  for (let i = 0; i < 100 && !urlC; i++) { urlC = (slogC.join('\n').match(/Page is up: (http:\/\/127\.0\.0\.1:\d+\/)/) || [])[1] || null; if (!urlC) await sl(50); }
+  // closed by the checked command's token (100 ms), not by the window's beacon (3 s grace) — s12 gives the whole selftest 30 s
+  const closeByToken = async (r, key, url) => { try { const l = JSON.parse(stripBom(readFileSync(lockPath(r, key), 'utf8'))); await fetch(url + 'close?t=' + l.closeToken, { method: 'POST' }); } catch { /* best effort */ } };
+  if (urlC) await closeByToken(root, basename(MD), urlC);
+  await Promise.race([servedC, sl(3000)]);
+  ok(!!urlC && !/Another page is open/.test(slogC.join('\n')) && existsSync(BRK) && existsSync(OLK),
+    'TK7b #169: a live pid that does not answer at its address (a reused pid) does not block, and a broken lock of another page is not deleted (I48)');
+  rmSync(BRK, { force: true });
+  // (7d) TK7b: a lock caught half-written is read again — a live page rewriting its pulse still refuses
+  writeFileSync(OLK, '{"pid": ');
+  setTimeout(() => writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: otherUrl, doc: 'interviews/interview_other.md' }) + '\n'), 50);
+  const slogD = [];
+  const eD = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogD.push(String(l)) }), sl(3000).then(() => null)]);
+  ok(eD && eD.exitCode === EXIT_PREFLIGHT && /Another page is open/.test(slogD.join('\n')),
+    'TK7b #169: a lock caught half-written is read again — the live page it belongs to still refuses the second one (I48)');
+  await new Promise((r) => otherPage.close(r));
+  ok(['--queue --list', '--call x --dry-run', '--wait', 'interviews/x.md --close', '--selftest', 'interviews/x.md --enqueue']
+    .every((a) => timeoutRefusal([...a.split(' '), '--timeout', '5']) === null) && timeoutRefusal(['interviews/x.md', '--timeout', '0']) === null,
+    'TK7b: --timeout is refused only where a page is shown — the list, the call, the waiter, the close, the selftest, the queue file pass; --timeout 0 is the default and legal (I48, I9)');
   rmSync(OLK, { force: true });
   rmSync(join(root, MD), { force: true });
   ok(timeoutRefusal(['interviews/x.md', '--timeout', '60']) !== null && timeoutRefusal(['interviews/x.md', '--no-open', '--silent', '--timeout', '1']) === null
@@ -14036,14 +14148,75 @@ export async function selftest(log = console.log) {
   await Promise.race([served9, sl(BEACON_RELOAD_GRACE_MS + 3000)]);
   rmSync(join(root, 'notes'), { recursive: true, force: true });
   rmSync(join(root, MD), { force: true });
+  // (8b) TK7b (judge TK7, hunt 4, defect 1): the queue page counts what it SHOWS — an old interview hidden as stale (I39) does not hold a
+  // page whose only item was the notice: the notice read ends it with exit 0, never an empty page waiting for «closed without an answer».
+  // (8c) TK7b (judge TK7, hunt 4, defect 2 — the mirror of #163): the LAST answer on the queue page does not end it while a notice on it
+  // is unread — the owner is never left on a dead page with an unread notice in front of him.
+  // Each in a root of its own (the shared one carries other cases' interviews and notices — a count over them says nothing about these),
+  // and the two run side by side: each waits out the server's death delay, and s12 gives the whole selftest 30 s.
+  const OLD = 'interviews/interview_009_old.md', ONE = 'interviews/interview_010_one.md';
+  const freshRoot = () => {
+    const r = mkdtempSync(join(tmpdir(), 'kaif-contour-tk7b-'));
+    for (const d of ['.kaif', 'interviews', 'notes']) mkdirSync(join(r, d), { recursive: true });
+    writeFileSync(join(r, '.kaif', 'kaif.json'), readFileSync(join(root, '.kaif', 'kaif.json')));
+    writeFileSync(join(r, OLD), '# Interview #009\n\n> Created: 2020-01-01\n> Status: awaiting\n\n' + MQ(1));
+    writeFileSync(join(r, NT), '# Notice\n\nThe recon is done.\n');
+    enqueue(r, NT, { kind: KIND_NOTICE });
+    return r;
+  };
+  const raise = async (r, slog) => {
+    const served = serveContour(r, { batch: true }, { open: false, signal: false, log: (l) => slog.push(String(l)) });
+    let url = null;
+    for (let i = 0; i < 100 && !url; i++) { url = (slog.join('\n').match(/Page is up: (http:\/\/127\.0\.0\.1:\d+\/)/) || [])[1] || null; if (!url) await sl(50); }
+    return { served, url };
+  };
+  const RB = freshRoot(), RM = freshRoot();
+  writeFileSync(join(RM, ONE), '# Interview #010\n\n> Status: awaiting\n\n' + MQ(1));
+  const hidden = pendingDocs(RB).some((d) => d.doc === OLD) && !ownerDocs(RB).some((d) => d.doc === OLD);
+  const slogB = [], slogM = [];
+  const [resB, resM] = await Promise.all([
+    (async () => {
+      const { served, url } = await raise(RB, slogB);
+      if (!url) return { e: null };
+      const beat = setInterval(() => { fetch(url + 'alive?i=-1&d=0&s=0').catch(() => {}); }, 200);
+      await fetch(url + 'decide', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ doc: NT, answers: {}, comment: '', read: true, face: 'interview', rev: docRev(RB, NT) }) }).catch(() => null);
+      const e = await Promise.race([served, sl(SERVER_DEATH_MS + 3000).then(() => null)]);
+      clearInterval(beat);
+      if (!e) { await closeByToken(RB, '_queue', url); await Promise.race([served, sl(3000)]); }
+      return { e };
+    })(),
+    (async () => {
+      const { served, url } = await raise(RM, slogM);
+      if (!url) return { r: 0, ended: null };
+      let ended = null; served.then((v) => { ended = v; });
+      const beat = setInterval(() => { fetch(url + 'alive?i=-1&d=0&s=0').catch(() => {}); }, 200);
+      const r = await fetch(url + 'decide', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ doc: ONE, answers: { Q1: { choice: 'A', text: '', comment: '' } }, comment: '', face: 'interview', rev: docRev(RM, ONE) }) })
+        .then((x) => x.status).catch(() => 0);
+      await sl(SERVER_DEATH_MS + 500);
+      clearInterval(beat);
+      const endedAtCheck = ended, logAtCheck = slogM.join('\n'); // read BEFORE this case closes the page itself
+      if (ended === null) await closeByToken(RM, '_queue', url);
+      await Promise.race([served, sl(3000)]);
+      return { r, ended: endedAtCheck, log: logAtCheck };
+    })(),
+  ]);
+  ok(hidden && resB.e && resB.e.exitCode === EXIT_DECIDED && /Outcome: notice read \(notes\/notice_163\.md/.test(slogB.join('\n')),
+    'TK7b #163: the queue page counts what it SHOWS — an old interview hidden as stale does not hold it; the notice read ends it, exit 0');
+  ok(resM.r === 200 && resM.ended === null && /Documents left in the queue: 0, unread notices: 1 — the page STAYS open/.test(resM.log || '')
+    && !/ending the contour/.test(resM.log || ''),
+    'TK7b #163, mirror: the last answer on the queue page does not end it while a notice on it is unread');
+  for (const r of [RB, RM]) rmSync(r, { recursive: true, force: true });
   } // OW6
 
   { // (9) 2.10 TK7 (c), origin #165: the engine gets words — numbers, abbreviations and Latin words become the pack's words; one sound file
     const ru = { language: 'ru' }, sp = T(ru).spoken;
+    const sl = (ms) => new Promise((r) => setTimeout(r, ms));
     const said = speakable('Owner, KAIF: interview #010 waits. Vulkan and Blender 2.10, load 80%', ru);
     const kaif = ['K', 'A', 'I', 'F'].map((c) => sp.letters[c]).join('-');
     ok(!/[A-Za-z0-9#%]/u.test(said) && said.includes(kaif.charAt(0).toUpperCase() + kaif.slice(1)) && said.includes(' ' + sp.number(10) + ' ')
-      && said.includes(sp.number(2) + ' ' + sp.number(10)) && said.includes(sp.number(80) + ' ' + sp.percent)
+      && said.includes(sp.number(2) + ' ' + sp.number(10)) && said.includes(sp.number(80) + ' ' + sp.percent('80'))
       && sp.number(2026) === sp.number(2000) + ' ' + sp.number(26) && sp.number(1000) !== sp.number(2000) && sp.number(21) === sp.tens[2] + ' ' + sp.ones[1],
       'TK7 #165: the Russian engine gets no Latin and no digits — an abbreviation letter by letter, a version and a percentage as words, thousands agree');
     ok(speakable('Owner, KAIF: interview #010 waits.', { language: 'en' }) === 'Owner, KAIF: interview 010 waits.',
@@ -14065,6 +14238,32 @@ export async function selftest(log = console.log) {
       && callShape({}, true).startsWith('ONE file') && callShape({ KAIF_VOICE_TOOL: 'x' }, true).startsWith('ONE file')
       && callShape({ KAIF_VOICE_TOOL: 'x', KAIF_VOICE_BEEPS: 'embedded' }, true).startsWith('KAIF_VOICE_TOOL only'),
       'TK7 #165: a stereo voice is not glued in; a rich tool\'s voice at its own rate is glued with silence and beeps made at that rate; the dry run names the composition');
+    // TK7b (judge TK7, hunt 5): a cut file is no voice (never a throw in the child's exit handler — I32); a data chunk without samples is no voice
+    const safe = (b) => { try { return pcmOfWav(b); } catch { return 'threw'; } };
+    const noData = Buffer.from(wav.subarray(0, 44)); noData.writeUInt32LE(36, 4); noData.writeUInt32LE(0, 40);
+    ok(safe(wav.subarray(0, 20)) === null && safe(wav.subarray(0, 30)) === null && safe(wav.subarray(0, 44)) === null && safe(noData) === null,
+      'TK7b #165: a WAV cut inside its format chunk or with no samples is NO voice — null, never a RangeError that would drop the page (I32, I36)');
+    // TK7b (judge TK7, hunt 5): diacritics, the agreeing percent word, thousands written with spaces
+    const said2 = speakable('café naïve Zürich: 1%, 3%, 11%, 21%; 1 000 000', ru);
+    ok(!/\p{Script=Latin}/u.test(said2) && !/\d/u.test(said2) && said2.includes(sp.number(1) + ' ' + sp.percent('1') + ',') && said2.includes(sp.number(3) + ' ' + sp.percent('3'))
+      && said2.includes(sp.number(11) + ' ' + sp.percent('11')) && said2.includes(sp.number(21) + ' ' + sp.percent('21') + ';')
+      && new Set([sp.percent('1'), sp.percent('3'), sp.percent('11')]).size === 3 && said2.endsWith(sp.number(1000000)) && sp.number(1000000).split(' ').length === 2,
+      'TK7b #165: the Russian engine gets no letter with a diacritic, the percent word agrees with its number, «1 000 000» is one million');
+    // TK7b (judge TK7, hunt 7): one voice at a time across processes — a call waits while another call is sounding
+    const VL = join(tmpDirOf(root), 'call.voice.json');
+    mkdirSync(tmpDirOf(root), { recursive: true });
+    writeFileSync(VL, JSON.stringify({ pid: process.pid, at: new Date().toISOString() }));
+    let got = null; whenVoiceFree(root, (rel) => { got = rel; }, { tick: 20 });
+    await sl(100); const waited = got === null;
+    rmSync(VL, { force: true }); await sl(100);
+    const went = typeof got === 'function' && existsSync(VL);
+    if (typeof got === 'function') got();
+    const released = !existsSync(VL);
+    writeFileSync(VL, JSON.stringify({ pid: spawnSync(process.execPath, ['-e', '']).pid, at: new Date().toISOString() }));
+    let got2 = null; whenVoiceFree(root, (rel) => { got2 = rel; }, { tick: 50 });
+    await sl(100); if (typeof got2 === 'function') got2();
+    ok(waited && went && released && typeof got2 === 'function' && !existsSync(VL),
+      'TK7b: one voice at a time — a call waits while another call is sounding, goes when it ends and gives the lock back; a gone caller\'s lock holds no one (I48)');
   }
 
   rmSync(root, { recursive: true, force: true });
@@ -14441,6 +14640,7 @@ const EN = {
     tens: ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'],
     // 2.10 TK7 (c), origin #165: how the CALL's phrase reaches the engine — empty here: an English engine reads Latin and digits itself;
     // a pack whose engine does not (Russian) fills `number` · `percent` · `letters` · `translit`, and `speakable()` in review.mjs uses them
+    // (`percent` — a word, or a function of the number as written that returns the agreeing word)
     number: null, percent: null, letters: null, translit: null },
   // the queue without a browser (`--queue --list`) — read by the agent, quoted by the rituals
   list: { waits: (d) => 'waiting ' + d + ' d', shown: (date, ago, t) => 'shown: ' + date + ' — ' + ago + ' d ago (' + t + ')',
@@ -14486,8 +14686,8 @@ const EN = {
 };
 
 // 2.10, epic TK step TK7 (c) (origin #165): a whole number as the Russian voice says it — nominative, thousands feminine
-// («две тысячи двадцать шесть»); 0 … 999 999, larger numbers digit by digit. The call's phrase is normalised by `speakable()` in
-// review.mjs before ANY engine — the owner's word in the ticket: the engine gets words, never digits.
+// («две тысячи двадцать шесть»); 0 … 999 999 999 (millions — TK7b, judge TK7 hunt 5), larger numbers digit by digit. The call's phrase is
+// normalised by `speakable()` in review.mjs before ANY engine — the owner's word in the ticket: the engine gets words, never digits.
 const RU_ONES = ['ноль', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять', 'десять', 'одиннадцать', 'двенадцать',
   'тринадцать', 'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
 const RU_TENS = ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'];
@@ -14495,7 +14695,7 @@ const RU_HUNDREDS = ['', 'сто', 'двести', 'триста', 'четыре
 function ruNumber(n) {
   if (!Number.isFinite(n) || n < 0) return String(n);
   if (n === 0) return RU_ONES[0];
-  if (n > 999999) return String(n).split('').map((d) => RU_ONES[Number(d)]).join(' ');
+  if (n > 999999999) return String(n).split('').map((d) => RU_ONES[Number(d)]).join(' ');
   const upTo999 = (x, fem) => {
     const h = Math.floor(x / 100), r = x % 100, out = [];
     if (h) out.push(RU_HUNDREDS[h]);
@@ -14503,13 +14703,21 @@ function ruNumber(n) {
     else if (r) out.push(fem && r < 3 ? ['', 'одна', 'две'][r] : RU_ONES[r]);
     return out;
   };
-  const th = Math.floor(n / 1000), rest = n % 1000, out = [];
-  if (th) {
-    const l2 = th % 100, l1 = th % 10;
-    out.push(...upTo999(th, true), l2 >= 11 && l2 <= 19 ? 'тысяч' : l1 === 1 ? 'тысяча' : l1 >= 2 && l1 <= 4 ? 'тысячи' : 'тысяч');
-  }
+  const mil = Math.floor(n / 1000000), th = Math.floor(n / 1000) % 1000, rest = n % 1000, out = [];
+  if (mil) out.push(...upTo999(mil, false), ruForm(mil, ['миллион', 'миллиона', 'миллионов']));
+  if (th) out.push(...upTo999(th, true), ruForm(th, ['тысяча', 'тысячи', 'тысяч']));
   out.push(...upTo999(rest, false));
   return out.join(' ');
+}
+// the Russian agreement of a counted word: [one, two–four, five and more] (11–14 take the last)
+function ruForm(n, [one, few, many]) {
+  const l2 = n % 100, l1 = n % 10;
+  return l2 >= 11 && l2 <= 19 ? many : l1 === 1 ? one : l1 >= 2 && l1 <= 4 ? few : many;
+}
+// TK7b (judge TK7, hunt 5 — «один процентов»): the percent word agrees with the number as written; a fraction («2,5») takes «процента»
+function ruPercent(written) {
+  if (!written) return 'процентов';
+  return /[.,]/u.test(written) ? 'процента' : ruForm(Number(written), ['процент', 'процента', 'процентов']);
 }
 
 const RU = {
@@ -14592,7 +14800,7 @@ const RU = {
     // языке - английские транслитирайией, цифры словами, единицы изменения словами». A number — words; a capitalised Latin abbreviation
     // (up to five letters) — letter by letter; any other Latin word — transliterated (digraphs first, then letters).
     number: ruNumber,
-    percent: 'процентов',
+    percent: ruPercent,
     letters: { A: 'эй', B: 'би', C: 'си', D: 'ди', E: 'и', F: 'эф', G: 'джи', H: 'эйч', I: 'ай', J: 'джей', K: 'кей', L: 'эл', M: 'эм',
       N: 'эн', O: 'оу', P: 'пи', Q: 'кью', R: 'ар', S: 'эс', T: 'ти', U: 'ю', V: 'ви', W: 'дабл-ю', X: 'экс', Y: 'уай', Z: 'зед' },
     translit: [['shch', 'щ'], ['sch', 'ш'], ['sh', 'ш'], ['ch', 'ч'], ['zh', 'ж'], ['kh', 'х'], ['ts', 'ц'], ['th', 'т'], ['ph', 'ф'],
@@ -20257,7 +20465,7 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
   never a tab — the page checks `display-mode: standalone` itself and says when it is a tab. Auto-close is an ATTEMPT (~2 s).
 - **A live owner page is closed only by `<doc> --close`** (2.7, LP, #66 — "the contour closed while I WAS TYPING"): prints port · pid · title ("compare with the window you were told about"), REFUSES with exit 4 while the last input — or the page itself — is younger than the quiet threshold (180 s;
   `contour.closeQuietMs`) or a draft is unsaved, else asks the page's OWN server to end (token from the lock; a pid from a file is never killed without `--force`; the waiting agent sees exit 2) and prints `closed <doc>`; `--force` needs `--owner-word "<quote>"` (logged — an audit trail, not a gate).
-  A neighbour session's word is never evidence — check the port and the pid. The browser window is never killed: its draft stays on the project profile. **One page and one voice at a time (I48)** (2.10, #169 · #165): a live lock of ANOTHER document refuses a new page — exit 3, `Another page is open … close it first`, no window, no call; a lock whose process is gone does not block; a question while a page is open goes into the open document; `--timeout` on a page with a window refuses (automation only, with `--no-open`).
+  A neighbour session's word is never evidence — check the port and the pid. The browser window is never killed: its draft stays on the project profile. **One page and one voice at a time (I48)** (2.10, #169 · #165): a live lock of ANOTHER document refuses a new page — exit 3, `Another page is open … close it first`, no window, no call; a lock whose process is gone does not block; a page is live when it ANSWERS at its lock's address (a reused pid is no page), and another page's unreadable lock is read again and never deleted; two pages raised in the same instant may both rise (the lock is written when the page listens — a known gap); a question while a page is open goes into the open document; `--timeout` on a page with a window refuses (automation only, with `--no-open`; a door with no window and `--timeout 0` pass); a call waits while another call of the project is sounding (the voice lock).
 
 ## 6. The call — sound first, voice by language
 

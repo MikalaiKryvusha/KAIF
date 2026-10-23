@@ -192,6 +192,7 @@ const EN = {
     tens: ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'],
     // 2.10 TK7 (c), origin #165: how the CALL's phrase reaches the engine — empty here: an English engine reads Latin and digits itself;
     // a pack whose engine does not (Russian) fills `number` · `percent` · `letters` · `translit`, and `speakable()` in review.mjs uses them
+    // (`percent` — a word, or a function of the number as written that returns the agreeing word)
     number: null, percent: null, letters: null, translit: null },
   // the queue without a browser (`--queue --list`) — read by the agent, quoted by the rituals
   list: { waits: (d) => 'waiting ' + d + ' d', shown: (date, ago, t) => 'shown: ' + date + ' — ' + ago + ' d ago (' + t + ')',
@@ -237,8 +238,8 @@ const EN = {
 };
 
 // 2.10, epic TK step TK7 (c) (origin #165): a whole number as the Russian voice says it — nominative, thousands feminine
-// («две тысячи двадцать шесть»); 0 … 999 999, larger numbers digit by digit. The call's phrase is normalised by `speakable()` in
-// review.mjs before ANY engine — the owner's word in the ticket: the engine gets words, never digits.
+// («две тысячи двадцать шесть»); 0 … 999 999 999 (millions — TK7b, judge TK7 hunt 5), larger numbers digit by digit. The call's phrase is
+// normalised by `speakable()` in review.mjs before ANY engine — the owner's word in the ticket: the engine gets words, never digits.
 const RU_ONES = ['ноль', 'один', 'два', 'три', 'четыре', 'пять', 'шесть', 'семь', 'восемь', 'девять', 'десять', 'одиннадцать', 'двенадцать',
   'тринадцать', 'четырнадцать', 'пятнадцать', 'шестнадцать', 'семнадцать', 'восемнадцать', 'девятнадцать'];
 const RU_TENS = ['', '', 'двадцать', 'тридцать', 'сорок', 'пятьдесят', 'шестьдесят', 'семьдесят', 'восемьдесят', 'девяносто'];
@@ -246,7 +247,7 @@ const RU_HUNDREDS = ['', 'сто', 'двести', 'триста', 'четыре
 function ruNumber(n) {
   if (!Number.isFinite(n) || n < 0) return String(n);
   if (n === 0) return RU_ONES[0];
-  if (n > 999999) return String(n).split('').map((d) => RU_ONES[Number(d)]).join(' ');
+  if (n > 999999999) return String(n).split('').map((d) => RU_ONES[Number(d)]).join(' ');
   const upTo999 = (x, fem) => {
     const h = Math.floor(x / 100), r = x % 100, out = [];
     if (h) out.push(RU_HUNDREDS[h]);
@@ -254,13 +255,21 @@ function ruNumber(n) {
     else if (r) out.push(fem && r < 3 ? ['', 'одна', 'две'][r] : RU_ONES[r]);
     return out;
   };
-  const th = Math.floor(n / 1000), rest = n % 1000, out = [];
-  if (th) {
-    const l2 = th % 100, l1 = th % 10;
-    out.push(...upTo999(th, true), l2 >= 11 && l2 <= 19 ? 'тысяч' : l1 === 1 ? 'тысяча' : l1 >= 2 && l1 <= 4 ? 'тысячи' : 'тысяч');
-  }
+  const mil = Math.floor(n / 1000000), th = Math.floor(n / 1000) % 1000, rest = n % 1000, out = [];
+  if (mil) out.push(...upTo999(mil, false), ruForm(mil, ['миллион', 'миллиона', 'миллионов']));
+  if (th) out.push(...upTo999(th, true), ruForm(th, ['тысяча', 'тысячи', 'тысяч']));
   out.push(...upTo999(rest, false));
   return out.join(' ');
+}
+// the Russian agreement of a counted word: [one, two–four, five and more] (11–14 take the last)
+function ruForm(n, [one, few, many]) {
+  const l2 = n % 100, l1 = n % 10;
+  return l2 >= 11 && l2 <= 19 ? many : l1 === 1 ? one : l1 >= 2 && l1 <= 4 ? few : many;
+}
+// TK7b (judge TK7, hunt 5 — «один процентов»): the percent word agrees with the number as written; a fraction («2,5») takes «процента»
+function ruPercent(written) {
+  if (!written) return 'процентов';
+  return /[.,]/u.test(written) ? 'процента' : ruForm(Number(written), ['процент', 'процента', 'процентов']);
 }
 
 const RU = {
@@ -343,7 +352,7 @@ const RU = {
     // языке - английские транслитирайией, цифры словами, единицы изменения словами». A number — words; a capitalised Latin abbreviation
     // (up to five letters) — letter by letter; any other Latin word — transliterated (digraphs first, then letters).
     number: ruNumber,
-    percent: 'процентов',
+    percent: ruPercent,
     letters: { A: 'эй', B: 'би', C: 'си', D: 'ди', E: 'и', F: 'эф', G: 'джи', H: 'эйч', I: 'ай', J: 'джей', K: 'кей', L: 'эл', M: 'эм',
       N: 'эн', O: 'оу', P: 'пи', Q: 'кью', R: 'ар', S: 'эс', T: 'ти', U: 'ю', V: 'ви', W: 'дабл-ю', X: 'экс', Y: 'уай', Z: 'зед' },
     translit: [['shch', 'щ'], ['sch', 'ш'], ['sh', 'ш'], ['ch', 'ч'], ['zh', 'ж'], ['kh', 'х'], ['ts', 'ц'], ['th', 'т'], ['ph', 'ф'],

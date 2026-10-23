@@ -43,7 +43,7 @@
 >      rule-as-prose-without-carrier, scope-crept-past-the-ask, measurement-without-method,
 >      git-state-mistaken, judge-caught-the-claim, environment-not-in-dossier,
 >      context-lost-between-sessions, recon-skipped-before-deciding, gate-output-not-gating,
->      answer-not-delivered, question-not-the-owners, stood-while-waiting -->
+>      answer-not-delivered, question-not-the-owners, stood-while-waiting, test-shares-state -->
 >
 > | Слаг класса | Провал, который он называет |
 > |---|---|
@@ -95,6 +95,19 @@
 > ищет эту строку.
 
 ## Записи
+
+### EXP-0191 · 2026-10-23 · ❌→✅ · #contour #selftest #shared-root #queue-page #count #tk
+класс: test-shares-state
+**Ситуация:** шаг TK7б версии 2.10 — два новых случая самопроверки страницы очереди («считает по показанному», «живёт при непрочитанном
+сообщении») судят СЧЁТ того, что осталось на странице.
+**Что делали:** первый прогон — оба красные. Журнал случая показал «Documents with questions left: 3, unread notices: 1/2»: корень самопроверки
+общий, и в нём лежали интервью 051–053 и сообщение прежних случаев — счёт шёл по ним, а не по фикстуре случая; код был верен.
+**Итог:** ❌→✅ — оба случая получили свой временный корень (`mkdtempSync`, копия `.kaif/kaif.json`); 159/159; мутанты M10–M11 краснят ровно их.
+**Урок:** случай, судящий СЧЁТ по каталогу (очередь, ждущие документы, замки), в общем корне самопроверки меряет чужие фикстуры — он красен
+или зелен не по своей причине. Такой случай заводит свой корень; первый красный сначала читается журналом случая, не правкой кода.
+**Trigger:** пишешь случай самопроверки контура, чьё ожидаемое — число документов, сообщений или замков в каталоге → свой `mkdtempSync`-корень.
+**Not for:** случаи над одним документом по пути (ответ, ревизия, рендер) — там общий корень безвреден.
+**Механизация:** none-cheap: свод о корне случая — суждение о том, что случай считает; мутанты M10–M11 `tk7-contour-mutants.mjs` стерегут сами случаи.
 
 ### EXP-0190 · 2026-10-23 · ❌→✅ · #contour #voice #selftest #mutants #threshold #tk
 класс: guard-not-proven-against-threat

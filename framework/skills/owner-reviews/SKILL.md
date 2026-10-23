@@ -376,8 +376,11 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   two windows and two voices at once, a page left dead by the agent's edits, servers launched with a 60-second timer, "the same
   sores from project to project"; two field deployments carried the same local fix.) A LIVE lock of another document refuses a new
   page — exit 3, `Another page is open: <url> (<doc>, pid N) … close it first`, no window, no call; a lock whose process is gone
-  does not block. A question for the owner while a page is open goes INTO the open document (`/interview`), not onto a second
-  page. `--timeout` on a page with a window refuses before any page (it is automation only, with `--no-open` — I9).
+  does not block, and a page is live only when it answers at its lock's address (a reused pid is no page; another page's unreadable
+  lock is read again, never deleted). Two pages raised in the same instant may both rise — the lock is written when the page listens
+  (a known gap). A question for the owner while a page is open goes INTO the open document (`/interview`), not onto a second
+  page. `--timeout` on a page with a window refuses before any page (it is automation only, with `--no-open` — I9); a door with
+  no window and `--timeout 0` pass. One voice: a call waits while another call of the project is sounding.
 
 ## The named class: "handling the human's work"
 

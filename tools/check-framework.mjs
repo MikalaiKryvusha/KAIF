@@ -1307,7 +1307,8 @@ errors.push(...checkLinesUnknownToReference(readFileSync(join(ROOT, 'framework',
     // 2.10, epic TK step TK7 (origin #169 · #165 · #163): one page and one voice at a time, no owner window on a timer, the queue page lives
     // while it has a question, the call is one sound and reaches the engine as words — the generator, the contract and both layers of the skills
     ['one page ↔ the generator refuses a second page and a timer on the window; the queue page lives; the call is one sound of words', 'framework/tools/contour/review.mjs',
-      ['export function otherLivePage(', 'Another page is open: ', 'export function timeoutRefusal(', 'the page STAYS open, the contour waits (#163)', 'export function speakable(', 'export function callWav(']],
+      ['export async function otherLivePage(', 'Another page is open: ', 'export function timeoutRefusal(', 'the page STAYS open, the contour waits (#163)', 'export function speakable(', 'export function callWav(',
+        'export function whenVoiceFree(', 'const NO_WINDOW_FLAGS = [']],
     ['one page ↔ the one-page contract names it and the one-sound call', 'framework/templates/_interactive-contour-spec.md',
       ['**One page and one voice at a time (I48)**', 'ONE sound, played once (2.10, #165)']],
     ['one page ↔ /owner-reviews carries I48 and the one-sound I33 (payload)', 'framework/skills/owner-reviews/SKILL.md',
