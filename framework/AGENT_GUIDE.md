@@ -745,9 +745,9 @@ of a MOMENT carries both, in the owner's local time:
 - **Two moments, told apart:** *decided* — when the owner's word was said; *recorded* — when it was
   written down or committed. They differ, and the difference is often the interesting part.
 - **The moment is PROBED, never felt:** `date '+%Y-%m-%d %H:%M %z'` (`+0300` → write `+03:00`; PowerShell: `Get-Date -Format 'yyyy-MM-dd HH:mm zzz'`) in the SAME
-  tool call as the write — a session's sense of time comes from the volume of work, not from the clock (origin issue #96: stamps 1–5
-  minutes ahead; "missed 12:00" said at 11:50); a decision about a named hour reads the probe too. Not captured → an honest
-  `≈ 2026-08-07 10:05 +03:00` — an invented number is worse than a missing one (the three-doors rule in `PHILOSOPHY.md`).
+  tool call as the write — a session's sense of time comes from the volume of work, not from the clock (origin issue #96: stamps 1–5 minutes ahead; "missed 12:00" said at 11:50); a decision about a named hour reads the probe too.
+  Where the clock hook is wired (`.kaif/hooks/clock-now.mjs`, 2.10), write the NOW placeholder — the word NOW in white square brackets — and the machine's clock fills it on the write; elsewhere, the probe.
+  Not captured → an honest `≈ 2026-08-07 10:05 +03:00` — an invented number is worse than a missing one (the three-doors rule in `PHILOSOPHY.md`).
 - **What is a stamp:** decisions, closures of tasks/phases/bugs, milestones in a document's status,
   receipts the machinery writes. **What is NOT** (a date is enough, and demanding time there is
   noise): schema fields whose format the header norm defines (`Created:` — an ISO date), identifiers

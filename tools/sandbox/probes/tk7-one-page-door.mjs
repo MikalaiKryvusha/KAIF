@@ -30,7 +30,7 @@ writeFileSync(join(root, DOC), '# Interview #901 — probe\n\n> **Created:** 202
   + '<!-- archaeology: n/a — probe -->\n\n- **A)** one\n- **B)** two\n\n**Answer:**\n');
 const run = (args) => spawnSync(process.execPath, [GEN, ...args], { cwd: root, env: quietEnv({ KAIF_VOICE_TOOL: '' }), encoding: 'utf8', timeout: 60000 });
 const door = (args) => run([DOC, ...args]);
-// the other page: a node child that answers HTTP at its address (any answer is a live page — the contour's liveness check)
+// the other page: a node child that answers HTTP at its address — its lock carries no token (a lock older than 2.7), so the port alone judges it
 const page = spawn(process.execPath, ['-e', "const s = require('http').createServer((q, r) => { r.writeHead(404); r.end(); });"
   + " s.listen(0, '127.0.0.1', () => console.log(s.address().port)); setTimeout(() => {}, 120000);"], { stdio: ['ignore', 'pipe', 'ignore'] });
 const port = await new Promise((r) => { page.stdout.once('data', (d) => r(Number(String(d).trim()))); });
@@ -69,6 +69,19 @@ const r6 = door(['--no-open', '--silent', '--timeout', '2']);
 const out6 = (r6.stdout || '') + (r6.stderr || '');
 say(/Page is up: http:\/\/127\.0\.0\.1:\d+\//.test(out6) && !/Already open/.test(out6),
   '(6) the own lock of a live pid whose address does not answer → the page rises (exit ' + r6.status + '), no «Already open»');
+// TK7e (judge TK7d, hunt 2 — REFUTED on TK7d): the crashed page's pid AND port both went to strangers — a live pid, an HTTP server on
+// the lock's port that is no page (it answers 404 to everything), a lock that carries a token (every lock since 2.7): the own lock raises
+// the page, no «Already open»; red on the TK7d build (it judged the port alone)
+const squatter = spawn(process.execPath, ['-e', "const s = require('http').createServer((q, r) => { r.writeHead(404); r.end(); });"
+  + " s.listen(0, '127.0.0.1', () => console.log(s.address().port)); setTimeout(() => {}, 120000);"], { stdio: ['ignore', 'pipe', 'ignore'] });
+const sqPort = await new Promise((r) => { squatter.stdout.once('data', (d) => r(Number(String(d).trim()))); });
+const OWN_LOCK = join(root, 'interviews', 'decisions', 'interview_901_probe.lock');
+writeFileSync(OWN_LOCK, JSON.stringify({ pid: stranger.pid, url: 'http://127.0.0.1:' + sqPort + '/', doc: DOC, closeToken: 'crashed-page-token' }) + '\n');
+const r7 = door(['--no-open', '--silent', '--timeout', '2']);
+const out7 = (r7.stdout || '') + (r7.stderr || '');
+say(/Page is up: http:\/\/127\.0\.0\.1:\d+\//.test(out7) && !/Already open/.test(out7),
+  '(7) the own lock whose pid and port both went to strangers (an HTTP 404 server on the port) → the page rises (exit ' + r7.status + '), no «Already open»');
+squatter.kill(); rmSync(OWN_LOCK, { force: true });
 stranger.kill();
 
 const r5 = run(['--queue', '--list', '--timeout', '5']);

@@ -53,9 +53,9 @@ const MUTANTS = [
   { name: 'M1 another live page does not refuse', file: 'review.mjs', find: "const other = await otherLivePage(root, batch ? '_queue' : basename(docPath));", to: 'const other = null;', red: ['TK7 #169: a live page', 'TK7b #169: a lock caught half-written', 'TK7d #169: a live page slow to answer'] },
   { name: 'M2 --timeout on the window legal', file: 'review.mjs', find: 'if (at < 0 ||', to: 'if (true ||', red: ['TK7 #169: --timeout'] },
   { name: 'M3 a notice read ends the queue page', file: 'review.mjs', find: 'if (batch && (restQ > 0 || restN > 0)) {', to: 'if (false) {', red: ['TK7 #163'] },
-  { name: 'M4 Latin reaches the engine', file: 'review.mjs', find: 'if (sp.letters && sp.translit) {', to: 'if (false) {', red: ['TK7 #165: the Russian engine', 'TK7b #165: the Russian engine gets no letter', 'TK7c #165'] },
+  { name: 'M4 Latin reaches the engine', file: 'review.mjs', find: 'if (sp.letters && sp.translit) {', to: 'if (false) {', red: ['TK7 #165: the Russian engine', 'TK7b #165: the Russian engine gets no letter', 'TK7c #165', 'TK7e #165'] }, // TK7e: the Roman numeral unfolds to Latin
   { name: 'M5 no lead silence', file: 'review.mjs', find: 'const CALL_LEAD_SILENCE_MS = 1000;', to: 'const CALL_LEAD_SILENCE_MS = 0;', red: ['TK7 #165: the call is ONE file', 'TK7 #165: a stereo voice'] },
-  { name: 'M6 liveness by pid only', file: 'review.mjs', find: 'if (await pageListens(lock)) return lock;', to: 'return lock;', red: ['TK7b #169: a live pid that does not answer'] },
+  { name: 'M6 liveness by pid only', file: 'review.mjs', find: 'if (await pageListens(lock)) return lock;', to: 'return lock;', red: ['TK7b #169: a live pid that does not answer', 'TK7e #169'] }, // TK7e: the strangers' live pid
   { name: 'M7 a half-written lock not read again', file: 'review.mjs', find: 'if (!lock) { await new Promise((r) => setTimeout(r, LOCK_REREAD_MS)); lock = readLock(f); }', to: '', red: ['TK7b #169: a lock caught half-written'] },
   { name: 'M8 another page\'s unreadable lock deleted', file: 'review.mjs', find: 'if (!lock || !lock.url) continue;', to: 'if (!lock || !lock.url) { if (!lock) rmSync(join(dir, f), { force: true }); continue; }', red: ['TK7b #169: a live pid that does not answer'] },
   { name: 'M9 --timeout refused at every door', file: 'review.mjs', find: 'if (at < 0 || !(Number(args[at + 1]) > 0) || NO_WINDOW_FLAGS.some(', to: "if (at < 0 || ['--no-open', '--no-serve', '--check'].some(", red: ['TK7b: --timeout is refused only where a page is shown'] },
@@ -63,18 +63,25 @@ const MUTANTS = [
   { name: 'M11 the last answer ignores an unread notice', file: 'review.mjs', find: 'if (rest > 0 || restN > 0) {', to: 'if (rest > 0) {', red: ['TK7b #163, mirror'] },
   { name: 'M12 a cut format chunk read anyway', file: 'review.mjs', find: 'if (size < 16 || p + 24 > buf.length) return null;', to: '', red: ['TK7b #165: a WAV cut'] },
   { name: 'M13 an empty data chunk is a voice', file: 'review.mjs', find: 'return rate && pcm.length >= 2 ? { pcm, rate } : null;', to: 'return rate ? { pcm, rate } : null;', red: ['TK7b #165: a WAV cut'] },
-  { name: 'M14 diacritics reach the engine', file: 'review.mjs', find: "const w = w0.normalize('NFKD')", to: "const w = w0, unused = w0.normalize('NFKD')", red: ['TK7b #165: the Russian engine gets no letter', 'TK7c #165'] },
+  { name: 'M14 diacritics reach the engine', file: 'review.mjs', find: "const w = w0.normalize('NFKD')", to: "const w = w0, unused = w0.normalize('NFKD')", red: ['TK7b #165: the Russian engine gets no letter', 'TK7c #165', 'TK7e #165'] }, // TK7e: raw Latin words of the numerals case
   { name: 'M15 the percent word does not agree', file: 'texts.mjs', find: "if (!written) return 'процентов';", to: "return 'процентов';", red: ['TK7b #165: the Russian engine gets no letter'] },
   { name: 'M16 spaced thousands read by groups', file: 'review.mjs', find: "if (typeof sp.number === 'function') s = s.replace(/(?<!", to: 'if (false) s = s.replace(/(?<!', red: ['TK7b #165: the Russian engine gets no letter'] },
   { name: 'M18 --list alone is a no-window door again', file: 'review.mjs', find: "const NO_WINDOW_FLAGS = ['--no-open', '--no-serve', '--check', '--call',", to: "const NO_WINDOW_FLAGS = ['--no-open', '--no-serve', '--check', '--list', '--call',", red: ['TK7 #169: --timeout'] },
   { name: 'M19 a plain space joins one group', file: 'review.mjs', find: '|(?: \\d{3}){2,})', to: '|(?: \\d{3})+)', red: ['TK7b #165: the Russian engine gets no letter'] },
-  { name: 'M17 the voice lock never holds', file: 'review.mjs', find: 'return l; // a live call holds the voice', to: 'return null;', red: ['TK7b: one voice at a time'] },
-  { name: 'M20 the own lock by pid only', file: 'review.mjs', find: 'return lock && !lock.stale && !(await pageListens(lock)) ? { ...lock, stale: true } : lock;', to: 'return lock;', red: ['TK7c #169: the own lock of a live pid'] },
+  { name: 'M17 the voice lock never holds', file: 'review.mjs', find: 'return l; // a live call holds the voice', to: 'return null;', red: ['TK7b: one voice at a time', 'TK7e: a fresh voice lock'] }, // TK7e: the readable lock 1 s ahead holds
+  { name: 'M20 the own lock by pid only', file: 'review.mjs', find: 'return lock && !lock.stale && !(await pageListens(lock)) ? { ...lock, stale: true } : lock;', to: 'return lock;', red: ['TK7c #169: the own lock of a live pid', 'TK7e #169'] }, // TK7e: the strangers on the own lock
   { name: 'M21 the own half-written lock not read again', file: 'review.mjs', find: 'if (existsSync(p) && readJsonOr(p, null) === null) await new Promise((r) => setTimeout(r, LOCK_REREAD_MS));', to: '', red: ['TK7c #169: the own lock caught half-written'] },
-  { name: 'M22 an unreadable voice lock is free', file: 'review.mjs', find: 'return age > -VOICE_LOCK_FUTURE_SLACK_MS && age < VOICE_LOCK_STALE_MS ? { pid: null, unreadable: true } : null;', to: 'return null;', red: ['TK7c: an unreadable voice lock'] },
-  { name: 'M23 no folding of ø ł ß æ', file: 'review.mjs', find: ".replace(LATIN_FOLD_RE, (c) => LATIN_FOLD[c])", to: '', red: ['TK7c #165'] },
+  { name: 'M22 an unreadable voice lock is free', file: 'review.mjs', find: 'return age > -VOICE_LOCK_FUTURE_SLACK_MS && age < VOICE_LOCK_STALE_MS ? { pid: null, unreadable: true } : null;', to: 'return null;', red: ['TK7c: an unreadable voice lock', 'TK7e: a fresh voice lock'] }, // TK7e: the fresh unreadable lock 30 ms ahead
+  { name: 'M23 no folding of ø ł ß æ', file: 'review.mjs', find: ".replace(LATIN_FOLD_RE, (c) => LATIN_FOLD[c])", to: '', red: ['TK7c #165', 'TK7e #165'] }, // TK7e: «ẞ» is folded by LATIN_FOLD
   { name: 'M24 comma and dot thousands by groups', file: 'review.mjs', find: "if (typeof sp.number === 'function') s = s.replace(/(?<![\\d.,])", to: 'if (false) s = s.replace(/(?<![\\d.,])', red: ['TK7c #165'] },
-  { name: 'M25 a live page must answer HTTP again (the TK7b /ping)', file: 'review.mjs', find: "sock.setTimeout(LIVENESS_TIMEOUT_MS, () => end(true));\n  sock.once('connect', () => end(true));", to: "sock.setTimeout(LIVENESS_TIMEOUT_MS, () => end(false));\n  sock.once('connect', () => sock.write('GET /ping HTTP/1.0\\r\\n\\r\\n'));\n  sock.once('data', () => end(true));", red: ['TK7d #169: a live page slow to answer'] },
+  { name: 'M25 a live page must answer HTTP again (the TK7b /ping)', file: 'review.mjs', find: "sock.setTimeout(LIVENESS_TIMEOUT_MS, () => end(true));\n  sock.once('error', () => end(false));", to: "sock.setTimeout(LIVENESS_TIMEOUT_MS, () => end(false));\n  sock.once('error', () => end(false));", red: ['TK7d #169: a live page slow to answer'] },
+  // TK7e (session 93, judge TK7d): M25's search line moved with the identity check (a silent connected port is still live — its timeout is
+  // the line now); the five below are red on exactly the TK7e cases
+  { name: 'M29 a connected port is a page again (no identity asked)', file: 'review.mjs', find: 'if (!lock.closeToken) { end(true); return; }', to: 'end(true); return;', red: ['TK7e #169'] },
+  { name: 'M30 a readable voice lock dated a day ahead holds', file: 'review.mjs', find: '!(lockAge > -VOICE_LOCK_FUTURE_SLACK_MS && lockAge < VOICE_LOCK_STALE_MS)', to: '!(lockAge < VOICE_LOCK_STALE_MS)', red: ['TK7e: a fresh voice lock'] },
+  { name: 'M31 no slack for the file clock (the EXP-0193 bug)', file: 'review.mjs', find: 'const VOICE_LOCK_FUTURE_SLACK_MS = 5000;', to: 'const VOICE_LOCK_FUTURE_SLACK_MS = 0;', red: ['TK7e: a fresh voice lock'] },
+  { name: 'M32 non-ASCII numerals reach the engine', file: 'review.mjs', find: "if (typeof sp.number === 'function') s = asciiNumerals(s);", to: '', red: ['TK7e #165'] },
+  { name: 'M33 the capital sharp s not folded to SS', file: 'review.mjs', find: "'SS' }; // TK7e", to: "'S' }; // TK7e", red: ['TK7e #165'] },
   { name: 'M26 every reader deletes a broken lock', file: 'review.mjs', find: 'if (removeBroken) rmSync(p, { force: true });', to: 'rmSync(p, { force: true });', red: ['TK7d #169: the window recovery'] },
   { name: 'M27 a future-dated voice lock holds', file: 'review.mjs', find: 'return age > -VOICE_LOCK_FUTURE_SLACK_MS && age < VOICE_LOCK_STALE_MS', to: 'return age < VOICE_LOCK_STALE_MS', red: ['TK7c: an unreadable voice lock'] },
   { name: 'M28 the Latin residue reaches the engine', file: 'review.mjs', find: ".replace(LATIN_LEFT_RE, '')", to: '', red: ['TK7c #165'] },
@@ -85,7 +92,8 @@ const redLines = (dir) => {
   const r = spawnSync(process.execPath, [join(dir, 'review.mjs'), '--selftest'], { cwd: process.cwd(), env: quietEnv({ KAIF_VOICE_TOOL: '' }),
     encoding: 'utf8', timeout: RUN_TIMEOUT_MS, maxBuffer: 1 << 26 });
   const out = (r.stdout || '') + (r.stderr || '');
-  return { died: !/selftest (green|RED)/i.test(out), red: out.split(/\r?\n/).filter((l) => /^\s*x /.test(l)).map((l) => l.trim()) };
+  return { died: !/selftest (green|RED)/i.test(out), red: out.split(/\r?\n/).filter((l) => /^\s*x /.test(l)).map((l) => l.trim()),
+    tail: out.split(/\r?\n/).filter((l) => l.trim()).slice(-8), status: r.status, signal: r.signal }; // session 93: a DIED run shows why
 };
 const copy = () => { const d = mkdtempSync(join(tmpdir(), 'kaif-tk7-')); cpSync(SRC, d, { recursive: true }); return d; };
 
@@ -108,7 +116,8 @@ for (const m of MUTANTS) {
   const r = redLines(d);
   say(!r.died && r.red.length === m.red.length && m.red.every((c) => r.red.some((l) => l.includes(c))), m.name + ': ' + (r.died ? 'DIED' : r.red.length + ' red line(s)') + ' (expected exactly «' + m.red.join('» · «') + '»)');
   for (const l of r.red) console.log('    ' + l.slice(0, 200));
+  if (r.died) for (const l of [`status ${r.status} signal ${r.signal}`, ...r.tail]) console.log('    | ' + l.slice(0, 240));
   rmSync(d, { recursive: true, force: true });
 }
-console.log(bad ? `✖ ${bad} BAD` : '✅ each TK7, TK7b, TK7c and TK7d change is red on its own selftest case only; the control copy is silent; the Russian call has no «вычитки»');
+console.log(bad ? `✖ ${bad} BAD` : '✅ each TK7, TK7b, TK7c, TK7d and TK7e change is red on its own selftest case only; the control copy is silent; the Russian call has no «вычитки»');
 process.exit(bad ? 1 : 0);

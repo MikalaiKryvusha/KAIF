@@ -597,14 +597,17 @@ refuses a copy that drifted from the core's block.
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
-agent systems with lifecycle hooks. Four scripts speaking the Claude Code hook contract —
+agent systems with lifecycle hooks. Five scripts speaking the Claude Code hook contract —
 `session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
 (refresh-marker age over 60 minutes → refresh order; silent while fresh),
 `stop-status-guard.mjs` (a dirty worktree or a commit within 3 h while `STATUS.md` went stale → one soft block per
 session, naming what it saw), `prompt-resume-word.mjs` (2.7, epic RS: the prompt's FIRST word is `resume` or its Russian shorthand — an imperative
 before it counts, the Russian noun as a heading with a colon does not (2.8) → the order to run `/resume` in full before the work;
 a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifier of "The owner's word mid-turn"); silent on every other message — Claude Code only,
-other systems' prompt field not verified) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
+other systems' prompt field not verified), `clock-now.mjs` (2.10, epic PT; origin tickets #170 · #172: one context line with the
+machine's local moment on every prompt; on `PreToolUse` of Write · Edit · MultiEdit a time placeholder — the word NOW, NOW-ISO, DATE
+or TIME between white square brackets — is filled by the clock through `updatedInput`, with no permission decision; silent on a write
+without one — Claude Code only) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
 suppression window exists, on the STATUS guard; injections are orders, never document bodies. RETIRED in 2.9 (origin ticket #144, the
 KAIF owner's verdict on the field): `pretool-owner-word.mjs` (2.8, `PreToolUse` — refused the next call after a mid-turn word) and the
 pre-release `stop-owner-answer.mjs` (`Stop` — demanded a last "next step" arrow line); the update retires an untouched copy (§10.5

@@ -15,6 +15,7 @@ lacking them.
 | `prompt-refresh-timer.mjs` | `UserPromptSubmit` | marker age > 60 min (`--minutes N` to override) | on EVERY prompt until the marker is re-stamped — the marker is the only off switch | injects the refresh order; silent while the marker is fresh |
 | `stop-status-guard.mjs` | `Stop` | dirty worktree OR a commit within 3 h, AND STATUS.md untouched > 3 h (2.9: the reason names which) | **once per session** — the only suppression window in the module | soft block: update STATUS.md or say why nothing changed |
 | `prompt-resume-word.mjs` (2.7, epic RS) | `UserPromptSubmit` | the prompt's FIRST word is `resume` / `/resume` / the Russian shorthand of it — the owner's leading word (`AGENT_GUIDE.md` → "A leading skill word is an order"); the same word mid-sentence is prose and never fires; an imperative before it (`run resume`, its Russian mirror) is still the order, the Russian noun as a heading with a colon is prose (2.8) — any other first word from the family fires, including a file named `resume.log`: one extra entry ritual is the named price. **2.8, epic OW:** a leading `stop` (or its Russian word) → the order to stop in this turn — an amplifier of "The owner's word mid-turn": a hook firing on a message typed mid-turn is observed on one system, promised by none | on every message that opens with the word — each one is a separate order | injects the ORDER to run `/resume` in full before the rest of the message, or the ORDER to stop; silent on every other prompt and on an event without a `prompt` field |
+| `clock-now.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PreToolUse`, matcher `Write\|Edit\|MultiEdit` | prompt: none — one short line is the point; write: the tool input holds a time placeholder (below) | on every prompt; on every write that holds a placeholder | prompt: one context line with the machine's local moment; write: `updatedInput` with the placeholders filled by the clock — no permission decision, never a stop; silent on a write without a placeholder |
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
 predicate, or names why it needs none, and the table above says which; a suppression window
@@ -126,6 +127,16 @@ it; the Codex, Cursor, Copilot and Antigravity samples do not wire it — whethe
 event carries the text was not read in the vendor documentation: **prompt field not verified**.
 Wire it yourself only after reading that contract.
 
+**The clock hook — `clock-now.mjs` (2.10, epic PT) — is wired for Claude Code only.** A model has no clock, so a moment it writes
+from memory drifts with the amount of work done. The agent writes a PLACEHOLDER where a moment goes — the word `NOW`, `NOW-ISO`,
+`DATE` or `TIME` between white square brackets (U+27E6 and U+27E7) — and the hook fills it in the tool input before the write runs:
+`NOW` → `2026-10-23 14:41 +03:00`, `NOW-ISO` → `2026-10-23T14:41:10+03:00`, `DATE` → `2026-10-23`, `TIME` → `14:41`, the machine's
+local time. Only `content` (Write), `new_string` (Edit) and `edits[].new_string` (MultiEdit) are filled — `old_string` must match
+the file and is never touched; a backslash before the opening bracket keeps a placeholder literal (a text ABOUT them). The answer
+carries `updatedInput` and no `permissionDecision`: "allow" would skip the owner's permission prompt. Without the hook the canon
+rule stands as written: take the moment with a `date` probe in the same call. The other systems' samples do not wire it — their
+input-rewrite contract was not read.
+
 Reading the table: a ❌ is a statement about that system's published contract, not about the
 module. Where a system carries one hook out of three, wire that one — a partial mechanical
 contour plus the markdown ritual is strictly better than the ritual alone, and the ritual is
@@ -144,7 +155,7 @@ including `SessionStart`, `PreCompact`/`PostCompact` and `UserPromptSubmit`; pro
 `<project-root>/.muse/hooks.json`, and project/user hooks must be explicitly trusted
 (`muse hooks trust <key>`) before they run. Still no sample here, but the reason has changed:
 the contract is now published, yet it documents no output field that injects context into the
-agent — and injection is what all three hooks of this module do. The moment the vendor documents
+agent — and injection is what the hooks of this module do. The moment the vendor documents
 an injection shape, Muse Code becomes a sample candidate; until then the markdown ritual is the
 honest answer.
 

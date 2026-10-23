@@ -39,8 +39,8 @@
 import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync, utimesSync } from 'node:fs';
 import { tmpdir, platform } from 'node:os';
 import { createServer, request as httpRequest } from 'node:http';
-import { connect as netConnect } from 'node:net';
-import { randomBytes } from 'node:crypto';
+import { connect as netConnect, createServer as netCreateServer } from 'node:net';
+import { randomBytes, createHash } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import { join, resolve, basename, relative, extname } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -174,7 +174,23 @@ export function spokenSession(name, cfg) {
 // the pack's `spoken` (number · letters · translit · percent); a pack without it (English) leaves the phrase as written. Pure — the selftest
 // judges it; the console and the banner keep the phrase as written.
 const LATIN_FOLD = { 'ø': 'o', 'Ø': 'O', 'ł': 'l', 'Ł': 'L', 'ß': 'ss', 'æ': 'ae', 'Æ': 'Ae', 'œ': 'oe', 'Œ': 'Oe', 'đ': 'd', 'Đ': 'D',
-  'þ': 'th', 'Þ': 'Th', 'ı': 'i', 'ħ': 'h', 'Ħ': 'H', 'ŧ': 't', 'Ŧ': 'T', 'ð': 'd', 'Ð': 'D', 'ƀ': 'b', 'ƚ': 'l', 'ŋ': 'ng', 'Ŋ': 'Ng' };
+  'þ': 'th', 'Þ': 'Th', 'ı': 'i', 'ħ': 'h', 'Ħ': 'H', 'ŧ': 't', 'Ŧ': 'T', 'ð': 'd', 'Ð': 'D', 'ƀ': 'b', 'ƚ': 'l', 'ŋ': 'ng', 'Ŋ': 'Ng',
+  'ẞ': 'SS' }; // TK7e (judge TK7d, hunt 6): the capital sharp s was dropped, not folded
+// TK7e (judge TK7d, hunt 6): a number written with non-ASCII numerals («² ₂ ½ ３ ① ٣ १२») reached the engine as written. Before the number
+// rules every numeral becomes ASCII: NFKD unfolds the compatibility forms (superscripts, fractions, fullwidth, circled), a decimal digit of
+// another script takes its value from its block of ten (the digits of a script are contiguous; a block of 50 is five tens); what is left
+// numeric and not a digit (the fraction slash, a vulgar fraction NFKD keeps) becomes a space.
+// [TESTED: 2026-10-23 15:33 · selftest «TK7e #165» (nine numeral forms, no \p{N} left; the capital sharp s) + mutants M32 · M33 · M4 · M14 ·
+//  M23 red on their cases; report testcases/reports/2026-10-23_tk7f-judge-tk7d-caveats.md]
+function asciiNumerals(s) {
+  return s.replace(/\p{N}/gu, (c) => {
+    if (/[0-9]/u.test(c)) return c;
+    const k = c.normalize('NFKD');
+    if (k !== c && /^[\x20-\x7e⁄]+$/u.test(k)) return k.replace(/⁄/gu, ' '); // a Roman numeral unfolds to Latin letters, said as such
+    if (/\p{Nd}/u.test(c)) { let base = c.codePointAt(0); while (/\p{Nd}/u.test(String.fromCodePoint(base - 1))) base--; return String((c.codePointAt(0) - base) % 10); }
+    return ' ';
+  });
+}
 // TK7d (judge TK7c, hunt 6): what is still Latin and not ASCII after NFKD and LATIN_FOLD is dropped — the engine never gets a Latin letter
 // it would read in another language; ligatures («ﬁ» · «ĳ») are split by NFKD itself
 const LATIN_LEFT_RE = /[^\x00-\x7f]/gu;
@@ -182,6 +198,7 @@ const LATIN_FOLD_RE = new RegExp('[' + Object.keys(LATIN_FOLD).join('') + ']', '
 export function speakable(text, cfg) {
   const sp = T(cfg).spoken || {};
   let s = String(text).replace(/[#\u2116]/gu, ' ');
+  if (typeof sp.number === 'function') s = asciiNumerals(s);
   // TK7\u0431 (judge TK7, hunt 5): thousands written with spaces (\u00ab1 000 000\u00bb) are ONE number; the word after a number agrees with it when the
   // pack gives `percent` as a function of the number as written (the Russian pack: one, two\u2013four and five-plus take three forms)
   // a no-break space joins one group, a plain space \u2014 two or more (\u00ab1 000 000\u00bb): \u00ab#165 100%\u00bb stays two numbers (judge TK7b, hunt 5)
@@ -331,7 +348,12 @@ export function voiceBusy(root, now = Date.now()) {
   // TK7d (judge TK7c, hunt 3): a file time in the future is no fresh lock — it would hold the voice until that moment, with no ceiling;
   // VOICE_LOCK_FUTURE_SLACK_MS forgives the file system stamping a just-written file a few ms after Date.now() (a fresh lock read as free)
   if (!l) { let age = Infinity; try { age = now - lstatSync(p).mtimeMs; } catch { /* no file — free */ } return age > -VOICE_LOCK_FUTURE_SLACK_MS && age < VOICE_LOCK_STALE_MS ? { pid: null, unreadable: true } : null; }
-  if (!l.pid || !(now - Date.parse(l.at) < VOICE_LOCK_STALE_MS)) return null;
+  // TK7e (judge TK7d, hunt 5): a READABLE lock dated beyond the slack in the future holds no one either — its `at` a day ahead held the
+  // voice for a day while its caller lived
+  // [TESTED: 2026-10-23 15:33 · selftest «TK7e: a fresh voice lock …» (deterministic — the clock is `now`) + mutants M30 · M31 · M17 · M22 red
+  //  on their cases; report testcases/reports/2026-10-23_tk7f-judge-tk7d-caveats.md]
+  const lockAge = now - Date.parse(l.at);
+  if (!l.pid || !(lockAge > -VOICE_LOCK_FUTURE_SLACK_MS && lockAge < VOICE_LOCK_STALE_MS)) return null;
   try { process.kill(l.pid, 0); } catch (e) { if (e.code !== 'EPERM') return null; }
   return l; // a live call holds the voice
 }
@@ -1321,7 +1343,8 @@ function checkLock(root, key, { removeBroken = false } = {}) {
 // TK7b (judge TK7, hunt 2): ALIVE means the page ANSWERS at the lock's address (since TK7d: its port accepts a connection — pageListens) — a live pid alone is no proof (Windows reuses pids: a kept
 // lock of a crashed page whose pid went to a stranger would block every page of the project, and `--close --force` would kill the stranger);
 // a lock of ANOTHER page is never deleted here — an unreadable one is a page rewriting its pulse, read again after LOCK_REREAD_MS (still
-// unreadable — a broken file, it blocks no one and stays). A known gap: two pages raised in the same instant may both rise — the lock is
+// unreadable — a broken file, it blocks no page and stays; the waiter (`--wait`) keeps waiting on it until the door of its own document
+// replaces it — a broken `_queue.lock` keeps every waiter of the queue waiting, a named gap — judge TK7d, hunt 3). A known gap: two pages raised in the same instant may both rise — the lock is
 // written when the page listens (I48 names it).
 // [TESTED: 2026-10-23 10:09 · selftest «TK7b #169» ×2 + mutants M6–M8 red on their cases; the real CLI door (4) — a live pid not answering
 //  does not block, red on the TK7 build; report testcases/reports/2026-10-23_tk7b-judge-findings.md]
@@ -1347,13 +1370,30 @@ export async function otherLivePage(root, key) {
 // a second page over a live one costs the owner's draft, a refusal costs one retry.
 // [TESTED: 2026-10-23 12:40 · selftest «TK7d #169» ×2 + mutants M25–M26 red on their cases; report
 //  testcases/reports/2026-10-23_tk7d-judge-tk7c-caveats.md]
+// TK7e (judge TK7d, hunt 2 — REFUTED: the reused-pid class moved to the port): a crashed page's pid AND port may both go to strangers —
+// any listener on that port accepted the connect, and the door said «Already open» with no page behind it. So a connected port is asked
+// WHO it is: `GET /whoami` answers the hash of the lock's `closeToken` (pageIdOf — the token itself never leaves the lock). The right hash
+// → live; a reset, a close, any other answer (a 404, another id) → a stranger's port, no page. No answer within LIVENESS_TIMEOUT_MS →
+// still live: a page whose loop is busy answers late, and a second page over a live one costs the owner's draft. The gap this leaves,
+// named: a stranger that accepts the connect and never answers reads as a live page. A lock without `closeToken` (written before 2.7)
+// is judged by the port alone.
+// [TESTED: 2026-10-23 15:33 · selftest «TK7e #169» (a resetting listener and an HTTP 404 server on the lock's port, a live pid — the own lock
+//  raises the page, another's refuses nothing) + mutants M29 · M6 · M20 red on their cases; report testcases/reports/2026-10-23_tk7f-judge-tk7d-caveats.md]
+export const pageIdOf = (token) => createHash('sha256').update('kaif-contour:' + String(token)).digest('hex').slice(0, 32);
 const pageListens = (lock) => new Promise((res) => {
   let u; try { u = new URL(String(lock && lock.url)); } catch { res(false); return; }
   const sock = netConnect({ host: u.hostname, port: Number(u.port) || 80 });
-  const end = (v) => { sock.destroy(); res(v); };
+  let done = false, data = '';
+  const end = (v) => { if (done) return; done = true; sock.destroy(); res(v); };
   sock.setTimeout(LIVENESS_TIMEOUT_MS, () => end(true));
-  sock.once('connect', () => end(true));
   sock.once('error', () => end(false));
+  sock.once('connect', () => {
+    if (!lock.closeToken) { end(true); return; }
+    sock.on('data', (b) => { data += b.toString('latin1'); if (data.length > 4096) end(false); });
+    sock.once('end', () => end(new RegExp('"id":"' + pageIdOf(lock.closeToken) + '"').test(data)));
+    sock.once('close', () => end(new RegExp('"id":"' + pageIdOf(lock.closeToken) + '"').test(data)));
+    sock.write('GET /whoami HTTP/1.0\r\nHost: ' + u.host + '\r\n\r\n');
+  });
 });
 // TK7c (judge TK7b, hunt 2): the OWN key by the same rule as another page's — a lock caught half-written is read again before checkLock may
 // remove it (a live page rewriting its pulse would get a second window), and a lock whose pid lives but whose address answers nothing is a
@@ -1535,7 +1575,9 @@ export async function serveContour(root, { docPath = null, batch = false, notice
     const pulseRev = (d) => (d && (batch ? pendingDocs(root).some((x) => x.doc === d) : d === relDoc(root, docPath)) ? docRev(root, d) : null);
     const server = createServer((req, res) => {
       const ok = (obj) => { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(obj)); };
-      if (req.method === 'GET' && req.url === '/') {
+      if (req.method === 'GET' && req.url === '/whoami') {
+        ok({ kaif: 'contour', id: pageIdOf(closeToken) }); // TK7e: the liveness check asks a connected port who it is (pageListens)
+      } else if (req.method === 'GET' && req.url === '/') {
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(build().html); // I1: always a fresh build from the source
       } else if (req.method === 'GET' && batch && req.url.startsWith('/d/')) {
@@ -1704,15 +1746,17 @@ export async function serveContour(root, { docPath = null, batch = false, notice
     }, SILENCE_TICK_MS);
     const finish = (code, keepLock = false) => {
       clearInterval(watch);
+      process.removeListener('SIGINT', onSigint); // TK7e: a page that ended leaves no handler behind (the selftest raised 11 and Node warned)
       if (!keepLock) rmSync(lockPath(root, lockKey), { force: true });
       server.close(() => resolveP({ outcome, exitCode: code }));
       setTimeout(() => resolveP({ outcome, exitCode: code }), 1000).unref();
     };
-    process.once('SIGINT', () => { // I25: the third outcome — interrupted by the human
+    const onSigint = () => { // I25: the third outcome — interrupted by the human
       outcome = 'interrupted by the human';
       log('Outcome: interrupted by the human (SIGINT).');
       finish(EXIT_INTERRUPTED);
-    });
+    };
+    process.once('SIGINT', onSigint);
     // I30: a free port, never a fixed one — and the PREVIOUS run's port FIRST when its process is gone (I29 mechanized,
     // origin issue #64): the port is part of the web origin, so coming up on the same port restores the draft the owner
     // typed in the window that outlived the process; taken by something else → a fresh port, and the loss is said by name.
@@ -1727,7 +1771,7 @@ export async function serveContour(root, { docPath = null, batch = false, notice
     server.once('listening', () => {
       const url = 'http://127.0.0.1:' + server.address().port + '/';
       if (stalePort && server.address().port === stalePort)
-        log('Port ' + stalePort + ' reused from the previous run (its process ' + held.pid + ' is gone) — same web origin, so a draft written in that window is restored on load (I29/I12).');
+        log('Port ' + stalePort + ' reused from the previous run (no page of pid ' + held.pid + ' answers there) — same web origin, so a draft written in that window is restored on load (I29/I12).');
       lockUrl = url; writeLock(); // LP: the lock carries doc · title · input state (read by `--close`)
       log('Page is up: ' + url + (batch ? ' (queue)' : ' (' + first.title + ')'));
       if (open) { // showing is the agent's action (I15) — and the claim is never wider than the observation (#63):
@@ -2664,10 +2708,14 @@ export async function selftest(log = console.log) {
   const OLK = lockPath(root, 'interview_other.md');
   // TK7b: a live page ANSWERS at its address — the other page is a listening server here (it was a live pid on a dead port, which a
   // reused pid also is; that case is now (7c) below and must NOT block)
-  const otherPage = createServer((q, s) => { s.writeHead(404); s.end(); });
+  // TK7e: a live page says who it is — `/whoami` answers the hash of its lock's token (pageListens); everything else 404 as before
+  const otherPage = createServer((q, s) => {
+    if (q.url === '/whoami') { s.writeHead(200, { 'Content-Type': 'application/json' }); s.end(JSON.stringify({ kaif: 'contour', id: pageIdOf('tok-other') })); return; }
+    s.writeHead(404); s.end();
+  });
   await new Promise((r) => otherPage.listen(0, '127.0.0.1', r));
   const otherUrl = 'http://127.0.0.1:' + otherPage.address().port + '/';
-  writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: otherUrl, doc: 'interviews/interview_other.md' }) + '\n');
+  writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: otherUrl, doc: 'interviews/interview_other.md', closeToken: 'tok-other' }) + '\n');
   const slog7 = [];
   const e7 = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slog7.push(String(l)) }), sl(3000).then(() => null)]);
   ok(e7 && e7.exitCode === EXIT_PREFLIGHT && e7.outcome === 'other-open' && slog7.join('\n').includes('Another page is open: ' + otherUrl + ' (interviews/interview_other.md')
@@ -2701,7 +2749,7 @@ export async function selftest(log = console.log) {
   rmSync(BRK, { force: true });
   // (7d) TK7b: a lock caught half-written is read again — a live page rewriting its pulse still refuses
   writeFileSync(OLK, '{"pid": ');
-  setTimeout(() => writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: otherUrl, doc: 'interviews/interview_other.md' }) + '\n'), 50);
+  setTimeout(() => writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: otherUrl, doc: 'interviews/interview_other.md', closeToken: 'tok-other' }) + '\n'), 50);
   const slogD = [];
   const eD = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogD.push(String(l)) }), sl(3000).then(() => null)]);
   ok(eD && eD.exitCode === EXIT_PREFLIGHT && /Another page is open/.test(slogD.join('\n')),
@@ -2723,7 +2771,7 @@ export async function selftest(log = console.log) {
     'TK7c #169: the own lock of a live pid that does not answer at its address (a reused pid) is no page — the page rises, no «Already open» (I29, I48)');
   // (7f) TK7c: the OWN lock caught half-written is read again — the live page it belongs to still says «Already open», no second window
   writeFileSync(OWN, '{"pid": ');
-  setTimeout(() => writeFileSync(OWN, JSON.stringify({ pid: process.pid, url: otherUrl, doc: MD }) + '\n'), 50);
+  setTimeout(() => writeFileSync(OWN, JSON.stringify({ pid: process.pid, url: otherUrl, doc: MD, closeToken: 'tok-other' }) + '\n'), 50);
   const slogF = [];
   const eF = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogF.push(String(l)) }), sl(3000).then(() => null)]);
   ok(eF && eF.outcome === 'already-open' && /Already open by this contour: /.test(slogF.join('\n')),
@@ -2733,17 +2781,48 @@ export async function selftest(log = console.log) {
   const slowPage = createServer(() => { /* accepts, never answers */ });
   await new Promise((r) => slowPage.listen(0, '127.0.0.1', r));
   const slowUrl = 'http://127.0.0.1:' + slowPage.address().port + '/';
-  writeFileSync(OWN, JSON.stringify({ pid: process.pid, url: slowUrl, doc: MD }) + '\n');
+  writeFileSync(OWN, JSON.stringify({ pid: process.pid, url: slowUrl, doc: MD, closeToken: 'tok-slow' }) + '\n');
   const slogG = [];
   const eG = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogG.push(String(l)) }), sl(4000).then(() => null)]);
   rmSync(OWN, { force: true });
-  writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: slowUrl, doc: 'interviews/interview_other.md' }) + '\n');
+  writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: slowUrl, doc: 'interviews/interview_other.md', closeToken: 'tok-slow' }) + '\n');
   const slogG2 = [];
   const eG2 = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogG2.push(String(l)) }), sl(4000).then(() => null)]);
   rmSync(OLK, { force: true });
   slowPage.closeAllConnections(); await new Promise((r) => slowPage.close(r));
   ok(eG && eG.outcome === 'already-open' && eG2 && eG2.exitCode === EXIT_PREFLIGHT && !/Page is up/.test(slogG.join('\n') + slogG2.join('\n')),
     'TK7d #169: a live page slow to answer is live — its port accepts: own lock «Already open», another document\'s refuses, no second page (I29, I48)');
+  // (7i) TK7e (judge TK7d, hunt 2 — REFUTED): a crashed page's pid AND port went to strangers — a live pid, a listener on the lock's port
+  // that is no page (one resets the connection, one is an HTTP server answering 404): the own lock raises the page (no «Already open»),
+  // another document's lock refuses nothing
+  const strangers = [createServer((q, s) => { s.writeHead(404); s.end(); }), netCreateServer((c) => c.destroy())];
+  let strangerOk = true; const strangerLog = [];
+  for (const st of strangers) {
+    await new Promise((r) => st.listen(0, '127.0.0.1', r));
+    const sUrl = 'http://127.0.0.1:' + st.address().port + '/';
+    writeFileSync(OWN, JSON.stringify({ pid: process.pid, url: sUrl, doc: MD, closeToken: 'tok-crashed' }) + '\n');
+    const slogI = [];
+    const servedI = serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogI.push(String(l)) });
+    let urlI = null;
+    for (let i = 0; i < 100 && !urlI; i++) { urlI = (slogI.join('\n').match(/Page is up: (http:\/\/127\.0\.0\.1:\d+\/)/) || [])[1] || null; if (!urlI) await sl(50); }
+    if (urlI) await closeByToken(root, basename(MD), urlI);
+    await Promise.race([servedI, sl(3000)]);
+    rmSync(OWN, { force: true });
+    writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: sUrl, doc: 'interviews/interview_other.md', closeToken: 'tok-crashed' }) + '\n');
+    const slogI2 = [];
+    const servedI2 = serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogI2.push(String(l)) });
+    let urlI2 = null;
+    for (let i = 0; i < 100 && !urlI2; i++) { urlI2 = (slogI2.join('\n').match(/Page is up: (http:\/\/127\.0\.0\.1:\d+\/)/) || [])[1] || null; if (!urlI2) await sl(50); }
+    if (urlI2) await closeByToken(root, basename(MD), urlI2);
+    await Promise.race([servedI2, sl(3000)]);
+    rmSync(OLK, { force: true });
+    if (st.closeAllConnections) st.closeAllConnections();
+    await new Promise((r) => st.close(r));
+    const one = !!urlI && !/Already open/.test(slogI.join('\n')) && !!urlI2 && !/Another page is open/.test(slogI2.join('\n'));
+    strangerOk = strangerOk && one; strangerLog.push(one ? 'ok' : (slogI.concat(slogI2).join(' | ')).slice(0, 300));
+  }
+  ok(strangerOk, 'TK7e #169: a crashed page\'s pid and port taken by strangers (a resetting listener, an HTTP 404 server) — the own lock raises the page, '
+    + 'another document\'s refuses nothing; a port is a page only when it answers its lock\'s id (I29, I48)', strangerLog.join(' · '));
   // (7h) TK7d (judge TK7c, hunt 4): the window recovery reads every lock and deletes none — a half-written lock of another page stays
   mkdirSync(profileDir(root), { recursive: true });
   writeFileSync(BRK, '{"pid": 12');
@@ -2910,6 +2989,9 @@ export async function selftest(log = console.log) {
     // TK7c (judge TK7b, hunt 7): a lock that does not read — taken by `wx`, its body not yet written — holds the voice while fresh and is
     // not deleted; the same file older than the stale window is taken over
     writeFileSync(VL, '');
+    // TK7e (judge TK7d, hunt 5): the file time is set a second in the PAST — the case judged a race with the file system clock before (red
+    // 1 run in 3 under the slack-0 mutant); the slack itself is guarded by the deterministic TK7e case below
+    const past = new Date(Date.now() - 1000); utimesSync(VL, past, past);
     let got3 = null; whenVoiceFree(root, (rel) => { got3 = rel; }, { tick: 20 });
     await sl(100); const held3 = got3 === null && existsSync(VL);
     const old = new Date(Date.now() - 2 * VOICE_LOCK_STALE_MS); utimesSync(VL, old, old);
@@ -2920,12 +3002,29 @@ export async function selftest(log = console.log) {
     const futureFree = voiceBusy(root) === null; rmSync(VL, { force: true });
     ok(held3 && took3 && !existsSync(VL) && futureFree,
       'TK7c: an unreadable voice lock holds the voice while fresh and is not deleted; a stale one is taken over, a future-dated one holds no one (I48)');
+    // TK7e (judge TK7d, hunt 5): DETERMINISTIC — the clock is the `now` argument, not a race with the file system: a fresh unreadable lock
+    // the file system stamped 30 ms after `now` holds the voice (the EXP-0193 bug: with no slack it read as free); a READABLE lock of a live
+    // caller dated a day ahead holds no one, one dated 1 s ahead (inside the slack) still holds
+    writeFileSync(VL, ''); const vlTime = lstatSync(VL).mtimeMs;
+    const freshHeld = voiceBusy(root, vlTime - 30) !== null; rmSync(VL, { force: true });
+    writeFileSync(VL, JSON.stringify({ pid: process.pid, at: new Date(Date.now() + 24 * 3600 * 1000).toISOString() }));
+    const dayAheadFree = voiceBusy(root) === null;
+    writeFileSync(VL, JSON.stringify({ pid: process.pid, at: new Date(Date.now() + 1000).toISOString() }));
+    const secondAheadHeld = voiceBusy(root) !== null; rmSync(VL, { force: true });
+    ok(freshHeld && dayAheadFree && secondAheadHeld,
+      'TK7e: a fresh voice lock stamped 30 ms past the clock holds the voice; a readable lock a day ahead holds no one, 1 s ahead still holds (I48)');
     // TK7c (judge TK7b, hunt 5): letters NFD keeps whole, thousands grouped by commas or dots
     const said3 = speakable('Søren, Łódź, Straße, Ærø, Ħal ŧeð ƀar ﬁle ĳs ɛvent: 1,000,000 and 1.000.000; version 2.10, 1,5', ru);
     ok(!/\p{Script=Latin}/u.test(said3) && !/\d/u.test(said3) && said3.split(sp.number(1000000)).length === 3
       && speakable('Straße Søren Ħal', ru) === speakable('Strasse Soren Hal', ru) // folded, not dropped (TK7d: the residue is dropped)
       && speakable('café Zürich Łódź', ru) === speakable('cafe Zurich Lodz', ru),  // decomposed, not dropped
       'TK7c #165: «ø ł ß æ» reach the Russian engine folded, «1,000,000» and «1.000.000» are one million each');
+    // TK7e (judge TK7d, hunt 6): numerals outside ASCII become numbers said as words; the capital sharp s is folded, not dropped. The check is
+    // \p{N} — the TK7c case looked only for ASCII digits and could not see them
+    const said4 = speakable('x² H₂O ½ １２３ ① ٣ १२ \u{1D7D3} Ⅻ', ru);
+    ok(!/\p{N}/u.test(said4) && !/\p{Script=Latin}/u.test(said4) && said4.includes(sp.number(123)) && said4.includes(sp.number(12))
+      && speakable('GROẞ', ru) === speakable('GROSS', ru),
+      'TK7e #165: «² ₂ ½ １２３ ① ٣ १२ 𝟓 Ⅻ» reach the Russian engine as number words, no digit of any script left; «ẞ» folds to «SS» (I48)');
   }
 
   rmSync(root, { recursive: true, force: true });

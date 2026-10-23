@@ -890,9 +890,9 @@ of a MOMENT carries both, in the owner's local time:
 - **Two moments, told apart:** *decided* — when the owner's word was said; *recorded* — when it was
   written down or committed. They differ, and the difference is often the interesting part.
 - **The moment is PROBED, never felt:** `date '+%Y-%m-%d %H:%M %z'` (`+0300` → write `+03:00`; PowerShell: `Get-Date -Format 'yyyy-MM-dd HH:mm zzz'`) in the SAME
-  tool call as the write — a session's sense of time comes from the volume of work, not from the clock (origin issue #96: stamps 1–5
-  minutes ahead; "missed 12:00" said at 11:50); a decision about a named hour reads the probe too. Not captured → an honest
-  `≈ 2026-08-07 10:05 +03:00` — an invented number is worse than a missing one (the three-doors rule in `PHILOSOPHY.md`).
+  tool call as the write — a session's sense of time comes from the volume of work, not from the clock (origin issue #96: stamps 1–5 minutes ahead; "missed 12:00" said at 11:50); a decision about a named hour reads the probe too.
+  Where the clock hook is wired (`.kaif/hooks/clock-now.mjs`, 2.10), write the NOW placeholder — the word NOW in white square brackets — and the machine's clock fills it on the write; elsewhere, the probe.
+  Not captured → an honest `≈ 2026-08-07 10:05 +03:00` — an invented number is worse than a missing one (the three-doors rule in `PHILOSOPHY.md`).
 - **What is a stamp:** decisions, closures of tasks/phases/bugs, milestones in a document's status,
   receipts the machinery writes. **What is NOT** (a date is enough, and demanding time there is
   noise): schema fields whose format the header norm defines (`Created:` — an ISO date), identifiers
@@ -3330,14 +3330,17 @@ refuses a copy that drifted from the core's block.
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
-agent systems with lifecycle hooks. Four scripts speaking the Claude Code hook contract —
+agent systems with lifecycle hooks. Five scripts speaking the Claude Code hook contract —
 `session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
 (refresh-marker age over 60 minutes → refresh order; silent while fresh),
 `stop-status-guard.mjs` (a dirty worktree or a commit within 3 h while `STATUS.md` went stale → one soft block per
 session, naming what it saw), `prompt-resume-word.mjs` (2.7, epic RS: the prompt's FIRST word is `resume` or its Russian shorthand — an imperative
 before it counts, the Russian noun as a heading with a colon does not (2.8) → the order to run `/resume` in full before the work;
 a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifier of "The owner's word mid-turn"); silent on every other message — Claude Code only,
-other systems' prompt field not verified) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
+other systems' prompt field not verified), `clock-now.mjs` (2.10, epic PT; origin tickets #170 · #172: one context line with the
+machine's local moment on every prompt; on `PreToolUse` of Write · Edit · MultiEdit a time placeholder — the word NOW, NOW-ISO, DATE
+or TIME between white square brackets — is filled by the clock through `updatedInput`, with no permission decision; silent on a write
+without one — Claude Code only) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
 suppression window exists, on the STATUS guard; injections are orders, never document bodies. RETIRED in 2.9 (origin ticket #144, the
 KAIF owner's verdict on the field): `pretool-owner-word.mjs` (2.8, `PreToolUse` — refused the next call after a mid-turn word) and the
 pre-release `stop-owner-answer.mjs` (`Stop` — demanded a last "next step" arrow line); the update retires an untouched copy (§10.5
@@ -7629,9 +7632,10 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   two windows and two voices at once, a page left dead by the agent's edits, servers launched with a 60-second timer, "the same
   sores from project to project"; two field deployments carried the same local fix.) A LIVE lock of another document refuses a new
   page — exit 3, `Another page is open: <url> (<doc>, pid N) … close it first`, no window, no call; a lock whose process is gone
-  does not block, and a page is live only when its lock's port accepts a connection — another document's and its own (a reused pid
-  is no page: no refusal, no "Already open"; a page slow to answer is still live); an unreadable lock is read again, another page's
-  never deleted. The waiter, `--close` and the window recovery still judge a lock by its pid (a known gap). Two pages raised in the same instant may both rise — the lock is written when the page listens
+  does not block, and a page is live only when its lock's port accepts a connection AND answers `/whoami` with its lock's id — another
+  document's and its own (a reused pid, or a pid and a port both gone to strangers, is no page: no refusal, no "Already open"; a page slow
+  to answer is still live — so is a stranger that accepts the connection and never answers, a known gap); an unreadable lock is read
+  again, another page's never deleted. The waiter, `--close` and the window recovery still judge a lock by its pid (a known gap). Two pages raised in the same instant may both rise — the lock is written when the page listens
   (a known gap). A question for the owner while a page is open goes INTO the open document (`/interview`), not onto a second
   page. `--timeout` on a page with a window refuses before any page (it is automation only, with `--no-open` — I9); a door with
   no window and `--timeout 0` pass. One voice: a call waits while another call of the project is sounding.

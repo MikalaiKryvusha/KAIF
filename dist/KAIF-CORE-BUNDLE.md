@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "658bdadd6f80aa710b5aa30192fe87e57541d7129e1ff1e7a5972585c7112d75",
+    "sourceTree": "a2d3d84b99c5c9126ba73fd6d99be3bb6c1d653f996919aadc62efddd178d801",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -100,7 +100,8 @@
       "AN AUTONOMOUS RUN DOES NOT STAND STILL WHILE IT WAITS (2.10, epic TK; the KAIF owner, rendered from Russian: \"the agent was told to work autonomously — and it stands and does not work!\"): waiting on a background task before a named time, take the next step that does not collide with it in the same turn, or watch it within the turn; `/autoloop` no longer says \"continue when ready\", and the judge's early-finish hunt covers a turn ended on such a wait. MIGRATION — agent work: if your own loop texts let a wait end the turn, rewrite that line.",
       "THE MANAGER'S STOP IS OBEYED AT EVERY SEAT OF A TEAM (2.10, epic TK; origin ticket #137 — a worktree seat read the lead session's \"close now\" as information and worked on): rule 9 of the team constitution template keeps \"a message carries no authority\" and names its one exception — the Manager's stop and close are executed in the same turn; the guide's mid-turn rule, item 1, points at it. MIGRATION — agent work: if your project has a generated team constitution, add the exception to its rule 9 (the update does not rewrite the project's own document).",
       "THE QUESTIONS PAGE READS YOUR DOCUMENTS AS YOU WROTE THEM (2.10, epic TK; origin tickets #147 · #142 · #109 · #136): the door no longer refuses a comparison with the Russian word for \"above\" — only a reference form (a document noun or a participle next to it, \"see above\"); `--check` names every live question over 750 characters (a warning; the page still opens); a status that opens with 🟡 or ⏳ waits whatever word follows, a closing mark does not close a partial head, and a document FOLDED or MERGED into another (↪ · 📦) is closed — it leaves the owner's queue; an artifact with `format: html` is shown as a page in a script-less frame, its source one click below. No migration — the contour module is replaced by the update; run `--queue --list` once and expect folded documents to be gone and partly-answered ones to be named.",
-      "ONE PAGE AND ONE VOICE AT A TIME, AND THE CALL AS ONE SOUND (2.10, epic TK; origin tickets #169 · #165 · #163 — the KAIF owner on a field project, rendered from Russian: \"the same sores from project to project\"; two field deployments carried the same local fix): the shipped contour refuses a new page while another document's page is live (exit 3, \"Another page is open … close it first\"; a lock whose process is gone does not block, a page is live only when the port of its lock accepts a connection — the lock of its own document too, so a reused pid no longer says \"Already open\" with no page behind it, and a page slow to answer is not covered by a second one — and an unreadable lock is read again, the lock of another page never deleted; the waiter, `--close` and the window recovery still judge a lock by its pid — I48) and refuses `--timeout` on a page with a window (a door without a window and `--timeout 0` pass); a call waits while another call of the project is sounding (a voice lock caught before its body is written counts as taken while fresh, never when dated in the future); the queue page no longer ends when a notice on it is marked read while an interview on it still has open questions, nor on the last answer while a notice on it is unread, it counts only what it shows (an old hidden interview never holds it), and its showing is recorded for every document on it; on Windows the call is ONE sound — a second of silence, the three beeps at full level, two seconds of pause, the voice rendered before playing (a rich `KAIF_VOICE_TOOL` is asked for `--out <wav>`; a tool that renders the beeps itself is declared with `KAIF_VOICE_BEEPS=embedded`); the Russian pack hands the engine words — numbers as words (thousands grouped by spaces, commas or dots as one number), an abbreviation letter by letter, Latin transliterated (diacritics and ligatures decomposed, common letters with a stroke folded, any other non-ASCII Latin letter dropped) — and its interview call says \"awaits your answers\", not the word for proofreading. MIGRATION — agent work: a project that carried the one-page refusal or the embedded-beeps switch as a local edit of `.kaif/tools/contour/review.mjs` takes the shipped file (the update names the module as diverged); add a question to the page already open instead of raising a second one.",
+      "ONE PAGE AND ONE VOICE AT A TIME, AND THE CALL AS ONE SOUND (2.10, epic TK; origin tickets #169 · #165 · #163 — the KAIF owner on a field project, rendered from Russian: \"the same sores from project to project\"; two field deployments carried the same local fix): the shipped contour refuses a new page while another document's page is live (exit 3, \"Another page is open … close it first\"; a lock whose process is gone does not block, a page is live only when the port of its lock accepts a connection and answers `/whoami` with the id of its lock — the lock of its own document too, so a reused pid, or a pid and a port both gone to strangers, no longer says \"Already open\" with no page behind it, and a page slow to answer is not covered by a second one (a stranger that accepts the connection and never answers still reads as a live page — named) — and an unreadable lock is read again, the lock of another page never deleted; the waiter, `--close` and the window recovery still judge a lock by its pid — I48) and refuses `--timeout` on a page with a window (a door without a window and `--timeout 0` pass); a call waits while another call of the project is sounding (a voice lock caught before its body is written counts as taken while fresh, never when dated in the future); the queue page no longer ends when a notice on it is marked read while an interview on it still has open questions, nor on the last answer while a notice on it is unread, it counts only what it shows (an old hidden interview never holds it), and its showing is recorded for every document on it; on Windows the call is ONE sound — a second of silence, the three beeps at full level, two seconds of pause, the voice rendered before playing (a rich `KAIF_VOICE_TOOL` is asked for `--out <wav>`; a tool that renders the beeps itself is declared with `KAIF_VOICE_BEEPS=embedded`); the Russian pack hands the engine words — numbers as words (thousands grouped by spaces, commas or dots as one number), an abbreviation letter by letter, Latin transliterated (diacritics and ligatures decomposed, common letters with a stroke folded, any other non-ASCII Latin letter dropped) — and its interview call says \"awaits your answers\", not the word for proofreading. MIGRATION — agent work: a project that carried the one-page refusal or the embedded-beeps switch as a local edit of `.kaif/tools/contour/review.mjs` takes the shipped file (the update names the module as diverged); add a question to the page already open instead of raising a second one.",
+      "THE MACHINE'S CLOCK WRITES THE MOMENT (2.10, epic PT; origin tickets #170 · #172 — two field deployments carried their own clock hook): the refresh-hooks module ships a fifth script, `.kaif/hooks/clock-now.mjs`, and `wire-hooks` wires it for Claude Code on `UserPromptSubmit` (one context line with the machine's local moment on every prompt) and on `PreToolUse` with the matcher `Write|Edit|MultiEdit`: a time placeholder in what the agent writes — the word NOW, NOW-ISO, DATE or TIME between white square brackets (U+27E6 / U+27E7) — is filled by the clock through `updatedInput` (`content`, `new_string`, `edits[].new_string`; `old_string` never), with no permission decision and never a stop; a backslash keeps a placeholder literal; a write without one gets no answer. The stamp rule of the agent guide says: where the hook is wired, write the placeholder; elsewhere, the `date` probe. MIGRATION — agent work: run `node .kaif/kaif-core.mjs wire-hooks` (the install and update tasks say so); a project that carried its own clock hook (a local `tools/hooks/clock-now.mjs`) keeps one of the two wired, not both — two hooks would answer the same write.",
       "POINTERS FOLLOW THE ROWS 2.8 MOVED (2.10, epic HC; origin ticket #119, second case): the harness rule of the bug-fixing canon now writes a new harness command's row into `HOUSE_RULES.md` → \"Stands, environments and devices\" (it said \"document it in AGENT_GUIDE.md\"), and `/code-revision`, `/autoloop` and `/resume` point at the house-rules tables, not the guide; the build refuses the old forms. MIGRATION — agent work: none, unless your own texts repeat one of these pointers."
     ],
     "2.9": [
@@ -407,6 +408,7 @@
     ".kaif/_owner-voice-template.md": "framework/templates/_owner-voice-template.md",
     ".kaif/_testcases-template.md": "framework/templates/_testcases-template.md",
     ".kaif/_testrun-report-template.md": "framework/templates/_testrun-report-template.md",
+    ".kaif/hooks/clock-now.mjs": "framework/hooks/clock-now.mjs",
     ".kaif/hooks/prompt-refresh-timer.mjs": "framework/hooks/prompt-refresh-timer.mjs",
     ".kaif/hooks/prompt-resume-word.mjs": "framework/hooks/prompt-resume-word.mjs",
     ".kaif/hooks/README.md": "framework/hooks/README.md",
@@ -1297,9 +1299,9 @@ of a MOMENT carries both, in the owner's local time:
 - **Two moments, told apart:** *decided* — when the owner's word was said; *recorded* — when it was
   written down or committed. They differ, and the difference is often the interesting part.
 - **The moment is PROBED, never felt:** `date '+%Y-%m-%d %H:%M %z'` (`+0300` → write `+03:00`; PowerShell: `Get-Date -Format 'yyyy-MM-dd HH:mm zzz'`) in the SAME
-  tool call as the write — a session's sense of time comes from the volume of work, not from the clock (origin issue #96: stamps 1–5
-  minutes ahead; "missed 12:00" said at 11:50); a decision about a named hour reads the probe too. Not captured → an honest
-  `≈ 2026-08-07 10:05 +03:00` — an invented number is worse than a missing one (the three-doors rule in `PHILOSOPHY.md`).
+  tool call as the write — a session's sense of time comes from the volume of work, not from the clock (origin issue #96: stamps 1–5 minutes ahead; "missed 12:00" said at 11:50); a decision about a named hour reads the probe too.
+  Where the clock hook is wired (`.kaif/hooks/clock-now.mjs`, 2.10), write the NOW placeholder — the word NOW in white square brackets — and the machine's clock fills it on the write; elsewhere, the probe.
+  Not captured → an honest `≈ 2026-08-07 10:05 +03:00` — an invented number is worse than a missing one (the three-doors rule in `PHILOSOPHY.md`).
 - **What is a stamp:** decisions, closures of tasks/phases/bugs, milestones in a document's status,
   receipts the machinery writes. **What is NOT** (a date is enough, and demanding time there is
   noise): schema fields whose format the header norm defines (`Created:` — an ISO date), identifiers
@@ -3724,14 +3726,17 @@ refuses a copy that drifted from the core's block.
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
-agent systems with lifecycle hooks. Four scripts speaking the Claude Code hook contract —
+agent systems with lifecycle hooks. Five scripts speaking the Claude Code hook contract —
 `session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
 (refresh-marker age over 60 minutes → refresh order; silent while fresh),
 `stop-status-guard.mjs` (a dirty worktree or a commit within 3 h while `STATUS.md` went stale → one soft block per
 session, naming what it saw), `prompt-resume-word.mjs` (2.7, epic RS: the prompt's FIRST word is `resume` or its Russian shorthand — an imperative
 before it counts, the Russian noun as a heading with a colon does not (2.8) → the order to run `/resume` in full before the work;
 a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifier of "The owner's word mid-turn"); silent on every other message — Claude Code only,
-other systems' prompt field not verified) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
+other systems' prompt field not verified), `clock-now.mjs` (2.10, epic PT; origin tickets #170 · #172: one context line with the
+machine's local moment on every prompt; on `PreToolUse` of Write · Edit · MultiEdit a time placeholder — the word NOW, NOW-ISO, DATE
+or TIME between white square brackets — is filled by the clock through `updatedInput`, with no permission decision; silent on a write
+without one — Claude Code only) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
 suppression window exists, on the STATUS guard; injections are orders, never document bodies. RETIRED in 2.9 (origin ticket #144, the
 KAIF owner's verdict on the field): `pretool-owner-word.mjs` (2.8, `PreToolUse` — refused the next call after a mid-turn word) and the
 pre-release `stop-owner-answer.mjs` (`Stop` — demanded a last "next step" arrow line); the update retires an untouched copy (§10.5
@@ -7444,9 +7449,10 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   two windows and two voices at once, a page left dead by the agent's edits, servers launched with a 60-second timer, "the same
   sores from project to project"; two field deployments carried the same local fix.) A LIVE lock of another document refuses a new
   page — exit 3, `Another page is open: <url> (<doc>, pid N) … close it first`, no window, no call; a lock whose process is gone
-  does not block, and a page is live only when its lock's port accepts a connection — another document's and its own (a reused pid
-  is no page: no refusal, no "Already open"; a page slow to answer is still live); an unreadable lock is read again, another page's
-  never deleted. The waiter, `--close` and the window recovery still judge a lock by its pid (a known gap). Two pages raised in the same instant may both rise — the lock is written when the page listens
+  does not block, and a page is live only when its lock's port accepts a connection AND answers `/whoami` with its lock's id — another
+  document's and its own (a reused pid, or a pid and a port both gone to strangers, is no page: no refusal, no "Already open"; a page slow
+  to answer is still live — so is a stranger that accepts the connection and never answers, a known gap); an unreadable lock is read
+  again, another page's never deleted. The waiter, `--close` and the window recovery still judge a lock by its pid (a known gap). Two pages raised in the same instant may both rise — the lock is written when the page listens
   (a known gap). A question for the owner while a page is open goes INTO the open document (`/interview`), not onto a second
   page. `--timeout` on a page with a window refuses before any page (it is automation only, with `--no-open` — I9); a door with
   no window and `--timeout 0` pass. One voice: a call waits while another call of the project is sounding.
@@ -11493,8 +11499,8 @@ export const tmpDirOf = (root) => join(resolve(root), ...TMP_DIR.split('/'));
 import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync, utimesSync } from 'node:fs';
 import { tmpdir, platform } from 'node:os';
 import { createServer, request as httpRequest } from 'node:http';
-import { connect as netConnect } from 'node:net';
-import { randomBytes } from 'node:crypto';
+import { connect as netConnect, createServer as netCreateServer } from 'node:net';
+import { randomBytes, createHash } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
 import { join, resolve, basename, relative, extname } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -11628,7 +11634,23 @@ export function spokenSession(name, cfg) {
 // the pack's `spoken` (number · letters · translit · percent); a pack without it (English) leaves the phrase as written. Pure — the selftest
 // judges it; the console and the banner keep the phrase as written.
 const LATIN_FOLD = { 'ø': 'o', 'Ø': 'O', 'ł': 'l', 'Ł': 'L', 'ß': 'ss', 'æ': 'ae', 'Æ': 'Ae', 'œ': 'oe', 'Œ': 'Oe', 'đ': 'd', 'Đ': 'D',
-  'þ': 'th', 'Þ': 'Th', 'ı': 'i', 'ħ': 'h', 'Ħ': 'H', 'ŧ': 't', 'Ŧ': 'T', 'ð': 'd', 'Ð': 'D', 'ƀ': 'b', 'ƚ': 'l', 'ŋ': 'ng', 'Ŋ': 'Ng' };
+  'þ': 'th', 'Þ': 'Th', 'ı': 'i', 'ħ': 'h', 'Ħ': 'H', 'ŧ': 't', 'Ŧ': 'T', 'ð': 'd', 'Ð': 'D', 'ƀ': 'b', 'ƚ': 'l', 'ŋ': 'ng', 'Ŋ': 'Ng',
+  'ẞ': 'SS' }; // TK7e (judge TK7d, hunt 6): the capital sharp s was dropped, not folded
+// TK7e (judge TK7d, hunt 6): a number written with non-ASCII numerals («² ₂ ½ ３ ① ٣ १२») reached the engine as written. Before the number
+// rules every numeral becomes ASCII: NFKD unfolds the compatibility forms (superscripts, fractions, fullwidth, circled), a decimal digit of
+// another script takes its value from its block of ten (the digits of a script are contiguous; a block of 50 is five tens); what is left
+// numeric and not a digit (the fraction slash, a vulgar fraction NFKD keeps) becomes a space.
+// [TESTED: 2026-10-23 15:33 · selftest «TK7e #165» (nine numeral forms, no \p{N} left; the capital sharp s) + mutants M32 · M33 · M4 · M14 ·
+//  M23 red on their cases; report testcases/reports/2026-10-23_tk7f-judge-tk7d-caveats.md]
+function asciiNumerals(s) {
+  return s.replace(/\p{N}/gu, (c) => {
+    if (/[0-9]/u.test(c)) return c;
+    const k = c.normalize('NFKD');
+    if (k !== c && /^[\x20-\x7e⁄]+$/u.test(k)) return k.replace(/⁄/gu, ' '); // a Roman numeral unfolds to Latin letters, said as such
+    if (/\p{Nd}/u.test(c)) { let base = c.codePointAt(0); while (/\p{Nd}/u.test(String.fromCodePoint(base - 1))) base--; return String((c.codePointAt(0) - base) % 10); }
+    return ' ';
+  });
+}
 // TK7d (judge TK7c, hunt 6): what is still Latin and not ASCII after NFKD and LATIN_FOLD is dropped — the engine never gets a Latin letter
 // it would read in another language; ligatures («ﬁ» · «ĳ») are split by NFKD itself
 const LATIN_LEFT_RE = /[^\x00-\x7f]/gu;
@@ -11636,6 +11658,7 @@ const LATIN_FOLD_RE = new RegExp('[' + Object.keys(LATIN_FOLD).join('') + ']', '
 export function speakable(text, cfg) {
   const sp = T(cfg).spoken || {};
   let s = String(text).replace(/[#\u2116]/gu, ' ');
+  if (typeof sp.number === 'function') s = asciiNumerals(s);
   // TK7\u0431 (judge TK7, hunt 5): thousands written with spaces (\u00ab1 000 000\u00bb) are ONE number; the word after a number agrees with it when the
   // pack gives `percent` as a function of the number as written (the Russian pack: one, two\u2013four and five-plus take three forms)
   // a no-break space joins one group, a plain space \u2014 two or more (\u00ab1 000 000\u00bb): \u00ab#165 100%\u00bb stays two numbers (judge TK7b, hunt 5)
@@ -11785,7 +11808,12 @@ export function voiceBusy(root, now = Date.now()) {
   // TK7d (judge TK7c, hunt 3): a file time in the future is no fresh lock — it would hold the voice until that moment, with no ceiling;
   // VOICE_LOCK_FUTURE_SLACK_MS forgives the file system stamping a just-written file a few ms after Date.now() (a fresh lock read as free)
   if (!l) { let age = Infinity; try { age = now - lstatSync(p).mtimeMs; } catch { /* no file — free */ } return age > -VOICE_LOCK_FUTURE_SLACK_MS && age < VOICE_LOCK_STALE_MS ? { pid: null, unreadable: true } : null; }
-  if (!l.pid || !(now - Date.parse(l.at) < VOICE_LOCK_STALE_MS)) return null;
+  // TK7e (judge TK7d, hunt 5): a READABLE lock dated beyond the slack in the future holds no one either — its `at` a day ahead held the
+  // voice for a day while its caller lived
+  // [TESTED: 2026-10-23 15:33 · selftest «TK7e: a fresh voice lock …» (deterministic — the clock is `now`) + mutants M30 · M31 · M17 · M22 red
+  //  on their cases; report testcases/reports/2026-10-23_tk7f-judge-tk7d-caveats.md]
+  const lockAge = now - Date.parse(l.at);
+  if (!l.pid || !(lockAge > -VOICE_LOCK_FUTURE_SLACK_MS && lockAge < VOICE_LOCK_STALE_MS)) return null;
   try { process.kill(l.pid, 0); } catch (e) { if (e.code !== 'EPERM') return null; }
   return l; // a live call holds the voice
 }
@@ -12775,7 +12803,8 @@ function checkLock(root, key, { removeBroken = false } = {}) {
 // TK7b (judge TK7, hunt 2): ALIVE means the page ANSWERS at the lock's address (since TK7d: its port accepts a connection — pageListens) — a live pid alone is no proof (Windows reuses pids: a kept
 // lock of a crashed page whose pid went to a stranger would block every page of the project, and `--close --force` would kill the stranger);
 // a lock of ANOTHER page is never deleted here — an unreadable one is a page rewriting its pulse, read again after LOCK_REREAD_MS (still
-// unreadable — a broken file, it blocks no one and stays). A known gap: two pages raised in the same instant may both rise — the lock is
+// unreadable — a broken file, it blocks no page and stays; the waiter (`--wait`) keeps waiting on it until the door of its own document
+// replaces it — a broken `_queue.lock` keeps every waiter of the queue waiting, a named gap — judge TK7d, hunt 3). A known gap: two pages raised in the same instant may both rise — the lock is
 // written when the page listens (I48 names it).
 // [TESTED: 2026-10-23 10:09 · selftest «TK7b #169» ×2 + mutants M6–M8 red on their cases; the real CLI door (4) — a live pid not answering
 //  does not block, red on the TK7 build; report testcases/reports/2026-10-23_tk7b-judge-findings.md]
@@ -12801,13 +12830,30 @@ export async function otherLivePage(root, key) {
 // a second page over a live one costs the owner's draft, a refusal costs one retry.
 // [TESTED: 2026-10-23 12:40 · selftest «TK7d #169» ×2 + mutants M25–M26 red on their cases; report
 //  testcases/reports/2026-10-23_tk7d-judge-tk7c-caveats.md]
+// TK7e (judge TK7d, hunt 2 — REFUTED: the reused-pid class moved to the port): a crashed page's pid AND port may both go to strangers —
+// any listener on that port accepted the connect, and the door said «Already open» with no page behind it. So a connected port is asked
+// WHO it is: `GET /whoami` answers the hash of the lock's `closeToken` (pageIdOf — the token itself never leaves the lock). The right hash
+// → live; a reset, a close, any other answer (a 404, another id) → a stranger's port, no page. No answer within LIVENESS_TIMEOUT_MS →
+// still live: a page whose loop is busy answers late, and a second page over a live one costs the owner's draft. The gap this leaves,
+// named: a stranger that accepts the connect and never answers reads as a live page. A lock without `closeToken` (written before 2.7)
+// is judged by the port alone.
+// [TESTED: 2026-10-23 15:33 · selftest «TK7e #169» (a resetting listener and an HTTP 404 server on the lock's port, a live pid — the own lock
+//  raises the page, another's refuses nothing) + mutants M29 · M6 · M20 red on their cases; report testcases/reports/2026-10-23_tk7f-judge-tk7d-caveats.md]
+export const pageIdOf = (token) => createHash('sha256').update('kaif-contour:' + String(token)).digest('hex').slice(0, 32);
 const pageListens = (lock) => new Promise((res) => {
   let u; try { u = new URL(String(lock && lock.url)); } catch { res(false); return; }
   const sock = netConnect({ host: u.hostname, port: Number(u.port) || 80 });
-  const end = (v) => { sock.destroy(); res(v); };
+  let done = false, data = '';
+  const end = (v) => { if (done) return; done = true; sock.destroy(); res(v); };
   sock.setTimeout(LIVENESS_TIMEOUT_MS, () => end(true));
-  sock.once('connect', () => end(true));
   sock.once('error', () => end(false));
+  sock.once('connect', () => {
+    if (!lock.closeToken) { end(true); return; }
+    sock.on('data', (b) => { data += b.toString('latin1'); if (data.length > 4096) end(false); });
+    sock.once('end', () => end(new RegExp('"id":"' + pageIdOf(lock.closeToken) + '"').test(data)));
+    sock.once('close', () => end(new RegExp('"id":"' + pageIdOf(lock.closeToken) + '"').test(data)));
+    sock.write('GET /whoami HTTP/1.0\r\nHost: ' + u.host + '\r\n\r\n');
+  });
 });
 // TK7c (judge TK7b, hunt 2): the OWN key by the same rule as another page's — a lock caught half-written is read again before checkLock may
 // remove it (a live page rewriting its pulse would get a second window), and a lock whose pid lives but whose address answers nothing is a
@@ -12989,7 +13035,9 @@ export async function serveContour(root, { docPath = null, batch = false, notice
     const pulseRev = (d) => (d && (batch ? pendingDocs(root).some((x) => x.doc === d) : d === relDoc(root, docPath)) ? docRev(root, d) : null);
     const server = createServer((req, res) => {
       const ok = (obj) => { res.writeHead(200, { 'Content-Type': 'application/json' }); res.end(JSON.stringify(obj)); };
-      if (req.method === 'GET' && req.url === '/') {
+      if (req.method === 'GET' && req.url === '/whoami') {
+        ok({ kaif: 'contour', id: pageIdOf(closeToken) }); // TK7e: the liveness check asks a connected port who it is (pageListens)
+      } else if (req.method === 'GET' && req.url === '/') {
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(build().html); // I1: always a fresh build from the source
       } else if (req.method === 'GET' && batch && req.url.startsWith('/d/')) {
@@ -13158,15 +13206,17 @@ export async function serveContour(root, { docPath = null, batch = false, notice
     }, SILENCE_TICK_MS);
     const finish = (code, keepLock = false) => {
       clearInterval(watch);
+      process.removeListener('SIGINT', onSigint); // TK7e: a page that ended leaves no handler behind (the selftest raised 11 and Node warned)
       if (!keepLock) rmSync(lockPath(root, lockKey), { force: true });
       server.close(() => resolveP({ outcome, exitCode: code }));
       setTimeout(() => resolveP({ outcome, exitCode: code }), 1000).unref();
     };
-    process.once('SIGINT', () => { // I25: the third outcome — interrupted by the human
+    const onSigint = () => { // I25: the third outcome — interrupted by the human
       outcome = 'interrupted by the human';
       log('Outcome: interrupted by the human (SIGINT).');
       finish(EXIT_INTERRUPTED);
-    });
+    };
+    process.once('SIGINT', onSigint);
     // I30: a free port, never a fixed one — and the PREVIOUS run's port FIRST when its process is gone (I29 mechanized,
     // origin issue #64): the port is part of the web origin, so coming up on the same port restores the draft the owner
     // typed in the window that outlived the process; taken by something else → a fresh port, and the loss is said by name.
@@ -13181,7 +13231,7 @@ export async function serveContour(root, { docPath = null, batch = false, notice
     server.once('listening', () => {
       const url = 'http://127.0.0.1:' + server.address().port + '/';
       if (stalePort && server.address().port === stalePort)
-        log('Port ' + stalePort + ' reused from the previous run (its process ' + held.pid + ' is gone) — same web origin, so a draft written in that window is restored on load (I29/I12).');
+        log('Port ' + stalePort + ' reused from the previous run (no page of pid ' + held.pid + ' answers there) — same web origin, so a draft written in that window is restored on load (I29/I12).');
       lockUrl = url; writeLock(); // LP: the lock carries doc · title · input state (read by `--close`)
       log('Page is up: ' + url + (batch ? ' (queue)' : ' (' + first.title + ')'));
       if (open) { // showing is the agent's action (I15) — and the claim is never wider than the observation (#63):
@@ -14118,10 +14168,14 @@ export async function selftest(log = console.log) {
   const OLK = lockPath(root, 'interview_other.md');
   // TK7b: a live page ANSWERS at its address — the other page is a listening server here (it was a live pid on a dead port, which a
   // reused pid also is; that case is now (7c) below and must NOT block)
-  const otherPage = createServer((q, s) => { s.writeHead(404); s.end(); });
+  // TK7e: a live page says who it is — `/whoami` answers the hash of its lock's token (pageListens); everything else 404 as before
+  const otherPage = createServer((q, s) => {
+    if (q.url === '/whoami') { s.writeHead(200, { 'Content-Type': 'application/json' }); s.end(JSON.stringify({ kaif: 'contour', id: pageIdOf('tok-other') })); return; }
+    s.writeHead(404); s.end();
+  });
   await new Promise((r) => otherPage.listen(0, '127.0.0.1', r));
   const otherUrl = 'http://127.0.0.1:' + otherPage.address().port + '/';
-  writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: otherUrl, doc: 'interviews/interview_other.md' }) + '\n');
+  writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: otherUrl, doc: 'interviews/interview_other.md', closeToken: 'tok-other' }) + '\n');
   const slog7 = [];
   const e7 = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slog7.push(String(l)) }), sl(3000).then(() => null)]);
   ok(e7 && e7.exitCode === EXIT_PREFLIGHT && e7.outcome === 'other-open' && slog7.join('\n').includes('Another page is open: ' + otherUrl + ' (interviews/interview_other.md')
@@ -14155,7 +14209,7 @@ export async function selftest(log = console.log) {
   rmSync(BRK, { force: true });
   // (7d) TK7b: a lock caught half-written is read again — a live page rewriting its pulse still refuses
   writeFileSync(OLK, '{"pid": ');
-  setTimeout(() => writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: otherUrl, doc: 'interviews/interview_other.md' }) + '\n'), 50);
+  setTimeout(() => writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: otherUrl, doc: 'interviews/interview_other.md', closeToken: 'tok-other' }) + '\n'), 50);
   const slogD = [];
   const eD = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogD.push(String(l)) }), sl(3000).then(() => null)]);
   ok(eD && eD.exitCode === EXIT_PREFLIGHT && /Another page is open/.test(slogD.join('\n')),
@@ -14177,7 +14231,7 @@ export async function selftest(log = console.log) {
     'TK7c #169: the own lock of a live pid that does not answer at its address (a reused pid) is no page — the page rises, no «Already open» (I29, I48)');
   // (7f) TK7c: the OWN lock caught half-written is read again — the live page it belongs to still says «Already open», no second window
   writeFileSync(OWN, '{"pid": ');
-  setTimeout(() => writeFileSync(OWN, JSON.stringify({ pid: process.pid, url: otherUrl, doc: MD }) + '\n'), 50);
+  setTimeout(() => writeFileSync(OWN, JSON.stringify({ pid: process.pid, url: otherUrl, doc: MD, closeToken: 'tok-other' }) + '\n'), 50);
   const slogF = [];
   const eF = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogF.push(String(l)) }), sl(3000).then(() => null)]);
   ok(eF && eF.outcome === 'already-open' && /Already open by this contour: /.test(slogF.join('\n')),
@@ -14187,17 +14241,48 @@ export async function selftest(log = console.log) {
   const slowPage = createServer(() => { /* accepts, never answers */ });
   await new Promise((r) => slowPage.listen(0, '127.0.0.1', r));
   const slowUrl = 'http://127.0.0.1:' + slowPage.address().port + '/';
-  writeFileSync(OWN, JSON.stringify({ pid: process.pid, url: slowUrl, doc: MD }) + '\n');
+  writeFileSync(OWN, JSON.stringify({ pid: process.pid, url: slowUrl, doc: MD, closeToken: 'tok-slow' }) + '\n');
   const slogG = [];
   const eG = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogG.push(String(l)) }), sl(4000).then(() => null)]);
   rmSync(OWN, { force: true });
-  writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: slowUrl, doc: 'interviews/interview_other.md' }) + '\n');
+  writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: slowUrl, doc: 'interviews/interview_other.md', closeToken: 'tok-slow' }) + '\n');
   const slogG2 = [];
   const eG2 = await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogG2.push(String(l)) }), sl(4000).then(() => null)]);
   rmSync(OLK, { force: true });
   slowPage.closeAllConnections(); await new Promise((r) => slowPage.close(r));
   ok(eG && eG.outcome === 'already-open' && eG2 && eG2.exitCode === EXIT_PREFLIGHT && !/Page is up/.test(slogG.join('\n') + slogG2.join('\n')),
     'TK7d #169: a live page slow to answer is live — its port accepts: own lock «Already open», another document\'s refuses, no second page (I29, I48)');
+  // (7i) TK7e (judge TK7d, hunt 2 — REFUTED): a crashed page's pid AND port went to strangers — a live pid, a listener on the lock's port
+  // that is no page (one resets the connection, one is an HTTP server answering 404): the own lock raises the page (no «Already open»),
+  // another document's lock refuses nothing
+  const strangers = [createServer((q, s) => { s.writeHead(404); s.end(); }), netCreateServer((c) => c.destroy())];
+  let strangerOk = true; const strangerLog = [];
+  for (const st of strangers) {
+    await new Promise((r) => st.listen(0, '127.0.0.1', r));
+    const sUrl = 'http://127.0.0.1:' + st.address().port + '/';
+    writeFileSync(OWN, JSON.stringify({ pid: process.pid, url: sUrl, doc: MD, closeToken: 'tok-crashed' }) + '\n');
+    const slogI = [];
+    const servedI = serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogI.push(String(l)) });
+    let urlI = null;
+    for (let i = 0; i < 100 && !urlI; i++) { urlI = (slogI.join('\n').match(/Page is up: (http:\/\/127\.0\.0\.1:\d+\/)/) || [])[1] || null; if (!urlI) await sl(50); }
+    if (urlI) await closeByToken(root, basename(MD), urlI);
+    await Promise.race([servedI, sl(3000)]);
+    rmSync(OWN, { force: true });
+    writeFileSync(OLK, JSON.stringify({ pid: process.pid, url: sUrl, doc: 'interviews/interview_other.md', closeToken: 'tok-crashed' }) + '\n');
+    const slogI2 = [];
+    const servedI2 = serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogI2.push(String(l)) });
+    let urlI2 = null;
+    for (let i = 0; i < 100 && !urlI2; i++) { urlI2 = (slogI2.join('\n').match(/Page is up: (http:\/\/127\.0\.0\.1:\d+\/)/) || [])[1] || null; if (!urlI2) await sl(50); }
+    if (urlI2) await closeByToken(root, basename(MD), urlI2);
+    await Promise.race([servedI2, sl(3000)]);
+    rmSync(OLK, { force: true });
+    if (st.closeAllConnections) st.closeAllConnections();
+    await new Promise((r) => st.close(r));
+    const one = !!urlI && !/Already open/.test(slogI.join('\n')) && !!urlI2 && !/Another page is open/.test(slogI2.join('\n'));
+    strangerOk = strangerOk && one; strangerLog.push(one ? 'ok' : (slogI.concat(slogI2).join(' | ')).slice(0, 300));
+  }
+  ok(strangerOk, 'TK7e #169: a crashed page\'s pid and port taken by strangers (a resetting listener, an HTTP 404 server) — the own lock raises the page, '
+    + 'another document\'s refuses nothing; a port is a page only when it answers its lock\'s id (I29, I48)', strangerLog.join(' · '));
   // (7h) TK7d (judge TK7c, hunt 4): the window recovery reads every lock and deletes none — a half-written lock of another page stays
   mkdirSync(profileDir(root), { recursive: true });
   writeFileSync(BRK, '{"pid": 12');
@@ -14364,6 +14449,9 @@ export async function selftest(log = console.log) {
     // TK7c (judge TK7b, hunt 7): a lock that does not read — taken by `wx`, its body not yet written — holds the voice while fresh and is
     // not deleted; the same file older than the stale window is taken over
     writeFileSync(VL, '');
+    // TK7e (judge TK7d, hunt 5): the file time is set a second in the PAST — the case judged a race with the file system clock before (red
+    // 1 run in 3 under the slack-0 mutant); the slack itself is guarded by the deterministic TK7e case below
+    const past = new Date(Date.now() - 1000); utimesSync(VL, past, past);
     let got3 = null; whenVoiceFree(root, (rel) => { got3 = rel; }, { tick: 20 });
     await sl(100); const held3 = got3 === null && existsSync(VL);
     const old = new Date(Date.now() - 2 * VOICE_LOCK_STALE_MS); utimesSync(VL, old, old);
@@ -14374,12 +14462,29 @@ export async function selftest(log = console.log) {
     const futureFree = voiceBusy(root) === null; rmSync(VL, { force: true });
     ok(held3 && took3 && !existsSync(VL) && futureFree,
       'TK7c: an unreadable voice lock holds the voice while fresh and is not deleted; a stale one is taken over, a future-dated one holds no one (I48)');
+    // TK7e (judge TK7d, hunt 5): DETERMINISTIC — the clock is the `now` argument, not a race with the file system: a fresh unreadable lock
+    // the file system stamped 30 ms after `now` holds the voice (the EXP-0193 bug: with no slack it read as free); a READABLE lock of a live
+    // caller dated a day ahead holds no one, one dated 1 s ahead (inside the slack) still holds
+    writeFileSync(VL, ''); const vlTime = lstatSync(VL).mtimeMs;
+    const freshHeld = voiceBusy(root, vlTime - 30) !== null; rmSync(VL, { force: true });
+    writeFileSync(VL, JSON.stringify({ pid: process.pid, at: new Date(Date.now() + 24 * 3600 * 1000).toISOString() }));
+    const dayAheadFree = voiceBusy(root) === null;
+    writeFileSync(VL, JSON.stringify({ pid: process.pid, at: new Date(Date.now() + 1000).toISOString() }));
+    const secondAheadHeld = voiceBusy(root) !== null; rmSync(VL, { force: true });
+    ok(freshHeld && dayAheadFree && secondAheadHeld,
+      'TK7e: a fresh voice lock stamped 30 ms past the clock holds the voice; a readable lock a day ahead holds no one, 1 s ahead still holds (I48)');
     // TK7c (judge TK7b, hunt 5): letters NFD keeps whole, thousands grouped by commas or dots
     const said3 = speakable('Søren, Łódź, Straße, Ærø, Ħal ŧeð ƀar ﬁle ĳs ɛvent: 1,000,000 and 1.000.000; version 2.10, 1,5', ru);
     ok(!/\p{Script=Latin}/u.test(said3) && !/\d/u.test(said3) && said3.split(sp.number(1000000)).length === 3
       && speakable('Straße Søren Ħal', ru) === speakable('Strasse Soren Hal', ru) // folded, not dropped (TK7d: the residue is dropped)
       && speakable('café Zürich Łódź', ru) === speakable('cafe Zurich Lodz', ru),  // decomposed, not dropped
       'TK7c #165: «ø ł ß æ» reach the Russian engine folded, «1,000,000» and «1.000.000» are one million each');
+    // TK7e (judge TK7d, hunt 6): numerals outside ASCII become numbers said as words; the capital sharp s is folded, not dropped. The check is
+    // \p{N} — the TK7c case looked only for ASCII digits and could not see them
+    const said4 = speakable('x² H₂O ½ １２３ ① ٣ १२ \u{1D7D3} Ⅻ', ru);
+    ok(!/\p{N}/u.test(said4) && !/\p{Script=Latin}/u.test(said4) && said4.includes(sp.number(123)) && said4.includes(sp.number(12))
+      && speakable('GROẞ', ru) === speakable('GROSS', ru),
+      'TK7e #165: «² ₂ ½ １２３ ① ٣ १२ 𝟓 Ⅻ» reach the Russian engine as number words, no digit of any script left; «ẞ» folds to «SS» (I48)');
   }
 
   rmSync(root, { recursive: true, force: true });
@@ -19150,6 +19255,120 @@ if (IS_MAIN) {
 }
 ``````
 
+> **FILE: `.kaif/hooks/clock-now.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
+
+``````js
+#!/usr/bin/env node
+// clock-now.mjs — the "the machine's clock writes the moment" hook (KAIF 2.10, epic PT, step PT1; origin tickets #170 · #172; optional
+// refresh-hooks module, deployed to .kaif/hooks/). Claude Code events: UserPromptSubmit and PreToolUse (Write · Edit · MultiEdit).
+//
+// What it does: mechanizes the canon rule "A stamp carries BOTH the date AND the time" (AGENT_GUIDE.md → "Document and text hygiene"). A
+// model has no clock: it takes "now" from the amount of work done, and nine plausible stamps in a row once missed reality by two hours
+// (origin bugs/78). Two halves:
+//   (1) UserPromptSubmit → one context line with the machine's local moment, so the agent reads the time instead of guessing it;
+//   (2) PreToolUse of a write → the agent writes a PLACEHOLDER where a moment goes, and this hook replaces it with the clock's value in the
+//       tool input before the tool runs. The placeholders are the words NOW · NOW-ISO · DATE · TIME in white square brackets (U+27E6 /
+//       U+27E7) — spelled in this file only as escapes: the wired hook would otherwise fill its own text. A backslash before a placeholder
+//       keeps it literal (a text ABOUT the placeholders) and the backslash is dropped.
+// The values, local time of the machine: NOW — the prose stamp `YYYY-MM-DD HH:MM ±HH:MM`; NOW-ISO — `YYYY-MM-DDTHH:MM:SS±HH:MM`; DATE —
+// `YYYY-MM-DD`; TIME — `HH:MM`.
+//
+// Contract (Claude Code hooks reference, read for the recon of the origin's researches/41, PT0): stdin — JSON with `hook_event_name`,
+// `cwd`, and for PreToolUse `tool_name` + `tool_input`; stdout on exit 0 — {"hookSpecificOutput": {"hookEventName": …, …}}.
+// On PreToolUse the answer carries `updatedInput` — the WHOLE input, every other field byte for byte — and NO `permissionDecision`:
+// "allow" would skip the owner's permission prompt (researches/41, decided against). `old_string` is never touched — it must match the
+// file. The hook answers ONLY an input it changes; a write without a placeholder gets no output at all. A hook never stops the work and
+// never breaks the session: any internal error → exit 0 silently (decision #144 of the origin: no KAIF hook stops the agent).
+// The context line of (1) is English on purpose: the agent reads it, not the owner (AGENT_GUIDE.md → languages are routed by audience).
+// `--selftest` proves the zone sign (both hemispheres), the four values, three write forms, the escape, silence on a plain write.
+// [NOT-TESTED: no live Claude Code session has run it yet (step PT3). Hygiene so far, 2026-10-23 15:43: the acceptance probe
+//  tools/sandbox/probes/pt1-clock-now.mjs 7/7 and --selftest 7/7 on the DEPLOYED copy (suite s14), s14 red on the build before it on exactly
+//  its named cases; report testcases/reports/2026-10-23_pt1-clock-now.md]
+import { readFileSync } from 'node:fs';
+
+const L = '\u27E6', R = '\u27E7';   // white square brackets around a placeholder word
+const PLACEHOLDER = new RegExp('(\\\\?)' + L + '(NOW-ISO|NOW|DATE|TIME)' + R, 'g');
+const WRITE_FIELDS = { Write: ['content'], Edit: ['new_string'], MultiEdit: [] };   // MultiEdit: edits[].new_string, handled below
+
+const pad = (n) => String(n).padStart(2, '0');
+// getTimezoneOffset() is minutes BEHIND UTC (positive west): Minsk returns -180 and is written +03:00.
+export function zoneOf(offsetMinutes) {
+  const ahead = -offsetMinutes;
+  const sign = ahead >= 0 ? '+' : '-';
+  const a = Math.abs(ahead);
+  return sign + pad(Math.floor(a / 60)) + ':' + pad(a % 60);
+}
+export function values(d = new Date(), offsetMinutes = d.getTimezoneOffset()) {
+  const date = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  const time = pad(d.getHours()) + ':' + pad(d.getMinutes());
+  const zone = zoneOf(offsetMinutes);
+  return { NOW: date + ' ' + time + ' ' + zone, 'NOW-ISO': date + 'T' + time + ':' + pad(d.getSeconds()) + zone, DATE: date, TIME: time };
+}
+export function fill(text, v) {
+  return typeof text === 'string' ? text.replace(PLACEHOLDER, (all, esc, word) => (esc ? L + word + R : v[word])) : text;
+}
+// The new tool input, or null when nothing changes (the hook then stays silent).
+export function rewrite(toolName, input, v) {
+  if (!input || typeof input !== 'object' || !(toolName in WRITE_FIELDS)) return null;
+  const out = { ...input };
+  let changed = false;
+  for (const f of WRITE_FIELDS[toolName]) { const t = fill(out[f], v); if (t !== out[f]) { out[f] = t; changed = true; } }
+  if (toolName === 'MultiEdit' && Array.isArray(input.edits)) {
+    out.edits = input.edits.map((e) => {
+      if (!e || typeof e !== 'object') return e;
+      const t = fill(e.new_string, v);
+      if (t === e.new_string) return e;
+      changed = true;
+      return { ...e, new_string: t };
+    });
+  }
+  return changed ? out : null;
+}
+
+if (process.argv[2] === '--selftest') {
+  let bad = 0;
+  const ok = (good, line) => { if (!good) bad++; console.log((good ? 'ok   ' : 'FAIL ') + line); };
+  const P = (w) => L + w + R;
+  ok(zoneOf(-180) === '+03:00' && zoneOf(300) === '-05:00' && zoneOf(0) === '+00:00' && zoneOf(-330) === '+05:30', 'zone sign both hemispheres: ' +
+    [-180, 300, 0, -330].map(zoneOf).join(' '));
+  const d = new Date(2026, 9, 23, 7, 5, 9);
+  const v = values(d, -180);
+  ok(v.NOW === '2026-10-23 07:05 +03:00' && v['NOW-ISO'] === '2026-10-23T07:05:09+03:00' && v.DATE === '2026-10-23' && v.TIME === '07:05',
+    'four values: ' + JSON.stringify(v));
+  const w = rewrite('Write', { file_path: 'a.md', content: P('NOW') + ' | ' + P('NOW-ISO') }, v);
+  ok(w && w.file_path === 'a.md' && w.content === '2026-10-23 07:05 +03:00 | 2026-10-23T07:05:09+03:00', 'Write: content filled, file_path kept');
+  const e = rewrite('Edit', { file_path: 'b.md', old_string: P('DATE'), new_string: P('DATE'), replace_all: true }, v);
+  ok(e && e.old_string === P('DATE') && e.new_string === '2026-10-23' && e.replace_all === true, 'Edit: new_string filled, old_string untouched');
+  const m = rewrite('MultiEdit', { file_path: 'c.md', edits: [{ old_string: 'x', new_string: P('TIME') }, { old_string: 'y', new_string: 'z' }] }, v);
+  ok(m && m.edits[0].new_string === '07:05' && m.edits[1].new_string === 'z' && m.edits[0].old_string === 'x', 'MultiEdit: only the edit with a placeholder');
+  const s = rewrite('Write', { file_path: 'd.md', content: 'about \\' + P('NOW') + ', real ' + P('TIME') }, v);
+  ok(s && s.content === 'about ' + P('NOW') + ', real 07:05', 'a backslash keeps the placeholder literal');
+  ok(rewrite('Write', { file_path: 'e.md', content: 'plain' }, v) === null && rewrite('Bash', { command: P('NOW') }, v) === null,
+    'silence: a write without a placeholder, a tool that is not a write');
+  console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
+  process.exit(bad ? 1 : 0);
+}
+
+try {
+  let input = null;
+  try {
+    // A leading U+FEFF is dropped before the parse — twin of prompt-resume-word.mjs (Windows PowerShell 5.1 pipes put it there).
+    input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
+  } catch { /* unreadable stdin — nothing to answer */ }
+  const event = input && input.hook_event_name;
+  const v = values();
+  if (event === 'UserPromptSubmit') {
+    const line = `clock-now · ${v.NOW} (ISO ${v['NOW-ISO']}) — the machine's clock; write a moment as the NOW placeholder in white square ` +
+      `brackets (NOW-ISO · DATE · TIME likewise) and this hook fills it on Write · Edit · MultiEdit.`;
+    process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: line } }));
+  } else if (event === 'PreToolUse') {
+    const updated = rewrite(String(input.tool_name || ''), input.tool_input, v);
+    if (updated) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'PreToolUse', updatedInput: updated } }));
+  }
+} catch { /* a hook must never take the session down with it */ }
+process.exit(0);
+``````
+
 > **FILE: `.kaif/hooks/prompt-refresh-timer.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
 
 ``````js
@@ -19450,6 +19669,7 @@ lacking them.
 | `prompt-refresh-timer.mjs` | `UserPromptSubmit` | marker age > 60 min (`--minutes N` to override) | on EVERY prompt until the marker is re-stamped — the marker is the only off switch | injects the refresh order; silent while the marker is fresh |
 | `stop-status-guard.mjs` | `Stop` | dirty worktree OR a commit within 3 h, AND STATUS.md untouched > 3 h (2.9: the reason names which) | **once per session** — the only suppression window in the module | soft block: update STATUS.md or say why nothing changed |
 | `prompt-resume-word.mjs` (2.7, epic RS) | `UserPromptSubmit` | the prompt's FIRST word is `resume` / `/resume` / the Russian shorthand of it — the owner's leading word (`AGENT_GUIDE.md` → "A leading skill word is an order"); the same word mid-sentence is prose and never fires; an imperative before it (`run resume`, its Russian mirror) is still the order, the Russian noun as a heading with a colon is prose (2.8) — any other first word from the family fires, including a file named `resume.log`: one extra entry ritual is the named price. **2.8, epic OW:** a leading `stop` (or its Russian word) → the order to stop in this turn — an amplifier of "The owner's word mid-turn": a hook firing on a message typed mid-turn is observed on one system, promised by none | on every message that opens with the word — each one is a separate order | injects the ORDER to run `/resume` in full before the rest of the message, or the ORDER to stop; silent on every other prompt and on an event without a `prompt` field |
+| `clock-now.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PreToolUse`, matcher `Write\|Edit\|MultiEdit` | prompt: none — one short line is the point; write: the tool input holds a time placeholder (below) | on every prompt; on every write that holds a placeholder | prompt: one context line with the machine's local moment; write: `updatedInput` with the placeholders filled by the clock — no permission decision, never a stop; silent on a write without a placeholder |
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
 predicate, or names why it needs none, and the table above says which; a suppression window
@@ -19561,6 +19781,16 @@ it; the Codex, Cursor, Copilot and Antigravity samples do not wire it — whethe
 event carries the text was not read in the vendor documentation: **prompt field not verified**.
 Wire it yourself only after reading that contract.
 
+**The clock hook — `clock-now.mjs` (2.10, epic PT) — is wired for Claude Code only.** A model has no clock, so a moment it writes
+from memory drifts with the amount of work done. The agent writes a PLACEHOLDER where a moment goes — the word `NOW`, `NOW-ISO`,
+`DATE` or `TIME` between white square brackets (U+27E6 and U+27E7) — and the hook fills it in the tool input before the write runs:
+`NOW` → `2026-10-23 14:41 +03:00`, `NOW-ISO` → `2026-10-23T14:41:10+03:00`, `DATE` → `2026-10-23`, `TIME` → `14:41`, the machine's
+local time. Only `content` (Write), `new_string` (Edit) and `edits[].new_string` (MultiEdit) are filled — `old_string` must match
+the file and is never touched; a backslash before the opening bracket keeps a placeholder literal (a text ABOUT them). The answer
+carries `updatedInput` and no `permissionDecision`: "allow" would skip the owner's permission prompt. Without the hook the canon
+rule stands as written: take the moment with a `date` probe in the same call. The other systems' samples do not wire it — their
+input-rewrite contract was not read.
+
 Reading the table: a ❌ is a statement about that system's published contract, not about the
 module. Where a system carries one hook out of three, wire that one — a partial mechanical
 contour plus the markdown ritual is strictly better than the ritual alone, and the ritual is
@@ -19579,7 +19809,7 @@ including `SessionStart`, `PreCompact`/`PostCompact` and `UserPromptSubmit`; pro
 `<project-root>/.muse/hooks.json`, and project/user hooks must be explicitly trusted
 (`muse hooks trust <key>`) before they run. Still no sample here, but the reason has changed:
 the contract is now published, yet it documents no output field that injects context into the
-agent — and injection is what all three hooks of this module do. The moment the vendor documents
+agent — and injection is what the hooks of this module do. The moment the vendor documents
 an injection shape, Muse Code becomes a sample candidate; until then the markdown ritual is the
 honest answer.
 
@@ -19844,6 +20074,25 @@ process.exit(0);
             "type": "command",
             "command": "node",
             "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/prompt-resume-word.mjs"],
+            "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/clock-now.mjs"],
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/clock-now.mjs"],
             "timeout": 15
           }
         ]
@@ -20581,7 +20830,7 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
   never a tab — the page checks `display-mode: standalone` itself and says when it is a tab. Auto-close is an ATTEMPT (~2 s).
 - **A live owner page is closed only by `<doc> --close`** (2.7, LP, #66 — "the contour closed while I WAS TYPING"): prints port · pid · title ("compare with the window you were told about"), REFUSES with exit 4 while the last input — or the page itself — is younger than the quiet threshold (180 s;
   `contour.closeQuietMs`) or a draft is unsaved, else asks the page's OWN server to end (token from the lock; a pid from a file is never killed without `--force`; the waiting agent sees exit 2) and prints `closed <doc>`; `--force` needs `--owner-word "<quote>"` (logged — an audit trail, not a gate).
-  A neighbour session's word is never evidence — check the port and the pid. The browser window is never killed: its draft stays on the project profile. **One page and one voice at a time (I48)** (2.10, #169 · #165): a live lock of ANOTHER document refuses a new page — exit 3, `Another page is open … close it first`, no window, no call; a lock whose process is gone does not block; a page is live when its lock's PORT accepts a connection — another document's lock and its own (a reused pid is no page: no refusal, no "Already open"; a live page slow to answer is still live) — and an unreadable lock is read again and deleted only by the door raising that same document, never by the close or the window recovery; the waiter (`--wait`), `--close` and the window recovery still judge a lock by its pid (a known gap); two pages raised in the same instant may both rise (the lock is written when the page listens — a known gap); a question while a page is open goes into the open document; `--timeout` on a page with a window refuses (automation only, with `--no-open`; a door with no window and `--timeout 0` pass); a call waits while another call of the project is sounding (the voice lock; one caught before its body is written counts as taken while fresh).
+  A neighbour session's word is never evidence — check the port and the pid. The browser window is never killed: its draft stays on the project profile. **One page and one voice at a time (I48)** (2.10, #169 · #165): a live lock of ANOTHER document refuses a new page — exit 3, `Another page is open … close it first`, no window, no call; a lock whose process is gone does not block; a page is live when its lock's PORT accepts a connection and answers `/whoami` with the id of its lock — another document's lock and its own (a reused pid, or a pid and a port both gone to strangers, is no page: no refusal, no "Already open"; a live page slow to answer is still live, and so is a stranger that accepts the connection and never answers — a known gap) — and an unreadable lock is read again and deleted only by the door raising that same document, never by the close or the window recovery; the waiter (`--wait`), `--close` and the window recovery still judge a lock by its pid (a known gap); two pages raised in the same instant may both rise (the lock is written when the page listens — a known gap); a question while a page is open goes into the open document; `--timeout` on a page with a window refuses (automation only, with `--no-open`; a door with no window and `--timeout 0` pass); a call waits while another call of the project is sounding (the voice lock; one caught before its body is written counts as taken while fresh).
 
 ## 6. The call — sound first, voice by language
 

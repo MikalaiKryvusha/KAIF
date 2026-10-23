@@ -513,7 +513,7 @@ framework/                            the canonical universal templates (the pay
   templates/languages/                9 language packs (owner-facing docs + skill trigger aliases; English is the source)
   tools/                              10 optional tool modules: the provenance gate and nine linters (canon, requirements,
                                       guards, scenarios, ranking, attribution, run reports, voice, experience) + the contour generator contour/
-  hooks/                              the refresh-hooks module (4 scripts + sample configs → .kaif/hooks/)
+  hooks/                              the refresh-hooks module (5 scripts + sample configs → .kaif/hooks/)
   readmes/                            7 directory READMEs
   AGENT_GUIDE.md … KAIF_REFERENCE.md  the fourteen key-document templates
 dist/                                 generated distribution (never hand-edited)
@@ -551,7 +551,7 @@ artifacts are never hand-edited.
 4. Discipline is enforced by documents and rituals; without the optional tool modules and hooks
    there is no runtime enforcement — an agent that skips `/resume` works without the canon.
 5. The delivery holds 14 documents + 7 READMEs + 37 skills + 1 unpacker = 59 embedded files;
-   184 bundle blocks; 836 modules.
+   185 bundle blocks; 836 modules.
 
 ## License
 
@@ -1071,7 +1071,7 @@ framework/                            канонические универса�
   templates/languages/                9 языковых пакетов (документы владельца + алиасы навыков; английский — исходник)
   tools/                              10 опциональных tool-модулей: гейт провенанса и девять линтеров (канон, требования,
                                       стражи, сценарии, ранжирование, авторство, отчёты прогона, голос, опыт) + генератор контура contour/
-  hooks/                              модуль refresh-hooks (4 скрипта + образцы конфигов → .kaif/hooks/)
+  hooks/                              модуль refresh-hooks (5 скриптов + образцы конфигов → .kaif/hooks/)
   readmes/                            7 README директорий
   AGENT_GUIDE.md … KAIF_REFERENCE.md  шаблоны четырнадцати ключевых документов
 dist/                                 генерируемая поставка (руками не правится)
@@ -1109,7 +1109,7 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 4. Дисциплина держится на документах и ритуалах; без опциональных tool-модулей и хуков
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.
 5. В поставке 14 документов + 7 README + 37 навыков + 1 распаковщик = 59 встроенных файлов;
-   184 блока бандла; 836 модулей.
+   185 блоков бандла; 836 модулей.
 
 ## Лицензия
 
