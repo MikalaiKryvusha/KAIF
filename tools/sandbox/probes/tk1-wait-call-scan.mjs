@@ -15,6 +15,13 @@
 //  T5 open → not judged) · the live transcript of the origin's session 88: the turn opened 2026-10-17T23:26Z (02:26 local) — the bugs/131
 //  incident, a polygon running — is named ENDED-WITH-LIVE-BACKGROUND; three of its turns ended on a chat question to the owner with no call;
 //  report testcases/reports/2026-10-18_tk2-turn-end-decision.md]
+// Session 93 (step TK7e): a launch is read from the harness's structured fields (`toolUseResult.backgroundTaskId` of a background command,
+// `status: async_launched` + `agentId` of a background subagent) — background subagents were invisible (judge TK7c, hunt 5: 26 turns), and
+// text matching took quoted launch lines for launches. GAP: a REPORT is still read from text (notification `<task-id>`, the stop line) — a
+// tool output quoting the id of a task still live in that turn would read it reported (false green); no such quote was seen in 25 records.
+// [TESTED: 2026-10-23 14:38 · --selftest 10/10 (T4g subagent unreported → named, T4h reported → silent, T4q quoted launch lines → silent) ·
+//  mutants tools/sandbox/probes/tk1-scan-mutants.mjs 4/4 · 25 live records of this project: turns with a live background task 21 → 46,
+//  the judge's independent count 26 less one quote · report testcases/reports/2026-10-23_tk7e-scan-subagents.md]
 import { readFileSync, existsSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -28,21 +35,31 @@ if (process.argv[2] === '--selftest') {
   const say = (ts, text) => ({ type: 'assistant', timestamp: ts, message: { content: [{ type: 'text', text }] } });
   const tool = (ts, command) => ({ type: 'assistant', timestamp: ts, message: { content: [{ type: 'tool_use', name: 'Bash', input: { command } }] } });
   const result = (ts, text) => ({ type: 'user', timestamp: ts, message: { content: [{ type: 'tool_result', content: text }] } });
+  const launch = (rec, toolUseResult) => ({ ...rec, toolUseResult });   // the harness's structured launch fields (session 93 survey)
   writeFileSync(fx, [
     prompt('T1', 'check the mode'), say('T1a', 'Проверил настройки. Запускаем проверку режима на новой кривой?'),
     prompt('T2', 'go on'), say('T2a', 'The stand needs a password; the work stops without it. Will you give it?'),
     prompt('T3', 'go on'), tool('T3a', 'node tools/review.mjs --call "the stand password"'), say('T3b', 'Called you: the stand needs a password. Will you give it?'),
-    prompt('T4', 'work for an hour'), tool('T4a', 'npm run test:core'), result('T4b', 'Command running in background with ID: abc123.'), say('T4c', 'The test run is going.'),
+    prompt('T4', 'work for an hour'), tool('T4a', 'npm run test:core'), launch(result('T4b', 'Command running in background with ID: abc123.'), { backgroundTaskId: 'abc123' }),
+    say('T4c', 'The test run is going.'),
     // TK7c (session 92): a task the agent STOPPED is no live task — the stop result is its report (session 91: a false red of this probe)
-    prompt('T4s', 'work for an hour'), result('T4sa', 'Command running in background with ID: def456.'),
+    prompt('T4s', 'work for an hour'), launch(result('T4sa', 'Command running in background with ID: def456.'), { backgroundTaskId: 'def456' }),
     result('T4sb', '{"message":"Successfully stopped task: def456 (npm run test:core)"}'), say('T4sc', 'Stopped the stale run; done.'),
+    // TK7d (session 93): a background SUBAGENT is a background task too — its launch is the Agent tool's result, its end the same notification
+    prompt('T4g', 'work for an hour'), launch(result('T4ga', 'Async agent launched successfully.\nagentId: a0123456789abcdef'), { status: 'async_launched', agentId: 'a0123456789abcdef' }),
+    say('T4gb', 'The judge is running.'),
+    prompt('T4h', 'work for an hour'), launch(result('T4ha', 'Async agent launched successfully.\nagentId: afedcba9876543210'), { status: 'async_launched', agentId: 'afedcba9876543210' }),
+    result('T4hb', '<task-notification>\n<task-id>afedcba9876543210</task-id>\n<status>completed</status>'), say('T4hc', 'The judge reported.'),
+    // TK7d: a tool output QUOTING launch lines (a grep over an old transcript) launches nothing — session 93 counted 5 such false launches
+    prompt('T4q', 'look at the old record'), result('T4qa', 'Async agent launched successfully.\nagentId: a1111111111111111\nCommand running in background with ID: zzz999.'),
+    say('T4qb', 'The old record has one judge.'),
     prompt('T5', 'more'), say('T5a', 'Working.'),
   ].map((r) => JSON.stringify(r)).join('\n') + '\n');
   const r = spawnSync(process.execPath, [fileURLToPath(import.meta.url), fx], { encoding: 'utf8' });
   rmSync(dir, { recursive: true, force: true });
   const out = r.stdout || '';
   const want = [['T1  LEAVE-FOR-OWN-STEP', true], ['T2  WAIT-WITHOUT-CALL', true], ['T3  ', false], ['T4  ENDED-WITH-LIVE-BACKGROUND (1)', true],
-    ['T4s  ', false], ['T5  ', false], ['turns judged: 5', true]];
+    ['T4s  ', false], ['T4g  ENDED-WITH-LIVE-BACKGROUND (1)', true], ['T4h  ', false], ['T4q  ', false], ['T5  ', false], ['turns judged: 8', true]];
   let bad = 0;
   for (const [line, present] of want) { const ok = out.includes(line) === present; if (!ok) bad++; console.log(`${ok ? 'ok  ' : 'FAIL'} ${present ? 'has' : 'lacks'} «${line.trim()}»`); }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
@@ -83,7 +100,11 @@ for (let t = 0; t < LAST; t++) {
       if (c.type === 'tool_use' && CALL.test(String(c.input?.command ?? ''))) called = true;
     }
     const body = flat(x.message?.content ?? x.attachment ?? x.content ?? '');
-    for (const m of body.matchAll(/running in background with ID: (\w+)/g)) launched.add(m[1]);
+    // a LAUNCH is read from the harness's structured result fields, never from text: text missed 5 real launches and took 5 quotes for
+    // launches (session 93 survey of 25 records); a background subagent (judge TK7c hunt 5) is a launch too — its end is the same notification
+    const u = x.toolUseResult;
+    if (u && typeof u === 'object' && typeof u.backgroundTaskId === 'string') launched.add(u.backgroundTaskId);
+    if (u && typeof u === 'object' && u.status === 'async_launched' && typeof u.agentId === 'string') launched.add(u.agentId);
     for (const m of body.matchAll(/<task-id>(\w+)<\/task-id>/g)) reported.add(m[1]);
     for (const m of body.matchAll(/Successfully stopped task: (\w+)/g)) reported.add(m[1]); // a stopped task is no live one (session 92)
   }
