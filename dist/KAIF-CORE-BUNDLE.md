@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "166cf4ec34a84fb964fcb688a9e0ef23ddb11478e48b58d80042bdb62781535b",
+    "sourceTree": "57788410701b895ef1d6273ec354a3111ae805eda2ade3a90310df0c62a62bc5",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -97,11 +97,12 @@
     "2.10": [
       "THE ANSWER TO THE OWNER'S WORD HAS NO PRESCRIBED OPENING (2.10, epic TK; origin ticket #156 — the KAIF owner on a field project, rendered from Russian: \"do not say where the AI agent should start, let it decide itself\"): \"The owner's word mid-turn\" says only: answer at once, as text, by its kind, then work on with what you were doing. MIGRATION — agent work: if your own texts (STATUS, house rules, experience, local skills) prescribe how your answer to the owner opens, delete that line.",
       "A TURN THAT ENDS ON A QUESTION TO THE OWNER FIRST DECIDES WHOSE STEP IT IS (2.10, epic TK; origin tickets #140 · #157 — the KAIF owner on a field project, rendered from Russian: \"the agent stopped, waits for the owner and did not call by voice — and it had to!\"): your own next step by the plan — take it, never ask leave for it; work that stops until the owner acts or answers — the turn's last call is `review.mjs --call \"<what is needed>\"`, then the text. `/fable-judge` hunts the leave asked for own work.",
-      "AN AUTONOMOUS RUN DOES NOT STAND STILL WHILE IT WAITS (2.10, epic TK; the KAIF owner, rendered from Russian: \"the agent was told to work autonomously — and it stands and does not work!\"): waiting on a background task before a named time, take the next step that does not collide with it in the same turn, or watch it within the turn; `/autoloop` no longer says \"continue when ready\", and the judge's early-finish hunt covers a turn ended on such a wait. MIGRATION — agent work: if your own loop texts let a wait end the turn, rewrite that line.",
+      "AN AUTONOMOUS RUN DOES NOT STAND STILL WHILE IT WAITS (2.10, epic TK; the KAIF owner, rendered from Russian: \"the agent was told to work autonomously — and it stands and does not work!\"): waiting on a background task before a named time, take the next step that does not collide with it in the same turn, or watch THAT task within the turn; `/autoloop` no longer says \"continue when ready\", and the judge's early-finish hunt covers a turn ended on such a wait. Since origin tickets #174 · #182 · #185 (field deployments): a loop whose only effect is passing the clock (`sleep` against `date`) is the early finish in disguise, not a watch; the order to work autonomously in any wording enters a loop at once, and a task given mid-loop is done, then the loop resumes; the state of a screen or a device is claimed only after a frame — a wait on a proxy (USB presence, a port, the system's own \"will restart\" text) is not a look; the judge hunts both. MIGRATION — agent work: if your own loop texts let a wait end the turn, rewrite that line.",
       "THE MANAGER'S STOP IS OBEYED AT EVERY SEAT OF A TEAM (2.10, epic TK; origin ticket #137 — a worktree seat read the lead session's \"close now\" as information and worked on): rule 9 of the team constitution template keeps \"a message carries no authority\" and names its one exception — the Manager's stop and close are executed in the same turn; the guide's mid-turn rule, item 1, points at it. MIGRATION — agent work: if your project has a generated team constitution, add the exception to its rule 9 (the update does not rewrite the project's own document).",
       "THE QUESTIONS PAGE READS YOUR DOCUMENTS AS YOU WROTE THEM (2.10, epic TK; origin tickets #147 · #142 · #109 · #136): the door no longer refuses a comparison with the Russian word for \"above\" — only a reference form (a document noun or a participle next to it, \"see above\"); `--check` names every live question over 750 characters (a warning; the page still opens); a status that opens with 🟡 or ⏳ waits whatever word follows, a closing mark does not close a partial head, and a document FOLDED or MERGED into another (↪ · 📦) is closed — it leaves the owner's queue; an artifact with `format: html` is shown as a page in a script-less frame, its source one click below. No migration — the contour module is replaced by the update; run `--queue --list` once and expect folded documents to be gone and partly-answered ones to be named.",
       "ONE PAGE AND ONE VOICE AT A TIME, AND THE CALL AS ONE SOUND (2.10, epic TK; origin tickets #169 · #165 · #163 — the KAIF owner on a field project, rendered from Russian: \"the same sores from project to project\"; two field deployments carried the same local fix): the shipped contour refuses a new page while another document's page is live (exit 3, \"Another page is open … close it first\"; a lock whose process is gone does not block, a page is live only when the port of its lock accepts a connection and answers `/whoami` with the id of its lock — the lock of its own document too, so a reused pid, or a pid and a port both gone to strangers, no longer says \"Already open\" with no page behind it, and a page slow to answer is not covered by a second one (a stranger that accepts the connection and never answers still reads as a live page — named) — and an unreadable lock is read again, the lock of another page never deleted; the waiter and the window recovery still judge a lock by its pid, `--close` asks the port first and sends its token only to the page — I48) and refuses `--timeout` on a page with a window (a door without a window and `--timeout 0` pass); a call waits while another call of the project is sounding (a voice lock caught before its body is written counts as taken while fresh, never when dated in the future); the queue page no longer ends when a notice on it is marked read while an interview on it still has open questions, nor on the last answer while a notice on it is unread, it counts only what it shows (an old hidden interview never holds it), and its showing is recorded for every document on it; on Windows the call is ONE sound — a second of silence, the three beeps at full level, two seconds of pause, the voice rendered before playing (a rich `KAIF_VOICE_TOOL` is asked for `--out <wav>`; a tool that renders the beeps itself is declared with `KAIF_VOICE_BEEPS=embedded`); the Russian pack hands the engine words — numbers as words (thousands grouped by spaces, commas or dots as one number), an abbreviation letter by letter, Latin transliterated (diacritics and ligatures decomposed, common letters with a stroke folded, any other non-ASCII Latin letter dropped) — and its interview call says \"awaits your answers\", not the word for proofreading. MIGRATION — agent work: a project that carried the one-page refusal or the embedded-beeps switch as a local edit of `.kaif/tools/contour/review.mjs` takes the shipped file (the update names the module as diverged); add a question to the page already open instead of raising a second one.",
-      "THE MACHINE'S CLOCK WRITES THE MOMENT (2.10, epic PT; origin tickets #170 · #172 — two field deployments carried their own clock hook): the refresh-hooks module ships a fifth script, `.kaif/hooks/clock-now.mjs`, and `wire-hooks` wires it for Claude Code on `UserPromptSubmit` (one context line with the machine's local moment on every prompt) and on `PreToolUse` with the matcher `Write|Edit|MultiEdit`: a time placeholder in what the agent writes — the word NOW, NOW-ISO, DATE or TIME between white square brackets (U+27E6 / U+27E7) — is filled by the clock through `updatedInput` (`content`, `new_string`, `edits[].new_string`; `old_string` never), with no permission decision and never a stop; a backslash keeps a placeholder literal; a write without one gets no answer. The stamp rule of the agent guide says: where the hook is wired, write the placeholder; elsewhere, the `date` probe. MIGRATION — agent work: run `node .kaif/kaif-core.mjs wire-hooks` (the install and update tasks say so); a project that carried its own clock hook (a local `tools/hooks/clock-now.mjs`) keeps one of the two wired, not both — two hooks would answer the same write.",
+      "THE MACHINE'S CLOCK WRITES THE MOMENT (2.10, epic PT; origin tickets #170 · #172 — two field deployments carried their own clock hook): the refresh-hooks module ships a fifth script, `.kaif/hooks/clock-now.mjs`, and `wire-hooks` wires it for Claude Code on `UserPromptSubmit` (one context line with the machine's local moment on every prompt) and on `PreToolUse` with the matcher `Write|Edit|MultiEdit`: a time placeholder in what the agent writes — the word NOW, NOW-ISO, DATE or TIME between white square brackets (U+27E6 / U+27E7) — is filled by the clock through `updatedInput` (`content`, `new_string`, `edits[].new_string`; `old_string` never; a placeholder the write only CARRIES — one already standing in the Edit's `old_string` or in the file a Write replaces — stays literal), with no permission decision and never a stop; a backslash keeps a placeholder literal; a write without one gets no answer. The stamp rule of the agent guide says: where the hook is wired, write the placeholder; elsewhere, the `date` probe. MIGRATION — agent work: run `node .kaif/kaif-core.mjs wire-hooks` (the install and update tasks say so); a project that carried its own clock hook (a local `tools/hooks/clock-now.mjs`) keeps one of the two wired, not both — two hooks would answer the same write.",
+      "THE CLOSING CHAT'S FAREWELL REACHES THE NEXT CHAT (2.10, epic PT; origin ticket #181 — the owner of a field project copied every farewell into the next chat by hand): the refresh-hooks module ships a seventh script, `.kaif/hooks/stop-farewell-capture.mjs`, and `wire-hooks` wires it for Claude Code on `Stop` next to the STATUS guard: on the stop of a turn that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (one closure writes once; never a block); `/resume` gains Step 0 — on the chat's first entry read that file before the canon, and if it is older than the newest commit say so and trust `STATUS.md`. Both files join the ignore-first set. MIGRATION — agent work: if your project carries its own farewell hook, keep one — the shipped one or yours — never both writing the same file.",
       "A SUBAGENT ENTERS THE PROJECT FIRST (2.10, epic PT; origin tickets #166 · #168 — a field deployment carried its own preamble hook): the refresh-hooks module ships a sixth script, `.kaif/hooks/subagent-preamble.mjs`, and `wire-hooks` wires it for Claude Code on `PreToolUse` with the matcher `Agent|Task`: every subagent task gets a marked preamble in front of it — read in full the documents of step 1 of `/resume` (read from `.claude/skills/resume/SKILL.md` by the step's number, existing files only), quote one canon line bearing on the task first in the report, no subagents of its own, no commit, no push — through `updatedInput`, with no permission decision; a task already marked is left as it is; each firing appends one line to `.kaif/subagent-preamble.jsonl` (now in the ignore-first set). The guide's fable-loop section gains the rule \"A brief to a subagent has five parts\" (context · bounds · role · report · the main agent's duty after) with the skeleton `.kaif/_subagent-brief-template.md`, and the judge hunts \"subagent result relayed unverified\". MIGRATION — agent work: none; `wire-hooks` adds the group, `\"hooks\": \"off\"` keeps it out.",
       "POINTERS FOLLOW THE ROWS 2.8 MOVED (2.10, epic HC; origin ticket #119, second case): the harness rule of the bug-fixing canon now writes a new harness command's row into `HOUSE_RULES.md` → \"Stands, environments and devices\" (it said \"document it in AGENT_GUIDE.md\"), and `/code-revision`, `/autoloop` and `/resume` point at the house-rules tables, not the guide; the build refuses the old forms. MIGRATION — agent work: none, unless your own texts repeat one of these pointers."
     ],
@@ -420,6 +421,7 @@
     ".kaif/hooks/sample-cursor-hooks.json": "framework/hooks/sample-cursor-hooks.json",
     ".kaif/hooks/session-start-refresh.mjs": "framework/hooks/session-start-refresh.mjs",
     ".kaif/hooks/settings-fragment.json": "framework/hooks/settings-fragment.json",
+    ".kaif/hooks/stop-farewell-capture.mjs": "framework/hooks/stop-farewell-capture.mjs",
     ".kaif/hooks/stop-status-guard.mjs": "framework/hooks/stop-status-guard.mjs",
     ".kaif/hooks/subagent-preamble.mjs": "framework/hooks/subagent-preamble.mjs",
     ".kaif/INTERACTIVE_CONTOUR_SPEC.md": "framework/templates/_interactive-contour-spec.md",
@@ -547,7 +549,11 @@
   },
   "sectionsNew": {
     "prev": "v2.9",
-    "files": {}
+    "files": {
+      ".claude/skills/resume/SKILL.md": [
+        "## Step 0. The chat's FIRST `/resume` — read the previous chat's farewell"
+      ]
+    }
   }
 }
 ``````
@@ -615,13 +621,13 @@ relies entirely on this document to get to work.
 > initiative, enter the appropriate loop skill (`/autoloop`, `/dayloop`, or `/nightloop` — or
 > `/guarded-loop` when the owner asked for a protected run) and grind the
 > backlog, committing progress and self-restarting after each task. Stop only on the skill's stop
-> conditions. Do not enter a loop if the human just gave a specific interactive task.
+> conditions. The order to work autonomously in any wording (its stem, as `autonom-`) enters a loop at once, after the tasks of the same message; a task given mid-loop is done, then the loop resumes. Do not enter a loop if the human just gave a specific interactive task.
 
 > ⏰ **WORKING UNTIL A NAMED TIME — the deadline is the START of the soft closure, not a finish
 > line.** When the human names an end time for autonomous work ("work until 11", "work for an
 > hour", any loop with a duration): until that time, work at your NORMAL pace as if there were no
 > deadline — no speeding up, no corner-cutting, and no finishing early out of fear of the clock
-> (an early finish breaks the order exactly as much as overrunning it). Waiting on a background task (a test run, a build, a scout) before the deadline? In the same turn take the next step that does not collide with it — a document, a plan, a report, a read — or watch it within the turn: a wait never ends the turn before the deadline. WHEN — and only when — the
+> (an early finish breaks the order exactly as much as overrunning it). Waiting on a background task (a test run, a build, a scout) before the deadline? In the same turn take the next step that does not collide with it — a document, a plan, a report, a read — or watch THAT task within the turn: a wait never ends the turn before the deadline, and a loop whose only effect is passing the clock (`sleep` against `date`) is the early finish in disguise, not a watch. WHEN — and only when — the
 > named time arrives, START `/end-chat-soft`: finish the current work to a natural cut, then run
 > the full ceremonies unhurried, and only then close. The named time bounds the WORKING, not the
 > closing. Every loop skill defers to this rule.
@@ -923,7 +929,7 @@ the proxy is said aloud:
 | the file was written, the signal sent | "delivered to the owner" | "written and signalled; delivery is confirmed only by your word" |
 | the instrument printed ✅ | "verified" | "the instrument's check passed; what it did NOT look at: …" |
 
-The state of the HUMAN'S SCREEN is asserted only after looking at the screen — a screenshot costs seconds;
+The state of the HUMAN'S SCREEN (or a device's) is asserted only after looking at it — a screenshot costs seconds, and a wait on a proxy (USB presence, a port, a process list, the system's own "will restart" text) is not a look;
 until then the only legal form is "I did X; please check whether you see Y". `/fable-judge` hunts a claim
 wider than the run that backs it (the
 claim-wider-than-observation hunt). The same rule, seen from the other side, defines the word "test"
@@ -3745,7 +3751,10 @@ or TIME between white square brackets — is filled by the clock through `update
 without one — Claude Code only), `subagent-preamble.mjs` (2.10, epic PT; origin tickets #166 · #168: on `PreToolUse` of `Agent|Task` a
 marked preamble in front of the subagent's task — read step 1 of `/resume`, quote one canon line first, no subagents of its own, no commit,
 no push — through `updatedInput`, with no permission decision; a marked task is left as it is; a journal line in
-`.kaif/subagent-preamble.jsonl` — Claude Code only) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
+`.kaif/subagent-preamble.jsonl` — Claude Code only), `stop-farewell-capture.mjs` (2.10, epic PT; origin ticket #181: on `Stop` of a turn
+that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the
+project root — one closure writes once, never a block; `/resume` reads it on the chat's first entry — Claude Code only) — plus
+`settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
 suppression window exists, on the STATUS guard; injections are orders, never document bodies. RETIRED in 2.9 (origin ticket #144, the
 KAIF owner's verdict on the field): `pretool-owner-word.mjs` (2.8, `PreToolUse` — refused the next call after a mid-turn word) and the
 pre-release `stop-owner-answer.mjs` (`Stop` — demanded a last "next step" arrow line); the update retires an untouched copy (§10.5
@@ -5524,7 +5533,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Mutation addressivity (KAIF 2.1).** A guard proven by mutation must name its addressees BEFORE the run: *mutant M → exactly checks P₁…Pₙ go red, and only they; intact code → 0 red*. A mutation that reddens only side checks — or a guard "proven" with no named addressees — proves nothing (field: a green smoke that forgave the entire error class it was supposed to catch).
    - **Refresh witness (KAIF 2.2).** A claimed context refresh must carry its two-part witness (`AGENT_GUIDE.md` → Context refresh): `.kaif/refresh-marker.json` rewritten at the claimed moment AND a chat quote of one concrete line from the re-read. A marker without the quote — or a refresh claimed against a stale marker — is fraud of the false-`[TESTED]` class.
    - **Fork without recon (KAIF 2.5).** A choice with ≥ 2 options and a non-zero price of error must carry its `FORK: options · price of error · consulted` line at the decision point (`AGENT_GUIDE.md` → the fable loop; `PHILOSOPHY.md` → the fourth door), and the `consulted` slot must name a domain authority, a recon doc or the owner — `consulted <own reasoning>`, or no line at all on a fork that had a price, is the finding (field: a black box set to dump "on close only", decided from the model's head, wrote zero bytes when the machine froze — origin issue #36).
-   - **Early finish (KAIF 2.5).** In a guarded loop the armed boundary is machine-readable (`armed until <ISO>` in the first pulse, `.kaif/guarded-loop.json`); a `run complete` pulse earlier than `until` with a non-empty pool — or closing ceremonies started before the `BOUNDARY:` line was printed — is fraud of the false-`[TESTED]` class: 25 of 60 ordered minutes were silently undelivered under a fulfilled-looking pulse (origin issue #30). Since 2.8 (origin issue #96) the same in `/end-chat-soft`, `/dayloop`, `/nightloop` and `/autoloop` when the owner named an end time: a close with no `BOUNDARY:` line whose `now` came from a clock probe in the same call, a verdict about the named hour ("time is up", "did not make it") with no probe behind it, and any stamp of a moment written without a probe in the same call — a field session stamped 1–5 minutes ahead of the clock and said at 11:50 it had missed 12:00. Since 2.10 also a turn that ENDED before the named time while a background task the agent launched was still running and the pool was not empty — the session stood instead of taking the next step (the KAIF owner, rendered from Russian: "the agent was told to work autonomously — and it stands and does not work!").
+   - **Early finish (KAIF 2.5).** Since 2.10 (origin #174 · #185): a turn kept open before the named time by a command whose only effect is the clock (`until … date …; sleep`) is this fraud too, and so is a state of a screen or a device claimed after a wait on a proxy with no frame read after the action. In a guarded loop the armed boundary is machine-readable (`armed until <ISO>` in the first pulse, `.kaif/guarded-loop.json`); a `run complete` pulse earlier than `until` with a non-empty pool — or closing ceremonies started before the `BOUNDARY:` line was printed — is fraud of the false-`[TESTED]` class: 25 of 60 ordered minutes were silently undelivered under a fulfilled-looking pulse (origin issue #30). Since 2.8 (origin issue #96) the same in `/end-chat-soft`, `/dayloop`, `/nightloop` and `/autoloop` when the owner named an end time: a close with no `BOUNDARY:` line whose `now` came from a clock probe in the same call, a verdict about the named hour ("time is up", "did not make it") with no probe behind it, and any stamp of a moment written without a probe in the same call — a field session stamped 1–5 minutes ahead of the clock and said at 11:50 it had missed 12:00. Since 2.10 also a turn that ENDED before the named time while a background task the agent launched was still running and the pool was not empty — the session stood instead of taking the next step (the KAIF owner, rendered from Russian: "the agent was told to work autonomously — and it stands and does not work!").
    - **Question without a scenario (KAIF 2.6).** Every question to the owner and every answer option must open with the four-line scenario of what the owner will SEE — Situation · Action · Result · Check, in the customer's language (`/interview` step 3a; `REQUIREMENTS_FRAMEWORK.md` → the scenario form) — the technical explanation under it, never instead of it. A live question or option that is a technical explanation (a vector or a scalar, a flag, a schema) with no "Result. You see …" line is a finding: the owner cannot decide about what the owner cannot see (field: two such questions came back as "I don't understand the problem — as a customer", the origin's decision #98). The declared exception is a marker with a reason on the line (`questions-guard:no-scenario`): a name, the taste class.
    - **Mechanic that asks the owner (KAIF 2.6).** A shipped mechanic, a skill step or an update-task item whose step sends the agent to the owner of the project for a parameter the mechanic can derive itself — from `GOAL.md`, the plan, the code, a run — is a finding: the mechanic is incomplete and does not ship (the origin's decision #97; field: the 2.5 delivery line sent the agents of four freshly updated projects to their owners to learn what to measure). Hunt the phrases "ask the owner", "agreed with the owner", "the owner names" in payload text and in update tasks. Hunt also any interview or homework opened to obtain a parameter the framework derives (a metric, a phase, a count — read from the plan, the code or a run, never from a question).
    - **Rule merged silently (KAIF 2.9).** An update whose task carried a `policy-changes` item and whose field report or farewell does not NAME each changed rule — or an agent that put those rules to the project owner as questions — is a finding: since 2.9 (origin issue #114) the rules the author of KAIF shipped are accepted with the version and named, and the project owner is asked only where a rule collides with a decision he recorded himself (an `[OWNER]` line, its address in the question).
@@ -8916,6 +8925,14 @@ A new session starts with empty context. This skill rebuilds the picture fast an
 > opens with `resume` (or its Russian shorthand) and continues with a task runs THIS skill first, in full — the task
 > is read only after the Step-2 announcement (`AGENT_GUIDE.md` → "A leading skill word is an
 > order"; the mechanical half is the `prompt-resume-word.mjs` hook of the refresh-hooks module).
+
+## Step 0. The chat's FIRST `/resume` — read the previous chat's farewell
+
+Only on the first `/resume` of this chat (never on an hourly refresh, never on a second `/resume`): if
+`FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` exists at the project root, read it before the canon — the closing chat's own last
+message, written by the `stop-farewell-capture.mjs` hook. Compare its date with the newest commit (`git log -1 --format=%ci`): older →
+say «the farewell predates the last commit — STATUS.md leads» and trust `STATUS.md`. Carry its «show first / do first» items into
+Step 2. No file → go on; the owner may paste the farewell under `resume` as before (origin ticket #181).
 
 ## Step 1. Read ALL the canon documents of the KAIF framework (in parallel)
 
@@ -12865,12 +12882,12 @@ export async function otherLivePage(root, key) {
 // [TESTED: 2026-10-23 15:33 · selftest «TK7e #169» (a resetting listener and an HTTP 404 server on the lock's port, a live pid — the own lock
 //  raises the page, another's refuses nothing) + mutants M29 · M6 · M20 red on their cases; report testcases/reports/2026-10-23_tk7f-judge-tk7d-caveats.md]
 export const pageIdOf = (token) => createHash('sha256').update('kaif-contour:' + String(token)).digest('hex').slice(0, 32);
-const pageListens = (lock) => new Promise((res) => {
+const pageListens = (lock, { silentIsLive = true } = {}) => new Promise((res) => {
   let u; try { u = new URL(String(lock && lock.url)); } catch { res(false); return; }
   const sock = netConnect({ host: u.hostname, port: Number(u.port) || 80 });
   let done = false, data = '';
   const end = (v) => { if (done) return; done = true; sock.destroy(); res(v); };
-  sock.setTimeout(LIVENESS_TIMEOUT_MS, () => end(true));
+  sock.setTimeout(LIVENESS_TIMEOUT_MS, () => end(silentIsLive));   // the door: a busy page is live; --close: silence is no page
   sock.once('error', () => end(false));
   sock.once('connect', () => {
     if (!lock.closeToken) { end(true); return; }
@@ -13334,9 +13351,9 @@ export async function closeContour(root, docPath, { force = false, ownerWord = n
   // TK7z (judge TK7e · PT1 · TK7g, hunt 2 caveat): the close request carries the RAW token — a stranger that got the page's port answered
   // 200, was told the token, and the lock was deleted («its own server ended it»). The port is asked WHO it is first (pageListens): not
   // this page → the token is never sent; without --force nothing is killed either; --force keeps its old way (the pid, by the owner's word).
-  const isPage = !lock.closeToken || await pageListens(lock);
+  const isPage = !lock.closeToken || await pageListens(lock, { silentIsLive: false });   // judge s95: a silent stranger got the token
   if (!isPage && !force) {
-    log('the page at ' + lock.url + ' does not answer as this page (GET /whoami: nothing, or another process) — the close token is NOT sent and pid ' + lock.pid + ' was NOT killed: a pid from a file may belong to another process by now; the lock is kept for the draft (I29); a hung or pre-2.10 contour is ended with --force --owner-word "<quote>" (exit ' + EXIT_NOT_CLOSED + ')');
+    log('the page at ' + lock.url + ' does not answer as this page (GET /whoami: nothing within the liveness window, or another process) — the close token is NOT sent and pid ' + lock.pid + ' was NOT killed: a pid from a file may belong to another process by now; the lock is kept for the draft (I29); a hung or pre-2.10 contour is ended with --force --owner-word "<quote>" (exit ' + EXIT_NOT_CLOSED + ')');
     return EXIT_NOT_CLOSED;
   }
   // The page's OWN server is asked to end (token from the lock): a pid read from a file may belong to another process by
@@ -14316,8 +14333,18 @@ export async function selftest(log = console.log) {
     const kept = existsSync(lockPath(root, basename(STR)));
     stranger.closeAllConnections(); await new Promise((r) => stranger.close(r));
     rmSync(lockPath(root, basename(STR)), { force: true }); rmSync(join(root, STR), { force: true });
-    ok(code === EXIT_NOT_CLOSED && kept && !seen.some((l) => l.includes('SECRET-TK7Z')) && /does not answer as this page/.test(clog.join('\n')),
-      'TK7z #169: --close against a stranger on the page\'s port sends no token, keeps the lock, exit 4 (I29, LP)');
+    // the silent stranger (judge of session 95): accepts the connection, never answers — it got the token after 1.5 s
+    const heard = [];
+    const silent = netCreateServer((c) => { c.on('data', (b) => heard.push(b.toString('latin1'))); });
+    await new Promise((r) => silent.listen(0, '127.0.0.1', r));
+    writeFileSync(lockPath(root, basename(STR)), JSON.stringify({ pid: process.pid, url: 'http://127.0.0.1:' + silent.address().port + '/', doc: STR,
+      closeToken: 'SECRET-SILENT', startedAt: new Date(Date.now() - 3600e3).toISOString() }) + '\n');
+    const code2 = await closeContour(root, STR, { log: () => {} });
+    await new Promise((r) => silent.close(r));
+    ok(code === EXIT_NOT_CLOSED && kept && !seen.some((l) => l.includes('SECRET-TK7Z')) && /does not answer as this page/.test(clog.join('\n'))
+      && code2 === EXIT_NOT_CLOSED && !heard.join('').includes('SECRET-SILENT'),
+      'TK7z #169: --close against a stranger on the page\'s port — answering 200 or silent — sends no token, keeps the lock, exit 4 (I29, LP)');
+    rmSync(lockPath(root, basename(STR)), { force: true });
   }
   // (7f) TK7c: the OWN lock caught half-written is read again — the live page it belongs to still says «Already open», no second window
   writeFileSync(OWN, '{"pid": ');
@@ -19402,11 +19429,11 @@ export function values(d = new Date(), offsetMinutes = d.getTimezoneOffset()) {
 // Words already standing literally in `carried` (the old text) are kept: the write only carries them.
 export function carriedWords(carried) {
   const out = new Set();
-  if (typeof carried === 'string') for (const m of carried.matchAll(PLACEHOLDER)) if (!m[1]) out.add(m[2]);
+  if (typeof carried === 'string') for (const m of carried.matchAll(PLACEHOLDER)) out.add(m[2]);   // escaped too (judge s95, hunt 3)
   return out;
 }
 export function fill(text, v, keep = new Set()) {
-  return typeof text === 'string' ? text.replace(PLACEHOLDER, (all, esc, word) => (esc ? L + word + R : keep.has(word) ? all : v[word])) : text;
+  return typeof text === 'string' ? text.replace(PLACEHOLDER, (all, esc, word) => (keep.has(word) ? all : esc ? L + word + R : v[word])) : text;
 }
 const fileText = (p) => { try { return typeof p === 'string' ? readFileSync(p, 'utf8') : ''; } catch { return ''; } };
 // The new tool input, or null when nothing changes (the hook then stays silent).
@@ -19448,6 +19475,8 @@ if (process.argv[2] === '--selftest') {
   const cw = rewrite('Write', { file_path: 'f.md', content: 'about ' + P('NOW') + ', done ' + P('DATE') }, v, () => 'about ' + P('NOW'));
   ok(cw && cw.content === 'about ' + P('NOW') + ', done 2026-10-23', 'carried: a Write keeps a word the replaced file already holds');
   ok(rewrite('Edit', { file_path: 'g.md', old_string: P('NOW'), new_string: P('NOW') }, v) === null, 'carried only: silence');
+  ok(rewrite('Edit', { file_path: 'h.md', old_string: 'x \\' + P('NOW'), new_string: 'x \\' + P('NOW') + ' y' }, v) === null,
+    'carried ESCAPED: the backslash stays — the edit only carries it (judge of session 95)');
   const m = rewrite('MultiEdit', { file_path: 'c.md', edits: [{ old_string: 'x', new_string: P('TIME') }, { old_string: 'y', new_string: 'z' }] }, v);
   ok(m && m.edits[0].new_string === '07:05' && m.edits[1].new_string === 'z' && m.edits[0].old_string === 'x', 'MultiEdit: only the edit with a placeholder');
   const s = rewrite('Write', { file_path: 'd.md', content: 'about \\' + P('NOW') + ', real ' + P('TIME') }, v);
@@ -19779,6 +19808,7 @@ lacking them.
 | `stop-status-guard.mjs` | `Stop` | dirty worktree OR a commit within 3 h, AND STATUS.md untouched > 3 h (2.9: the reason names which) | **once per session** — the only suppression window in the module | soft block: update STATUS.md or say why nothing changed |
 | `prompt-resume-word.mjs` (2.7, epic RS) | `UserPromptSubmit` | the prompt's FIRST word is `resume` / `/resume` / the Russian shorthand of it — the owner's leading word (`AGENT_GUIDE.md` → "A leading skill word is an order"); the same word mid-sentence is prose and never fires; an imperative before it (`run resume`, its Russian mirror) is still the order, the Russian noun as a heading with a colon is prose (2.8) — any other first word from the family fires, including a file named `resume.log`: one extra entry ritual is the named price. **2.8, epic OW:** a leading `stop` (or its Russian word) → the order to stop in this turn — an amplifier of "The owner's word mid-turn": a hook firing on a message typed mid-turn is observed on one system, promised by none | on every message that opens with the word — each one is a separate order | injects the ORDER to run `/resume` in full before the rest of the message, or the ORDER to stop; silent on every other prompt and on an event without a `prompt` field |
 | `clock-now.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PreToolUse`, matcher `Write\|Edit\|MultiEdit` | prompt: none — one short line is the point; write: the tool input holds a time placeholder (below) | on every prompt; on every write that holds a placeholder | prompt: one context line with the machine's local moment; write: `updatedInput` with the placeholders filled by the clock — no permission decision, never a stop; silent on a write without a placeholder |
+| `stop-farewell-capture.mjs` (2.10, epic PT) | `Stop` | the turn ran `/end-chat-soft` or `/end-chat-force` (a Skill call or the owner's slash command), and this closure has not written yet | once per closure — a later stop of the same closure (another Stop hook blocked) writes nothing | writes the turn's last message WHOLE into `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (temporary file + rename); never blocks, never speaks |
 | `subagent-preamble.mjs` (2.10, epic PT) | `PreToolUse`, matcher `Agent\|Task` | the launch carries a task without the preamble's marker | once per launch — a second pass over a marked task changes nothing | `updatedInput` with a marked preamble in front of the subagent's task: read step 1 of `/resume` (read from the skill, existing files only), quote one canon line first in the report, no nested subagents, no commit, no push; one journal line in `.kaif/subagent-preamble.jsonl` — no permission decision, never a stop |
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
@@ -19910,6 +19940,13 @@ brief may lack: no subagents of its own, no commit, no push. The rest of the bri
 "Brief to a subagent — five parts"). The answer carries `updatedInput` and no `permissionDecision`; a field deployment observed the
 rewritten task reach 48 of 48 subagents without one. Each firing appends one JSON line to `.kaif/subagent-preamble.jsonl` (ignored —
 session state). Without the hook the brief rule stands as written.
+
+**The farewell hook — `stop-farewell-capture.mjs` (2.10, epic PT, origin #181) — is wired for Claude Code only.** The closing rituals end
+with a farewell written after the closing commit — the densest handover there is — and the owner used to copy it by hand into the next
+chat. On the stop of a turn that ran a closing ritual the hook replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root
+with that turn's last message; `/resume` reads it first on the chat's first entry. One closure writes once (`.kaif/farewell-capture.json`
+keeps its id): `stop_hook_active` is not the test — it is already true on the first stop after the closure when a guard blocked earlier
+in the turn. Both files are session state (ignored). Without the hook the owner's paste under `resume` stands as before.
 
 Reading the table: a ❌ is a statement about that system's published contract, not about the
 module. Where a system carries one hook out of three, wire that one — a partial mechanical
@@ -20237,12 +20274,154 @@ process.exit(0);
             "command": "node",
             "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/stop-status-guard.mjs"],
             "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/stop-farewell-capture.mjs"],
+            "timeout": 15
           }
         ]
       }
     ]
   }
 }
+``````
+
+> **FILE: `.kaif/hooks/stop-farewell-capture.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
+
+``````js
+#!/usr/bin/env node
+// stop-farewell-capture.mjs — the "the closing chat's farewell reaches the next chat" hook (KAIF 2.10, epic PT, step PT5; origin ticket #181;
+// optional refresh-hooks module, deployed to .kaif/hooks/). Claude Code event: Stop. It never blocks and never speaks.
+//
+// What it does: the closing rituals (/end-chat-soft, /end-chat-force) end with a farewell — the densest handover the framework produces,
+// written after the closing commit — and it lived only in the chat: the owner copied it by hand into the next chat under `resume`. On the
+// stop of a turn that ran a closing ritual, this hook writes that turn's last message WHOLE into FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md
+// at the project root, replacing what was there; `/resume` reads it first on the chat's first entry. The file name is the field owner's.
+//
+// Rules, each paid by the field (origin #181 and its two comments):
+//   - the turn = every record after the owner's last real prompt (not a skill body — isMeta —, not a tool result, not a CLI wrapper);
+//   - a closure = a Skill tool call of `end-chat-soft|end-chat-force` (a plugin prefix allowed) or the owner's own slash command in the turn;
+//   - the text = `last_assistant_message` of the event, else the transcript text after the turn's last tool call;
+//   - ONE closure writes ONCE: its id (the Skill tool_use id, or the owner prompt's uuid) is kept in .kaif/farewell-capture.json, and a later
+//     stop of the same closure — after another Stop hook blocked and the agent answered one line — leaves the file alone. `stop_hook_active`
+//     is NOT the test: it is already true on the FIRST stop after the closure whenever a guard blocked earlier in the same turn;
+//   - a turn without a closure (the owner's «thanks» after the farewell) never touches the file;
+//   - the write goes through a temporary file and a rename: a torn write never hands the next chat half a farewell.
+// The project root is the directory of .kaif/kaif.json above the event's `cwd` (twin of stop-status-guard.mjs); CLAUDE_PROJECT_DIR wins.
+// The farewell file and the closure memory are session state: both are in the deployment's ignore-first set.
+// Contract (Claude Code hooks reference, as for the other Stop hook of this module): stdin — JSON with `transcript_path`, `cwd`,
+// `stop_hook_active`, `last_assistant_message` (when the harness gives it). Any internal error → exit 0 silently: a hook never stops the work.
+// `--selftest` proves the turn reader on a transcript of the live record order. The field acceptance — tools/sandbox/probes/pt5-farewell.mjs
+// of the origin.
+// [NOT-TESTED: the field hook this one is distilled from was observed writing a live farewell (field report on #181); this file — selftest and
+//  the acceptance probe only until the origin's live closing turn is read back]
+import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from 'node:fs';
+import { join, dirname, resolve } from 'node:path';
+
+export const FAREWELL_FILE = 'FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md';
+const MEMORY = join('.kaif', 'farewell-capture.json');
+const DEPLOYMENT = join('.kaif', 'kaif.json');
+const CLOSURE_SKILL = /^(?:[\w-]+:)?end-chat-(?:soft|force)$/;
+const CLOSURE_COMMAND = /<command-name>\/?(?:[\w-]+:)?end-chat-(?:soft|force)<\/command-name>/;
+
+function projectRoot(cwd) {
+  for (let d = resolve(cwd); ;) {
+    if (existsSync(join(d, DEPLOYMENT))) return d;
+    const up = dirname(d);
+    if (up === d) return cwd;
+    d = up;
+  }
+}
+const contentOf = (rec) => (rec && rec.message ? rec.message.content : undefined);
+const blocks = (c) => (Array.isArray(c) ? c.filter(Boolean) : typeof c === 'string' ? [{ type: 'text', text: c }] : []);
+const textOf = (bs) => bs.filter((b) => b.type === 'text').map((b) => b.text || '').join('\n');
+// The owner's real prompt: a user record that is not a skill body (isMeta), not a tool result, not a local CLI command's wrapper.
+function isOwnerPrompt(rec) {
+  if (!rec || rec.type !== 'user' || rec.isMeta) return false;
+  const bs = blocks(contentOf(rec));
+  if (!bs.length || bs.some((b) => b.type === 'tool_result')) return false;
+  const text = textOf(bs);
+  return Boolean(text.trim()) && !text.startsWith('<local-command-caveat>');
+}
+// → { closed, closureId, text } of the transcript's last turn.
+export function readTurn(lines) {
+  const recs = [];
+  for (const l of lines) { if (!l.trim()) continue; try { recs.push(JSON.parse(l)); } catch { /* a torn line */ } }
+  let start = 0;
+  for (let i = recs.length - 1; i >= 0; i--) if (isOwnerPrompt(recs[i])) { start = i; break; }
+  let closed = false, closureId = '', tail = [];
+  for (const rec of recs.slice(start)) {
+    const bs = blocks(contentOf(rec));
+    if (rec.type === 'user') {
+      if (!rec.isMeta && CLOSURE_COMMAND.test(textOf(bs))) { closed = true; closureId = String(rec.uuid || 'command'); }
+      if (bs.some((b) => b.type === 'tool_result')) tail = [];
+      continue;
+    }
+    if (rec.type !== 'assistant') continue;
+    for (const b of bs) {
+      if (b.type === 'tool_use') {
+        if (b.name === 'Skill' && b.input && CLOSURE_SKILL.test(String(b.input.skill || '').trim())) { closed = true; closureId = String(b.id || rec.uuid || 'skill'); }
+        tail = [];
+      } else if (b.type === 'text' && b.text && b.text.trim()) tail.push(b.text);
+    }
+  }
+  return { closed, closureId, text: tail.join('\n\n').trim() };
+}
+// The decision, pure: what to write where, or null.
+export function capture(event, readFile = (p) => readFileSync(p, 'utf8')) {
+  if (!event || !event.transcript_path) return null;
+  const turn = readTurn(readFile(event.transcript_path).split('\n'));
+  if (!turn.closed) return null;
+  const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(String(event.cwd || process.cwd()));
+  let seen = '';
+  try { seen = JSON.parse(readFile(join(root, MEMORY)).replace(/^\uFEFF/, '')).closureId || ''; } catch { /* no memory yet */ }
+  if (turn.closureId && seen === turn.closureId) return null;   // a later stop of the same closure
+  const text = typeof event.last_assistant_message === 'string' && event.last_assistant_message.trim() ? event.last_assistant_message.trim() : turn.text;
+  return text ? { root, text, closureId: turn.closureId } : null;
+}
+
+if (process.argv[2] === '--selftest') {
+  let bad = 0;
+  const ok = (good, line) => { if (!good) bad++; console.log((good ? 'ok   ' : 'FAIL ') + line); };
+  const J = (r) => JSON.stringify(r);
+  const owner = J({ type: 'user', uuid: 'u1', message: { content: 'close the chat' } });
+  const skill = J({ type: 'assistant', message: { content: [{ type: 'tool_use', id: 't1', name: 'Skill', input: { skill: 'end-chat-soft' } }] } });
+  const result = J({ type: 'user', message: { content: [{ type: 'tool_result', tool_use_id: 't1' }] } });
+  const body = J({ type: 'user', isMeta: true, message: { content: [{ type: 'text', text: 'skill body' }] } });
+  const work = J({ type: 'assistant', message: { content: [{ type: 'text', text: 'working' }, { type: 'tool_use', id: 't2', name: 'Bash' }] } });
+  const bye = J({ type: 'assistant', message: { content: [{ type: 'text', text: 'Bye.' }] } });
+  const summary = J({ type: 'system', subtype: 'stop_hook_summary' });
+  const t = readTurn([owner, skill, result, body, work, result, bye, summary]);
+  ok(t.closed && t.closureId === 't1' && t.text === 'Bye.', 'a closing turn: closure t1, the text after the last tool call');
+  ok(!readTurn([owner, skill, result, bye, J({ type: 'user', message: { content: 'thanks' } }), J({ type: 'assistant', message: { content: [{ type: 'text', text: 'np' }] } })]).closed,
+    'a turn after the closing one (the owner\'s thanks) is not a closure');
+  ok(readTurn([J({ type: 'user', uuid: 'u7', message: { content: '<command-name>/end-chat-force</command-name>' } }), bye]).closureId === 'u7', 'the owner\'s slash command is a closure');
+  const files = { 'T.jsonl': [owner, skill, result, bye].join('\n') };
+  const read = (p) => { const k = Object.keys(files).find((f) => p.endsWith(f)); if (!k) throw new Error('no ' + p); return files[k]; };
+  process.env.CLAUDE_PROJECT_DIR = 'ROOT';
+  const c1 = capture({ transcript_path: 'T.jsonl', stop_hook_active: true }, read);
+  files['farewell-capture.json'] = J({ closureId: 't1' });
+  const c2 = capture({ transcript_path: 'T.jsonl', last_assistant_message: 'No new knowledge.' }, read);
+  ok(c1 && c1.text === 'Bye.' && c1.root === 'ROOT' && c2 === null, 'the first stop writes even with stop_hook_active; a later stop of the same closure writes nothing');
+  console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
+  process.exit(bad ? 1 : 0);
+}
+
+try {
+  let event = null;
+  try { event = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}'); } catch { /* unreadable stdin — nothing to do */ }
+  const c = capture(event);
+  if (c) {
+    const out = join(c.root, FAREWELL_FILE);
+    writeFileSync(out + '.tmp', c.text + '\n', 'utf8');
+    renameSync(out + '.tmp', out);
+    mkdirSync(join(c.root, '.kaif'), { recursive: true });
+    writeFileSync(join(c.root, MEMORY), JSON.stringify({ closureId: c.closureId, at: new Date().toISOString() }) + '\n');
+  }
+} catch { /* a hook must never take the session down with it */ }
+process.exit(0);
 ``````
 
 > **FILE: `.kaif/hooks/stop-status-guard.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
@@ -23684,7 +23863,7 @@ NN_DONE_x.md`) плюс раздел статуса. Справочные док
   "end-chat-force": "«закрой чат срочно», «сворачиваемся прямо сейчас», «закрывай немедленно», «без церемоний»",
   "derive-styleguide": "«выведи стайлгайд», «зафиксируй мой стиль», «стайлгайд из образца»",
   "autoloop": "«работай сам», «автопилот», «погриндь беклог», «запусти автономный цикл»",
-  "dayloop": "«дневной цикл», «работай сам, я занят», «гринди беклог днём»",
+  "dayloop": "«дневной цикл», «работай автономно», «работай сам, я занят», «гринди беклог днём»",
   "nightloop": "«ночной цикл», «работай до утра», «поработай ночью»",
   "refresh-context": "«освежи контекст», «перечитай доки», «пересобери беклог»",
   "check-backlog": "«проверь беклог», «ревизуй беклог», «что осталось», «пометь сделанное DONE»",

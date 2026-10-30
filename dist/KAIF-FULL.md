@@ -203,13 +203,13 @@ relies entirely on this document to get to work.
 > initiative, enter the appropriate loop skill (`/autoloop`, `/dayloop`, or `/nightloop` — or
 > `/guarded-loop` when the owner asked for a protected run) and grind the
 > backlog, committing progress and self-restarting after each task. Stop only on the skill's stop
-> conditions. Do not enter a loop if the human just gave a specific interactive task.
+> conditions. The order to work autonomously in any wording (its stem, as `autonom-`) enters a loop at once, after the tasks of the same message; a task given mid-loop is done, then the loop resumes. Do not enter a loop if the human just gave a specific interactive task.
 
 > ⏰ **WORKING UNTIL A NAMED TIME — the deadline is the START of the soft closure, not a finish
 > line.** When the human names an end time for autonomous work ("work until 11", "work for an
 > hour", any loop with a duration): until that time, work at your NORMAL pace as if there were no
 > deadline — no speeding up, no corner-cutting, and no finishing early out of fear of the clock
-> (an early finish breaks the order exactly as much as overrunning it). Waiting on a background task (a test run, a build, a scout) before the deadline? In the same turn take the next step that does not collide with it — a document, a plan, a report, a read — or watch it within the turn: a wait never ends the turn before the deadline. WHEN — and only when — the
+> (an early finish breaks the order exactly as much as overrunning it). Waiting on a background task (a test run, a build, a scout) before the deadline? In the same turn take the next step that does not collide with it — a document, a plan, a report, a read — or watch THAT task within the turn: a wait never ends the turn before the deadline, and a loop whose only effect is passing the clock (`sleep` against `date`) is the early finish in disguise, not a watch. WHEN — and only when — the
 > named time arrives, START `/end-chat-soft`: finish the current work to a natural cut, then run
 > the full ceremonies unhurried, and only then close. The named time bounds the WORKING, not the
 > closing. Every loop skill defers to this rule.
@@ -511,7 +511,7 @@ the proxy is said aloud:
 | the file was written, the signal sent | "delivered to the owner" | "written and signalled; delivery is confirmed only by your word" |
 | the instrument printed ✅ | "verified" | "the instrument's check passed; what it did NOT look at: …" |
 
-The state of the HUMAN'S SCREEN is asserted only after looking at the screen — a screenshot costs seconds;
+The state of the HUMAN'S SCREEN (or a device's) is asserted only after looking at it — a screenshot costs seconds, and a wait on a proxy (USB presence, a port, a process list, the system's own "will restart" text) is not a look;
 until then the only legal form is "I did X; please check whether you see Y". `/fable-judge` hunts a claim
 wider than the run that backs it (the
 claim-wider-than-observation hunt). The same rule, seen from the other side, defines the word "test"
@@ -3346,7 +3346,10 @@ or TIME between white square brackets — is filled by the clock through `update
 without one — Claude Code only), `subagent-preamble.mjs` (2.10, epic PT; origin tickets #166 · #168: on `PreToolUse` of `Agent|Task` a
 marked preamble in front of the subagent's task — read step 1 of `/resume`, quote one canon line first, no subagents of its own, no commit,
 no push — through `updatedInput`, with no permission decision; a marked task is left as it is; a journal line in
-`.kaif/subagent-preamble.jsonl` — Claude Code only) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
+`.kaif/subagent-preamble.jsonl` — Claude Code only), `stop-farewell-capture.mjs` (2.10, epic PT; origin ticket #181: on `Stop` of a turn
+that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the
+project root — one closure writes once, never a block; `/resume` reads it on the chat's first entry — Claude Code only) — plus
+`settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
 suppression window exists, on the STATUS guard; injections are orders, never document bodies. RETIRED in 2.9 (origin ticket #144, the
 KAIF owner's verdict on the field): `pretool-owner-word.mjs` (2.8, `PreToolUse` — refused the next call after a mid-turn word) and the
 pre-release `stop-owner-answer.mjs` (`Stop` — demanded a last "next step" arrow line); the update retires an untouched copy (§10.5
@@ -3920,6 +3923,14 @@ A new session starts with empty context. This skill rebuilds the picture fast an
 > opens with `resume` (or its Russian shorthand) and continues with a task runs THIS skill first, in full — the task
 > is read only after the Step-2 announcement (`AGENT_GUIDE.md` → "A leading skill word is an
 > order"; the mechanical half is the `prompt-resume-word.mjs` hook of the refresh-hooks module).
+
+## Step 0. The chat's FIRST `/resume` — read the previous chat's farewell
+
+Only on the first `/resume` of this chat (never on an hourly refresh, never on a second `/resume`): if
+`FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` exists at the project root, read it before the canon — the closing chat's own last
+message, written by the `stop-farewell-capture.mjs` hook. Compare its date with the newest commit (`git log -1 --format=%ci`): older →
+say «the farewell predates the last commit — STATUS.md leads» and trust `STATUS.md`. Carry its «show first / do first» items into
+Step 2. No file → go on; the owner may paste the farewell under `resume` as before (origin ticket #181).
 
 ## Step 1. Read ALL the canon documents of the KAIF framework (in parallel)
 
@@ -6433,7 +6444,7 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Mutation addressivity (KAIF 2.1).** A guard proven by mutation must name its addressees BEFORE the run: *mutant M → exactly checks P₁…Pₙ go red, and only they; intact code → 0 red*. A mutation that reddens only side checks — or a guard "proven" with no named addressees — proves nothing (field: a green smoke that forgave the entire error class it was supposed to catch).
    - **Refresh witness (KAIF 2.2).** A claimed context refresh must carry its two-part witness (`AGENT_GUIDE.md` → Context refresh): `.kaif/refresh-marker.json` rewritten at the claimed moment AND a chat quote of one concrete line from the re-read. A marker without the quote — or a refresh claimed against a stale marker — is fraud of the false-`[TESTED]` class.
    - **Fork without recon (KAIF 2.5).** A choice with ≥ 2 options and a non-zero price of error must carry its `FORK: options · price of error · consulted` line at the decision point (`AGENT_GUIDE.md` → the fable loop; `PHILOSOPHY.md` → the fourth door), and the `consulted` slot must name a domain authority, a recon doc or the owner — `consulted <own reasoning>`, or no line at all on a fork that had a price, is the finding (field: a black box set to dump "on close only", decided from the model's head, wrote zero bytes when the machine froze — origin issue #36).
-   - **Early finish (KAIF 2.5).** In a guarded loop the armed boundary is machine-readable (`armed until <ISO>` in the first pulse, `.kaif/guarded-loop.json`); a `run complete` pulse earlier than `until` with a non-empty pool — or closing ceremonies started before the `BOUNDARY:` line was printed — is fraud of the false-`[TESTED]` class: 25 of 60 ordered minutes were silently undelivered under a fulfilled-looking pulse (origin issue #30). Since 2.8 (origin issue #96) the same in `/end-chat-soft`, `/dayloop`, `/nightloop` and `/autoloop` when the owner named an end time: a close with no `BOUNDARY:` line whose `now` came from a clock probe in the same call, a verdict about the named hour ("time is up", "did not make it") with no probe behind it, and any stamp of a moment written without a probe in the same call — a field session stamped 1–5 minutes ahead of the clock and said at 11:50 it had missed 12:00. Since 2.10 also a turn that ENDED before the named time while a background task the agent launched was still running and the pool was not empty — the session stood instead of taking the next step (the KAIF owner, rendered from Russian: "the agent was told to work autonomously — and it stands and does not work!").
+   - **Early finish (KAIF 2.5).** Since 2.10 (origin #174 · #185): a turn kept open before the named time by a command whose only effect is the clock (`until … date …; sleep`) is this fraud too, and so is a state of a screen or a device claimed after a wait on a proxy with no frame read after the action. In a guarded loop the armed boundary is machine-readable (`armed until <ISO>` in the first pulse, `.kaif/guarded-loop.json`); a `run complete` pulse earlier than `until` with a non-empty pool — or closing ceremonies started before the `BOUNDARY:` line was printed — is fraud of the false-`[TESTED]` class: 25 of 60 ordered minutes were silently undelivered under a fulfilled-looking pulse (origin issue #30). Since 2.8 (origin issue #96) the same in `/end-chat-soft`, `/dayloop`, `/nightloop` and `/autoloop` when the owner named an end time: a close with no `BOUNDARY:` line whose `now` came from a clock probe in the same call, a verdict about the named hour ("time is up", "did not make it") with no probe behind it, and any stamp of a moment written without a probe in the same call — a field session stamped 1–5 minutes ahead of the clock and said at 11:50 it had missed 12:00. Since 2.10 also a turn that ENDED before the named time while a background task the agent launched was still running and the pool was not empty — the session stood instead of taking the next step (the KAIF owner, rendered from Russian: "the agent was told to work autonomously — and it stands and does not work!").
    - **Question without a scenario (KAIF 2.6).** Every question to the owner and every answer option must open with the four-line scenario of what the owner will SEE — Situation · Action · Result · Check, in the customer's language (`/interview` step 3a; `REQUIREMENTS_FRAMEWORK.md` → the scenario form) — the technical explanation under it, never instead of it. A live question or option that is a technical explanation (a vector or a scalar, a flag, a schema) with no "Result. You see …" line is a finding: the owner cannot decide about what the owner cannot see (field: two such questions came back as "I don't understand the problem — as a customer", the origin's decision #98). The declared exception is a marker with a reason on the line (`questions-guard:no-scenario`): a name, the taste class.
    - **Mechanic that asks the owner (KAIF 2.6).** A shipped mechanic, a skill step or an update-task item whose step sends the agent to the owner of the project for a parameter the mechanic can derive itself — from `GOAL.md`, the plan, the code, a run — is a finding: the mechanic is incomplete and does not ship (the origin's decision #97; field: the 2.5 delivery line sent the agents of four freshly updated projects to their owners to learn what to measure). Hunt the phrases "ask the owner", "agreed with the owner", "the owner names" in payload text and in update tasks. Hunt also any interview or homework opened to obtain a parameter the framework derives (a metric, a phase, a count — read from the plan, the code or a run, never from a question).
    - **Rule merged silently (KAIF 2.9).** An update whose task carried a `policy-changes` item and whose field report or farewell does not NAME each changed rule — or an agent that put those rules to the project owner as questions — is a finding: since 2.9 (origin issue #114) the rules the author of KAIF shipped are accepted with the version and named, and the project owner is asked only where a rule collides with a decision he recorded himself (an `[OWNER]` line, its address in the question).

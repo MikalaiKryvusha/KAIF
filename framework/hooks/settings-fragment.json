@@ -70,6 +70,12 @@
             "command": "node",
             "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/stop-status-guard.mjs"],
             "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/stop-farewell-capture.mjs"],
+            "timeout": 15
           }
         ]
       }

@@ -16,6 +16,7 @@ lacking them.
 | `stop-status-guard.mjs` | `Stop` | dirty worktree OR a commit within 3 h, AND STATUS.md untouched > 3 h (2.9: the reason names which) | **once per session** — the only suppression window in the module | soft block: update STATUS.md or say why nothing changed |
 | `prompt-resume-word.mjs` (2.7, epic RS) | `UserPromptSubmit` | the prompt's FIRST word is `resume` / `/resume` / the Russian shorthand of it — the owner's leading word (`AGENT_GUIDE.md` → "A leading skill word is an order"); the same word mid-sentence is prose and never fires; an imperative before it (`run resume`, its Russian mirror) is still the order, the Russian noun as a heading with a colon is prose (2.8) — any other first word from the family fires, including a file named `resume.log`: one extra entry ritual is the named price. **2.8, epic OW:** a leading `stop` (or its Russian word) → the order to stop in this turn — an amplifier of "The owner's word mid-turn": a hook firing on a message typed mid-turn is observed on one system, promised by none | on every message that opens with the word — each one is a separate order | injects the ORDER to run `/resume` in full before the rest of the message, or the ORDER to stop; silent on every other prompt and on an event without a `prompt` field |
 | `clock-now.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PreToolUse`, matcher `Write\|Edit\|MultiEdit` | prompt: none — one short line is the point; write: the tool input holds a time placeholder (below) | on every prompt; on every write that holds a placeholder | prompt: one context line with the machine's local moment; write: `updatedInput` with the placeholders filled by the clock — no permission decision, never a stop; silent on a write without a placeholder |
+| `stop-farewell-capture.mjs` (2.10, epic PT) | `Stop` | the turn ran `/end-chat-soft` or `/end-chat-force` (a Skill call or the owner's slash command), and this closure has not written yet | once per closure — a later stop of the same closure (another Stop hook blocked) writes nothing | writes the turn's last message WHOLE into `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (temporary file + rename); never blocks, never speaks |
 | `subagent-preamble.mjs` (2.10, epic PT) | `PreToolUse`, matcher `Agent\|Task` | the launch carries a task without the preamble's marker | once per launch — a second pass over a marked task changes nothing | `updatedInput` with a marked preamble in front of the subagent's task: read step 1 of `/resume` (read from the skill, existing files only), quote one canon line first in the report, no nested subagents, no commit, no push; one journal line in `.kaif/subagent-preamble.jsonl` — no permission decision, never a stop |
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
@@ -147,6 +148,13 @@ brief may lack: no subagents of its own, no commit, no push. The rest of the bri
 "Brief to a subagent — five parts"). The answer carries `updatedInput` and no `permissionDecision`; a field deployment observed the
 rewritten task reach 48 of 48 subagents without one. Each firing appends one JSON line to `.kaif/subagent-preamble.jsonl` (ignored —
 session state). Without the hook the brief rule stands as written.
+
+**The farewell hook — `stop-farewell-capture.mjs` (2.10, epic PT, origin #181) — is wired for Claude Code only.** The closing rituals end
+with a farewell written after the closing commit — the densest handover there is — and the owner used to copy it by hand into the next
+chat. On the stop of a turn that ran a closing ritual the hook replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root
+with that turn's last message; `/resume` reads it first on the chat's first entry. One closure writes once (`.kaif/farewell-capture.json`
+keeps its id): `stop_hook_active` is not the test — it is already true on the first stop after the closure when a guard blocked earlier
+in the turn. Both files are session state (ignored). Without the hook the owner's paste under `resume` stands as before.
 
 Reading the table: a ❌ is a statement about that system's published contract, not about the
 module. Where a system carries one hook out of three, wire that one — a partial mechanical

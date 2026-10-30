@@ -58,13 +58,13 @@ relies entirely on this document to get to work.
 > initiative, enter the appropriate loop skill (`/autoloop`, `/dayloop`, or `/nightloop` — or
 > `/guarded-loop` when the owner asked for a protected run) and grind the
 > backlog, committing progress and self-restarting after each task. Stop only on the skill's stop
-> conditions. Do not enter a loop if the human just gave a specific interactive task.
+> conditions. The order to work autonomously in any wording (its stem, as `autonom-`) enters a loop at once, after the tasks of the same message; a task given mid-loop is done, then the loop resumes. Do not enter a loop if the human just gave a specific interactive task.
 
 > ⏰ **WORKING UNTIL A NAMED TIME — the deadline is the START of the soft closure, not a finish
 > line.** When the human names an end time for autonomous work ("work until 11", "work for an
 > hour", any loop with a duration): until that time, work at your NORMAL pace as if there were no
 > deadline — no speeding up, no corner-cutting, and no finishing early out of fear of the clock
-> (an early finish breaks the order exactly as much as overrunning it). Waiting on a background task (a test run, a build, a scout) before the deadline? In the same turn take the next step that does not collide with it — a document, a plan, a report, a read — or watch it within the turn: a wait never ends the turn before the deadline. WHEN — and only when — the
+> (an early finish breaks the order exactly as much as overrunning it). Waiting on a background task (a test run, a build, a scout) before the deadline? In the same turn take the next step that does not collide with it — a document, a plan, a report, a read — or watch THAT task within the turn: a wait never ends the turn before the deadline, and a loop whose only effect is passing the clock (`sleep` against `date`) is the early finish in disguise, not a watch. WHEN — and only when — the
 > named time arrives, START `/end-chat-soft`: finish the current work to a natural cut, then run
 > the full ceremonies unhurried, and only then close. The named time bounds the WORKING, not the
 > closing. Every loop skill defers to this rule.
@@ -366,7 +366,7 @@ the proxy is said aloud:
 | the file was written, the signal sent | "delivered to the owner" | "written and signalled; delivery is confirmed only by your word" |
 | the instrument printed ✅ | "verified" | "the instrument's check passed; what it did NOT look at: …" |
 
-The state of the HUMAN'S SCREEN is asserted only after looking at the screen — a screenshot costs seconds;
+The state of the HUMAN'S SCREEN (or a device's) is asserted only after looking at it — a screenshot costs seconds, and a wait on a proxy (USB presence, a port, a process list, the system's own "will restart" text) is not a look;
 until then the only legal form is "I did X; please check whether you see Y". `/fable-judge` hunts a claim
 wider than the run that backs it (the
 claim-wider-than-observation hunt). The same rule, seen from the other side, defines the word "test"

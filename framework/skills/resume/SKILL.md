@@ -12,6 +12,14 @@ A new session starts with empty context. This skill rebuilds the picture fast an
 > is read only after the Step-2 announcement (`AGENT_GUIDE.md` → "A leading skill word is an
 > order"; the mechanical half is the `prompt-resume-word.mjs` hook of the refresh-hooks module).
 
+## Step 0. The chat's FIRST `/resume` — read the previous chat's farewell
+
+Only on the first `/resume` of this chat (never on an hourly refresh, never on a second `/resume`): if
+`FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` exists at the project root, read it before the canon — the closing chat's own last
+message, written by the `stop-farewell-capture.mjs` hook. Compare its date with the newest commit (`git log -1 --format=%ci`): older →
+say «the farewell predates the last commit — STATUS.md leads» and trust `STATUS.md`. Carry its «show first / do first» items into
+Step 2. No file → go on; the owner may paste the farewell under `resume` as before (origin ticket #181).
+
 ## Step 1. Read ALL the canon documents of the KAIF framework (in parallel)
 
 **Read every canon document — the full set, not a slice.** A session that skips one resumes with a

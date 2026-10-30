@@ -21,6 +21,11 @@ tools/.review-tmp/
 .kaif/refresh-marker.json
 .kaif/voice-marker.json
 .kaif/update-rehearsal.json
+# Хуки 2.10 (эпик PT): журнал преамбулы субагенту, прощание закрывающего чата и память закрытия — состояние сессии
+.kaif/subagent-preamble.jsonl
+/FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md
+/FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md.tmp
+.kaif/farewell-capture.json
 
 # Защищённый цикл (2.5, CN4): взведённая граница until — состояние прогона, как и пульс
 .kaif/guarded-loop.json

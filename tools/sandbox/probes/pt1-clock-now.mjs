@@ -53,8 +53,9 @@ say(r3.code === 0 && u3 && u3.old_string === e.old_string && nearNow(u3.new_stri
 const eb = { file_path: 'notes/b.md', old_string: 'write ' + ph('NOW') + ' here', new_string: 'write ' + ph('NOW') + ' here, at ' + ph('TIME') };
 const r3b = call(pre('Edit', eb));
 const u3b = r3b.hso && r3b.hso.updatedInput;
-say(r3b.code === 0 && u3b && u3b.new_string.startsWith('write ' + ph('NOW') + ' here, at ') && /\d{2}:\d{2}$/.test(u3b.new_string),
-  '(3b) Edit: a placeholder the edit only carries stays literal, a new one is filled: ' + String(u3b && u3b.new_string).slice(0, 60));
+say(r3b.code === 0 && u3b && u3b.new_string.startsWith('write ' + ph('NOW') + ' here, at ') && /\d{2}:\d{2}$/.test(u3b.new_string)
+  && u3b.old_string === eb.old_string,   // judge of session 95: the old (3) also proved old_string WITH a placeholder stays untouched — kept here
+  '(3b) Edit: a placeholder the edit only carries stays literal, a new one is filled, old_string with the placeholder untouched: ' + String(u3b && u3b.new_string).slice(0, 60));
 
 const m = { file_path: 'notes/c.md', edits: [{ old_string: 'x', new_string: ph('TIME') }, { old_string: 'y', new_string: 'z' }] };
 const r4 = call(pre('MultiEdit', m));

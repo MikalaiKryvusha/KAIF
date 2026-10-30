@@ -51,11 +51,11 @@ export function values(d = new Date(), offsetMinutes = d.getTimezoneOffset()) {
 // Words already standing literally in `carried` (the old text) are kept: the write only carries them.
 export function carriedWords(carried) {
   const out = new Set();
-  if (typeof carried === 'string') for (const m of carried.matchAll(PLACEHOLDER)) if (!m[1]) out.add(m[2]);
+  if (typeof carried === 'string') for (const m of carried.matchAll(PLACEHOLDER)) out.add(m[2]);   // escaped too (judge s95, hunt 3)
   return out;
 }
 export function fill(text, v, keep = new Set()) {
-  return typeof text === 'string' ? text.replace(PLACEHOLDER, (all, esc, word) => (esc ? L + word + R : keep.has(word) ? all : v[word])) : text;
+  return typeof text === 'string' ? text.replace(PLACEHOLDER, (all, esc, word) => (keep.has(word) ? all : esc ? L + word + R : v[word])) : text;
 }
 const fileText = (p) => { try { return typeof p === 'string' ? readFileSync(p, 'utf8') : ''; } catch { return ''; } };
 // The new tool input, or null when nothing changes (the hook then stays silent).
@@ -97,6 +97,8 @@ if (process.argv[2] === '--selftest') {
   const cw = rewrite('Write', { file_path: 'f.md', content: 'about ' + P('NOW') + ', done ' + P('DATE') }, v, () => 'about ' + P('NOW'));
   ok(cw && cw.content === 'about ' + P('NOW') + ', done 2026-10-23', 'carried: a Write keeps a word the replaced file already holds');
   ok(rewrite('Edit', { file_path: 'g.md', old_string: P('NOW'), new_string: P('NOW') }, v) === null, 'carried only: silence');
+  ok(rewrite('Edit', { file_path: 'h.md', old_string: 'x \\' + P('NOW'), new_string: 'x \\' + P('NOW') + ' y' }, v) === null,
+    'carried ESCAPED: the backslash stays — the edit only carries it (judge of session 95)');
   const m = rewrite('MultiEdit', { file_path: 'c.md', edits: [{ old_string: 'x', new_string: P('TIME') }, { old_string: 'y', new_string: 'z' }] }, v);
   ok(m && m.edits[0].new_string === '07:05' && m.edits[1].new_string === 'z' && m.edits[0].old_string === 'x', 'MultiEdit: only the edit with a placeholder');
   const s = rewrite('Write', { file_path: 'd.md', content: 'about \\' + P('NOW') + ', real ' + P('TIME') }, v);

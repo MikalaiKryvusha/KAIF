@@ -614,7 +614,10 @@ or TIME between white square brackets — is filled by the clock through `update
 without one — Claude Code only), `subagent-preamble.mjs` (2.10, epic PT; origin tickets #166 · #168: on `PreToolUse` of `Agent|Task` a
 marked preamble in front of the subagent's task — read step 1 of `/resume`, quote one canon line first, no subagents of its own, no commit,
 no push — through `updatedInput`, with no permission decision; a marked task is left as it is; a journal line in
-`.kaif/subagent-preamble.jsonl` — Claude Code only) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
+`.kaif/subagent-preamble.jsonl` — Claude Code only), `stop-farewell-capture.mjs` (2.10, epic PT; origin ticket #181: on `Stop` of a turn
+that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the
+project root — one closure writes once, never a block; `/resume` reads it on the chat's first entry — Claude Code only) — plus
+`settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
 suppression window exists, on the STATUS guard; injections are orders, never document bodies. RETIRED in 2.9 (origin ticket #144, the
 KAIF owner's verdict on the field): `pretool-owner-word.mjs` (2.8, `PreToolUse` — refused the next call after a mid-turn word) and the
 pre-release `stop-owner-answer.mjs` (`Stop` — demanded a last "next step" arrow line); the update retires an untouched copy (§10.5

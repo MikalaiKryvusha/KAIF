@@ -17,7 +17,9 @@ const REPO = resolve(new URL('../../..', import.meta.url).pathname.replace(/^\/(
 const SRC = join(REPO, 'framework', 'tools', 'contour');
 const MUTANTS = [
   ['J1', "ok({ kaif: 'contour', id: pageIdOf(closeToken) })", "ok({ kaif: 'contour', id: pageIdOf('not-this-page') })", ['TK7z #169: a REAL page answers /whoami']],
-  ['CL', 'const isPage = !lock.closeToken || await pageListens(lock);', 'const isPage = true;', ['TK7z #169: --close against a stranger']],
+  ['CL', 'const isPage = !lock.closeToken || await pageListens(lock, { silentIsLive: false });', 'const isPage = true;', ['TK7z #169: --close against a stranger']],
+  // SL — judge of session 95: --close counts a silent stranger as the page again (it got the token after 1.5 s)
+  ['SL', 'await pageListens(lock, { silentIsLive: false });', 'await pageListens(lock);', ['TK7z #169: --close against a stranger']],
   ['MS', "const target = markShownTarget(root, opt('--mark-shown'), docPath);", "const target = { doc: opt('--mark-shown') };", ['TK9 #178: the real CLI']],
   ['MF', "  const pick = value && !String(value).startsWith('--') ? value : positional;\n  if (!pick)",
     "  const pick = value;\n  if (pick) return { doc: pick };\n  if (!pick)", ['TK9 #178: --mark-shown takes the named file', 'TK9 #178: the real CLI']],

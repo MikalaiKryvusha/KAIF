@@ -1395,12 +1395,12 @@ export async function otherLivePage(root, key) {
 // [TESTED: 2026-10-23 15:33 · selftest «TK7e #169» (a resetting listener and an HTTP 404 server on the lock's port, a live pid — the own lock
 //  raises the page, another's refuses nothing) + mutants M29 · M6 · M20 red on their cases; report testcases/reports/2026-10-23_tk7f-judge-tk7d-caveats.md]
 export const pageIdOf = (token) => createHash('sha256').update('kaif-contour:' + String(token)).digest('hex').slice(0, 32);
-const pageListens = (lock) => new Promise((res) => {
+const pageListens = (lock, { silentIsLive = true } = {}) => new Promise((res) => {
   let u; try { u = new URL(String(lock && lock.url)); } catch { res(false); return; }
   const sock = netConnect({ host: u.hostname, port: Number(u.port) || 80 });
   let done = false, data = '';
   const end = (v) => { if (done) return; done = true; sock.destroy(); res(v); };
-  sock.setTimeout(LIVENESS_TIMEOUT_MS, () => end(true));
+  sock.setTimeout(LIVENESS_TIMEOUT_MS, () => end(silentIsLive));   // the door: a busy page is live; --close: silence is no page
   sock.once('error', () => end(false));
   sock.once('connect', () => {
     if (!lock.closeToken) { end(true); return; }
@@ -1864,9 +1864,9 @@ export async function closeContour(root, docPath, { force = false, ownerWord = n
   // TK7z (judge TK7e · PT1 · TK7g, hunt 2 caveat): the close request carries the RAW token — a stranger that got the page's port answered
   // 200, was told the token, and the lock was deleted («its own server ended it»). The port is asked WHO it is first (pageListens): not
   // this page → the token is never sent; without --force nothing is killed either; --force keeps its old way (the pid, by the owner's word).
-  const isPage = !lock.closeToken || await pageListens(lock);
+  const isPage = !lock.closeToken || await pageListens(lock, { silentIsLive: false });   // judge s95: a silent stranger got the token
   if (!isPage && !force) {
-    log('the page at ' + lock.url + ' does not answer as this page (GET /whoami: nothing, or another process) — the close token is NOT sent and pid ' + lock.pid + ' was NOT killed: a pid from a file may belong to another process by now; the lock is kept for the draft (I29); a hung or pre-2.10 contour is ended with --force --owner-word "<quote>" (exit ' + EXIT_NOT_CLOSED + ')');
+    log('the page at ' + lock.url + ' does not answer as this page (GET /whoami: nothing within the liveness window, or another process) — the close token is NOT sent and pid ' + lock.pid + ' was NOT killed: a pid from a file may belong to another process by now; the lock is kept for the draft (I29); a hung or pre-2.10 contour is ended with --force --owner-word "<quote>" (exit ' + EXIT_NOT_CLOSED + ')');
     return EXIT_NOT_CLOSED;
   }
   // The page's OWN server is asked to end (token from the lock): a pid read from a file may belong to another process by
@@ -2846,8 +2846,18 @@ export async function selftest(log = console.log) {
     const kept = existsSync(lockPath(root, basename(STR)));
     stranger.closeAllConnections(); await new Promise((r) => stranger.close(r));
     rmSync(lockPath(root, basename(STR)), { force: true }); rmSync(join(root, STR), { force: true });
-    ok(code === EXIT_NOT_CLOSED && kept && !seen.some((l) => l.includes('SECRET-TK7Z')) && /does not answer as this page/.test(clog.join('\n')),
-      'TK7z #169: --close against a stranger on the page\'s port sends no token, keeps the lock, exit 4 (I29, LP)');
+    // the silent stranger (judge of session 95): accepts the connection, never answers — it got the token after 1.5 s
+    const heard = [];
+    const silent = netCreateServer((c) => { c.on('data', (b) => heard.push(b.toString('latin1'))); });
+    await new Promise((r) => silent.listen(0, '127.0.0.1', r));
+    writeFileSync(lockPath(root, basename(STR)), JSON.stringify({ pid: process.pid, url: 'http://127.0.0.1:' + silent.address().port + '/', doc: STR,
+      closeToken: 'SECRET-SILENT', startedAt: new Date(Date.now() - 3600e3).toISOString() }) + '\n');
+    const code2 = await closeContour(root, STR, { log: () => {} });
+    await new Promise((r) => silent.close(r));
+    ok(code === EXIT_NOT_CLOSED && kept && !seen.some((l) => l.includes('SECRET-TK7Z')) && /does not answer as this page/.test(clog.join('\n'))
+      && code2 === EXIT_NOT_CLOSED && !heard.join('').includes('SECRET-SILENT'),
+      'TK7z #169: --close against a stranger on the page\'s port — answering 200 or silent — sends no token, keeps the lock, exit 4 (I29, LP)');
+    rmSync(lockPath(root, basename(STR)), { force: true });
   }
   // (7f) TK7c: the OWN lock caught half-written is read again — the live page it belongs to still says «Already open», no second window
   writeFileSync(OWN, '{"pid": ');
