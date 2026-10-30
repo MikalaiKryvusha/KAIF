@@ -10,6 +10,9 @@
 //       tool input before the tool runs. The placeholders are the words NOW · NOW-ISO · DATE · TIME in white square brackets (U+27E6 /
 //       U+27E7) — spelled in this file only as escapes: the wired hook would otherwise fill its own text. A backslash before a placeholder
 //       keeps it literal (a text ABOUT the placeholders) and the backslash is dropped.
+//       A placeholder the write only CARRIES is kept literal too (2.10 TK7z, judge hunt 4): a word that already stands in the Edit's
+//       `old_string` (MultiEdit: that edit's `old_string`) or in the file a Write replaces — a text about the placeholders, rewritten next
+//       to them, kept getting the clock's value in their place.
 // The values, local time of the machine: NOW — the prose stamp `YYYY-MM-DD HH:MM ±HH:MM`; NOW-ISO — `YYYY-MM-DDTHH:MM:SS±HH:MM`; DATE —
 // `YYYY-MM-DD`; TIME — `HH:MM`.
 //
@@ -21,9 +24,10 @@
 // never breaks the session: any internal error → exit 0 silently (decision #144 of the origin: no KAIF hook stops the agent).
 // The context line of (1) is English on purpose: the agent reads it, not the owner (AGENT_GUIDE.md → languages are routed by audience).
 // `--selftest` proves the zone sign (both hemispheres), the four values, three write forms, the escape, silence on a plain write.
-// [NOT-TESTED: no live Claude Code session has run it yet (step PT3). Hygiene so far, 2026-10-23 15:43: the acceptance probe
-//  tools/sandbox/probes/pt1-clock-now.mjs 7/7 and --selftest 7/7 on the DEPLOYED copy (suite s14), s14 red on the build before it on exactly
-//  its named cases; report testcases/reports/2026-10-23_pt1-clock-now.md]
+// [TESTED: 2026-10-23 16:58 · live Claude Code sessions of step PT3 — a file written with the placeholder read back with the clock's
+//  date (testcases/reports/2026-10-23_pt3-live-hooks.md); 2026-10-30 16:30 · the origin's own live session with this file wired: a carried
+//  placeholder stayed literal and a new one got the minute (TK7z, judge hunt 4); hygiene — --selftest 10/10, probe pt1-clock-now 8/8, the
+//  carried-word mutant red on exactly its three cases]
 import { readFileSync } from 'node:fs';
 
 const L = '\u27E6', R = '\u27E7';   // white square brackets around a placeholder word
@@ -44,19 +48,27 @@ export function values(d = new Date(), offsetMinutes = d.getTimezoneOffset()) {
   const zone = zoneOf(offsetMinutes);
   return { NOW: date + ' ' + time + ' ' + zone, 'NOW-ISO': date + 'T' + time + ':' + pad(d.getSeconds()) + zone, DATE: date, TIME: time };
 }
-export function fill(text, v) {
-  return typeof text === 'string' ? text.replace(PLACEHOLDER, (all, esc, word) => (esc ? L + word + R : v[word])) : text;
+// Words already standing literally in `carried` (the old text) are kept: the write only carries them.
+export function carriedWords(carried) {
+  const out = new Set();
+  if (typeof carried === 'string') for (const m of carried.matchAll(PLACEHOLDER)) if (!m[1]) out.add(m[2]);
+  return out;
 }
+export function fill(text, v, keep = new Set()) {
+  return typeof text === 'string' ? text.replace(PLACEHOLDER, (all, esc, word) => (esc ? L + word + R : keep.has(word) ? all : v[word])) : text;
+}
+const fileText = (p) => { try { return typeof p === 'string' ? readFileSync(p, 'utf8') : ''; } catch { return ''; } };
 // The new tool input, or null when nothing changes (the hook then stays silent).
-export function rewrite(toolName, input, v) {
+export function rewrite(toolName, input, v, readOld = fileText) {
   if (!input || typeof input !== 'object' || !(toolName in WRITE_FIELDS)) return null;
   const out = { ...input };
   let changed = false;
-  for (const f of WRITE_FIELDS[toolName]) { const t = fill(out[f], v); if (t !== out[f]) { out[f] = t; changed = true; } }
+  const keep = carriedWords(toolName === 'Write' ? readOld(input.file_path) : input.old_string);
+  for (const f of WRITE_FIELDS[toolName]) { const t = fill(out[f], v, keep); if (t !== out[f]) { out[f] = t; changed = true; } }
   if (toolName === 'MultiEdit' && Array.isArray(input.edits)) {
     out.edits = input.edits.map((e) => {
       if (!e || typeof e !== 'object') return e;
-      const t = fill(e.new_string, v);
+      const t = fill(e.new_string, v, carriedWords(e.old_string));
       if (t === e.new_string) return e;
       changed = true;
       return { ...e, new_string: t };
@@ -77,8 +89,14 @@ if (process.argv[2] === '--selftest') {
     'four values: ' + JSON.stringify(v));
   const w = rewrite('Write', { file_path: 'a.md', content: P('NOW') + ' | ' + P('NOW-ISO') }, v);
   ok(w && w.file_path === 'a.md' && w.content === '2026-10-23 07:05 +03:00 | 2026-10-23T07:05:09+03:00', 'Write: content filled, file_path kept');
-  const e = rewrite('Edit', { file_path: 'b.md', old_string: P('DATE'), new_string: P('DATE'), replace_all: true }, v);
-  ok(e && e.old_string === P('DATE') && e.new_string === '2026-10-23' && e.replace_all === true, 'Edit: new_string filled, old_string untouched');
+  const e = rewrite('Edit', { file_path: 'b.md', old_string: 'x', new_string: P('DATE'), replace_all: true }, v);
+  ok(e && e.old_string === 'x' && e.new_string === '2026-10-23' && e.replace_all === true, 'Edit: new_string filled, old_string untouched');
+  // TK7z (judge hunt 4): a placeholder the edit only carries stays; a new word next to it is filled
+  const c = rewrite('Edit', { file_path: 'b.md', old_string: 'write ' + P('NOW') + ' here', new_string: 'write ' + P('NOW') + ' here · at ' + P('TIME') }, v);
+  ok(c && c.new_string === 'write ' + P('NOW') + ' here · at 07:05', 'carried: a word in old_string stays literal, a new word is filled');
+  const cw = rewrite('Write', { file_path: 'f.md', content: 'about ' + P('NOW') + ', done ' + P('DATE') }, v, () => 'about ' + P('NOW'));
+  ok(cw && cw.content === 'about ' + P('NOW') + ', done 2026-10-23', 'carried: a Write keeps a word the replaced file already holds');
+  ok(rewrite('Edit', { file_path: 'g.md', old_string: P('NOW'), new_string: P('NOW') }, v) === null, 'carried only: silence');
   const m = rewrite('MultiEdit', { file_path: 'c.md', edits: [{ old_string: 'x', new_string: P('TIME') }, { old_string: 'y', new_string: 'z' }] }, v);
   ok(m && m.edits[0].new_string === '07:05' && m.edits[1].new_string === 'z' && m.edits[0].old_string === 'x', 'MultiEdit: only the edit with a placeholder');
   const s = rewrite('Write', { file_path: 'd.md', content: 'about \\' + P('NOW') + ', real ' + P('TIME') }, v);

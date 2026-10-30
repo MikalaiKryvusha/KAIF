@@ -43,11 +43,18 @@ const u2 = r2.hso && r2.hso.updatedInput;
 say(r2.code === 0 && u2 && u2.file_path === w.file_path && nearNow(u2.content) && !u2.content.includes(L) && !('permissionDecision' in (r2.hso || {})),
   '(2) Write: content filled, file_path kept, no permission decision: ' + String(u2 && u2.content).slice(0, 90));
 
-const e = { file_path: 'notes/b.md', old_string: ph('NOW') + ' old', new_string: 'new ' + ph('NOW'), replace_all: false };
+// TK7з (judge hunt 4): the old case put the placeholder in old_string too and expected it filled — exactly the defect (a placeholder the
+// edit only CARRIES got the clock). Now (3) writes a NEW placeholder, and (3b) proves a carried one stays literal next to a filled one.
+const e = { file_path: 'notes/b.md', old_string: 'old text', new_string: 'new ' + ph('NOW'), replace_all: false };
 const r3 = call(pre('Edit', e));
 const u3 = r3.hso && r3.hso.updatedInput;
 say(r3.code === 0 && u3 && u3.old_string === e.old_string && nearNow(u3.new_string) && u3.replace_all === false && u3.file_path === e.file_path,
   '(3) Edit: new_string filled, old_string and the other fields untouched');
+const eb = { file_path: 'notes/b.md', old_string: 'write ' + ph('NOW') + ' here', new_string: 'write ' + ph('NOW') + ' here, at ' + ph('TIME') };
+const r3b = call(pre('Edit', eb));
+const u3b = r3b.hso && r3b.hso.updatedInput;
+say(r3b.code === 0 && u3b && u3b.new_string.startsWith('write ' + ph('NOW') + ' here, at ') && /\d{2}:\d{2}$/.test(u3b.new_string),
+  '(3b) Edit: a placeholder the edit only carries stays literal, a new one is filled: ' + String(u3b && u3b.new_string).slice(0, 60));
 
 const m = { file_path: 'notes/c.md', edits: [{ old_string: 'x', new_string: ph('TIME') }, { old_string: 'y', new_string: 'z' }] };
 const r4 = call(pre('MultiEdit', m));

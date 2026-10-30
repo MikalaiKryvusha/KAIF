@@ -506,6 +506,7 @@ function ignoreFirstWanted() {
     '.kaif/guarded-loop.json', // the guarded loop's armed boundary (2.5, CN4) — same class as the pulse; the origin once swept it into a commit
     '.kaif/refresh-marker.json',  // the context-refresh witness is session state, not history (AGENT_GUIDE → Context refresh)
     '.kaif/voice-marker.json',    // the voice-portrait load witness — the same class (2.7, epic VC: `kaif-voice-lint load`)
+    '.kaif/subagent-preamble.jsonl', // the subagent-preamble hook's journal (2.10, epic PT) — session state, the same class
     '.kaif/contour-window/',      // the owner page's own browser profile IN THE PROJECT (2.7, epic LP, origin issue #66)
     '.kaif/.contour-tmp/',        // the contour's renders and the call phrase (2.9, #126) — a sweeping commit took a page of questions along
     contourDecisionsDir() + '/*.lock', // the contour's window locks (2.9, #126) — a killed server's lock stays on purpose (I29)

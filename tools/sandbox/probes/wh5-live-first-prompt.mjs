@@ -86,11 +86,15 @@ say(!existsSync(MK), 'right after install there is no refresh witness on disk (t
 r = core(P, ['wire-hooks']);
 const settings = existsSync(join(P, '.claude', 'settings.json')) ? readFileSync(join(P, '.claude', 'settings.json'), 'utf8') : '';
 say(r.code === 0 && /prompt-refresh-timer\.mjs/.test(settings), `wire-hooks wires the refresh timer into .claude/settings.json — ${tail(r.all, 2)}`);
+// how many UserPromptSubmit hooks the build wires — read from the wired settings, not a constant (2.9 wired two; 2.10 PT1 adds the
+// clock hook — a constant 2 made this probe stale the day a third hook shipped, session 94)
+const UPS = (() => { try { return JSON.parse(settings).hooks.UserPromptSubmit.flatMap((g) => g.hooks || []).length; } catch { return -1; } })();
+info(`UserPromptSubmit hooks wired: ${UPS}`);
 
 // ---- CONTROL: no witness → the live session's first prompt gets the timer's order
 let s = live(P, 'control');
 info(`control session: exit ${s.code} · UserPromptSubmit hook events ${s.hookEvents} · result ${JSON.stringify(s.result)}${s.code ? ' · ' + tail(s.err, 3) : ''}`);
-say(s.code === 0 && s.hookEvents === 2 && s.orders.some((o) => /no refresh witness found/.test(o)),
+say(s.code === 0 && s.hookEvents === UPS && s.orders.some((o) => /no refresh witness found/.test(o)),
     `CONTROL: with no witness the harness fires the timer on the first prompt — «${s.orders[0] || 'no order seen'}»`);
 
 // ---- the study item, the way the agent does it: re-read the nine, write the witness as the item says, tick
@@ -109,9 +113,9 @@ say(r.code === 0 && /KAIF-ADAPT: study done/.test(task()), `checkpoint study tic
 // ---- the owner's first prompt after the install: the timer is silent
 s = live(P, 'after-study');
 info(`after-study session: exit ${s.code} · UserPromptSubmit hook events ${s.hookEvents} · result ${JSON.stringify(s.result)}${s.code ? ' · ' + tail(s.err, 3) : ''}`);
-// two UserPromptSubmit hooks are wired (the timer and the resume word): both must have RUN (exit 0) — silence of a hook that never ran
+// every wired UserPromptSubmit hook (the timer, the resume word and, since 2.10, the clock) must have RUN (exit 0) — silence of a hook that never ran
 // would prove nothing
-say(s.code === 0 && s.hookEvents === 2 && s.allExit0 && s.orders.length === 0,
+say(s.code === 0 && s.hookEvents === UPS && s.allExit0 && s.orders.length === 0,
     `after study the first live prompt gets no timer order (hooks that ran: ${s.hookEvents}, all exit 0: ${s.allExit0}; orders: ${s.orders.length ? s.orders.join(' / ') : 'none'})`);
 
 console.log(bad ? `\nFAILED: ${bad} BAD — the run folder is kept: ${ROOT}` : '\nALL OK — the timer fires without the witness and is silent after the study item, in a live session');

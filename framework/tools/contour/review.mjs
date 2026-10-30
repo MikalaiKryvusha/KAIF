@@ -42,8 +42,8 @@ import { createServer, request as httpRequest } from 'node:http';
 import { connect as netConnect, createServer as netCreateServer } from 'node:net';
 import { randomBytes, createHash } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
-import { join, resolve, basename, relative, extname } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { join, resolve, basename, relative, extname, isAbsolute } from 'node:path';
+import { pathToFileURL, fileURLToPath } from 'node:url';
 import {
   loadContourConfig, normalize, bodyHash, provenance, inQuietHours, parseMetaBlock, parseQuestions,
   docStatus, OPTION_START_RE, renderMd, renderInline, splitParagraphs, recordDecision, preflight, lengthWarnings, QUESTION_CHARS_BUDGET, REFERENCES_SINCE, checkForm, escapeHtml, tmpDirOf, TMP_DIR,
@@ -597,6 +597,21 @@ export function ownerDocs(root, { includeStale = false, now = new Date() } = {})
 // ── I40–I42: the fact of SHOWING, the queue with ages, the gate by exit code ──────────────────
 export function readShown(root, cfg = cfgOf(root)) { return readJsonOr(join(decisionsAbs(root, cfg), SHOWN_FILE), {}); }
 // Written AT THE MOMENT of showing (window open / question asked in chat) — not when the agent remembered.
+// TK9 (2.10, origin #178): the document --mark-shown records must be a real file of this project. The 2.9 branch took whatever word
+// followed the flag — `--transport`, `chat` — wrote it as a key and said "Shown recorded". The value of the flag wins; a value that is
+// another flag falls back to the positional document (`<doc> --mark-shown --transport chat`); anything that is not an existing file
+// under the root is refused and nothing is written.
+export function markShownTarget(root, value, positional) {
+  const pick = value && !String(value).startsWith('--') ? value : positional;
+  if (!pick) return { refusal: 'no document named — usage: --mark-shown <doc.md> [--transport chat]' };
+  const abs = resolve(root, pick);
+  const rel = relative(resolve(root), abs);
+  if (rel.startsWith('..') || isAbsolute(rel)) return { refusal: '"' + pick + '" is outside the project — nothing recorded' };
+  let isFile = false;
+  try { isFile = lstatSync(abs).isFile(); } catch { /* missing */ }
+  if (!isFile) return { refusal: '"' + pick + '" is not an existing file of this project — nothing recorded (a flag value is not a document, #178)' };
+  return { doc: rel.replace(/\\/g, '/') };
+}
 export function recordShown(root, rels, transport, now = new Date()) {
   const map = readShown(root);
   for (const r of rels) map[String(r).replace(/\\/g, '/')] = { at: now.toISOString(), transport };
@@ -1846,9 +1861,18 @@ export async function closeContour(root, docPath, { force = false, ownerWord = n
     if (!ownerWord || !String(ownerWord).trim()) { log('refusing --force: it needs --owner-word "<the owner\'s words, verbatim>" — a neighbour session\'s word is not evidence'); return EXIT_UNKNOWN_FLAG; }
     log('FORCE close by the owner\'s word: "' + ownerWord + '"' + (sinceInput !== null && sinceInput < quietMs ? ' — last input ' + Math.round(sinceInput / 1000) + ' s ago' : '') + (unsaved ? ' — draft of ' + lock.draftFields + ' field(s) NOT saved' : ''));
   }
+  // TK7z (judge TK7e · PT1 · TK7g, hunt 2 caveat): the close request carries the RAW token — a stranger that got the page's port answered
+  // 200, was told the token, and the lock was deleted («its own server ended it»). The port is asked WHO it is first (pageListens): not
+  // this page → the token is never sent; without --force nothing is killed either; --force keeps its old way (the pid, by the owner's word).
+  const isPage = !lock.closeToken || await pageListens(lock);
+  if (!isPage && !force) {
+    log('the page at ' + lock.url + ' does not answer as this page (GET /whoami: nothing, or another process) — the close token is NOT sent and pid ' + lock.pid + ' was NOT killed: a pid from a file may belong to another process by now; the lock is kept for the draft (I29); a hung or pre-2.10 contour is ended with --force --owner-word "<quote>" (exit ' + EXIT_NOT_CLOSED + ')');
+    return EXIT_NOT_CLOSED;
+  }
   // The page's OWN server is asked to end (token from the lock): a pid read from a file may belong to another process by
   // now, and a killed process exits with a code the contract does not know. Only --force may fall back to the pid.
-  const asked = await postLocal(String(lock.url).replace(/\/?$/u, '/') + 'close?t=' + encodeURIComponent(lock.closeToken || '') + (unsaved ? '&keep=1' : ''));
+  const asked = isPage ? await postLocal(String(lock.url).replace(/\/?$/u, '/') + 'close?t=' + encodeURIComponent(lock.closeToken || '') + (unsaved ? '&keep=1' : ''))
+    : { status: 0, error: 'not this page (GET /whoami) — the token was not sent' };
   let how = null;
   if (asked.status === 200) { how = 'its own server ended it (exit 2 for the waiting agent)'; if (!unsaved) rmSync(lockPath(root, key), { force: true }); } // the server removes its lock too — idempotent
   else if (!force) {
@@ -2047,6 +2071,25 @@ export async function selftest(log = console.log) {
   const words = decisionWords({ answers: { Q1: { choice: 'A' }, Q2: { choice: 'B', text: 'take B,\n  but later', comment: 'the radio does not clear' }, Q3: { text: 'free' } }, comment: 'bug on the page' });
   ok(words === 'Q1 = A, Q2 = B + text «take B, but later» + comment «the radio does not clear», Q3 = text «free», document comment «bug on the page»',
     'CP #128: the waiter\'s line names choice · text · comment · document comment (a choice alone stays "Q1 = A")');
+  { // 2.10, epic TK, step TK9 (origin #178): --mark-shown records only a real file of this project — a flag value is not a document
+    const r = mkdtempSync(join(tmpdir(), 'kaif-tk9-'));
+    mkdirSync(join(r, 'interviews'), { recursive: true });
+    writeFileSync(join(r, 'interviews', 'q.md'), '# q\n');
+    const t = (v, p) => markShownTarget(r, v, p);
+    ok(t('interviews/q.md').doc === 'interviews/q.md' && t('--transport', 'interviews/q.md').doc === 'interviews/q.md'
+      && !!t('--transport').refusal && !!t('chat', 'interviews/q.md').refusal && !!t('interviews/nope.md').refusal
+      && !!t('../outside.md').refusal && !!t(null).refusal,
+      'TK9 #178: --mark-shown takes the named file or, after another flag, the positional one; "--transport", "chat", a missing file, a path outside the project and nothing refuse');
+    // the CLI branch itself — the field's two wrong calls — exits 1 and writes nothing; the right one records the file
+    const cli = (...a) => spawnSync(process.execPath, [fileURLToPath(import.meta.url), ...a], { cwd: r, encoding: 'utf8', timeout: 20000 });
+    const shownAt = join(decisionsAbs(r), SHOWN_FILE);
+    const w1 = cli('interviews/q.md', '--mark-shown', 'chat'), w2 = cli('--mark-shown', '--transport', 'chat');
+    const junk = existsSync(shownAt);
+    const g1 = cli('--mark-shown', 'interviews/q.md', '--transport', 'chat');
+    ok(w1.status === 1 && w2.status === 1 && !junk && g1.status === 0 && Object.keys(readJsonOr(shownAt, {})).join() === 'interviews/q.md',
+      'TK9 #178: the real CLI — «<doc> --mark-shown chat» and «--mark-shown --transport chat» exit 1 with nothing written; «--mark-shown <doc>» records only the file');
+    rmSync(r, { recursive: true, force: true });
+  }
   // CP (2.9, #123): a hard-wrapped paragraph, list item and quote render as ONE block each; bold across the wrap is bold, not raw "**"
   ok(renderMd('a **b\nc** d') === '<p>a <strong>b\nc</strong> d</p>' && !renderMd('- **A)** text **bold across\n  the wrap** end').includes('**')
     && renderMd('> one\n> two') === '<blockquote>\n<p>one\ntwo</p>\n</blockquote>' && renderMd('**P (rename kaif-*) → W**') === '<p><strong>P (rename kaif-*) → W</strong></p>'
@@ -2769,6 +2812,43 @@ export async function selftest(log = console.log) {
   await Promise.race([servedE, sl(3000)]);
   ok(!!urlE && !/Already open/.test(slogE.join('\n')),
     'TK7c #169: the own lock of a live pid that does not answer at its address (a reused pid) is no page — the page rises, no «Already open» (I29, I48)');
+  // (7h) TK7z (judge TK7e · PT1 · TK7g, hunt 2 — REFUTED proof): every other "live page" here is a fixture that answers /whoami itself; this
+  // one is a REAL page (serveContour) — the door must read ITS answer: another document refuses, its own document says «Already open»
+  {
+    const REAL = 'interviews/interview_real.md';
+    writeFileSync(join(root, REAL), three);
+    const slogR = [];
+    const servedR = serveContour(root, { docPath: REAL }, { open: false, signal: false, log: (l) => slogR.push(String(l)) });
+    let urlR = null;
+    for (let i = 0; i < 100 && !urlR; i++) { urlR = (slogR.join('\n').match(/Page is up: (http:\/\/127\.0\.0\.1:\d+\/)/) || [])[1] || null; if (!urlR) await sl(50); }
+    const slogR2 = [], slogR3 = [];
+    const eR2 = urlR && await Promise.race([serveContour(root, { docPath: MD }, { open: false, signal: false, log: (l) => slogR2.push(String(l)) }), sl(4000).then(() => null)]);
+    const eR3 = urlR && await Promise.race([serveContour(root, { docPath: REAL }, { open: false, signal: false, log: (l) => slogR3.push(String(l)) }), sl(4000).then(() => null)]);
+    if (urlR) await closeByToken(root, basename(REAL), urlR);
+    await Promise.race([servedR, sl(3000)]);
+    rmSync(join(root, REAL), { force: true });
+    ok(!!urlR && eR2 && eR2.exitCode === EXIT_PREFLIGHT && eR2.outcome === 'other-open' && eR3 && eR3.outcome === 'already-open'
+      && !/Page is up/.test(slogR2.join('\n') + slogR3.join('\n')),
+      'TK7z #169: a REAL page answers /whoami with its own lock\'s id — another document refuses, its own says «Already open», no second page (I29, I48)');
+  }
+  // (7k) TK7z (hunt 2 caveat): --close against a stranger on the page's port — an HTTP server answering 200 to everything — keeps the token
+  // and the lock, exit 4
+  {
+    const seen = [];
+    const stranger = createServer((q, s) => { seen.push(q.method + ' ' + q.url); s.writeHead(200); s.end('ok'); });
+    await new Promise((r) => stranger.listen(0, '127.0.0.1', r));
+    const STR = 'interviews/interview_stranger.md';
+    writeFileSync(join(root, STR), three);
+    writeFileSync(lockPath(root, basename(STR)), JSON.stringify({ pid: process.pid, url: 'http://127.0.0.1:' + stranger.address().port + '/', doc: STR,
+      closeToken: 'SECRET-TK7Z', startedAt: new Date(Date.now() - 3600e3).toISOString() }) + '\n');
+    const clog = [];
+    const code = await closeContour(root, STR, { log: (l) => clog.push(String(l)) });
+    const kept = existsSync(lockPath(root, basename(STR)));
+    stranger.closeAllConnections(); await new Promise((r) => stranger.close(r));
+    rmSync(lockPath(root, basename(STR)), { force: true }); rmSync(join(root, STR), { force: true });
+    ok(code === EXIT_NOT_CLOSED && kept && !seen.some((l) => l.includes('SECRET-TK7Z')) && /does not answer as this page/.test(clog.join('\n')),
+      'TK7z #169: --close against a stranger on the page\'s port sends no token, keeps the lock, exit 4 (I29, LP)');
+  }
   // (7f) TK7c: the OWN lock caught half-written is read again — the live page it belongs to still says «Already open», no second window
   writeFileSync(OWN, '{"pid": ');
   setTimeout(() => writeFileSync(OWN, JSON.stringify({ pid: process.pid, url: otherUrl, doc: MD, closeToken: 'tok-other' }) + '\n'), 50);
@@ -3096,8 +3176,9 @@ export function main(args = process.argv.slice(2), root = process.cwd()) {
     process.exit(0);
   }
   if (args.includes('--mark-shown')) { // I40: the question was asked pointedly in chat — the agent's hand records the fact
-    const doc = opt('--mark-shown');
-    if (!doc) usage();
+    const target = markShownTarget(root, opt('--mark-shown'), docPath);
+    if (target.refusal) { console.error('✖ --mark-shown: ' + target.refusal); process.exitCode = EXIT_UNKNOWN_FLAG; return; }
+    const doc = target.doc;
     const transport = opt('--transport') || T(cfg).transport.chat;
     recordShown(root, [doc], transport);
     console.log('Shown recorded (I40): ' + doc + ' · ' + transport + ' → ' + cfg.decisionsDir + '/' + SHOWN_FILE);

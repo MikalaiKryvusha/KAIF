@@ -21,11 +21,13 @@
 // Session 94 (step TK7f, judge of epic TK hunt 1 — REFUTED the count of TK7e): a REPORT counts only if it stands BEFORE the turn's last
 // assistant record — the harness writes the notification's `queue-operation/enqueue` into the OLD turn after its end, and the probe read it
 // as a report (TK7e's "21 → 46" was half the truth: 92); a call is an EXECUTED `node …review.mjs … --call` without `--dry-run` — grep, sed
-// and dry runs counted as calls. GAPS: a report is still read from text — a tool output quoting the id of a live task BEFORE the turn's last
+// and dry runs counted as calls; shell segments are cut OUTSIDE quotes only (judge TK7e·PT1·TK7g hunt 5: a `;` in the call's text left
+// session 90's dry run, 05:58:37Z, counted as a call — the first TK7f fix cut inside the quote). GAPS: a report is still read from text — a tool output quoting the id of a live task BEFORE the turn's last
 // assistant record would read it reported (false green); a wait is judged only by a closing «?» (session 90, 08:40 — an affirmative wait
 // the probe does not judge; its call was in the record); the probe does not know a named time — the reader judges each named turn.
 // [TESTED: 2026-10-23 16:21 · --selftest 14/14 (T4L report after the turn end → named, T4m mid-turn `queued_command` report → silent,
-//  T3d dry run and T3g grep → WAIT) · mutants tools/sandbox/probes/tk1-scan-mutants.mjs 8/8 · 25 live records: 92 turns with a live
+//  T3d dry run and T3g grep → WAIT; 17:00 — T3q dry run with `;` in its text → WAIT, T3p PowerShell form → a call) · mutants
+//  tools/sandbox/probes/tk1-scan-mutants.mjs 9/9 · 25 live records: 92 turns with a live
 //  background task (judge's independent count ≈ 93 — one turn of session 93 was open when he measured) · report
 //  testcases/reports/2026-10-23_tk7g-scan-late-report.md]
 import { readFileSync, existsSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
@@ -70,6 +72,9 @@ if (process.argv[2] === '--selftest') {
     say('T4mc', 'The run reported green.'),
     // TK7f: a call is an EXECUTED `review.mjs --call` without `--dry-run` — a dry run plays nothing, grep and sed call no one (judge hunt 1)
     prompt('T3d', 'go on'), tool('T3da', 'node tools/review.mjs --call "the stand password" --dry-run'), say('T3db', 'The work stops without the password. Will you give it?'),
+    // ...a `;` inside the call's quoted text does not cut the command (session 90, 05:58:37Z), and the PowerShell form with a Windows path is a call
+    prompt('T3q', 'go on'), tool('T3qa', 'node tools/review.mjs --call "the stand waits; password needed" --dry-run 2>&1'), say('T3qb', 'The work stops without the password. Will you give it?'),
+    prompt('T3p', 'go on'), tool('T3pa', '& node "D:\\p\\.kaif\\tools\\contour\\review.mjs" --call "the stand waits; password needed"'), say('T3pb', 'Called you: the work stops without the password. Will you give it?'),
     prompt('T3g', 'go on'), tool('T3ga', 'grep -o "review.mjs --call[^\\"]*" session.jsonl; sed -n 1,5p x'), say('T3gb', 'The work stops without the password. Will you give it?'),
     prompt('T5', 'more'), say('T5a', 'Working.'),
   ].map((r) => JSON.stringify(r)).join('\n') + '\n');
@@ -79,7 +84,7 @@ if (process.argv[2] === '--selftest') {
   const want = [['T1  LEAVE-FOR-OWN-STEP', true], ['T2  WAIT-WITHOUT-CALL', true], ['T3  ', false], ['T4  ENDED-WITH-LIVE-BACKGROUND (1)', true],
     ['T4s  ', false], ['T4g  ENDED-WITH-LIVE-BACKGROUND (1)', true], ['T4h  ', false], ['T4q  ', false],
     ['T4L  ENDED-WITH-LIVE-BACKGROUND (1)', true], ['T4m  ', false], ['T3d  WAIT-WITHOUT-CALL', true], ['T3g  WAIT-WITHOUT-CALL', true],
-    ['T5  ', false], ['turns judged: 12', true]];
+    ['T3q  WAIT-WITHOUT-CALL', true], ['T3p  ', false], ['T5  ', false], ['turns judged: 14', true]];
   let bad = 0;
   for (const [line, present] of want) { const ok = out.includes(line) === present; if (!ok) bad++; console.log(`${ok ? 'ok  ' : 'FAIL'} ${present ? 'has' : 'lacks'} «${line.trim()}»`); }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
@@ -97,7 +102,22 @@ const opensTurn = (r) => r && r.type === 'user' && !!(r.promptSource || r.origin
 // a call is an EXECUTED contour `--call` — a shell segment that RUNS `node …review.mjs … --call` without `--dry-run`; text that only names
 // a call (grep, sed, a quote) and a dry run (plays nothing) are no call (judge of epic TK, hunt 1: five such counted in sessions 88–92)
 const CALL_SEGMENT = /^\s*(?:[A-Za-z_]\w*=\S*\s+)*(?:&\s*)?node(?:\.exe)?\s+\S*review\.mjs\b.*--call\b/;
-const isCall = (command) => String(command).split(/&&|\|\||[;|\n]/).some((seg) => CALL_SEGMENT.test(seg) && !/--dry-run\b/.test(seg));
+// shell segments are cut at `;` `|` `&&` `||` and new lines OUTSIDE quotes only — a `;` inside the call's text is text (judge TK7е·PT1·TK7ж,
+// hunt 5: session 90, 05:58:37Z — `--call "KAIF: … waits; Vulkan …" --dry-run` cut inside the quote read as a real call)
+const shellSegments = (command) => {
+  const out = []; let cur = '', q = '';
+  const s = String(command);
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (q) { cur += ch; if (ch === q) q = ''; continue; }
+    if (ch === '"' || ch === "'") { q = ch; cur += ch; continue; }
+    if (ch === ';' || ch === '\n' || ch === '|' || (ch === '&' && s[i + 1] === '&')) { out.push(cur); cur = ''; if (s[i + 1] === ch) i++; continue; }
+    cur += ch;
+  }
+  out.push(cur);
+  return out;
+};
+const isCall = (command) => shellSegments(command).some((seg) => CALL_SEGMENT.test(seg) && !/--dry-run\b/.test(seg));
 // leave asked for the agent's own step — Russian and English forms seen in the field (#140, #157); a closing question mark is required
 const LEAVE = /(?:сделать|делать|делаем|запускаем|запустить|продолжа(?:ю|ть|ем)|приступ(?:ить|аю)|начинать|начинаем|беру|брать|взяться)[^?\n]{0,120}\?|\b(?:shall|should) I\b[^?\n]{0,120}\?|\bdo I (?:continue|go on|proceed)\b[^?\n]{0,60}\?|\b(?:go ahead|proceed)\b[^?\n]{0,60}\?/i;
 const flat = (v) => (typeof v === 'string' ? v : Array.isArray(v) ? v.map(flat).join('') : v && typeof v === 'object' ? flat(v.text ?? v.content ?? '') : '');

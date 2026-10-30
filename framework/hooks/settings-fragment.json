@@ -49,6 +49,17 @@
             "timeout": 15
           }
         ]
+      },
+      {
+        "matcher": "Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/subagent-preamble.mjs"],
+            "timeout": 15
+          }
+        ]
       }
     ],
     "Stop": [

@@ -384,7 +384,10 @@ ok(r.code === 0 && /no live page for/.test(r.out) && !/Page is up|CALL:/.test(r.
 // the holder is a tiny contour-LIKE server: `--close` never kills a pid from a file — it asks the page's own server to end
 // (POST /close?t=<token from the lock>); a page that does not answer is NOT killed without --force (judge Н7)
 const pHold = await freePort();
-const holder = spawn(process.execPath, ['-e', "var h=require('http');h.createServer(function(q,r){if(q.method==='POST'&&q.url.indexOf('/close?t=tok')===0){r.end('{}');setTimeout(function(){process.exit(0)},50)}else{r.statusCode=404;r.end()}}).listen(" + pHold + ",'127.0.0.1')"], { stdio: 'ignore' });
+// 2.10 TK7z: a real page answers GET /whoami with the hash of its lock's token (pageIdOf, TK7e) and --close asks it first — the stand-in
+// page answers it too (before, it modelled a pre-2.10 page; --close would now rightly refuse to send the token to it)
+const HOLD_ID = createHash('sha256').update('kaif-contour:tok').digest('hex').slice(0, 32);
+const holder = spawn(process.execPath, ['-e', "var h=require('http');h.createServer(function(q,r){if(q.url==='/whoami'){r.setHeader('Content-Type','application/json');r.end(JSON.stringify({kaif:'contour',id:'" + HOLD_ID + "'}))}else if(q.method==='POST'&&q.url.indexOf('/close?t=tok')===0){r.end('{}');setTimeout(function(){process.exit(0)},50)}else{r.statusCode=404;r.end()}}).listen(" + pHold + ",'127.0.0.1')"], { stdio: 'ignore' });
 let holderExit = null; holder.on('exit', (c, s) => { holderExit = c ?? s ?? 'gone'; });
 await wait(600); // the holder's server is listening
 const lockObj = (extra) => JSON.stringify({ pid: holder.pid, url: 'http://127.0.0.1:' + pHold + '/', startedAt: '2026-09-18T09:00:00+03:00',

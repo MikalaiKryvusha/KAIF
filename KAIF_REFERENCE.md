@@ -110,7 +110,10 @@ at the project root on first use — a standing rule of the owner (`/fix-vision`
 keeping, a project-subject section moving out of an over-budget guide; the copy is the project's, `/resume` reads it
 at entry, and it is not one of the fourteen key documents. Since 2.8 it is also where the guide's project FACTS live —
 the stands and harness commands, the environment dossier table (`/refresh-context` regenerates it there), the tools
-table and the push recipe — while the guide keeps the method and one pointer line per section. One more
+table and the push recipe — while the guide keeps the method and one pointer line per section. A fifth skeleton (2.10, epic PT;
+origin tickets #166 #168), `.kaif/_subagent-brief-template.md`, carries the five parts of a brief to a subagent (task context · bounds ·
+role · report · the main agent's duty after — the subagent count against the owner's budget, the report a finding until verified); the
+agent copies the parts into the task it hands a subagent (`AGENT_GUIDE.md` → "Task execution discipline"). One more
 bundle-only page of the same family (2.6, epic IC; origin issues #19 #38 #47 #51): **`.kaif/INTERACTIVE_CONTOUR_SPEC.md`**
 — the one-page executable CONTRACT of the owner-facing interactive contour (the two legal option forms,
 the pre-flight that refuses a page without radio buttons with exit 3, the three records and the fact of
@@ -598,7 +601,7 @@ refuses a copy that drifted from the core's block.
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
-agent systems with lifecycle hooks. Five scripts speaking the Claude Code hook contract —
+agent systems with lifecycle hooks. Six scripts speaking the Claude Code hook contract —
 `session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
 (refresh-marker age over 60 minutes → refresh order; silent while fresh),
 `stop-status-guard.mjs` (a dirty worktree or a commit within 3 h while `STATUS.md` went stale → one soft block per
@@ -608,7 +611,10 @@ a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifi
 other systems' prompt field not verified), `clock-now.mjs` (2.10, epic PT; origin tickets #170 · #172: one context line with the
 machine's local moment on every prompt; on `PreToolUse` of Write · Edit · MultiEdit a time placeholder — the word NOW, NOW-ISO, DATE
 or TIME between white square brackets — is filled by the clock through `updatedInput`, with no permission decision; silent on a write
-without one — Claude Code only) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
+without one — Claude Code only), `subagent-preamble.mjs` (2.10, epic PT; origin tickets #166 · #168: on `PreToolUse` of `Agent|Task` a
+marked preamble in front of the subagent's task — read step 1 of `/resume`, quote one canon line first, no subagents of its own, no commit,
+no push — through `updatedInput`, with no permission decision; a marked task is left as it is; a journal line in
+`.kaif/subagent-preamble.jsonl` — Claude Code only) — plus `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
 suppression window exists, on the STATUS guard; injections are orders, never document bodies. RETIRED in 2.9 (origin ticket #144, the
 KAIF owner's verdict on the field): `pretool-owner-word.mjs` (2.8, `PreToolUse` — refused the next call after a mid-turn word) and the
 pre-release `stop-owner-answer.mjs` (`Stop` — demanded a last "next step" arrow line); the update retires an untouched copy (§10.5

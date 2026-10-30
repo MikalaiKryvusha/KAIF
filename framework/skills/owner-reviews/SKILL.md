@@ -379,7 +379,7 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   does not block, and a page is live only when its lock's port accepts a connection AND answers `/whoami` with its lock's id — another
   document's and its own (a reused pid, or a pid and a port both gone to strangers, is no page: no refusal, no "Already open"; a page slow
   to answer is still live — so is a stranger that accepts the connection and never answers, a known gap); an unreadable lock is read
-  again, another page's never deleted. The waiter, `--close` and the window recovery still judge a lock by its pid (a known gap). Two pages raised in the same instant may both rise — the lock is written when the page listens
+  again, another page's never deleted. The waiter and the window recovery still judge a lock by its pid (a known gap); `--close` asks the port first and sends its token only to the page (2.10). Two pages raised in the same instant may both rise — the lock is written when the page listens
   (a known gap). A question for the owner while a page is open goes INTO the open document (`/interview`), not onto a second
   page. `--timeout` on a page with a window refuses before any page (it is automation only, with `--no-open` — I9); a door with
   no window and `--timeout 0` pass. One voice: a call waits while another call of the project is sounding.

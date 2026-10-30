@@ -293,22 +293,22 @@ task type ("writing into the owner's artifact"), not by external truth.
 
 ### Task execution discipline — the fable loop
 
-Any non-trivial task is executed by the **fable-method** loop (`.claude/skills/fable-method/`): classify
-the ask → define done → gather evidence → decide → act surgically → verify by observation → report
-outcome-first, with its gates and **forced artifacts** (`INTENT:` / `AUTH:` / `TWINS:` / `PENDING:`
-lines at decision points — rules at decision points, not rules in lists, are what weak sessions actually
-follow; and the one carve-out of the `AUTH:` gate stands IN ITS OWN LINE, not in a paragraph elsewhere: a
-ticket about a defect of KAIF itself or an update's field report, filed to the framework's own origin, is delivered under the KAIF
-owner's standing authorization in the same move as filing — `node .kaif/kaif-core.mjs report
-bugs/KAIF/NN_*.md` or the report, `/report-bug` step 3 — and awaits no `AUTH:` line; every other outward action still
-waits for the owner's quoted words — a narrow exception written away from the rule it excepts does not
-hold). Orchestrated work (parallel evidence fan-out, adversarial verifiers) uses `/fable-loop` — inside
-the autonomous cycles, per backlog item. Whenever work is claimed complete (yours or another agent's),
-run a **`/fable-judge`** pass before presenting it as done — mandatory in the loops and in `/release`.
-**KAIF adds one obligation at step 5, and it is stated HERE rather than inside the loop's own text:**
-verification is not only *observed*, it is *produced*. New behaviour ships together with the artifact
-that checks it — test suite, checklist, fixture, guard — planned in the SAME step, never "later"
-(`TESTING_FRAMEWORK.md` → "The work produces its own means of checking").
+Any non-trivial task is executed by the **fable-method** loop (`.claude/skills/fable-method/`): classify the ask → define done → gather
+evidence → decide → act surgically → verify by observation → report outcome-first, with its gates and **forced artifacts** (`INTENT:` /
+`AUTH:` / `TWINS:` / `PENDING:` lines at decision points — rules at decision points, not rules in lists, are what weak sessions actually
+follow; and the one carve-out of the `AUTH:` gate stands IN ITS OWN LINE, not in a paragraph elsewhere: a ticket about a defect of KAIF
+itself or an update's field report, filed to the framework's own origin, is delivered under the KAIF owner's standing authorization in
+the same move as filing — `node .kaif/kaif-core.mjs report bugs/KAIF/NN_*.md` or the report, `/report-bug` step 3 — and awaits no
+`AUTH:` line; every other outward action still waits for the owner's quoted words — a narrow exception written away from the rule it
+excepts does not hold). Orchestrated work (parallel evidence fan-out, adversarial verifiers) uses `/fable-loop` — inside the autonomous
+cycles, per backlog item. **A brief to a subagent has five parts** (2.10): task context · bounds · role · report · the main agent's duty
+after — subagents counted before and after against the project owner's budget, the report a finding until verified — copy
+`.kaif/_subagent-brief-template.md`; where the subagent hook is wired (`.kaif/hooks/subagent-preamble.mjs`), it adds the canon reading
+and three bounds. Whenever work is claimed complete (yours or another agent's), run a **`/fable-judge`** pass before presenting it as
+done — mandatory in the loops and in `/release`. **KAIF adds one obligation at step 5, and it is stated HERE rather than inside the
+loop's own text:** verification is not only *observed*, it is *produced*. New behaviour ships together with the artifact that checks it
+— test suite, checklist, fixture, guard — planned in the SAME step, never "later" (`TESTING_FRAMEWORK.md` → "The work produces its own
+means of checking").
 
 **KAIF adds a second obligation at step 3 (decide), stated here for the same reason — the FORK: a
 fork is NOT the agent's to decide alone.** A fork is any

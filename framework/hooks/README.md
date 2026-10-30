@@ -16,6 +16,7 @@ lacking them.
 | `stop-status-guard.mjs` | `Stop` | dirty worktree OR a commit within 3 h, AND STATUS.md untouched > 3 h (2.9: the reason names which) | **once per session** — the only suppression window in the module | soft block: update STATUS.md or say why nothing changed |
 | `prompt-resume-word.mjs` (2.7, epic RS) | `UserPromptSubmit` | the prompt's FIRST word is `resume` / `/resume` / the Russian shorthand of it — the owner's leading word (`AGENT_GUIDE.md` → "A leading skill word is an order"); the same word mid-sentence is prose and never fires; an imperative before it (`run resume`, its Russian mirror) is still the order, the Russian noun as a heading with a colon is prose (2.8) — any other first word from the family fires, including a file named `resume.log`: one extra entry ritual is the named price. **2.8, epic OW:** a leading `stop` (or its Russian word) → the order to stop in this turn — an amplifier of "The owner's word mid-turn": a hook firing on a message typed mid-turn is observed on one system, promised by none | on every message that opens with the word — each one is a separate order | injects the ORDER to run `/resume` in full before the rest of the message, or the ORDER to stop; silent on every other prompt and on an event without a `prompt` field |
 | `clock-now.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PreToolUse`, matcher `Write\|Edit\|MultiEdit` | prompt: none — one short line is the point; write: the tool input holds a time placeholder (below) | on every prompt; on every write that holds a placeholder | prompt: one context line with the machine's local moment; write: `updatedInput` with the placeholders filled by the clock — no permission decision, never a stop; silent on a write without a placeholder |
+| `subagent-preamble.mjs` (2.10, epic PT) | `PreToolUse`, matcher `Agent\|Task` | the launch carries a task without the preamble's marker | once per launch — a second pass over a marked task changes nothing | `updatedInput` with a marked preamble in front of the subagent's task: read step 1 of `/resume` (read from the skill, existing files only), quote one canon line first in the report, no nested subagents, no commit, no push; one journal line in `.kaif/subagent-preamble.jsonl` — no permission decision, never a stop |
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
 predicate, or names why it needs none, and the table above says which; a suppression window
@@ -136,6 +137,16 @@ the file and is never touched; a backslash before the opening bracket keeps a pl
 carries `updatedInput` and no `permissionDecision`: "allow" would skip the owner's permission prompt. Without the hook the canon
 rule stands as written: take the moment with a `date` probe in the same call. The other systems' samples do not wire it — their
 input-rewrite contract was not read.
+
+**The subagent hook — `subagent-preamble.mjs` (2.10, epic PT) — is wired for Claude Code only.** A subagent starts with an empty
+context and only the brief the main agent wrote; a brief that forgets the canon sends it to work blind. The hook puts a marked
+preamble in front of the task of every `Agent` launch (`Task` before Claude Code 2.1.63): read IN FULL the documents of step 1 of
+`/resume` — the list is read from `.claude/skills/resume/SKILL.md` by the step's number, so a skill in the owner's language works the
+same, and only files that exist are named — quote one canon line bearing on the task first in the report, and keep three bounds a
+brief may lack: no subagents of its own, no commit, no push. The rest of the brief stays the main agent's job (AGENT_GUIDE.md →
+"Brief to a subagent — five parts"). The answer carries `updatedInput` and no `permissionDecision`; a field deployment observed the
+rewritten task reach 48 of 48 subagents without one. Each firing appends one JSON line to `.kaif/subagent-preamble.jsonl` (ignored —
+session state). Without the hook the brief rule stands as written.
 
 Reading the table: a ❌ is a statement about that system's published contract, not about the
 module. Where a system carries one hook out of three, wire that one — a partial mechanical
