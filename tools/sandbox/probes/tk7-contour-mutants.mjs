@@ -50,7 +50,7 @@ import { quietEnv } from '../../lib/sandbox-run.mjs';
 const SRC = join(process.cwd(), 'framework', 'tools', 'contour');
 const RUN_TIMEOUT_MS = 600000;
 const MUTANTS = [
-  { name: 'M1 another live page does not refuse', file: 'review.mjs', find: "const other = await otherLivePage(root, batch ? '_queue' : basename(docPath));", to: 'const other = null;', red: ['TK7 #169: a live page', 'TK7b #169: a lock caught half-written', 'TK7d #169: a live page slow to answer'] },
+  { name: 'M1 another live page does not refuse', file: 'review.mjs', find: "const other = await otherLivePage(root, batch ? '_queue' : basename(docPath));", to: 'const other = null;', red: ['TK7 #169: a live page', 'TK7b #169: a lock caught half-written', 'TK7d #169: a live page slow to answer', 'TK7z #169: a REAL page'] },
   { name: 'M2 --timeout on the window legal', file: 'review.mjs', find: 'if (at < 0 ||', to: 'if (true ||', red: ['TK7 #169: --timeout'] },
   { name: 'M3 a notice read ends the queue page', file: 'review.mjs', find: 'if (batch && (restQ > 0 || restN > 0)) {', to: 'if (false) {', red: ['TK7 #163'] },
   { name: 'M4 Latin reaches the engine', file: 'review.mjs', find: 'if (sp.letters && sp.translit) {', to: 'if (false) {', red: ['TK7 #165: the Russian engine', 'TK7b #165: the Russian engine gets no letter', 'TK7c #165', 'TK7e #165'] }, // TK7e: the Roman numeral unfolds to Latin
@@ -74,13 +74,17 @@ const MUTANTS = [
   { name: 'M22 an unreadable voice lock is free', file: 'review.mjs', find: 'return age > -VOICE_LOCK_FUTURE_SLACK_MS && age < VOICE_LOCK_STALE_MS ? { pid: null, unreadable: true } : null;', to: 'return null;', red: ['TK7c: an unreadable voice lock', 'TK7e: a fresh voice lock'] }, // TK7e: the fresh unreadable lock 30 ms ahead
   { name: 'M23 no folding of ø ł ß æ', file: 'review.mjs', find: ".replace(LATIN_FOLD_RE, (c) => LATIN_FOLD[c])", to: '', red: ['TK7c #165', 'TK7e #165'] }, // TK7e: «ẞ» is folded by LATIN_FOLD
   { name: 'M24 comma and dot thousands by groups', file: 'review.mjs', find: "if (typeof sp.number === 'function') s = s.replace(/(?<![\\d.,])", to: 'if (false) s = s.replace(/(?<![\\d.,])', red: ['TK7c #165'] },
-  { name: 'M25 a live page must answer HTTP again (the TK7b /ping)', file: 'review.mjs', find: "sock.setTimeout(LIVENESS_TIMEOUT_MS, () => end(true));\n  sock.once('error', () => end(false));", to: "sock.setTimeout(LIVENESS_TIMEOUT_MS, () => end(false));\n  sock.once('error', () => end(false));", red: ['TK7d #169: a live page slow to answer'] },
+  { name: 'M25 a live page must answer HTTP again (the TK7b /ping)', file: 'review.mjs', find: 'sock.setTimeout(LIVENESS_TIMEOUT_MS, () => end(silentIsLive));', to: 'sock.setTimeout(LIVENESS_TIMEOUT_MS, () => end(false));', red: ['TK7d #169: a live page slow to answer'] },
+  // session 96: M25's search line moved again — session 95 (judge s95, mutant SL) made silence a page only for the door (`silentIsLive`)
   // TK7e (session 93, judge TK7d): M25's search line moved with the identity check (a silent connected port is still live — its timeout is
   // the line now); the five below are red on exactly the TK7e cases
-  { name: 'M29 a connected port is a page again (no identity asked)', file: 'review.mjs', find: 'if (!lock.closeToken) { end(true); return; }', to: 'end(true); return;', red: ['TK7e #169'] },
+  { name: 'M29 a connected port is a page again (no identity asked)', file: 'review.mjs', find: 'if (!lock.closeToken) { end(true); return; }', to: 'end(true); return;', red: ['TK7e #169', 'TK7z #169: --close against a stranger'] }, // session 96: --close asks the same identity (TK7z)
   { name: 'M30 a readable voice lock dated a day ahead holds', file: 'review.mjs', find: '!(lockAge > -VOICE_LOCK_FUTURE_SLACK_MS && lockAge < VOICE_LOCK_STALE_MS)', to: '!(lockAge < VOICE_LOCK_STALE_MS)', red: ['TK7e: a fresh voice lock'] },
-  { name: 'M31 no slack for the file clock (the EXP-0193 bug)', file: 'review.mjs', find: 'const VOICE_LOCK_FUTURE_SLACK_MS = 5000;', to: 'const VOICE_LOCK_FUTURE_SLACK_MS = 0;', red: ['TK7e: a fresh voice lock'] },
-  { name: 'M32 non-ASCII numerals reach the engine', file: 'review.mjs', find: "if (typeof sp.number === 'function') s = asciiNumerals(s);", to: '', red: ['TK7e #165'] },
+  { name: 'M31 no slack for the file clock (the EXP-0193 bug)', file: 'review.mjs', find: 'const VOICE_LOCK_FUTURE_SLACK_MS = 5000;', to: 'const VOICE_LOCK_FUTURE_SLACK_MS = 0;', red: ['TK7e: a fresh voice lock'], maybe: ['TK7b: one voice at a time'] },
+  // session 96: M31 is red on «TK7b: one voice» too when that case writes the lock and reads it within the same millisecond — with no slack
+  // `age > -0` is false at age 0 (the EXP-0193 bug itself); a slower machine crosses the millisecond, so it is a MAYBE, never required
+  // (judge of epic PT, hunt 4: a required timing-bound red makes the probe flaky)
+  { name: 'M32 non-ASCII numerals reach the engine', file: 'review.mjs', find: "if (typeof sp.number === 'function') s = sayFractions(s, sp);", to: '', red: ['TK7e #165', 'TK7z #165'] }, // session 96: the numerals go through sayFractions
   { name: 'M33 the capital sharp s not folded to SS', file: 'review.mjs', find: "'SS' }; // TK7e", to: "'S' }; // TK7e", red: ['TK7e #165'] },
   { name: 'M26 every reader deletes a broken lock', file: 'review.mjs', find: 'if (removeBroken) rmSync(p, { force: true });', to: 'rmSync(p, { force: true });', red: ['TK7d #169: the window recovery'] },
   { name: 'M27 a future-dated voice lock holds', file: 'review.mjs', find: 'return age > -VOICE_LOCK_FUTURE_SLACK_MS && age < VOICE_LOCK_STALE_MS', to: 'return age < VOICE_LOCK_STALE_MS', red: ['TK7c: an unreadable voice lock'] },
@@ -109,12 +113,15 @@ const copy = () => { const d = mkdtempSync(join(tmpdir(), 'kaif-tk7-')); cpSync(
   for (const l of r.red) console.log('    ' + l.slice(0, 200));
   rmSync(d, { recursive: true, force: true });
 }
-for (const m of MUTANTS) {
+// session 96: `node … M3 M14` runs only the named mutants (a DIED one repeated once — bugs/109 — without the seven-minute round)
+const ONLY = process.argv.slice(2);
+for (const m of MUTANTS.filter((x) => !ONLY.length || ONLY.includes(x.name.split(' ')[0]))) {
   const d = copy(); const p = join(d, m.file); const before = readFileSync(p, 'utf8');
   if (!before.includes(m.find)) { say(false, m.name + ': the edit did not apply'); rmSync(d, { recursive: true, force: true }); continue; }
   writeFileSync(p, before.replace(m.find, () => m.to));
   const r = redLines(d);
-  say(!r.died && r.red.length === m.red.length && m.red.every((c) => r.red.some((l) => l.includes(c))), m.name + ': ' + (r.died ? 'DIED' : r.red.length + ' red line(s)') + ' (expected exactly «' + m.red.join('» · «') + '»)');
+  const allowed = [...m.red, ...(m.maybe || [])]; // session 96: a `maybe` red may come or not; any other red is BAD
+  say(!r.died && m.red.every((c) => r.red.some((l) => l.includes(c))) && r.red.every((l) => allowed.some((c) => l.includes(c))), m.name + ': ' + (r.died ? 'DIED' : r.red.length + ' red line(s)') + ' (expected exactly «' + m.red.join('» · «') + '»)');
   for (const l of r.red) console.log('    ' + l.slice(0, 200));
   if (r.died) for (const l of [`status ${r.status} signal ${r.signal}`, ...r.tail]) console.log('    | ' + l.slice(0, 240));
   rmSync(d, { recursive: true, force: true });

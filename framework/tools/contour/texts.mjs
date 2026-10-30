@@ -192,8 +192,9 @@ const EN = {
     tens: ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'],
     // 2.10 TK7 (c), origin #165: how the CALL's phrase reaches the engine — empty here: an English engine reads Latin and digits itself;
     // a pack whose engine does not (Russian) fills `number` · `percent` · `letters` · `translit`, and `speakable()` in review.mjs uses them
-    // (`percent` — a word, or a function of the number as written that returns the agreeing word)
-    number: null, percent: null, letters: null, translit: null },
+    // (`percent` — a word, or a function of the number as written that returns the agreeing word; TK7z: `fraction(num, den)` — a fraction
+    // as one value, `unknownNumber` — the word for a numeral of no known value, so the phrase is never empty)
+    number: null, percent: null, letters: null, translit: null, fraction: null, unknownNumber: null },
   // the queue without a browser (`--queue --list`) — read by the agent, quoted by the rituals
   list: { waits: (d) => 'waiting ' + d + ' d', shown: (date, ago, t) => 'shown: ' + date + ' — ' + ago + ' d ago (' + t + ')',
     never: 'NEVER SHOWN — the owner does not know this question exists', empty: "The owner's queue is empty — no waiting documents.",
@@ -270,6 +271,22 @@ function ruForm(n, [one, few, many]) {
 function ruPercent(written) {
   if (!written) return 'процентов';
   return /[.,]/u.test(written) ? 'процента' : ruForm(Number(written), ['процент', 'процента', 'процентов']);
+}
+// TK7z (judge TK7e · PT1 · TK7g, hunt 3 — «½» said «один два»): a fraction as the Russian voice says it — the numerator feminine, the
+// denominator an ordinal: a numerator ending in one (not eleven) takes the nominative singular («одна вторая», «двадцать одна сотая»),
+// any other the genitive plural («три четвёртых», «ноль третьих»); a denominator past the table is said «три дробь шестнадцать» — the
+// spoken form of a written fraction. [NOT-TESTED]
+const RU_ORDINAL = { 2: ['вторая', 'вторых'], 3: ['третья', 'третьих'], 4: ['четвёртая', 'четвёртых'], 5: ['пятая', 'пятых'],
+  6: ['шестая', 'шестых'], 7: ['седьмая', 'седьмых'], 8: ['восьмая', 'восьмых'], 9: ['девятая', 'девятых'], 10: ['десятая', 'десятых'],
+  100: ['сотая', 'сотых'] };
+// Session 96 (judge of epic PT, hunt 3 — «1½» said «один одна вторая»): a whole part is said before the fraction, feminine, with «целая» /
+// «целых» agreeing with it («одна целая одна вторая», «две целых одна третья»).
+const ruFeminine = (n) => ruNumber(n).replace(/(^|\s)один$/u, '$1одна').replace(/(^|\s)два$/u, '$1две');
+function ruFraction(num, den, whole) {
+  const head = Number.isFinite(whole) ? ruFeminine(whole) + ' ' + ruForm(whole, ['целая', 'целых', 'целых']) + ' ' : '';
+  const ord = RU_ORDINAL[den];
+  if (!ord) return head + ruFeminine(num) + ' дробь ' + ruNumber(den);
+  return head + ruFeminine(num) + ' ' + (num % 10 === 1 && num % 100 !== 11 ? ord[0] : ord[1]);
 }
 
 const RU = {
@@ -353,6 +370,8 @@ const RU = {
     // (up to five letters) — letter by letter; any other Latin word — transliterated (digraphs first, then letters).
     number: ruNumber,
     percent: ruPercent,
+    fraction: ruFraction,      // TK7z: «¾» — «три четвёртых», not two numbers
+    unknownNumber: 'число',    // TK7z: a numeral of no known value («𐄇») is said as this word — never an empty phrase
     letters: { A: 'эй', B: 'би', C: 'си', D: 'ди', E: 'и', F: 'эф', G: 'джи', H: 'эйч', I: 'ай', J: 'джей', K: 'кей', L: 'эл', M: 'эм',
       N: 'эн', O: 'оу', P: 'пи', Q: 'кью', R: 'ар', S: 'эс', T: 'ти', U: 'ю', V: 'ви', W: 'дабл-ю', X: 'экс', Y: 'уай', Z: 'зед' },
     translit: [['shch', 'щ'], ['sch', 'ш'], ['sh', 'ш'], ['ch', 'ч'], ['zh', 'ж'], ['kh', 'х'], ['ts', 'ц'], ['th', 'т'], ['ph', 'ф'],

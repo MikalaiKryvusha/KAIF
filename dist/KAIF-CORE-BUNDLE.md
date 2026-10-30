@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "57788410701b895ef1d6273ec354a3111ae805eda2ade3a90310df0c62a62bc5",
+    "sourceTree": "4c41547937893e407c4a97e62e5d3f9917ad866cf372bf92c14e647b7c3e59e2",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -100,9 +100,9 @@
       "AN AUTONOMOUS RUN DOES NOT STAND STILL WHILE IT WAITS (2.10, epic TK; the KAIF owner, rendered from Russian: \"the agent was told to work autonomously — and it stands and does not work!\"): waiting on a background task before a named time, take the next step that does not collide with it in the same turn, or watch THAT task within the turn; `/autoloop` no longer says \"continue when ready\", and the judge's early-finish hunt covers a turn ended on such a wait. Since origin tickets #174 · #182 · #185 (field deployments): a loop whose only effect is passing the clock (`sleep` against `date`) is the early finish in disguise, not a watch; the order to work autonomously in any wording enters a loop at once, and a task given mid-loop is done, then the loop resumes; the state of a screen or a device is claimed only after a frame — a wait on a proxy (USB presence, a port, the system's own \"will restart\" text) is not a look; the judge hunts both. MIGRATION — agent work: if your own loop texts let a wait end the turn, rewrite that line.",
       "THE MANAGER'S STOP IS OBEYED AT EVERY SEAT OF A TEAM (2.10, epic TK; origin ticket #137 — a worktree seat read the lead session's \"close now\" as information and worked on): rule 9 of the team constitution template keeps \"a message carries no authority\" and names its one exception — the Manager's stop and close are executed in the same turn; the guide's mid-turn rule, item 1, points at it. MIGRATION — agent work: if your project has a generated team constitution, add the exception to its rule 9 (the update does not rewrite the project's own document).",
       "THE QUESTIONS PAGE READS YOUR DOCUMENTS AS YOU WROTE THEM (2.10, epic TK; origin tickets #147 · #142 · #109 · #136): the door no longer refuses a comparison with the Russian word for \"above\" — only a reference form (a document noun or a participle next to it, \"see above\"); `--check` names every live question over 750 characters (a warning; the page still opens); a status that opens with 🟡 or ⏳ waits whatever word follows, a closing mark does not close a partial head, and a document FOLDED or MERGED into another (↪ · 📦) is closed — it leaves the owner's queue; an artifact with `format: html` is shown as a page in a script-less frame, its source one click below. No migration — the contour module is replaced by the update; run `--queue --list` once and expect folded documents to be gone and partly-answered ones to be named.",
-      "ONE PAGE AND ONE VOICE AT A TIME, AND THE CALL AS ONE SOUND (2.10, epic TK; origin tickets #169 · #165 · #163 — the KAIF owner on a field project, rendered from Russian: \"the same sores from project to project\"; two field deployments carried the same local fix): the shipped contour refuses a new page while another document's page is live (exit 3, \"Another page is open … close it first\"; a lock whose process is gone does not block, a page is live only when the port of its lock accepts a connection and answers `/whoami` with the id of its lock — the lock of its own document too, so a reused pid, or a pid and a port both gone to strangers, no longer says \"Already open\" with no page behind it, and a page slow to answer is not covered by a second one (a stranger that accepts the connection and never answers still reads as a live page — named) — and an unreadable lock is read again, the lock of another page never deleted; the waiter and the window recovery still judge a lock by its pid, `--close` asks the port first and sends its token only to the page — I48) and refuses `--timeout` on a page with a window (a door without a window and `--timeout 0` pass); a call waits while another call of the project is sounding (a voice lock caught before its body is written counts as taken while fresh, never when dated in the future); the queue page no longer ends when a notice on it is marked read while an interview on it still has open questions, nor on the last answer while a notice on it is unread, it counts only what it shows (an old hidden interview never holds it), and its showing is recorded for every document on it; on Windows the call is ONE sound — a second of silence, the three beeps at full level, two seconds of pause, the voice rendered before playing (a rich `KAIF_VOICE_TOOL` is asked for `--out <wav>`; a tool that renders the beeps itself is declared with `KAIF_VOICE_BEEPS=embedded`); the Russian pack hands the engine words — numbers as words (thousands grouped by spaces, commas or dots as one number), an abbreviation letter by letter, Latin transliterated (diacritics and ligatures decomposed, common letters with a stroke folded, any other non-ASCII Latin letter dropped) — and its interview call says \"awaits your answers\", not the word for proofreading. MIGRATION — agent work: a project that carried the one-page refusal or the embedded-beeps switch as a local edit of `.kaif/tools/contour/review.mjs` takes the shipped file (the update names the module as diverged); add a question to the page already open instead of raising a second one.",
+      "ONE PAGE AND ONE VOICE AT A TIME, AND THE CALL AS ONE SOUND (2.10, epic TK; origin tickets #169 · #165 · #163 — the KAIF owner on a field project, rendered from Russian: \"the same sores from project to project\"; two field deployments carried the same local fix): the shipped contour refuses a new page while another document's page is live (exit 3, \"Another page is open … close it first\"; a lock whose process is gone does not block, a page is live only when the port of its lock accepts a connection and answers `/whoami` with the id of its lock — the lock of its own document too, so a reused pid, or a pid and a port both gone to strangers, no longer says \"Already open\" with no page behind it, and a page slow to answer is not covered by a second one (a stranger that accepts the connection and never answers still reads as a live page — named) — and an unreadable lock is read again, the lock of another page never deleted; the waiter and the window recovery still judge a lock by its pid, `--close` asks the port first and sends its token only to the page — I48) and refuses `--timeout` on a page with a window (a door without a window and `--timeout 0` pass); a call waits while another call of the project is sounding (a voice lock caught before its body is written counts as taken while fresh, never when dated in the future); the queue page no longer ends when a notice on it is marked read while an interview on it still has open questions, nor on the last answer while a notice on it is unread, it counts only what it shows (an old hidden interview never holds it), and its showing is recorded for every document on it; on Windows the call is ONE sound — a second of silence, the three beeps at full level, two seconds of pause, the voice rendered before playing (a rich `KAIF_VOICE_TOOL` is asked for `--out <wav>`; a tool that renders the beeps itself is declared with `KAIF_VOICE_BEEPS=embedded`); the Russian pack hands the engine words — numbers as words (thousands grouped by spaces, commas or dots as one number; a fraction as one value, a Roman numeral as its value, a numeral of no known value as a word — never an empty phrase), an abbreviation letter by letter, Latin transliterated (diacritics and ligatures decomposed, common letters with a stroke folded, any other non-ASCII Latin letter dropped) — and its interview call says \"awaits your answers\", not the word for proofreading. MIGRATION — agent work: a project that carried the one-page refusal or the embedded-beeps switch as a local edit of `.kaif/tools/contour/review.mjs` takes the shipped file (the update names the module as diverged); add a question to the page already open instead of raising a second one.",
       "THE MACHINE'S CLOCK WRITES THE MOMENT (2.10, epic PT; origin tickets #170 · #172 — two field deployments carried their own clock hook): the refresh-hooks module ships a fifth script, `.kaif/hooks/clock-now.mjs`, and `wire-hooks` wires it for Claude Code on `UserPromptSubmit` (one context line with the machine's local moment on every prompt) and on `PreToolUse` with the matcher `Write|Edit|MultiEdit`: a time placeholder in what the agent writes — the word NOW, NOW-ISO, DATE or TIME between white square brackets (U+27E6 / U+27E7) — is filled by the clock through `updatedInput` (`content`, `new_string`, `edits[].new_string`; `old_string` never; a placeholder the write only CARRIES — one already standing in the Edit's `old_string` or in the file a Write replaces — stays literal), with no permission decision and never a stop; a backslash keeps a placeholder literal; a write without one gets no answer. The stamp rule of the agent guide says: where the hook is wired, write the placeholder; elsewhere, the `date` probe. MIGRATION — agent work: run `node .kaif/kaif-core.mjs wire-hooks` (the install and update tasks say so); a project that carried its own clock hook (a local `tools/hooks/clock-now.mjs`) keeps one of the two wired, not both — two hooks would answer the same write.",
-      "THE CLOSING CHAT'S FAREWELL REACHES THE NEXT CHAT (2.10, epic PT; origin ticket #181 — the owner of a field project copied every farewell into the next chat by hand): the refresh-hooks module ships a seventh script, `.kaif/hooks/stop-farewell-capture.mjs`, and `wire-hooks` wires it for Claude Code on `Stop` next to the STATUS guard: on the stop of a turn that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (one closure writes once; never a block); `/resume` gains Step 0 — on the chat's first entry read that file before the canon, and if it is older than the newest commit say so and trust `STATUS.md`. Both files join the ignore-first set. MIGRATION — agent work: if your project carries its own farewell hook, keep one — the shipped one or yours — never both writing the same file.",
+      "THE CLOSING CHAT'S FAREWELL REACHES THE NEXT CHAT (2.10, epic PT; origin ticket #181 — the owner of a field project copied every farewell into the next chat by hand): the refresh-hooks module ships a seventh script, `.kaif/hooks/stop-farewell-capture.mjs`, and `wire-hooks` wires it for Claude Code on `Stop` next to the STATUS guard: on the stop of a turn that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (the last stop of the closing turn wins — a one-line answer to another hook's block or to a neighbour session excepted, and a background task's notification does not open a new turn; never a block); `/resume` gains Step 0 — on the chat's first entry read that file before the canon, and if it is older than the newest commit say so and trust `STATUS.md`. Both files join the ignore-first set. MIGRATION — agent work: if your project carries its own farewell hook, keep one — the shipped one or yours — never both writing the same file.",
       "A SUBAGENT ENTERS THE PROJECT FIRST (2.10, epic PT; origin tickets #166 · #168 — a field deployment carried its own preamble hook): the refresh-hooks module ships a sixth script, `.kaif/hooks/subagent-preamble.mjs`, and `wire-hooks` wires it for Claude Code on `PreToolUse` with the matcher `Agent|Task`: every subagent task gets a marked preamble in front of it — read in full the documents of step 1 of `/resume` (read from `.claude/skills/resume/SKILL.md` by the step's number, existing files only), quote one canon line bearing on the task first in the report, no subagents of its own, no commit, no push — through `updatedInput`, with no permission decision; a task already marked is left as it is; each firing appends one line to `.kaif/subagent-preamble.jsonl` (now in the ignore-first set). The guide's fable-loop section gains the rule \"A brief to a subagent has five parts\" (context · bounds · role · report · the main agent's duty after) with the skeleton `.kaif/_subagent-brief-template.md`, and the judge hunts \"subagent result relayed unverified\". MIGRATION — agent work: none; `wire-hooks` adds the group, `\"hooks\": \"off\"` keeps it out.",
       "POINTERS FOLLOW THE ROWS 2.8 MOVED (2.10, epic HC; origin ticket #119, second case): the harness rule of the bug-fixing canon now writes a new harness command's row into `HOUSE_RULES.md` → \"Stands, environments and devices\" (it said \"document it in AGENT_GUIDE.md\"), and `/code-revision`, `/autoloop` and `/resume` point at the house-rules tables, not the guide; the build refuses the old forms. MIGRATION — agent work: none, unless your own texts repeat one of these pointers."
     ],
@@ -3753,7 +3753,7 @@ marked preamble in front of the subagent's task — read step 1 of `/resume`, qu
 no push — through `updatedInput`, with no permission decision; a marked task is left as it is; a journal line in
 `.kaif/subagent-preamble.jsonl` — Claude Code only), `stop-farewell-capture.mjs` (2.10, epic PT; origin ticket #181: on `Stop` of a turn
 that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the
-project root — one closure writes once, never a block; `/resume` reads it on the chat's first entry — Claude Code only) — plus
+project root — the last stop of the closing turn wins, a one-line answer to another hook's block or to a neighbour session excepted; never a block; `/resume` reads it on the chat's first entry — Claude Code only) — plus
 `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
 suppression window exists, on the STATUS guard; injections are orders, never document bodies. RETIRED in 2.9 (origin ticket #144, the
 KAIF owner's verdict on the field): `pretool-owner-word.mjs` (2.8, `PreToolUse` — refused the next call after a mid-turn word) and the
@@ -11669,14 +11669,50 @@ const LATIN_FOLD = { 'ø': 'o', 'Ø': 'O', 'ł': 'l', 'Ł': 'L', 'ß': 'ss', 'æ
 // numeric and not a digit (the fraction slash, a vulgar fraction NFKD keeps) becomes a space.
 // [TESTED: 2026-10-23 15:33 · selftest «TK7e #165» (nine numeral forms, no \p{N} left; the capital sharp s) + mutants M32 · M33 · M4 · M14 ·
 //  M23 red on their cases; report testcases/reports/2026-10-23_tk7f-judge-tk7d-caveats.md]
-function asciiNumerals(s) {
+// TK7z (judge TK7e · PT1 · TK7g, hunt 3): «XII» was spelled letter by letter and «〇 𐄇» left an EMPTY phrase. The ideographic zero has a
+// value NFKD does not give; a numeral of no known value becomes the pack's `unknown` word, never nothing — the engine must not get an
+// empty phrase. Roman numerals are said by `romanRun()` below, before this.
+// [NOT-TESTED]
+const NUMERAL_VALUE = { '〇': '0' };
+// Session 96 (judge of epic PT, hunt 3 — «ⅯⅭⅯ» was said as three numbers, «ↂ ↁ ↇ» as the unknown-numeral word): a RUN of Roman numeral signs is ONE number
+// — every sign's value (NFKD letters for Ⅰ…ⅿ, the table for the signs NFKD keeps whole), then the subtractive rule over the whole run.
+const ROMAN = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+const ROMAN_WHOLE = { 'ↀ': 1000, 'ↁ': 5000, 'ↂ': 10000, 'ↅ': 6, 'ↆ': 50, 'ↇ': 50000, 'ↈ': 100000 };
+const ROMAN_RUN_RE = /[Ⅰ-ↂↅ-ↈ]+/gu;
+function romanRun(run) {
+  const vals = [];
+  for (const c of run) { if (ROMAN_WHOLE[c]) vals.push(ROMAN_WHOLE[c]); else for (const l of c.normalize('NFKD').toUpperCase()) vals.push(ROMAN[l] || 0); }
+  return vals.reduce((v, a, i) => v + (a < (vals[i + 1] || 0) ? -a : a), 0);
+}
+function asciiNumerals(s, unknown = ' ') {
   return s.replace(/\p{N}/gu, (c) => {
     if (/[0-9]/u.test(c)) return c;
+    if (NUMERAL_VALUE[c]) return NUMERAL_VALUE[c];
     const k = c.normalize('NFKD');
-    if (k !== c && /^[\x20-\x7e⁄]+$/u.test(k)) return k.replace(/⁄/gu, ' '); // a Roman numeral unfolds to Latin letters, said as such
+    if (k !== c && /^[\x20-\x7e⁄]+$/u.test(k)) return k.replace(/⁄/gu, ' ');
     if (/\p{Nd}/u.test(c)) { let base = c.codePointAt(0); while (/\p{Nd}/u.test(String.fromCodePoint(base - 1))) base--; return String((c.codePointAt(0) - base) % 10); }
-    return ' ';
+    return ' ' + unknown + ' ';
   });
+}
+// TK7z (judge TK7e · PT1 · TK7g, hunt 3 — «½» was said «one two», «¾» «three four»): a vulgar fraction unfolds to «a⁄b» apart from a whole
+// number before it («1½» is one and a half, not «11⁄2»); digits around the fraction slash are ONE value said by the pack's `fraction`;
+// a slash left alone is a space. Session 96 (judge of epic PT, hunt 3 — «1½» was said «one, one second», «⅟4» «one four»): digits right
+// before a vulgar fraction are its WHOLE part, passed to the pack's `fraction(num, den, whole)`; «⅟» takes the digits after it as its
+// denominator. [NOT-TESTED]
+const VULGAR_FRACTION_RE = /[¼-¾⅐-⅟↉]/gu;
+const MIXED_FRACTION_RE = new RegExp('(\\d*)(' + VULGAR_FRACTION_RE.source + ')(\\d*)', 'gu');
+function sayFractions(s, sp) {
+  const say = (a, b, whole) => ' ' + (typeof sp.fraction === 'function' ? sp.fraction(a, b, whole)
+    : [whole, a, b].filter((x) => x !== undefined).join(' ')) + ' ';
+  s = s.replace(MIXED_FRACTION_RE, (m, w, c, after) => {
+    const [a, b] = c.normalize('NFKD').split('⁄');
+    const whole = w ? Number(w) : undefined;
+    if (b) return say(Number(a), Number(b), whole) + after;                       // «1½» · «¾»
+    return after ? say(Number(a), Number(after), whole) : ' ' + w + ' ' + a + ' '; // «⅟4» — the denominator follows the sign
+  });
+  s = s.replace(ROMAN_RUN_RE, (run) => ' ' + romanRun(run) + ' ');
+  s = asciiNumerals(s, sp.unknownNumber || ' ');
+  return s.replace(/(\d+)⁄(\d+)/gu, (m, a, b) => say(Number(a), Number(b))).replace(/⁄/gu, ' ');
 }
 // TK7d (judge TK7c, hunt 6): what is still Latin and not ASCII after NFKD and LATIN_FOLD is dropped — the engine never gets a Latin letter
 // it would read in another language; ligatures («ﬁ» · «ĳ») are split by NFKD itself
@@ -11685,7 +11721,7 @@ const LATIN_FOLD_RE = new RegExp('[' + Object.keys(LATIN_FOLD).join('') + ']', '
 export function speakable(text, cfg) {
   const sp = T(cfg).spoken || {};
   let s = String(text).replace(/[#\u2116]/gu, ' ');
-  if (typeof sp.number === 'function') s = asciiNumerals(s);
+  if (typeof sp.number === 'function') s = sayFractions(s, sp);
   // TK7\u0431 (judge TK7, hunt 5): thousands written with spaces (\u00ab1 000 000\u00bb) are ONE number; the word after a number agrees with it when the
   // pack gives `percent` as a function of the number as written (the Russian pack: one, two\u2013four and five-plus take three forms)
   // a no-break space joins one group, a plain space \u2014 two or more (\u00ab1 000 000\u00bb): \u00ab#165 100%\u00bb stays two numbers (judge TK7b, hunt 5)
@@ -14602,6 +14638,17 @@ export async function selftest(log = console.log) {
     ok(!/\p{N}/u.test(said4) && !/\p{Script=Latin}/u.test(said4) && said4.includes(sp.number(123)) && said4.includes(sp.number(12))
       && speakable('GROẞ', ru) === speakable('GROSS', ru),
       'TK7e #165: «² ₂ ½ １２３ ① ٣ १२ 𝟓 Ⅻ» reach the Russian engine as number words, no digit of any script left; «ẞ» folds to «SS» (I48)');
+    // TK7z (judge TK7e · PT1 · TK7g, hunt 3): a fraction is ONE value said by the pack's `fraction` («½» was «one two»); a Roman numeral
+    // its value («XII» was spelled); a numeral of no known value the pack's word — «〇 𐄇» left an EMPTY phrase
+    const hunt3 = [['½', sp.fraction(1, 2)], ['¾', sp.fraction(3, 4)], ['⅔', sp.fraction(2, 3)], ['3⁄16', sp.fraction(3, 16)],
+      ['1½', sp.fraction(1, 2, 1)], ['2⅓', sp.fraction(1, 3, 2)], ['⅟4', sp.fraction(1, 4)], // session 96: the whole part, «⅟» + denominator
+      ['Ⅻ', sp.number(12)], ['ⅻ', sp.number(12)], ['Ⅳ', sp.number(4)], ['ⅯⅭⅯ', sp.number(1900)], ['ↂ', sp.number(10000)], // a run is ONE number
+      ['〇', sp.number(0)], ['\u{10107}', sp.unknownNumber]];
+    const miss3 = hunt3.filter(([w, want]) => speakable(w, ru) !== want || !want);
+    ok(miss3.length === 0 && sp.fraction(1, 2) !== sp.fraction(3, 4) && !/\p{N}/u.test(hunt3.map(([, x]) => x).join(' '))
+      && sp.fraction(1, 2, 1) !== sp.number(1) + ' ' + sp.fraction(1, 2), // judge of epic PT: «1½» was expected as «one, one second»
+      'TK7z #165: «½ ¾ ⅔ 3⁄16» reach the Russian engine as one fraction each, «Ⅻ ⅻ Ⅳ» as their values, «〇» as zero, «𐄇» as the pack\'s word — no empty phrase (I48)'
+      + (miss3.length ? ' — ' + miss3.map(([w]) => w + ' -> ' + speakable(w, ru)).join(' | ') : ''));
   }
 
   rmSync(root, { recursive: true, force: true });
@@ -14979,8 +15026,9 @@ const EN = {
     tens: ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'],
     // 2.10 TK7 (c), origin #165: how the CALL's phrase reaches the engine — empty here: an English engine reads Latin and digits itself;
     // a pack whose engine does not (Russian) fills `number` · `percent` · `letters` · `translit`, and `speakable()` in review.mjs uses them
-    // (`percent` — a word, or a function of the number as written that returns the agreeing word)
-    number: null, percent: null, letters: null, translit: null },
+    // (`percent` — a word, or a function of the number as written that returns the agreeing word; TK7z: `fraction(num, den)` — a fraction
+    // as one value, `unknownNumber` — the word for a numeral of no known value, so the phrase is never empty)
+    number: null, percent: null, letters: null, translit: null, fraction: null, unknownNumber: null },
   // the queue without a browser (`--queue --list`) — read by the agent, quoted by the rituals
   list: { waits: (d) => 'waiting ' + d + ' d', shown: (date, ago, t) => 'shown: ' + date + ' — ' + ago + ' d ago (' + t + ')',
     never: 'NEVER SHOWN — the owner does not know this question exists', empty: "The owner's queue is empty — no waiting documents.",
@@ -15057,6 +15105,22 @@ function ruForm(n, [one, few, many]) {
 function ruPercent(written) {
   if (!written) return 'процентов';
   return /[.,]/u.test(written) ? 'процента' : ruForm(Number(written), ['процент', 'процента', 'процентов']);
+}
+// TK7z (judge TK7e · PT1 · TK7g, hunt 3 — «½» said «один два»): a fraction as the Russian voice says it — the numerator feminine, the
+// denominator an ordinal: a numerator ending in one (not eleven) takes the nominative singular («одна вторая», «двадцать одна сотая»),
+// any other the genitive plural («три четвёртых», «ноль третьих»); a denominator past the table is said «три дробь шестнадцать» — the
+// spoken form of a written fraction. [NOT-TESTED]
+const RU_ORDINAL = { 2: ['вторая', 'вторых'], 3: ['третья', 'третьих'], 4: ['четвёртая', 'четвёртых'], 5: ['пятая', 'пятых'],
+  6: ['шестая', 'шестых'], 7: ['седьмая', 'седьмых'], 8: ['восьмая', 'восьмых'], 9: ['девятая', 'девятых'], 10: ['десятая', 'десятых'],
+  100: ['сотая', 'сотых'] };
+// Session 96 (judge of epic PT, hunt 3 — «1½» said «один одна вторая»): a whole part is said before the fraction, feminine, with «целая» /
+// «целых» agreeing with it («одна целая одна вторая», «две целых одна третья»).
+const ruFeminine = (n) => ruNumber(n).replace(/(^|\s)один$/u, '$1одна').replace(/(^|\s)два$/u, '$1две');
+function ruFraction(num, den, whole) {
+  const head = Number.isFinite(whole) ? ruFeminine(whole) + ' ' + ruForm(whole, ['целая', 'целых', 'целых']) + ' ' : '';
+  const ord = RU_ORDINAL[den];
+  if (!ord) return head + ruFeminine(num) + ' дробь ' + ruNumber(den);
+  return head + ruFeminine(num) + ' ' + (num % 10 === 1 && num % 100 !== 11 ? ord[0] : ord[1]);
 }
 
 const RU = {
@@ -15140,6 +15204,8 @@ const RU = {
     // (up to five letters) — letter by letter; any other Latin word — transliterated (digraphs first, then letters).
     number: ruNumber,
     percent: ruPercent,
+    fraction: ruFraction,      // TK7z: «¾» — «три четвёртых», not two numbers
+    unknownNumber: 'число',    // TK7z: a numeral of no known value («𐄇») is said as this word — never an empty phrase
     letters: { A: 'эй', B: 'би', C: 'си', D: 'ди', E: 'и', F: 'эф', G: 'джи', H: 'эйч', I: 'ай', J: 'джей', K: 'кей', L: 'эл', M: 'эм',
       N: 'эн', O: 'оу', P: 'пи', Q: 'кью', R: 'ар', S: 'эс', T: 'ти', U: 'ю', V: 'ви', W: 'дабл-ю', X: 'экс', Y: 'уай', Z: 'зед' },
     translit: [['shch', 'щ'], ['sch', 'ш'], ['sh', 'ш'], ['ch', 'ч'], ['zh', 'ж'], ['kh', 'х'], ['ts', 'ц'], ['th', 'т'], ['ph', 'ф'],
@@ -19404,8 +19470,9 @@ if (IS_MAIN) {
 // `--selftest` proves the zone sign (both hemispheres), the four values, three write forms, the escape, silence on a plain write.
 // [TESTED: 2026-10-23 16:58 · live Claude Code sessions of step PT3 — a file written with the placeholder read back with the clock's
 //  date (testcases/reports/2026-10-23_pt3-live-hooks.md); 2026-10-30 16:30 · the origin's own live session with this file wired: a carried
-//  placeholder stayed literal and a new one got the minute (TK7z, judge hunt 4); hygiene — --selftest 10/10, probe pt1-clock-now 8/8, the
-//  carried-word mutant red on exactly its three cases]
+//  placeholder stayed literal and a new one got the minute (TK7z, judge hunt 4; testcases/reports/2026-10-30_tk7z-tk9-contour-clock.md); hygiene — --selftest 10/10, probe pt1-clock-now 8/8, the
+//  carried-word mutant red on exactly its three cases; 2026-10-30 18:57 · session 96: --selftest 11/11 (the escaped-carry case of the
+//  judge of session 95), the carried-word mutant (keep ignored) red on exactly its four cases]
 import { readFileSync } from 'node:fs';
 
 const L = '\u27E6', R = '\u27E7';   // white square brackets around a placeholder word
@@ -19926,7 +19993,10 @@ from memory drifts with the amount of work done. The agent writes a PLACEHOLDER 
 `DATE` or `TIME` between white square brackets (U+27E6 and U+27E7) — and the hook fills it in the tool input before the write runs:
 `NOW` → `2026-10-23 14:41 +03:00`, `NOW-ISO` → `2026-10-23T14:41:10+03:00`, `DATE` → `2026-10-23`, `TIME` → `14:41`, the machine's
 local time. Only `content` (Write), `new_string` (Edit) and `edits[].new_string` (MultiEdit) are filled — `old_string` must match
-the file and is never touched; a backslash before the opening bracket keeps a placeholder literal (a text ABOUT them). The answer
+the file and is never touched; a backslash before the opening bracket keeps a placeholder literal (a text ABOUT them). A word the
+write only carries stays literal: it already stands in `old_string`, or in the file a Write replaces. The limit is by WORD, not by
+occurrence — a second `NOW` added next to a carried `NOW` stays literal too; write another word there (`NOW-ISO`, `DATE`) or take a
+`date` probe. The answer
 carries `updatedInput` and no `permissionDecision`: "allow" would skip the owner's permission prompt. Without the hook the canon
 rule stands as written: take the moment with a `date` probe in the same call. The other systems' samples do not wire it — their
 input-rewrite contract was not read.
@@ -19944,9 +20014,11 @@ session state). Without the hook the brief rule stands as written.
 **The farewell hook — `stop-farewell-capture.mjs` (2.10, epic PT, origin #181) — is wired for Claude Code only.** The closing rituals end
 with a farewell written after the closing commit — the densest handover there is — and the owner used to copy it by hand into the next
 chat. On the stop of a turn that ran a closing ritual the hook replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root
-with that turn's last message; `/resume` reads it first on the chat's first entry. One closure writes once (`.kaif/farewell-capture.json`
-keeps its id): `stop_hook_active` is not the test — it is already true on the first stop after the closure when a guard blocked earlier
-in the turn. Both files are session state (ignored). Without the hook the owner's paste under `resume` stands as before.
+with that turn's last message; `/resume` reads it first on the chat's first entry. Every stop of the closing turn writes and the last one
+wins, except a stop that only answers another Stop hook's block or a neighbour session's message with no tool call after it. A background
+task's notification does not open a new turn: a closing turn that waited on a polygon and wrote its farewell after the notification
+replaces the interim line. `stop_hook_active` is not the test — it is already true on the first stop after the closure when a guard
+blocked earlier in the turn. `.kaif/farewell-capture.json` records which closure wrote last. Both files are session state (ignored). Without the hook the owner's paste under `resume` stands as before.
 
 Reading the table: a ❌ is a statement about that system's published contract, not about the
 module. Where a system carries one hook out of three, wire that one — a partial mechanical
@@ -20304,9 +20376,12 @@ process.exit(0);
 //   - the turn = every record after the owner's last real prompt (not a skill body — isMeta —, not a tool result, not a CLI wrapper);
 //   - a closure = a Skill tool call of `end-chat-soft|end-chat-force` (a plugin prefix allowed) or the owner's own slash command in the turn;
 //   - the text = `last_assistant_message` of the event, else the transcript text after the turn's last tool call;
-//   - ONE closure writes ONCE: its id (the Skill tool_use id, or the owner prompt's uuid) is kept in .kaif/farewell-capture.json, and a later
-//     stop of the same closure — after another Stop hook blocked and the agent answered one line — leaves the file alone. `stop_hook_active`
-//     is NOT the test: it is already true on the FIRST stop after the closure whenever a guard blocked earlier in the same turn;
+//   - EVERY stop of the closing turn writes, the last one wins — EXCEPT a stop that only answers another Stop hook's block («Stop hook
+//     feedback») or a neighbour session's message with no tool call after it: that one line is not a farewell. A closing turn that waits
+//     on background work stops first on an interim line («waiting for the polygon») and is woken by the task's notification — which is NOT
+//     the owner's prompt, so the farewell after it belongs to the same turn and replaces the interim line (judge of epic PT, session 96: the
+//     former «one closure writes once» froze the interim line). `stop_hook_active` is NOT the test: it is already true on the FIRST stop
+//     after the closure whenever a guard blocked earlier in the same turn. .kaif/farewell-capture.json records which closure wrote last;
 //   - a turn without a closure (the owner's «thanks» after the farewell) never touches the file;
 //   - the write goes through a temporary file and a rename: a torn write never hands the next chat half a farewell.
 // The project root is the directory of .kaif/kaif.json above the event's `cwd` (twin of stop-status-guard.mjs); CLAUDE_PROJECT_DIR wins.
@@ -20315,8 +20390,11 @@ process.exit(0);
 // `stop_hook_active`, `last_assistant_message` (when the harness gives it). Any internal error → exit 0 silently: a hook never stops the work.
 // `--selftest` proves the turn reader on a transcript of the live record order. The field acceptance — tools/sandbox/probes/pt5-farewell.mjs
 // of the origin.
-// [NOT-TESTED: the field hook this one is distilled from was observed writing a live farewell (field report on #181); this file — selftest and
-//  the acceptance probe only until the origin's live closing turn is read back]
+// [TESTED: 2026-10-30 · the origin's live closing turn of session 95 (the former rule) read back by step 0 of /resume of session 96 — the
+//  file equal to that turn's farewell; the present rule replayed on the same real record — one write at the farewell, the two later stops
+//  (answers to a neighbour) no write; acceptance 13/13, red on the former hook at (11)–(13), mutants «quiet ignored» and «a notification is
+//  the owner» red on exactly their cases — testcases/reports/2026-10-30_s96-farewell-live-speech-scenarios.md. NOT YET live: a closing turn
+//  woken by a background task's notification]
 import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 
@@ -20337,47 +20415,61 @@ function projectRoot(cwd) {
 const contentOf = (rec) => (rec && rec.message ? rec.message.content : undefined);
 const blocks = (c) => (Array.isArray(c) ? c.filter(Boolean) : typeof c === 'string' ? [{ type: 'text', text: c }] : []);
 const textOf = (bs) => bs.filter((b) => b.type === 'text').map((b) => b.text || '').join('\n');
-// The owner's real prompt: a user record that is not a skill body (isMeta), not a tool result, not a local CLI command's wrapper.
-function isOwnerPrompt(rec) {
-  if (!rec || rec.type !== 'user' || rec.isMeta) return false;
+// Session 96 (judge of epic PT, hunts 1–2): the live record of a Claude Code session (VS Code client, 2026-10-30) marks who woke the turn —
+// the owner's prompt `origin.kind: "human"`, a background task's notification `"task-notification"` (isMeta false!), a neighbour session
+// `"peer"`; a Stop hook's block reaches the model as an isMeta user record «Stop hook feedback: …». A record with no `origin` is read by the
+// older rule (a CLI or an older version of the client).
+const WAKE_KINDS = { 'task-notification': 'notification', peer: 'peer' };
+function wakeOf(rec) {
+  if (!rec || rec.type !== 'user') return null;
   const bs = blocks(contentOf(rec));
-  if (!bs.length || bs.some((b) => b.type === 'tool_result')) return false;
+  if (!bs.length || bs.some((b) => b.type === 'tool_result')) return null;
   const text = textOf(bs);
-  return Boolean(text.trim()) && !text.startsWith('<local-command-caveat>');
+  const kind = rec.origin && rec.origin.kind;
+  if (kind) return kind === 'human' ? 'owner' : WAKE_KINDS[kind] || 'meta';
+  if (/^Stop hook feedback:/.test(text)) return 'feedback';
+  if (/^<task-notification>/.test(text.trim())) return 'notification';
+  if (/^(?:Another Claude session sent a message|\[Cross-session)/.test(text.trim())) return 'peer';
+  if (rec.isMeta) return 'meta';
+  return text.trim() && !text.startsWith('<local-command-caveat>') ? 'owner' : null;
 }
-// → { closed, closureId, text } of the transcript's last turn.
+// The owner's real prompt opens a turn — never a skill body, a tool result, a CLI wrapper, a task's notification or a neighbour's message:
+// work the closing turn waits on (a polygon in the background) belongs to the SAME turn.
+const isOwnerPrompt = (rec) => wakeOf(rec) === 'owner';
+// → { closed, closureId, text, quiet } of the transcript's last turn. `quiet` — the turn's last stop only ANSWERS a Stop hook's block or a
+// neighbour's message (no tool call after it): that one line is not a farewell, the file keeps the one before it.
+// [NOT-TESTED]
 export function readTurn(lines) {
   const recs = [];
   for (const l of lines) { if (!l.trim()) continue; try { recs.push(JSON.parse(l)); } catch { /* a torn line */ } }
   let start = 0;
   for (let i = recs.length - 1; i >= 0; i--) if (isOwnerPrompt(recs[i])) { start = i; break; }
-  let closed = false, closureId = '', tail = [];
+  let closed = false, closureId = '', tail = [], wake = 'owner', toolsSinceWake = 0;
   for (const rec of recs.slice(start)) {
     const bs = blocks(contentOf(rec));
     if (rec.type === 'user') {
       if (!rec.isMeta && CLOSURE_COMMAND.test(textOf(bs))) { closed = true; closureId = String(rec.uuid || 'command'); }
       if (bs.some((b) => b.type === 'tool_result')) tail = [];
+      const w = wakeOf(rec);
+      if (w && w !== 'meta') { wake = w; toolsSinceWake = 0; }
       continue;
     }
     if (rec.type !== 'assistant') continue;
     for (const b of bs) {
       if (b.type === 'tool_use') {
         if (b.name === 'Skill' && b.input && CLOSURE_SKILL.test(String(b.input.skill || '').trim())) { closed = true; closureId = String(b.id || rec.uuid || 'skill'); }
-        tail = [];
+        tail = []; toolsSinceWake++;
       } else if (b.type === 'text' && b.text && b.text.trim()) tail.push(b.text);
     }
   }
-  return { closed, closureId, text: tail.join('\n\n').trim() };
+  return { closed, closureId, text: tail.join('\n\n').trim(), quiet: (wake === 'feedback' || wake === 'peer') && toolsSinceWake === 0 };
 }
 // The decision, pure: what to write where, or null.
 export function capture(event, readFile = (p) => readFileSync(p, 'utf8')) {
   if (!event || !event.transcript_path) return null;
   const turn = readTurn(readFile(event.transcript_path).split('\n'));
-  if (!turn.closed) return null;
+  if (!turn.closed || turn.quiet) return null;   // no closure, or the stop only answers a block or a neighbour
   const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(String(event.cwd || process.cwd()));
-  let seen = '';
-  try { seen = JSON.parse(readFile(join(root, MEMORY)).replace(/^\uFEFF/, '')).closureId || ''; } catch { /* no memory yet */ }
-  if (turn.closureId && seen === turn.closureId) return null;   // a later stop of the same closure
   const text = typeof event.last_assistant_message === 'string' && event.last_assistant_message.trim() ? event.last_assistant_message.trim() : turn.text;
   return text ? { root, text, closureId: turn.closureId } : null;
 }
@@ -20398,13 +20490,22 @@ if (process.argv[2] === '--selftest') {
   ok(!readTurn([owner, skill, result, bye, J({ type: 'user', message: { content: 'thanks' } }), J({ type: 'assistant', message: { content: [{ type: 'text', text: 'np' }] } })]).closed,
     'a turn after the closing one (the owner\'s thanks) is not a closure');
   ok(readTurn([J({ type: 'user', uuid: 'u7', message: { content: '<command-name>/end-chat-force</command-name>' } }), bye]).closureId === 'u7', 'the owner\'s slash command is a closure');
-  const files = { 'T.jsonl': [owner, skill, result, bye].join('\n') };
+  // session 96: the live record forms of who woke the turn (VS Code client, 2026-10-30)
+  const feedback = J({ type: 'user', isMeta: true, message: { content: [{ type: 'text', text: 'Stop hook feedback:\nKAIF STATUS guard ...' }] } });
+  const oneLine = J({ type: 'assistant', message: { content: [{ type: 'text', text: 'No new knowledge.' }] } });
+  const notice = J({ type: 'user', origin: { kind: 'task-notification' }, message: { content: '<task-notification>\n<task-id>b1</task-id>' } });
+  const peer = J({ type: 'user', isMeta: true, origin: { kind: 'peer' }, message: { content: 'Another Claude session sent a message: ...' } });
+  const waiting = J({ type: 'assistant', message: { content: [{ type: 'text', text: 'Waiting for the polygon.' }] } });
+  const files = { 'T.jsonl': [owner, skill, result, bye].join('\n'), 'F.jsonl': [owner, skill, result, bye, summary, feedback, oneLine].join('\n'),
+    'N.jsonl': [owner, skill, result, waiting, summary, notice, work, result, bye].join('\n'), 'P.jsonl': [owner, skill, result, bye, summary, peer, oneLine].join('\n') };
   const read = (p) => { const k = Object.keys(files).find((f) => p.endsWith(f)); if (!k) throw new Error('no ' + p); return files[k]; };
   process.env.CLAUDE_PROJECT_DIR = 'ROOT';
   const c1 = capture({ transcript_path: 'T.jsonl', stop_hook_active: true }, read);
-  files['farewell-capture.json'] = J({ closureId: 't1' });
-  const c2 = capture({ transcript_path: 'T.jsonl', last_assistant_message: 'No new knowledge.' }, read);
-  ok(c1 && c1.text === 'Bye.' && c1.root === 'ROOT' && c2 === null, 'the first stop writes even with stop_hook_active; a later stop of the same closure writes nothing');
+  const c2 = capture({ transcript_path: 'F.jsonl', last_assistant_message: 'No new knowledge.', stop_hook_active: true }, read);
+  ok(c1 && c1.text === 'Bye.' && c1.root === 'ROOT' && c2 === null, 'the first stop writes even with stop_hook_active; the one-line answer to a guard\'s block writes nothing');
+  const c3 = capture({ transcript_path: 'N.jsonl' }, read);
+  ok(c3 && c3.text === 'Bye.' && capture({ transcript_path: 'P.jsonl' }, read) === null,
+    'a task\'s notification does not open a new turn — the farewell after it is written; a one-line answer to a neighbour is not');
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
@@ -21290,7 +21391,7 @@ Approval binds to the SHA-256 of the NORMALISED body (BOM stripped, CRLF/CR → 
 
 ## 6. The call — sound first, voice by language
 
-ONE sound, played once (2.10, #165): 1 s of silence (the device wakes up on the first samples), beeps 880/160 → 660/160 → 990/260 ms at full level, 2 s of pause, the voice already rendered (the system voice into a file; a rich tool through `--out <wav>`, else the beeps and then the tool speaks; a tool that renders the beeps itself declares `KAIF_VOICE_BEEPS=embedded`); the banner first — after the page is up, never before. The phrase reaches the engine as words of the deployment language — numbers as words, an abbreviation letter by letter, Latin transliterated (`--call --dry-run` prints what it would get). The voice is chosen by the deployment language (`.kaif/kaif.json` →
+ONE sound, played once (2.10, #165): 1 s of silence (the device wakes up on the first samples), beeps 880/160 → 660/160 → 990/260 ms at full level, 2 s of pause, the voice already rendered (the system voice into a file; a rich tool through `--out <wav>`, else the beeps and then the tool speaks; a tool that renders the beeps itself declares `KAIF_VOICE_BEEPS=embedded`); the banner first — after the page is up, never before. The phrase reaches the engine as words of the deployment language — numbers as words (a fraction as one value, a Roman numeral as its value, a numeral of no known value as a word — never an empty phrase), an abbreviation letter by letter, Latin transliterated (`--call --dry-run` prints what it would get). The voice is chosen by the deployment language (`.kaif/kaif.json` →
 `language`) first, timbre second; when no matching engine exists the call line says so ("system voice — engine not installed") and the contour drops to beeps + banner rather than speaking noise. The
 rich engine is a MACHINE resource reached through the environment (`KAIF_VOICE_TOOL`, `KAIF_VOICE`, `KAIF_SAPI_VOICE`) — never a path inside the project. Quiet hours override every level; the window
 may cross midnight. **The call names the calling session** when the project has more than one workspace («<owner>, this is <session>. …», `CALL · <session>:`, the window title; `KAIF_SESSION_NAME`,

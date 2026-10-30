@@ -5,8 +5,12 @@
 //   CL — --close no longer asks the port who it is before sending the token               → «TK7z #169: --close against a stranger»
 //   MS — the CLI branch of --mark-shown bypasses the resolver (#178)                       → «TK9 #178: the real CLI»
 //   MF — the resolver takes any value of the flag as the document (#178)                   → both TK9 cases (the CLI calls the resolver)
+//   FR — a vulgar fraction is no longer one value («½» said as two numbers; hunt 3)        → «TK7z #165: «½ ¾ ⅔ 3⁄16»»
+//   RM — a Roman numeral is no longer its value («Ⅻ» spelled; hunt 3)                       → the same case
+//   UN — a numeral of no known value becomes nothing again («𐄇» empty; hunt 3)             → the same case
+//   WH — the whole part of a mixed number is dropped («1½» as «одна вторая»; judge of epic PT) → the same case
 // A mutation that does not apply is BAD (never a green), a selftest that dies is BAD (EXP-0158).
-// usage: node tools/sandbox/probes/tk7z-tk9-contour-mutants.mjs   (≈ 4 min, alone: the selftest raises local pages)
+// usage: node tools/sandbox/probes/tk7z-tk9-contour-mutants.mjs   (≈ 6 min, alone: the selftest raises local pages)
 import { cpSync, readFileSync, writeFileSync, rmSync, mkdtempSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -23,6 +27,12 @@ const MUTANTS = [
   ['MS', "const target = markShownTarget(root, opt('--mark-shown'), docPath);", "const target = { doc: opt('--mark-shown') };", ['TK9 #178: the real CLI']],
   ['MF', "  const pick = value && !String(value).startsWith('--') ? value : positional;\n  if (!pick)",
     "  const pick = value;\n  if (pick) return { doc: pick };\n  if (!pick)", ['TK9 #178: --mark-shown takes the named file', 'TK9 #178: the real CLI']],
+  // session 96, judge TK7e · PT1 · TK7g hunt 3 — the speech of numerals
+  ['FR', 's = s.replace(MIXED_FRACTION_RE,', 's = s.replace(/(?!)/gu,', ['TK7z #165: «½ ¾ ⅔ 3⁄16»']],
+  ['RM', "  s = s.replace(ROMAN_RUN_RE, (run) => ' ' + romanRun(run) + ' ');\n", '', ['TK7z #165: «½ ¾ ⅔ 3⁄16»']],
+  // session 96, judge of epic PT (hunt 3): the whole part of «1½» dropped again
+  ['WH', 'return say(Number(a), Number(b), whole) + after;', 'return say(Number(a), Number(b)) + after;', ['TK7z #165: «½ ¾ ⅔ 3⁄16»']],
+  ['UN', "    return ' ' + unknown + ' ';", "    return ' ';", ['TK7z #165: «½ ¾ ⅔ 3⁄16»']],
 ];
 let bad = 0;
 for (const [name, from, to, addressee] of MUTANTS) {

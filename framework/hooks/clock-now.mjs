@@ -26,8 +26,9 @@
 // `--selftest` proves the zone sign (both hemispheres), the four values, three write forms, the escape, silence on a plain write.
 // [TESTED: 2026-10-23 16:58 · live Claude Code sessions of step PT3 — a file written with the placeholder read back with the clock's
 //  date (testcases/reports/2026-10-23_pt3-live-hooks.md); 2026-10-30 16:30 · the origin's own live session with this file wired: a carried
-//  placeholder stayed literal and a new one got the minute (TK7z, judge hunt 4); hygiene — --selftest 10/10, probe pt1-clock-now 8/8, the
-//  carried-word mutant red on exactly its three cases]
+//  placeholder stayed literal and a new one got the minute (TK7z, judge hunt 4; testcases/reports/2026-10-30_tk7z-tk9-contour-clock.md); hygiene — --selftest 10/10, probe pt1-clock-now 8/8, the
+//  carried-word mutant red on exactly its three cases; 2026-10-30 18:57 · session 96: --selftest 11/11 (the escaped-carry case of the
+//  judge of session 95), the carried-word mutant (keep ignored) red on exactly its four cases]
 import { readFileSync } from 'node:fs';
 
 const L = '\u27E6', R = '\u27E7';   // white square brackets around a placeholder word

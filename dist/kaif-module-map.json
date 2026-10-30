@@ -1546,7 +1546,7 @@
       {
         "signature": "## 14. Optional tool modules",
         "class": "static",
-        "sha256": "828e55372ccaede2e64a4ce5a70751077c51864ecc3d882a12656ff0b2c76cda",
+        "sha256": "71da658a8d33efe506fc264879116ba91910e2e0786e63913a98092e96d74d39",
         "lines": [
           575,
           642
@@ -5725,10 +5725,10 @@
       {
         "signature": "## Other agent systems",
         "class": "static",
-        "sha256": "67d7511de7a1723bc52699f68a955489b09ab3695254f9d12d7fe771b04c99d3",
+        "sha256": "ae46de790d6b58d2b3c1611f1dffea857d737ae2b1ea10c5d3b16d10fa6ac55f",
         "lines": [
           99,
-          186
+          191
         ]
       }
     ],
@@ -6187,7 +6187,7 @@
       {
         "signature": "## 6. The call — sound first, voice by language",
         "class": "static",
-        "sha256": "71b4b50c0970add373edcca5366c505fbfef936711352d2c51795f0d871b15b8",
+        "sha256": "b283542bcf49105500c908fe476492abfa80abb5a99612fcf6df092ee3a78d07",
         "lines": [
           87,
           94

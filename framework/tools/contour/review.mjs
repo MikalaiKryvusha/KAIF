@@ -182,14 +182,50 @@ const LATIN_FOLD = { 'ø': 'o', 'Ø': 'O', 'ł': 'l', 'Ł': 'L', 'ß': 'ss', 'æ
 // numeric and not a digit (the fraction slash, a vulgar fraction NFKD keeps) becomes a space.
 // [TESTED: 2026-10-23 15:33 · selftest «TK7e #165» (nine numeral forms, no \p{N} left; the capital sharp s) + mutants M32 · M33 · M4 · M14 ·
 //  M23 red on their cases; report testcases/reports/2026-10-23_tk7f-judge-tk7d-caveats.md]
-function asciiNumerals(s) {
+// TK7z (judge TK7e · PT1 · TK7g, hunt 3): «XII» was spelled letter by letter and «〇 𐄇» left an EMPTY phrase. The ideographic zero has a
+// value NFKD does not give; a numeral of no known value becomes the pack's `unknown` word, never nothing — the engine must not get an
+// empty phrase. Roman numerals are said by `romanRun()` below, before this.
+// [NOT-TESTED]
+const NUMERAL_VALUE = { '〇': '0' };
+// Session 96 (judge of epic PT, hunt 3 — «ⅯⅭⅯ» was said as three numbers, «ↂ ↁ ↇ» as the unknown-numeral word): a RUN of Roman numeral signs is ONE number
+// — every sign's value (NFKD letters for Ⅰ…ⅿ, the table for the signs NFKD keeps whole), then the subtractive rule over the whole run.
+const ROMAN = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+const ROMAN_WHOLE = { 'ↀ': 1000, 'ↁ': 5000, 'ↂ': 10000, 'ↅ': 6, 'ↆ': 50, 'ↇ': 50000, 'ↈ': 100000 };
+const ROMAN_RUN_RE = /[Ⅰ-ↂↅ-ↈ]+/gu;
+function romanRun(run) {
+  const vals = [];
+  for (const c of run) { if (ROMAN_WHOLE[c]) vals.push(ROMAN_WHOLE[c]); else for (const l of c.normalize('NFKD').toUpperCase()) vals.push(ROMAN[l] || 0); }
+  return vals.reduce((v, a, i) => v + (a < (vals[i + 1] || 0) ? -a : a), 0);
+}
+function asciiNumerals(s, unknown = ' ') {
   return s.replace(/\p{N}/gu, (c) => {
     if (/[0-9]/u.test(c)) return c;
+    if (NUMERAL_VALUE[c]) return NUMERAL_VALUE[c];
     const k = c.normalize('NFKD');
-    if (k !== c && /^[\x20-\x7e⁄]+$/u.test(k)) return k.replace(/⁄/gu, ' '); // a Roman numeral unfolds to Latin letters, said as such
+    if (k !== c && /^[\x20-\x7e⁄]+$/u.test(k)) return k.replace(/⁄/gu, ' ');
     if (/\p{Nd}/u.test(c)) { let base = c.codePointAt(0); while (/\p{Nd}/u.test(String.fromCodePoint(base - 1))) base--; return String((c.codePointAt(0) - base) % 10); }
-    return ' ';
+    return ' ' + unknown + ' ';
   });
+}
+// TK7z (judge TK7e · PT1 · TK7g, hunt 3 — «½» was said «one two», «¾» «three four»): a vulgar fraction unfolds to «a⁄b» apart from a whole
+// number before it («1½» is one and a half, not «11⁄2»); digits around the fraction slash are ONE value said by the pack's `fraction`;
+// a slash left alone is a space. Session 96 (judge of epic PT, hunt 3 — «1½» was said «one, one second», «⅟4» «one four»): digits right
+// before a vulgar fraction are its WHOLE part, passed to the pack's `fraction(num, den, whole)`; «⅟» takes the digits after it as its
+// denominator. [NOT-TESTED]
+const VULGAR_FRACTION_RE = /[¼-¾⅐-⅟↉]/gu;
+const MIXED_FRACTION_RE = new RegExp('(\\d*)(' + VULGAR_FRACTION_RE.source + ')(\\d*)', 'gu');
+function sayFractions(s, sp) {
+  const say = (a, b, whole) => ' ' + (typeof sp.fraction === 'function' ? sp.fraction(a, b, whole)
+    : [whole, a, b].filter((x) => x !== undefined).join(' ')) + ' ';
+  s = s.replace(MIXED_FRACTION_RE, (m, w, c, after) => {
+    const [a, b] = c.normalize('NFKD').split('⁄');
+    const whole = w ? Number(w) : undefined;
+    if (b) return say(Number(a), Number(b), whole) + after;                       // «1½» · «¾»
+    return after ? say(Number(a), Number(after), whole) : ' ' + w + ' ' + a + ' '; // «⅟4» — the denominator follows the sign
+  });
+  s = s.replace(ROMAN_RUN_RE, (run) => ' ' + romanRun(run) + ' ');
+  s = asciiNumerals(s, sp.unknownNumber || ' ');
+  return s.replace(/(\d+)⁄(\d+)/gu, (m, a, b) => say(Number(a), Number(b))).replace(/⁄/gu, ' ');
 }
 // TK7d (judge TK7c, hunt 6): what is still Latin and not ASCII after NFKD and LATIN_FOLD is dropped — the engine never gets a Latin letter
 // it would read in another language; ligatures («ﬁ» · «ĳ») are split by NFKD itself
@@ -198,7 +234,7 @@ const LATIN_FOLD_RE = new RegExp('[' + Object.keys(LATIN_FOLD).join('') + ']', '
 export function speakable(text, cfg) {
   const sp = T(cfg).spoken || {};
   let s = String(text).replace(/[#\u2116]/gu, ' ');
-  if (typeof sp.number === 'function') s = asciiNumerals(s);
+  if (typeof sp.number === 'function') s = sayFractions(s, sp);
   // TK7\u0431 (judge TK7, hunt 5): thousands written with spaces (\u00ab1 000 000\u00bb) are ONE number; the word after a number agrees with it when the
   // pack gives `percent` as a function of the number as written (the Russian pack: one, two\u2013four and five-plus take three forms)
   // a no-break space joins one group, a plain space \u2014 two or more (\u00ab1 000 000\u00bb): \u00ab#165 100%\u00bb stays two numbers (judge TK7b, hunt 5)
@@ -3115,6 +3151,17 @@ export async function selftest(log = console.log) {
     ok(!/\p{N}/u.test(said4) && !/\p{Script=Latin}/u.test(said4) && said4.includes(sp.number(123)) && said4.includes(sp.number(12))
       && speakable('GROẞ', ru) === speakable('GROSS', ru),
       'TK7e #165: «² ₂ ½ １２３ ① ٣ १२ 𝟓 Ⅻ» reach the Russian engine as number words, no digit of any script left; «ẞ» folds to «SS» (I48)');
+    // TK7z (judge TK7e · PT1 · TK7g, hunt 3): a fraction is ONE value said by the pack's `fraction` («½» was «one two»); a Roman numeral
+    // its value («XII» was spelled); a numeral of no known value the pack's word — «〇 𐄇» left an EMPTY phrase
+    const hunt3 = [['½', sp.fraction(1, 2)], ['¾', sp.fraction(3, 4)], ['⅔', sp.fraction(2, 3)], ['3⁄16', sp.fraction(3, 16)],
+      ['1½', sp.fraction(1, 2, 1)], ['2⅓', sp.fraction(1, 3, 2)], ['⅟4', sp.fraction(1, 4)], // session 96: the whole part, «⅟» + denominator
+      ['Ⅻ', sp.number(12)], ['ⅻ', sp.number(12)], ['Ⅳ', sp.number(4)], ['ⅯⅭⅯ', sp.number(1900)], ['ↂ', sp.number(10000)], // a run is ONE number
+      ['〇', sp.number(0)], ['\u{10107}', sp.unknownNumber]];
+    const miss3 = hunt3.filter(([w, want]) => speakable(w, ru) !== want || !want);
+    ok(miss3.length === 0 && sp.fraction(1, 2) !== sp.fraction(3, 4) && !/\p{N}/u.test(hunt3.map(([, x]) => x).join(' '))
+      && sp.fraction(1, 2, 1) !== sp.number(1) + ' ' + sp.fraction(1, 2), // judge of epic PT: «1½» was expected as «one, one second»
+      'TK7z #165: «½ ¾ ⅔ 3⁄16» reach the Russian engine as one fraction each, «Ⅻ ⅻ Ⅳ» as their values, «〇» as zero, «𐄇» as the pack\'s word — no empty phrase (I48)'
+      + (miss3.length ? ' — ' + miss3.map(([w]) => w + ' -> ' + speakable(w, ru)).join(' | ') : ''));
   }
 
   rmSync(root, { recursive: true, force: true });

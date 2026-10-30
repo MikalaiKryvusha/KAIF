@@ -134,7 +134,10 @@ from memory drifts with the amount of work done. The agent writes a PLACEHOLDER 
 `DATE` or `TIME` between white square brackets (U+27E6 and U+27E7) — and the hook fills it in the tool input before the write runs:
 `NOW` → `2026-10-23 14:41 +03:00`, `NOW-ISO` → `2026-10-23T14:41:10+03:00`, `DATE` → `2026-10-23`, `TIME` → `14:41`, the machine's
 local time. Only `content` (Write), `new_string` (Edit) and `edits[].new_string` (MultiEdit) are filled — `old_string` must match
-the file and is never touched; a backslash before the opening bracket keeps a placeholder literal (a text ABOUT them). The answer
+the file and is never touched; a backslash before the opening bracket keeps a placeholder literal (a text ABOUT them). A word the
+write only carries stays literal: it already stands in `old_string`, or in the file a Write replaces. The limit is by WORD, not by
+occurrence — a second `NOW` added next to a carried `NOW` stays literal too; write another word there (`NOW-ISO`, `DATE`) or take a
+`date` probe. The answer
 carries `updatedInput` and no `permissionDecision`: "allow" would skip the owner's permission prompt. Without the hook the canon
 rule stands as written: take the moment with a `date` probe in the same call. The other systems' samples do not wire it — their
 input-rewrite contract was not read.
@@ -152,9 +155,11 @@ session state). Without the hook the brief rule stands as written.
 **The farewell hook — `stop-farewell-capture.mjs` (2.10, epic PT, origin #181) — is wired for Claude Code only.** The closing rituals end
 with a farewell written after the closing commit — the densest handover there is — and the owner used to copy it by hand into the next
 chat. On the stop of a turn that ran a closing ritual the hook replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root
-with that turn's last message; `/resume` reads it first on the chat's first entry. One closure writes once (`.kaif/farewell-capture.json`
-keeps its id): `stop_hook_active` is not the test — it is already true on the first stop after the closure when a guard blocked earlier
-in the turn. Both files are session state (ignored). Without the hook the owner's paste under `resume` stands as before.
+with that turn's last message; `/resume` reads it first on the chat's first entry. Every stop of the closing turn writes and the last one
+wins, except a stop that only answers another Stop hook's block or a neighbour session's message with no tool call after it. A background
+task's notification does not open a new turn: a closing turn that waited on a polygon and wrote its farewell after the notification
+replaces the interim line. `stop_hook_active` is not the test — it is already true on the first stop after the closure when a guard
+blocked earlier in the turn. `.kaif/farewell-capture.json` records which closure wrote last. Both files are session state (ignored). Without the hook the owner's paste under `resume` stands as before.
 
 Reading the table: a ❌ is a statement about that system's published contract, not about the
 module. Where a system carries one hook out of three, wire that one — a partial mechanical

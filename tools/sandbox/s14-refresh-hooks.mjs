@@ -114,7 +114,7 @@ ok(JSON.stringify((frag.hooks?.PreToolUse || []).map((g) => [g.matcher, (g.hooks
   const hook = join(S, '.kaif', 'hooks', 'stop-farewell-capture.mjs');
   const acc = spawnSync(process.execPath, [join(REPO, 'tools', 'sandbox', 'probes', 'pt5-farewell.mjs'), hook], { encoding: 'utf8', timeout: 60000 });
   ok(acc.status === 0 && /✅ the farewell hook answers by the PT5 contract/.test(acc.stdout || ''),
-     's14 PT5: развёрнутый хук прощания проходит приёмку шага — 10 из 10 (одно закрытие — одна запись в корне · ход без закрытия не трогает · тишина)',
+     's14 PT5: развёрнутый хук прощания проходит приёмку шага — 13 из 13 (одно закрытие — одна запись в корне · ход без закрытия не трогает · тишина)',
      `${acc.status} ${(acc.stdout || '').slice(-600)} ${(acc.stderr || '').slice(-200)}`);
   const st = spawnSync(process.execPath, [hook, '--selftest'], { encoding: 'utf8', timeout: 60000 });
   ok(st.status === 0 && /selftest: all ok/.test(st.stdout || ''), 's14 PT5: самопроверка развёрнутого хука прощания зелёная', `${st.status} ${(st.stdout || '').slice(-600)}`);
@@ -874,5 +874,5 @@ r = run(S, 'check');
 ok(r.code !== 0 && /MISSING or empty: \.kaif\/hooks\//.test(r.out),
    's14 контраст: УДАЛЕНИЕ файлов модуля — честный MISSING (целостность поставки, как у tool-модулей)', r.out.slice(-300));
 
-console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ песочница refresh-hooks зелёная (деплой с модулем и без · 5 хуков по живому контракту · снятые хуки сняты с проводки)'}`);
+console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : `✅ песочница refresh-hooks зелёная (деплой с модулем и без · хуков по живому контракту — ${HOOK_FILES.filter((f) => f.endsWith('.mjs')).length} · снятые хуки сняты с проводки)`}`);
 process.exit(failures ? 1 : 0);
