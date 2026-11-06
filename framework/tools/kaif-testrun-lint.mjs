@@ -81,11 +81,15 @@ export const LINES = {
   ru: { hygiene: 'Гигиена', functional: 'Функциональный прогон' },
 };
 const LINE_LABELS = Object.values(LINES).flatMap((l) => [l.hygiene, l.functional]);
-const LINE_LABEL_RE = new RegExp(`^\\s*(?:${LINE_LABELS.join('|')})\\s*:`, 'iu');
+// A list item is a line too (version KAIF 2.10, epic HC, step HC7; origin ticket #161 — a field night of seven reports written
+// «- Functional run: …» by the canon, each red under `pass`): one optional list marker — `-` · `*` · `+` · `1.` · `1)` — may stand
+// before the label; the label itself, its colon and the rule of the value are unchanged.
+const LIST_MARK = '(?:(?:[-*+]|\\d+[.)])[^\\S\\n]+)?';
+const LINE_LABEL_RE = new RegExp(`^\\s*${LIST_MARK}(?:${LINE_LABELS.join('|')})\\s*:`, 'iu');
 // Whitespace after the colon is LINE-BOUND (`[^\S\n]*`, never `\s*`): under the `u` flag `\s*` spans newlines, so an
 // empty value would swallow the next non-blank line — the Checks table — as its "value" (judge of epic CL: a report with a
 // bare `Functional run:` or the template's own placeholder above a filled table passed green).
-const FUNCTIONAL_LINE = new RegExp(`^[^\\S\\n]*(?:${Object.values(LINES).map((l) => l.functional).join('|')})[^\\S\\n]*:[^\\S\\n]*(.*)$`, 'imu');
+const FUNCTIONAL_LINE = new RegExp(`^[^\\S\\n]*${LIST_MARK}(?:${Object.values(LINES).map((l) => l.functional).join('|')})[^\\S\\n]*:[^\\S\\n]*(.*)$`, 'imu');
 // NONE as the whole value or followed only by punctuation — "NONE (see below)", "нет — см. ниже" — or nothing at all;
 // "None of the walked flows failed …" is a filled line, not NONE (a word after it is prose, not a qualifier).
 const NONE_VALUE = /^(?:(?:none|нет|ноль|n\/a|—|-)(?:\s*$|\s*[(\[—–:;,.])|$)/iu;
@@ -411,6 +415,14 @@ function selftest() {
     say(wordContent.length === 0, `${lang}: a filled line that merely starts with the word none/нет under pass → clean (got [${wordContent.join(',')}])`);
     const fenced = lint(CLEAN_NAME, render(lang, { ...CLEAN[lang], checks: '```\n' + LINES[lang].functional + ': walked, read\n```' + TABLE[lang] })).map((x) => x.id);
     say(fenced.length === 1 && fenced[0] === 'pass-without-functional-run', `${lang}: the label only inside a code fence under pass → exactly [pass-without-functional-run] (got [${fenced.join(',')}])`);
+    // HC7 (#161): the two lines written as list items count — every marker form; a listed NONE under pass is still the rule
+    const listed = (mark) => CLEAN[lang].checks.split('\n').map((l) => (LINE_LABEL_RE.test(l) ? mark + l : l)).join('\n');
+    const marks = ['- ', '* ', '+ ', '1. ', '2) '];
+    const listGot = marks.map((mk) => lint(CLEAN_NAME, render(lang, { ...CLEAN[lang], checks: listed(mk) })).map((x) => x.id));
+    say(listGot.every((g) => g.length === 0) && marks.every((mk) => listed(mk).includes(mk + LINES[lang].functional + ':')),
+      `${lang}: «- ${LINES[lang].functional}: …» — the line as a list item counts (${marks.map((m) => m.trim()).join(' ')}) (#161) (got [${listGot.map((g) => g.join(',')).join(' | ')}])`);
+    const listNone = lint(CLEAN_NAME, render(lang, { ...CLEAN[lang], checks: NONE_LINE[lang].split('\n').map((l) => '- ' + l).join('\n') })).map((x) => x.id);
+    say(listNone.length === 1 && listNone[0] === 'pass-without-functional-run', `${lang}: «- ${LINES[lang].functional}: NONE» under pass → exactly [pass-without-functional-run] (#161) (got [${listNone.join(',')}])`);
   }
   // A report whose headings are recognised in neither language names all seven fields missing.
   const foreign = lint(CLEAN_NAME, '# Report\n\n## Summary\n\nfine\n').map((x) => x.id);

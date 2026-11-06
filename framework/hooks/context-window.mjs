@@ -4,7 +4,7 @@
 // Claude Code events: UserPromptSubmit · PostToolUse.
 //
 // What it does: reads the session's last main-thread usage from the transcript (input + cache_creation + cache_read tokens — the vendor's
-// own formula for «used», code.claude.com/docs/en/statusline) and, once per level and session, puts ONE line into the agent's context:
+// own formula for «used», code.claude.com/docs/en/statusline) and, once per level (re-armed after a compaction), puts ONE line into the agent's context:
 //   warnPct (default 80)  — a WARNING only: keep the normal pace, keep STATUS.md fresh, tell the owner once by voice. The line carries no
 //                           closing word — a field agent read «finish to a cut — at 75 % it is time to close» at 70 % as the closure itself
 //                           and stopped taking work with 30 % of the window left (the owner: «you close too early»);

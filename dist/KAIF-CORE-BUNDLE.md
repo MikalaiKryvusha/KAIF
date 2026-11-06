@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "9b1e27ad19bf0a05a53307aa618a140198e431c45261d6d2ca9d00f5ba89550e",
+    "sourceTree": "6340631f39db6c27da39a5979f4bbd0aa3aa315eb97b06507f8737b820456ba6",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -3769,8 +3769,8 @@ source file (what the docs say of it is quoted; named nowhere — an order to ad
 twelve plain tool results; state per session in `.kaif/knowledge-moment.json`; never a block — Claude Code only), `context-window.mjs`
 (2.10, epic PT; origin ticket #188: the session's used share of the context window — the last main-thread usage of the transcript
 against the window size by the vendor's model rule or the project's `contextWindow.tokens` — at `contextWindow.warnPct` (80) one warning
-line with no closing word, at `closePct` (85, then every 5 %) «finish to a logical cut, then `/end-chat-soft`»; once per level per session,
-state in `.kaif/context-window.json`; never a block, never a forced closure — Claude Code only) — plus
+line with no closing word, at `closePct` (85, then every 5 %) «finish to a logical cut, then `/end-chat-soft`»; once per level, the
+levels re-armed when a compaction lowers the share; state in `.kaif/context-window.json`; never a block, never a forced closure — Claude Code only) — plus
 `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
 suppression window exists, on the STATUS guard; injections are orders, never document bodies. RETIRED in 2.9 (origin ticket #144, the
 KAIF owner's verdict on the field): `pretool-owner-word.mjs` (2.8, `PreToolUse` — refused the next call after a mid-turn word) and the
@@ -18449,11 +18449,15 @@ export const LINES = {
   ru: { hygiene: 'Гигиена', functional: 'Функциональный прогон' },
 };
 const LINE_LABELS = Object.values(LINES).flatMap((l) => [l.hygiene, l.functional]);
-const LINE_LABEL_RE = new RegExp(`^\\s*(?:${LINE_LABELS.join('|')})\\s*:`, 'iu');
+// A list item is a line too (version KAIF 2.10, epic HC, step HC7; origin ticket #161 — a field night of seven reports written
+// «- Functional run: …» by the canon, each red under `pass`): one optional list marker — `-` · `*` · `+` · `1.` · `1)` — may stand
+// before the label; the label itself, its colon and the rule of the value are unchanged.
+const LIST_MARK = '(?:(?:[-*+]|\\d+[.)])[^\\S\\n]+)?';
+const LINE_LABEL_RE = new RegExp(`^\\s*${LIST_MARK}(?:${LINE_LABELS.join('|')})\\s*:`, 'iu');
 // Whitespace after the colon is LINE-BOUND (`[^\S\n]*`, never `\s*`): under the `u` flag `\s*` spans newlines, so an
 // empty value would swallow the next non-blank line — the Checks table — as its "value" (judge of epic CL: a report with a
 // bare `Functional run:` or the template's own placeholder above a filled table passed green).
-const FUNCTIONAL_LINE = new RegExp(`^[^\\S\\n]*(?:${Object.values(LINES).map((l) => l.functional).join('|')})[^\\S\\n]*:[^\\S\\n]*(.*)$`, 'imu');
+const FUNCTIONAL_LINE = new RegExp(`^[^\\S\\n]*${LIST_MARK}(?:${Object.values(LINES).map((l) => l.functional).join('|')})[^\\S\\n]*:[^\\S\\n]*(.*)$`, 'imu');
 // NONE as the whole value or followed only by punctuation — "NONE (see below)", "нет — см. ниже" — or nothing at all;
 // "None of the walked flows failed …" is a filled line, not NONE (a word after it is prose, not a qualifier).
 const NONE_VALUE = /^(?:(?:none|нет|ноль|n\/a|—|-)(?:\s*$|\s*[(\[—–:;,.])|$)/iu;
@@ -18779,6 +18783,14 @@ function selftest() {
     say(wordContent.length === 0, `${lang}: a filled line that merely starts with the word none/нет under pass → clean (got [${wordContent.join(',')}])`);
     const fenced = lint(CLEAN_NAME, render(lang, { ...CLEAN[lang], checks: '```\n' + LINES[lang].functional + ': walked, read\n```' + TABLE[lang] })).map((x) => x.id);
     say(fenced.length === 1 && fenced[0] === 'pass-without-functional-run', `${lang}: the label only inside a code fence under pass → exactly [pass-without-functional-run] (got [${fenced.join(',')}])`);
+    // HC7 (#161): the two lines written as list items count — every marker form; a listed NONE under pass is still the rule
+    const listed = (mark) => CLEAN[lang].checks.split('\n').map((l) => (LINE_LABEL_RE.test(l) ? mark + l : l)).join('\n');
+    const marks = ['- ', '* ', '+ ', '1. ', '2) '];
+    const listGot = marks.map((mk) => lint(CLEAN_NAME, render(lang, { ...CLEAN[lang], checks: listed(mk) })).map((x) => x.id));
+    say(listGot.every((g) => g.length === 0) && marks.every((mk) => listed(mk).includes(mk + LINES[lang].functional + ':')),
+      `${lang}: «- ${LINES[lang].functional}: …» — the line as a list item counts (${marks.map((m) => m.trim()).join(' ')}) (#161) (got [${listGot.map((g) => g.join(',')).join(' | ')}])`);
+    const listNone = lint(CLEAN_NAME, render(lang, { ...CLEAN[lang], checks: NONE_LINE[lang].split('\n').map((l) => '- ' + l).join('\n') })).map((x) => x.id);
+    say(listNone.length === 1 && listNone[0] === 'pass-without-functional-run', `${lang}: «- ${LINES[lang].functional}: NONE» under pass → exactly [pass-without-functional-run] (#161) (got [${listNone.join(',')}])`);
   }
   // A report whose headings are recognised in neither language names all seven fields missing.
   const foreign = lint(CLEAN_NAME, '# Report\n\n## Summary\n\nfine\n').map((x) => x.id);
@@ -19807,7 +19819,7 @@ process.exit(0);
 // Claude Code events: UserPromptSubmit · PostToolUse.
 //
 // What it does: reads the session's last main-thread usage from the transcript (input + cache_creation + cache_read tokens — the vendor's
-// own formula for «used», code.claude.com/docs/en/statusline) and, once per level and session, puts ONE line into the agent's context:
+// own formula for «used», code.claude.com/docs/en/statusline) and, once per level (re-armed after a compaction), puts ONE line into the agent's context:
 //   warnPct (default 80)  — a WARNING only: keep the normal pace, keep STATUS.md fresh, tell the owner once by voice. The line carries no
 //                           closing word — a field agent read «finish to a cut — at 75 % it is time to close» at 70 % as the closure itself
 //                           and stopped taking work with 30 % of the window left (the owner: «you close too early»);
@@ -20499,7 +20511,7 @@ lacking them.
 | `clock-now.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PreToolUse`, matcher `Write\|Edit\|MultiEdit` | prompt: none — one short line is the point; write: the tool input holds a time placeholder (below) | on every prompt; on every write that holds a placeholder | prompt: one context line with the machine's local moment, and — on the owner's OWN prompt (not a task notification, a harness text or a subagent's hand-back) — the presence mark `.kaif/owner-presence.json`, by which the contour lifts its quiet hours for `contour.ownerActiveMinutes` (2.10, #193); write: `updatedInput` with the placeholders filled by the clock — no permission decision, never a stop; silent on a write without a placeholder |
 | `stop-farewell-capture.mjs` (2.10, epic PT) | `Stop` | the turn ran `/end-chat-soft` or `/end-chat-force` (a Skill call or the owner's slash command), and this closure has not written yet | once per closure — a later stop of the same closure (another Stop hook blocked) writes nothing | writes the turn's last message WHOLE into `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (temporary file + rename); never blocks, never speaks |
 | `subagent-preamble.mjs` (2.10, epic PT) | `PreToolUse`, matcher `Agent\|Task` | the launch carries a task without the preamble's marker | once per launch — a second pass over a marked task changes nothing | `updatedInput` with a marked preamble in front of the subagent's task: read step 1 of `/resume` (read from the skill, existing files only), quote one canon line first in the report, no nested subagents, no commit, no push; one journal line in `.kaif/subagent-preamble.jsonl` — no permission decision, never a stop |
-| `context-window.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PostToolUse`, matcher `*` | the session's used share of the window — the last main-thread usage of the transcript (input + cache_creation + cache_read tokens) against the window size (the project's `contextWindow.tokens`, else the vendor's rule for the model) — reaches `contextWindow.warnPct` (80) or `closePct` (85, then every 5 %) | once per level per session | one `additionalContext` line: at 80 % a WARNING without a closing word (keep the pace, tell the owner once by voice), at 85 % «finish the current work to a logical cut, then `/end-chat-soft`» — never a forced closure, never a block; state in `.kaif/context-window.json` |
+| `context-window.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PostToolUse`, matcher `*` | the session's used share of the window — the last main-thread usage of the transcript (input + cache_creation + cache_read tokens) against the window size (the project's `contextWindow.tokens`, else the vendor's rule for the model) — reaches `contextWindow.warnPct` (80) or `closePct` (85, then every 5 %) | once per level, re-armed after a compaction | one `additionalContext` line: at 80 % a WARNING without a closing word (keep the pace, tell the owner once by voice), at 85 % «finish the current work to a logical cut, then `/end-chat-soft`» — never a forced closure, never a block; state in `.kaif/context-window.json` |
 | `knowledge-moment.mjs` (2.10, epic MM) | `UserPromptSubmit`; `PostToolUse` and `PostToolUseFailure`, matcher `*` | STRONG moments speak at once — the owner's own prompt (a background task's notification is not), a failed tool call, a Read of a knowledge document (maps, `STATUS.md`, `EXPERIENCE.md`, `HOUSE_RULES.md`, `plans/`, `researches/`), the first touch in a session of a file whose component has `NOTES.md`, the first Read in a session of a project source file — a config file (`package.json`, `*.yaml`, `*.toml`) is not one, a generic name (`index`, `utils`, `main` …) is looked up by its full path only (the docs that name it are quoted — «does the code say the same?»; named nowhere — «before you answer, add one line to the map»); every other tool result adds weight 1, and the hook speaks at 12 | per moment; the weight resets after each line; component notes — once per session | one `additionalContext` line: write what you understood into the project document where it lives, in this turn — never a block, never a stop, never a document body; state per session in `.kaif/knowledge-moment.json` |
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
@@ -21706,7 +21718,7 @@ Functional run: <what was walked · on which contour (stage / production, as the
 <Then what was verified, case by case, with the status `pass` · `fail` · `blocked` · `skipped` and the
 observation named (what was seen). Cite the case ids of the case set where one exists. A case `blocked` for want of
 test conditions names the stand step the agent takes next (TESTING_FRAMEWORK.md → "The stand is the agent's") —
-never "needs a stand" handed to the owner.>
+never "needs a stand" handed to the owner. The two lines above may stand as list items («- Functional run: …»).>
 
 | Case | Status | Observation |
 |---|---|---|

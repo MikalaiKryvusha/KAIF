@@ -1546,7 +1546,7 @@
       {
         "signature": "## 14. Optional tool modules",
         "class": "static",
-        "sha256": "11900662636e027451bf9d67e506c6216a9d8c6de8ff29f260cb914b018ebda0",
+        "sha256": "5b0c7f05032e6e54131a51cc451380aa1b3b9c54674b6fe802017590a2a3124f",
         "lines": [
           575,
           651
@@ -5707,7 +5707,7 @@
       {
         "signature": "## What ships here",
         "class": "static",
-        "sha256": "cb26253d0d1992722df4163798fa04adf9044593e4b2f1a1e2d391a1a842ebcb",
+        "sha256": "74c7441c3f9d0cebc46ff75d2fb844410b6fe6a77746e3b639ef7b837cb225f1",
         "lines": [
           10,
           44
@@ -5956,7 +5956,7 @@
       {
         "signature": "## 4. Checks",
         "class": "static",
-        "sha256": "6fb8fa3bb0b8ed98ceabccca2a7f1356527493d0dfc767bd0ffde6fbcdaa489f",
+        "sha256": "12cd72f9d411c77c29b22650e95622acb3dbda48d7749f7948fc817e5f6be56a",
         "lines": [
           33,
           52

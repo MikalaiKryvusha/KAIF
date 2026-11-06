@@ -44,7 +44,7 @@ Functional run: <what was walked · on which contour (stage / production, as the
 <Then what was verified, case by case, with the status `pass` · `fail` · `blocked` · `skipped` and the
 observation named (what was seen). Cite the case ids of the case set where one exists. A case `blocked` for want of
 test conditions names the stand step the agent takes next (TESTING_FRAMEWORK.md → "The stand is the agent's") —
-never "needs a stand" handed to the owner.>
+never "needs a stand" handed to the owner. The two lines above may stand as list items («- Functional run: …»).>
 
 | Case | Status | Observation |
 |---|---|---|
