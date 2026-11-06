@@ -7483,6 +7483,7 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   (`<project>-team-<role>` → `<role>`), `main` for the main copy; one workspace — no name; spoken by the language pack
   (`dev2` → «dev two»). A request for the owner's hands or a quick answer outside a page goes by the same call —
   `review.mjs --call "<what is needed>"` (`--dry-run` prints it without sound) — never as a line left in the chat (origin issue #95).
+  The tool adds the owner's name itself: write only the request (a text that opens with the name still gets it once — 2.10, #191).
 - **I29. One document — one window.** A lock with pid and address; a second launch prints the live
   address and exits. Two windows are two calls AND two different drafts — the port is part of the
   web origin, so a draft written in one window is invisible to the other.

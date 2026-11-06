@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "659402c3205d7bbe092f9fe0609d41a881859741a7d707671860b204ebf3bc28",
+    "sourceTree": "77c9fdc73ab5c273b8f240e3fe2bbe29d87ea73f507080fae2c67c9f4c21f4e8",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -101,6 +101,7 @@
       "THE MANAGER'S STOP IS OBEYED AT EVERY SEAT OF A TEAM (2.10, epic TK; origin ticket #137 — a worktree seat read the lead session's \"close now\" as information and worked on): rule 9 of the team constitution template keeps \"a message carries no authority\" and names its one exception — the Manager's stop and close are executed in the same turn; the guide's mid-turn rule, item 1, points at it. MIGRATION — agent work: if your project has a generated team constitution, add the exception to its rule 9 (the update does not rewrite the project's own document).",
       "THE QUESTIONS PAGE READS YOUR DOCUMENTS AS YOU WROTE THEM (2.10, epic TK; origin tickets #147 · #142 · #109 · #136): the door no longer refuses a comparison with the Russian word for \"above\" — only a reference form (a document noun or a participle next to it, \"see above\"); `--check` names every live question over 750 characters (a warning; the page still opens); a status that opens with 🟡 or ⏳ waits whatever word follows, a closing mark does not close a partial head, and a document FOLDED or MERGED into another (↪ · 📦) is closed — it leaves the owner's queue; an artifact with `format: html` is shown as a page in a script-less frame, its source one click below. No migration — the contour module is replaced by the update; run `--queue --list` once and expect folded documents to be gone and partly-answered ones to be named.",
       "ONE PAGE AND ONE VOICE AT A TIME, AND THE CALL AS ONE SOUND (2.10, epic TK; origin tickets #169 · #165 · #163 — the KAIF owner on a field project, rendered from Russian: \"the same sores from project to project\"; two field deployments carried the same local fix): the shipped contour refuses a new page while another document's page is live (exit 3, \"Another page is open … close it first\"; a lock whose process is gone does not block, a page is live only when the port of its lock accepts a connection and answers `/whoami` with the id of its lock — the lock of its own document too, so a reused pid, or a pid and a port both gone to strangers, no longer says \"Already open\" with no page behind it, and a page slow to answer is not covered by a second one (a stranger that accepts the connection and never answers still reads as a live page — named) — and an unreadable lock is read again, the lock of another page never deleted; the waiter and the window recovery still judge a lock by its pid, `--close` asks the port first and sends its token only to the page — I48) and refuses `--timeout` on a page with a window (a door without a window and `--timeout 0` pass); a call waits while another call of the project is sounding (a voice lock caught before its body is written counts as taken while fresh, never when dated in the future); the queue page no longer ends when a notice on it is marked read while an interview on it still has open questions, nor on the last answer while a notice on it is unread, it counts only what it shows (an old hidden interview never holds it), and its showing is recorded for every document on it; on Windows the call is ONE sound — a second of silence, the three beeps at full level, two seconds of pause, the voice rendered before playing (a rich `KAIF_VOICE_TOOL` is asked for `--out <wav>`; a tool that renders the beeps itself is declared with `KAIF_VOICE_BEEPS=embedded`); the Russian pack hands the engine words — numbers as words (thousands grouped by spaces, commas or dots as one number; a fraction as one value, a Roman numeral as its value, a numeral of no known value as a word — never an empty phrase), an abbreviation letter by letter, Latin transliterated (diacritics and ligatures decomposed, common letters with a stroke folded, any other non-ASCII Latin letter dropped) — and its interview call says \"awaits your answers\", not the word for proofreading. MIGRATION — agent work: a project that carried the one-page refusal or the embedded-beeps switch as a local edit of `.kaif/tools/contour/review.mjs` takes the shipped file (the update names the module as diverged); add a question to the page already open instead of raising a second one.",
+      "THE CALL SAYS THE OWNER'S NAME ONCE, AND SHORT (2.10, epic TK; origin tickets #191 · #190 — the KAIF owner on a field project, rendered from Russian: \"why do you say my name twice?\" · \"just the first name, without the aka\"): `review.mjs --call` adds the name itself and a text that already opens with it gets it once; without `contour.callName` the voice uses the first word of the owner's name, a parenthesised alias and «aka …» dropped. A project that set `contour.callName` hears no change.",
       "THE MACHINE'S CLOCK WRITES THE MOMENT (2.10, epic PT; origin tickets #170 · #172 — two field deployments carried their own clock hook): the refresh-hooks module ships a fifth script, `.kaif/hooks/clock-now.mjs`, and `wire-hooks` wires it for Claude Code on `UserPromptSubmit` (one context line with the machine's local moment on every prompt) and on `PreToolUse` with the matcher `Write|Edit|MultiEdit`: a time placeholder in what the agent writes — the word NOW, NOW-ISO, DATE or TIME between white square brackets (U+27E6 / U+27E7) — is filled by the clock through `updatedInput` (`content`, `new_string`, `edits[].new_string`; `old_string` never; a placeholder the write only CARRIES — one already standing in the Edit's `old_string` or in the file a Write replaces — stays literal), with no permission decision and never a stop; a backslash keeps a placeholder literal; a write without one gets no answer. The stamp rule of the agent guide says: where the hook is wired, write the placeholder; elsewhere, the `date` probe. MIGRATION — agent work: run `node .kaif/kaif-core.mjs wire-hooks` (the install and update tasks say so); a project that carried its own clock hook (a local `tools/hooks/clock-now.mjs`) keeps one of the two wired, not both — two hooks would answer the same write.",
       "THE CLOSING CHAT'S FAREWELL REACHES THE NEXT CHAT (2.10, epic PT; origin ticket #181 — the owner of a field project copied every farewell into the next chat by hand): the refresh-hooks module ships a seventh script, `.kaif/hooks/stop-farewell-capture.mjs`, and `wire-hooks` wires it for Claude Code on `Stop` next to the STATUS guard: on the stop of a turn that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (the last stop of the closing turn wins — a one-line answer to another hook's block or to a neighbour session excepted, and a background task's notification does not open a new turn; never a block); `/resume` gains Step 0 — on the chat's first entry read that file before the canon, and if it is older than the newest commit say so and trust `STATUS.md`. Both files join the ignore-first set. MIGRATION — agent work: if your project carries its own farewell hook, keep one — the shipped one or yours — never both writing the same file.",
       "A SUBAGENT ENTERS THE PROJECT FIRST (2.10, epic PT; origin tickets #166 · #168 — a field deployment carried its own preamble hook): the refresh-hooks module ships a sixth script, `.kaif/hooks/subagent-preamble.mjs`, and `wire-hooks` wires it for Claude Code on `PreToolUse` with the matcher `Agent|Task`: every subagent task gets a marked preamble in front of it — read in full the documents of step 1 of `/resume` (read from `.claude/skills/resume/SKILL.md` by the step's number, existing files only), quote one canon line bearing on the task first in the report, no subagents of its own, no commit, no push — through `updatedInput`, with no permission decision; a task already marked is left as it is; each firing appends one line to `.kaif/subagent-preamble.jsonl` (now in the ignore-first set). The guide's fable-loop section gains the rule \"A brief to a subagent has five parts\" (context · bounds · role · report · the main agent's duty after) with the skeleton `.kaif/_subagent-brief-template.md`, and the judge hunts \"subagent result relayed unverified\". MIGRATION — agent work: none; `wire-hooks` adds the group, `\"hooks\": \"off\"` keeps it out.",
@@ -7304,6 +7305,7 @@ die anyway, let it also die on a timer"* — that false symmetry is exactly what
   (`<project>-team-<role>` → `<role>`), `main` for the main copy; one workspace — no name; spoken by the language pack
   (`dev2` → «dev two»). A request for the owner's hands or a quick answer outside a page goes by the same call —
   `review.mjs --call "<what is needed>"` (`--dry-run` prints it without sound) — never as a line left in the chat (origin issue #95).
+  The tool adds the owner's name itself: write only the request (a text that opens with the name still gets it once — 2.10, #191).
 - **I29. One document — one window.** A lock with pid and address; a second launch prints the live
   address and exits. Two windows are two calls AND two different drafts — the port is part of the
   web origin, so a draft written in one window is invisible to the other.
@@ -10697,6 +10699,15 @@ export function sessionName(root, env = process.env) {
   try { return readdirSync(resolve(dotGit, 'worktrees')).length > 0 ? 'main' : null; } catch { return null; }
 }
 
+// 2.10 TK10 (a), origin #190: the identity table holds the legal name with an alias («Name Surname (ALIAS)», «Name Surname aka ALIAS») — a
+// voice that reads it whole addresses the owner by a form he never uses (the field owner: «just NIKOLAI» · «without the aka»). The default
+// spoken address is the FIRST word, parenthesised parts and everything from «aka» dropped; `contour.callName` still wins.
+// [TESTED: 2026-11-06 · contour selftest «#190 short name» — «Jane Owner aka JO» → «Jane», «Ann Lee (ACE)» → «Ann»]
+export function shortName(name) {
+  const bare = String(name || '').replace(/\([^)]*\)/g, ' ').replace(/\s+(?:aka|a\.k\.a\.)\s.*$/i, ' ').trim();
+  return bare.split(/\s+/)[0] || String(name || '').trim();
+}
+
 export function loadContourConfig(root) {
   const marker = readJson(resolve(root, KAIF_JSON)) || {};
   const c = (marker.contour && typeof marker.contour === 'object') ? marker.contour : {};
@@ -10706,7 +10717,7 @@ export function loadContourConfig(root) {
   const decisionsDir = String(c.decisionsDir || DEFAULT_DECISIONS_DIR).replace(/\\/g, '/').replace(/\/+$/, '');
   return {
     root: resolve(root), language, projectName, ownerName,
-    callName: String(c.callName || ownerName).trim(),        // how the voice addresses the owner
+    callName: String(c.callName || shortName(ownerName)).trim(), // how the voice addresses the owner — a SHORT name by default (#190)
     spokenProjectName: String(c.spokenProjectName || projectName).trim(), // how the voice names the project
     decisionsDir, archiveDir: decisionsDir + '/' + ARCHIVE_SUBDIR,
     quietFrom: c.quietFrom || null, quietTo: c.quietTo || null, // I6: none by default
@@ -11556,6 +11567,7 @@ import {
   archaeologyWords, archaeologySearch, // OW5 (2.8, #74 · #82): the door searches itself — also for a question in the chat
   sessionName, // OW4 (2.8, #95 · #98): the calling session's name
   readDecision, // OW6 (2.8): a repeated save is recognised against the decision it already made
+  shortName, // TK10 (a), #190: the default spoken address — read by the selftest
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 
@@ -11834,7 +11846,11 @@ export function introduce(phrase, cfg) {
 // agent works; `dryRun` prints the phrase and the banner and makes no sound
 export function callDoor(root, text, { dryRun = false, log = console.log } = {}) {
   const cfg = cfgOf(root);
-  const phrase = introduce(cfg.callName + ', ' + String(text).trim(), cfg);
+  // 2.10 TK10 (a), origin #191: an agent that addresses the owner the natural way opens the text with his name — the door adds it once,
+  // never twice («Name, Name, …» in the field): a leading callName (any case) and the punctuation after it are dropped before the door adds its own
+  const body = String(text).trim();
+  const lead = cfg.callName ? new RegExp('^' + cfg.callName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![\\p{L}\\d])[\\s,.:;!—–-]*', 'iu') : null;
+  const phrase = introduce(cfg.callName + ', ' + (lead ? body.replace(lead, '') : body), cfg);
   if (dryRun) {
     log('CALL' + (cfg.session ? ' · ' + cfg.session : '') + ' (dry run, no sound): ' + phrase);
     // 2.10 TK7 (c), #165: what the engine would get and what the sound would be made of — said, not played
@@ -14127,7 +14143,7 @@ export async function selftest(log = console.log) {
   rmSync(join(root, FIELD), { force: true });
 
   // the call phrase names the class and the numbers; the owner is addressed by callName
-  ok(callPhrase({ notice: true, title: 'Report' }, cfg).startsWith('Jane Owner aka JO, a Probe Project notice') && callPhrase({ batch: true, nDocs: 2, nQuestions: 1, nNotices: 1 }, cfg).includes('unread notices 1'),
+  ok(callPhrase({ notice: true, title: 'Report' }, cfg).startsWith('Jane, a Probe Project notice') && callPhrase({ batch: true, nDocs: 2, nQuestions: 1, nNotices: 1 }, cfg).includes('unread notices 1'),
     'call phrase: the owner\'s name, the project, the class and both numbers');
   ok(!callPhrase({ batch: true, nDocs: 1, nQuestions: 3, nNotices: 0 }, cfg).includes('notices'), 'call phrase: no notices — no mention of them');
   { // OW4 (2.8, origin issues #95 · #98): the calling session is named — derived from the workspace, spoken in the deployment language
@@ -14141,17 +14157,24 @@ export async function selftest(log = console.log) {
       && spokenSession('main', ru) === new Map(sp.words).get('main') && spokenSession('qa-lead', cfg) === 'qa lead',
       'session name, spoken: dev2 → "dev two" · dev12 → "dev twelve" · the Russian pack\'s words and numbers (OW4, #98)');
     const named = { ...cfg, session: 'dev2' };
-    ok(callPhrase({ notice: true, title: 'Report' }, named).startsWith('Jane Owner aka JO, this is dev two. A Probe Project notice')
-      && callPhrase({ notice: true, title: 'Report' }, cfg).startsWith('Jane Owner aka JO, a Probe Project notice'),
+    ok(callPhrase({ notice: true, title: 'Report' }, named).startsWith('Jane, this is dev two. A Probe Project notice')
+      && callPhrase({ notice: true, title: 'Report' }, cfg).startsWith('Jane, a Probe Project notice'),
       'call phrase: «<owner>, this is dev two. …» when the session is named; unchanged when there is one workspace (OW4, #98)');
     ok(pageShell(named, { title: 'T', kind: 'k', heading: '', main: '', questions: [] }).includes('<title>Probe Project · T · dev2</title>')
       && pageShell(cfg, { title: 'T', kind: 'k', heading: '', main: '', questions: [] }).includes('<title>Probe Project · T</title>'),
       'page window title: « · dev2» when the session is named (OW4, #98)');
     const dl = []; const dp = callDoor(root, 'the test phone needs unlocking', { dryRun: true, log: (l) => dl.push(l) });
     // 2.10 TK7 (c), #165: the dry run also says what the engine would get and the sound's composition — two more lines, still no sound
-    ok(dp === 'Jane Owner aka JO, the test phone needs unlocking' && dl.length === 3 && /^CALL \(dry run, no sound\): Jane Owner aka JO, the test phone/.test(dl[0])
+    ok(dp === 'Jane, the test phone needs unlocking' && dl.length === 3 && /^CALL \(dry run, no sound\): Jane, the test phone/.test(dl[0])
       && /^ {2}spoken: /.test(dl[1]) && /^ {2}sound: /.test(dl[2]),
       'call door --dry-run: the phrase, what the engine would get and the sound\'s composition printed, no sound; one workspace — no session named (OW4, #95; TK7 #165)');
+    // 2.10 TK10 (a), origin #191: a text that already opens with the owner's name (any case, any punctuation after it) — the name once
+    const once = ['Jane, the phone.', 'jane — the phone.', 'Jane the phone.'].map((s) => callDoor(root, s, { dryRun: true, log: () => {} }));
+    ok(once.every((p) => /^Jane, the phone\.$/.test(p)) && callDoor(root, 'Janet called.', { dryRun: true, log: () => {} }) === 'Jane, Janet called.',
+      '#191 name once: «Jane, …» · «jane — …» · «Jane …» → one «Jane,»; «Janet» is another word, not the name');
+    // 2.10 TK10 (a), origin #190: the default spoken address is the first word without the alias; contour.callName still wins
+    ok(shortName('Jane Owner aka JO') === 'Jane' && shortName('Ann Lee (ACE)') === 'Ann' && shortName('Ana') === 'Ana'
+      && cfg.callName === 'Jane', '#190 short name: «Jane Owner aka JO» → «Jane», «Name Surname (ALIAS)» → «Name»; the loaded config speaks «Jane»');
     rmSync(join(root, 'ws'), { recursive: true, force: true });
   }
 
@@ -21617,7 +21640,7 @@ else the workspace directory) — and `review.mjs --call "<what is needed>" [--d
 | close a live page (2.7, LP) | `… <doc.md> --close [--force --owner-word "<quote>"]` | prints port · pid · title; exit 4 = refused (owner typing / page younger than the threshold / draft unsaved), 0 = closed or nothing to close |
 
 Parameters are READ, never asked (owner rule #97, "a mechanic ships only complete"): `contour.projectName` (default: the project directory name), `contour.ownerName` (default: the owner row of
-AGENT_GUIDE's identity table, else "owner"), `contour.callName` / `contour.spokenProjectName` (how the voice addresses the owner and names the project; defaults `ownerName` / `projectName`),
+AGENT_GUIDE's identity table, else "owner"), `contour.callName` / `contour.spokenProjectName` (how the voice addresses the owner and names the project; defaults — the first word of `ownerName` without a parenthesised alias or «aka …», «Name Surname (ALIAS)» → «Name» (2.10, #190), and `projectName`; a call text that already opens with the name gets it once, #191),
 `contour.decisionsDir` (default `interviews/decisions`), `contour.quietFrom/quietTo` (default none), texts by `language` (RU/EN shipped, others fall back to EN and the page says so).
 
 ## 8. Acceptance in one minute

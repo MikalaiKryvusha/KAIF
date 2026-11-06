@@ -1270,6 +1270,8 @@ errors.push(...checkLinesUnknownToReference(readFileSync(join(ROOT, 'framework',
       ['`KNOWLEDGE: нового нет`']],
     ['knowledge line ↔ /fable-judge hunts a finding said but not written', 'framework/skills/fable-judge/SKILL.md',
       ['**Learned, not recorded (KAIF 2.10).**']],
+    ['knowledge line ↔ /fable-judge hunts a finding said but not written (wrapper)', '.claude/skills/fable-judge/SKILL.md',
+      ['**Learned, not recorded (KAIF 2.10).**']],
     // TK4 (version KAIF 2.10, origin ticket #137): rule 8 gives the Manager the stop signal, rule 9 took the force from every message —
     // a worktree seat worked past "close now". The exception stands in rule 9 of both layers and in the guide's mid-turn rule, item 1.
     ['manager stop ↔ the constitution template executes the Manager\'s stop and close in the same turn (payload)',

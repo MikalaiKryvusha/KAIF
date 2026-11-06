@@ -54,6 +54,7 @@ import {
   archaeologyWords, archaeologySearch, // OW5 (2.8, #74 · #82): the door searches itself — also for a question in the chat
   sessionName, // OW4 (2.8, #95 · #98): the calling session's name
   readDecision, // OW6 (2.8): a repeated save is recognised against the decision it already made
+  shortName, // TK10 (a), #190: the default spoken address — read by the selftest
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 
@@ -332,7 +333,11 @@ export function introduce(phrase, cfg) {
 // agent works; `dryRun` prints the phrase and the banner and makes no sound
 export function callDoor(root, text, { dryRun = false, log = console.log } = {}) {
   const cfg = cfgOf(root);
-  const phrase = introduce(cfg.callName + ', ' + String(text).trim(), cfg);
+  // 2.10 TK10 (a), origin #191: an agent that addresses the owner the natural way opens the text with his name — the door adds it once,
+  // never twice («Name, Name, …» in the field): a leading callName (any case) and the punctuation after it are dropped before the door adds its own
+  const body = String(text).trim();
+  const lead = cfg.callName ? new RegExp('^' + cfg.callName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![\\p{L}\\d])[\\s,.:;!—–-]*', 'iu') : null;
+  const phrase = introduce(cfg.callName + ', ' + (lead ? body.replace(lead, '') : body), cfg);
   if (dryRun) {
     log('CALL' + (cfg.session ? ' · ' + cfg.session : '') + ' (dry run, no sound): ' + phrase);
     // 2.10 TK7 (c), #165: what the engine would get and what the sound would be made of — said, not played
@@ -2625,7 +2630,7 @@ export async function selftest(log = console.log) {
   rmSync(join(root, FIELD), { force: true });
 
   // the call phrase names the class and the numbers; the owner is addressed by callName
-  ok(callPhrase({ notice: true, title: 'Report' }, cfg).startsWith('Jane Owner aka JO, a Probe Project notice') && callPhrase({ batch: true, nDocs: 2, nQuestions: 1, nNotices: 1 }, cfg).includes('unread notices 1'),
+  ok(callPhrase({ notice: true, title: 'Report' }, cfg).startsWith('Jane, a Probe Project notice') && callPhrase({ batch: true, nDocs: 2, nQuestions: 1, nNotices: 1 }, cfg).includes('unread notices 1'),
     'call phrase: the owner\'s name, the project, the class and both numbers');
   ok(!callPhrase({ batch: true, nDocs: 1, nQuestions: 3, nNotices: 0 }, cfg).includes('notices'), 'call phrase: no notices — no mention of them');
   { // OW4 (2.8, origin issues #95 · #98): the calling session is named — derived from the workspace, spoken in the deployment language
@@ -2639,17 +2644,24 @@ export async function selftest(log = console.log) {
       && spokenSession('main', ru) === new Map(sp.words).get('main') && spokenSession('qa-lead', cfg) === 'qa lead',
       'session name, spoken: dev2 → "dev two" · dev12 → "dev twelve" · the Russian pack\'s words and numbers (OW4, #98)');
     const named = { ...cfg, session: 'dev2' };
-    ok(callPhrase({ notice: true, title: 'Report' }, named).startsWith('Jane Owner aka JO, this is dev two. A Probe Project notice')
-      && callPhrase({ notice: true, title: 'Report' }, cfg).startsWith('Jane Owner aka JO, a Probe Project notice'),
+    ok(callPhrase({ notice: true, title: 'Report' }, named).startsWith('Jane, this is dev two. A Probe Project notice')
+      && callPhrase({ notice: true, title: 'Report' }, cfg).startsWith('Jane, a Probe Project notice'),
       'call phrase: «<owner>, this is dev two. …» when the session is named; unchanged when there is one workspace (OW4, #98)');
     ok(pageShell(named, { title: 'T', kind: 'k', heading: '', main: '', questions: [] }).includes('<title>Probe Project · T · dev2</title>')
       && pageShell(cfg, { title: 'T', kind: 'k', heading: '', main: '', questions: [] }).includes('<title>Probe Project · T</title>'),
       'page window title: « · dev2» when the session is named (OW4, #98)');
     const dl = []; const dp = callDoor(root, 'the test phone needs unlocking', { dryRun: true, log: (l) => dl.push(l) });
     // 2.10 TK7 (c), #165: the dry run also says what the engine would get and the sound's composition — two more lines, still no sound
-    ok(dp === 'Jane Owner aka JO, the test phone needs unlocking' && dl.length === 3 && /^CALL \(dry run, no sound\): Jane Owner aka JO, the test phone/.test(dl[0])
+    ok(dp === 'Jane, the test phone needs unlocking' && dl.length === 3 && /^CALL \(dry run, no sound\): Jane, the test phone/.test(dl[0])
       && /^ {2}spoken: /.test(dl[1]) && /^ {2}sound: /.test(dl[2]),
       'call door --dry-run: the phrase, what the engine would get and the sound\'s composition printed, no sound; one workspace — no session named (OW4, #95; TK7 #165)');
+    // 2.10 TK10 (a), origin #191: a text that already opens with the owner's name (any case, any punctuation after it) — the name once
+    const once = ['Jane, the phone.', 'jane — the phone.', 'Jane the phone.'].map((s) => callDoor(root, s, { dryRun: true, log: () => {} }));
+    ok(once.every((p) => /^Jane, the phone\.$/.test(p)) && callDoor(root, 'Janet called.', { dryRun: true, log: () => {} }) === 'Jane, Janet called.',
+      '#191 name once: «Jane, …» · «jane — …» · «Jane …» → one «Jane,»; «Janet» is another word, not the name');
+    // 2.10 TK10 (a), origin #190: the default spoken address is the first word without the alias; contour.callName still wins
+    ok(shortName('Jane Owner aka JO') === 'Jane' && shortName('Ann Lee (ACE)') === 'Ann' && shortName('Ana') === 'Ana'
+      && cfg.callName === 'Jane', '#190 short name: «Jane Owner aka JO» → «Jane», «Name Surname (ALIAS)» → «Name»; the loaded config speaks «Jane»');
     rmSync(join(root, 'ws'), { recursive: true, force: true });
   }
 

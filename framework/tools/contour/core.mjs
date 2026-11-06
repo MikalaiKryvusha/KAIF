@@ -84,6 +84,15 @@ export function sessionName(root, env = process.env) {
   try { return readdirSync(resolve(dotGit, 'worktrees')).length > 0 ? 'main' : null; } catch { return null; }
 }
 
+// 2.10 TK10 (a), origin #190: the identity table holds the legal name with an alias («Name Surname (ALIAS)», «Name Surname aka ALIAS») — a
+// voice that reads it whole addresses the owner by a form he never uses (the field owner: «just NIKOLAI» · «without the aka»). The default
+// spoken address is the FIRST word, parenthesised parts and everything from «aka» dropped; `contour.callName` still wins.
+// [TESTED: 2026-11-06 · contour selftest «#190 short name» — «Jane Owner aka JO» → «Jane», «Ann Lee (ACE)» → «Ann»]
+export function shortName(name) {
+  const bare = String(name || '').replace(/\([^)]*\)/g, ' ').replace(/\s+(?:aka|a\.k\.a\.)\s.*$/i, ' ').trim();
+  return bare.split(/\s+/)[0] || String(name || '').trim();
+}
+
 export function loadContourConfig(root) {
   const marker = readJson(resolve(root, KAIF_JSON)) || {};
   const c = (marker.contour && typeof marker.contour === 'object') ? marker.contour : {};
@@ -93,7 +102,7 @@ export function loadContourConfig(root) {
   const decisionsDir = String(c.decisionsDir || DEFAULT_DECISIONS_DIR).replace(/\\/g, '/').replace(/\/+$/, '');
   return {
     root: resolve(root), language, projectName, ownerName,
-    callName: String(c.callName || ownerName).trim(),        // how the voice addresses the owner
+    callName: String(c.callName || shortName(ownerName)).trim(), // how the voice addresses the owner — a SHORT name by default (#190)
     spokenProjectName: String(c.spokenProjectName || projectName).trim(), // how the voice names the project
     decisionsDir, archiveDir: decisionsDir + '/' + ARCHIVE_SUBDIR,
     quietFrom: c.quietFrom || null, quietTo: c.quietTo || null, // I6: none by default
