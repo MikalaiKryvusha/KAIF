@@ -1,0 +1,42 @@
+{
+  "kind": "interview",
+  "document": "interviews/interview_047_kaif_2.10_new_tickets_187_193.md",
+  "by": "Mikalai Kryvusha (KOT KRINIK)",
+  "at": "2026-11-06T08:03:45.665Z",
+  "atHuman": "6 ноября 2026, 11:03 (+03:00)",
+  "comment": "",
+  "answers": {
+    "Q1": {
+      "choice": "A",
+      "text": "",
+      "comment": ""
+    },
+    "Q2": {
+      "choice": "A",
+      "text": "",
+      "comment": ""
+    },
+    "Q3": {
+      "choice": "A",
+      "text": "",
+      "comment": ""
+    },
+    "Q4": {
+      "choice": "A",
+      "text": "",
+      "comment": ""
+    },
+    "Q5": {
+      "choice": "A",
+      "text": "",
+      "comment": ""
+    },
+    "Q6": {
+      "choice": "B",
+      "text": "",
+      "comment": ""
+    }
+  },
+  "rev": "d36ac6767bf5571daa2dd86f6ccf86b69ceec88af671c0a135b9c4bfbb53edf8",
+  "revAfter": "e4dacced91d52fb1463bc7768c8ae92d6dd8d052567f3063616e73b778212cfb"
+}
