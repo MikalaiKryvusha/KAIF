@@ -609,7 +609,8 @@ session, naming what it saw), `prompt-resume-word.mjs` (2.7, epic RS: the prompt
 before it counts, the Russian noun as a heading with a colon does not (2.8) → the order to run `/resume` in full before the work;
 a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifier of "The owner's word mid-turn"); silent on every other message — Claude Code only,
 other systems' prompt field not verified), `clock-now.mjs` (2.10, epic PT; origin tickets #170 · #172: one context line with the
-machine's local moment on every prompt; on `PreToolUse` of Write · Edit · MultiEdit a time placeholder — the word NOW, NOW-ISO, DATE
+machine's local moment on every prompt, and on the owner's own prompt the presence mark `.kaif/owner-presence.json` that lifts the
+contour's quiet hours while fresh (#193); on `PreToolUse` of Write · Edit · MultiEdit a time placeholder — the word NOW, NOW-ISO, DATE
 or TIME between white square brackets — is filled by the clock through `updatedInput`, with no permission decision; silent on a write
 without one — Claude Code only), `subagent-preamble.mjs` (2.10, epic PT; origin tickets #166 · #168: on `PreToolUse` of `Agent|Task` a
 marked preamble in front of the subagent's task — read step 1 of `/resume`, quote one canon line first, no subagents of its own, no commit,

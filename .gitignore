@@ -29,6 +29,8 @@ tools/.review-tmp/
 # Хук знаний 2.10 (эпик MM): вес и прочитанные конспекты по сессиям — состояние сессии
 .kaif/knowledge-moment.json
 .kaif/knowledge-moment.json.tmp
+# Хук часов 2.10 (TK10 (в), #193): момент последнего сообщения владельца — состояние сессии
+.kaif/owner-presence.json
 
 # Защищённый цикл (2.5, CN4): взведённая граница until — состояние прогона, как и пульс
 .kaif/guarded-loop.json

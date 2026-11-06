@@ -108,6 +108,8 @@ export function loadContourConfig(root) {
     callName: String(c.callName || shortName(ownerName)).trim(), // how the voice addresses the owner — a SHORT name by default (#190)
     spokenProjectName: String(c.spokenProjectName || projectName).trim(), // how the voice names the project
     decisionsDir, archiveDir: decisionsDir + '/' + ARCHIVE_SUBDIR,
+    ownerActiveMinutes: Number(c.ownerActiveMinutes) > 0 ? Number(c.ownerActiveMinutes) : null, // TK10 (c), #193: presence lifts the quiet hours
+    noCalls: Array.isArray(c.noCalls) ? c.noCalls : [],                // TK10 (c), #193: the owner's call-free windows — never lifted
     quietFrom: c.quietFrom || null, quietTo: c.quietTo || null, // I6: none by default
     closeQuietMs: Number(c.closeQuietMs) > 0 ? Number(c.closeQuietMs) : null, // LP (2.7, #66): `--close` refuses while the owner typed less than this ago (default in the generator: 180 s)
     markerFound: existsSync(resolve(root, KAIF_JSON)),
@@ -143,6 +145,30 @@ export function inQuietHours(now = new Date(), from = null, to = null) {
   const n = now.getHours() * 60 + now.getMinutes();
   const f = mins(from), t = mins(to);
   return f <= t ? (n >= f && n < t) : (n >= f || n < t); // second branch — across midnight
+}
+
+// 2.10 TK10 (c), origin #193: the quiet hours yield to the owner's presence — his own chat message younger than `contour.ownerActiveMinutes`
+// (default 60) lifts them; the mark is written by the prompt hook of the refresh-hooks module (`.kaif/owner-presence.json`). The windows
+// the owner himself named call-free (`contour.noCalls`: [{ "from": "HH:MM", "to": "HH:MM" }] — his meetings) are never lifted. Without the
+// mark, a stale mark or no hook — the quiet hours hold as before. Pure: the mark's moment is passed in.
+// [TESTED: 2026-11-06 12:45 +03:00 · functional — `tools/sandbox/probes/tk10c-quiet-presence.mjs`: a fresh deployment, quiet hours around now, the
+//  clock hook fed the owner's prompt wrote the mark → a real `--call` in quietEnv printed «Quiet hours (I6) lifted — the owner wrote 0 min
+//  ago»; the mark aged 61 min → «suppressed»; a task notification wrote none; hygiene — selftest cases «quiet + owner 5 min ago → voice» ·
+//  «61 min → off» · «no mark → off» · «owner window stays»; whether the owner HEARS a lifted call — his word only]
+export const OWNER_ACTIVE_MINUTES = 60;
+export const PRESENCE_FILE = '.kaif/owner-presence.json';
+export function ownerSeenAt(root) {
+  const j = readJson(resolve(root, PRESENCE_FILE));
+  const t = j && Date.parse(j.at);
+  return Number.isFinite(t) ? new Date(t) : null;
+}
+export function quietNow(now, cfg, seenAt) {
+  const hard = (Array.isArray(cfg.noCalls) ? cfg.noCalls : []).some((w) => w && inQuietHours(now, w.from, w.to));
+  if (hard) return { quiet: true, lifted: false, hard: true };
+  if (!inQuietHours(now, cfg.quietFrom, cfg.quietTo)) return { quiet: false, lifted: false };
+  const mins = Number(cfg.ownerActiveMinutes) > 0 ? Number(cfg.ownerActiveMinutes) : OWNER_ACTIVE_MINUTES;
+  const ago = seenAt ? (now - seenAt) / 60000 : Infinity;
+  return ago >= 0 && ago < mins ? { quiet: false, lifted: true, ago: Math.round(ago), mins } : { quiet: true, lifted: false };
 }
 
 // ── Document metadata (name contract): a fenced block at the head of the document ─────────────

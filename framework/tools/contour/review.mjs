@@ -56,6 +56,7 @@ import {
   readDecision, // OW6 (2.8): a repeated save is recognised against the decision it already made
   shortName, // TK10 (a), #190: the default spoken address — read by the selftest
   withImages, imageRefs, // TK10 (b), #187: pictures of a document shown as pictures
+  quietNow, ownerSeenAt, // TK10 (c), #193: the owner's presence lifts the quiet hours
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 
@@ -435,11 +436,13 @@ export function whenVoiceFree(root, then, { tick = VOICE_WAIT_TICK_MS } = {}) {
 }
 export function signalCall(root, rawPhrase, { quiet = null, log = console.log } = {}) {
   const cfg = cfgOf(root);
-  const isQuiet = quiet === null ? inQuietHours(new Date(), cfg.quietFrom, cfg.quietTo) : quiet;
+  const qn = quiet === null ? quietNow(new Date(), cfg, ownerSeenAt(root)) : { quiet, lifted: false };   // TK10 (c), #193
+  const isQuiet = qn.quiet;
   log('CALL' + (cfg.session ? ' · ' + cfg.session : '') + ': ' + rawPhrase); // C8: plain text to the console — an exit code does not prove a human heard it; OW4: the session
   // no markup in speech; 2.10 TK7 (c) (#165): the engine gets words of the deployment language — speakable()
   const phrase = speakable(rawPhrase.replace(/[*_`#>[\]()«»"]/g, ' ').replace(/\s{2,}/g, ' ').trim(), cfg);
-  if (isQuiet) { log('Quiet hours (I6) — beeps and voice suppressed; the page is up silently.'); return; }
+  if (qn.lifted) log('Quiet hours (I6) lifted — the owner wrote ' + qn.ago + ' min ago (under ' + qn.mins + ' min, origin #193).');
+  if (isQuiet) { log(qn.hard ? 'Call-free window of the owner (noCalls) — beeps and voice suppressed; the page is up silently.' : 'Quiet hours (I6) — beeps and voice suppressed; the page is up silently.'); return; }
   const lang = cfg.language;
   const dir = tmpDirOf(root);
   const psq = (p) => String(p).replace(/'/g, "''"); // a PowerShell single-quoted string
@@ -2298,6 +2301,17 @@ export async function selftest(log = console.log) {
   ok(inQuietHours(at(23, 30), '23:00', '09:00') && inQuietHours(at(3, 0), '23:00', '09:00') && !inQuietHours(at(12, 0), '23:00', '09:00'),
     'quiet hours: 23:30 and 03:00 inside 23:00–09:00, noon outside');
   ok(!inQuietHours(at(3, 0), null, null), 'quiet hours: no window — never quiet');
+  { // 2.10 TK10 (c), origin #193: the owner's own fresh message lifts the quiet hours; his named call-free windows never yield
+    const qc = { quietFrom: '00:00', quietTo: '08:00', ownerActiveMinutes: null, noCalls: [{ from: '13:00', to: '14:00' }] };
+    const at2 = (h, m) => new Date(2026, 10, 4, h, m, 0);
+    ok(quietNow(at2(7, 57), qc, at2(7, 52)).quiet === false && quietNow(at2(7, 57), qc, at2(7, 52)).lifted === true,
+      'quiet + owner 5 min ago → voice: the window 00:00–08:00 at 07:57, the owner wrote at 07:52 — the call sounds (#193)');
+    ok(quietNow(at2(7, 57), qc, at2(6, 56)).quiet === true, 'quiet + owner 61 min ago → off: the mark is stale — the call stays silent');
+    ok(quietNow(at2(7, 57), qc, null).quiet === true, 'quiet + no mark → off: no presence hook or no prompt yet — as before');
+    ok(quietNow(at2(13, 30), qc, at2(13, 29)).quiet === true && quietNow(at2(13, 30), qc, at2(13, 29)).hard === true,
+      'owner window stays: «noCalls» 13:00–14:00, the owner wrote a minute ago — still no call');
+    ok(quietNow(at2(12, 0), qc, null).quiet === false, 'outside every window — the call sounds');
+  }
 
   // C4: parsing rules
   const fx = '# Interview #099\n\n> Status: awaiting\n\n### Q1. Which?\n\n- **A) (Recommended)** first line\n  second line of the option\n- **B)** short\n\n**Answer:**\n\n---\ntail after the rule\n\n### Q2. Second?\n\n**Counter-question:** why?\n\n**Answer:** A\n';

@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "d7fd998023aaa8156dd338f17ff906d7808c90a6e0d3cabc4adf918240dd082f",
+    "sourceTree": "ccec05a60466782d3ec333ce72132581b99616a5b0e5fc944ff762f31fd84303",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -103,6 +103,7 @@
       "ONE PAGE AND ONE VOICE AT A TIME, AND THE CALL AS ONE SOUND (2.10, epic TK; origin tickets #169 · #165 · #163 — the KAIF owner on a field project, rendered from Russian: \"the same sores from project to project\"; two field deployments carried the same local fix): the shipped contour refuses a new page while another document's page is live (exit 3, \"Another page is open … close it first\"; a lock whose process is gone does not block, a page is live only when the port of its lock accepts a connection and answers `/whoami` with the id of its lock — the lock of its own document too, so a reused pid, or a pid and a port both gone to strangers, no longer says \"Already open\" with no page behind it, and a page slow to answer is not covered by a second one (a stranger that accepts the connection and never answers still reads as a live page — named) — and an unreadable lock is read again, the lock of another page never deleted; the waiter and the window recovery still judge a lock by its pid, `--close` asks the port first and sends its token only to the page — I48) and refuses `--timeout` on a page with a window (a door without a window and `--timeout 0` pass); a call waits while another call of the project is sounding (a voice lock caught before its body is written counts as taken while fresh, never when dated in the future); the queue page no longer ends when a notice on it is marked read while an interview on it still has open questions, nor on the last answer while a notice on it is unread, it counts only what it shows (an old hidden interview never holds it), and its showing is recorded for every document on it; on Windows the call is ONE sound — a second of silence, the three beeps at full level, two seconds of pause, the voice rendered before playing (a rich `KAIF_VOICE_TOOL` is asked for `--out <wav>`; a tool that renders the beeps itself is declared with `KAIF_VOICE_BEEPS=embedded`); the Russian pack hands the engine words — numbers as words (thousands grouped by spaces, commas or dots as one number; a fraction as one value, a Roman numeral as its value, a numeral of no known value as a word — never an empty phrase), an abbreviation letter by letter, Latin transliterated (diacritics and ligatures decomposed, common letters with a stroke folded, any other non-ASCII Latin letter dropped) — and its interview call says \"awaits your answers\", not the word for proofreading. MIGRATION — agent work: a project that carried the one-page refusal or the embedded-beeps switch as a local edit of `.kaif/tools/contour/review.mjs` takes the shipped file (the update names the module as diverged); add a question to the page already open instead of raising a second one.",
       "THE CALL SAYS THE OWNER'S NAME ONCE, AND SHORT (2.10, epic TK; origin tickets #191 · #190 — the KAIF owner on a field project, rendered from Russian: \"why do you say my name twice?\" · \"just the first name, without the aka\"): `review.mjs --call` adds the name itself and a text that already opens with it gets it once; without `contour.callName` the voice uses the first word of the owner's name, a parenthesised alias and «aka …» dropped. A project that set `contour.callName` hears no change.",
       "A PICTURE IN A DOCUMENT REACHES THE OWNER AS A PICTURE (2.10, epic TK; origin ticket #187 — a field interview «with pictures» showed each picture as «!caption» text and a review round was lost): the questions page shows `![caption](path)` as the picture — the path is read from the document's folder inside the project and embedded, so no request leaves the machine; a click opens it at full size; a missing file or a remote address is shown as «[caption]», and `review.mjs <doc> --check` names it before the page opens.",
+      "A CALL THE OWNER ASKED FOR IS NOT SILENCED WHILE HE IS AT THE CHAT (2.10, epic TK; origin ticket #193 — the KAIF owner on a field project, rendered from Russian: \"but I asked\" — a call he ordered at 07:57 was dropped by the quiet hours 00:00–08:00): the clock hook marks the owner's own prompt in `.kaif/owner-presence.json`, and the contour lifts its quiet hours while that mark is younger than `contour.ownerActiveMinutes` (default 60); the windows he names call-free in `contour.noCalls` never yield. Without the hook the quiet hours hold as before.",
       "THE MACHINE'S CLOCK WRITES THE MOMENT (2.10, epic PT; origin tickets #170 · #172 — two field deployments carried their own clock hook): the refresh-hooks module ships a fifth script, `.kaif/hooks/clock-now.mjs`, and `wire-hooks` wires it for Claude Code on `UserPromptSubmit` (one context line with the machine's local moment on every prompt) and on `PreToolUse` with the matcher `Write|Edit|MultiEdit`: a time placeholder in what the agent writes — the word NOW, NOW-ISO, DATE or TIME between white square brackets (U+27E6 / U+27E7) — is filled by the clock through `updatedInput` (`content`, `new_string`, `edits[].new_string`; `old_string` never; a placeholder the write only CARRIES — one already standing in the Edit's `old_string` or in the file a Write replaces — stays literal), with no permission decision and never a stop; a backslash keeps a placeholder literal; a write without one gets no answer. The stamp rule of the agent guide says: where the hook is wired, write the placeholder; elsewhere, the `date` probe. MIGRATION — agent work: run `node .kaif/kaif-core.mjs wire-hooks` (the install and update tasks say so); a project that carried its own clock hook (a local `tools/hooks/clock-now.mjs`) keeps one of the two wired, not both — two hooks would answer the same write.",
       "THE CLOSING CHAT'S FAREWELL REACHES THE NEXT CHAT (2.10, epic PT; origin ticket #181 — the owner of a field project copied every farewell into the next chat by hand): the refresh-hooks module ships a seventh script, `.kaif/hooks/stop-farewell-capture.mjs`, and `wire-hooks` wires it for Claude Code on `Stop` next to the STATUS guard: on the stop of a turn that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (the last stop of the closing turn wins — a one-line answer to another hook's block or to a neighbour session excepted, and a background task's notification does not open a new turn; never a block); `/resume` gains Step 0 — on the chat's first entry read that file before the canon, and if it is older than the newest commit say so and trust `STATUS.md`. Both files join the ignore-first set. MIGRATION — agent work: if your project carries its own farewell hook, keep one — the shipped one or yours — never both writing the same file.",
       "A SUBAGENT ENTERS THE PROJECT FIRST (2.10, epic PT; origin tickets #166 · #168 — a field deployment carried its own preamble hook): the refresh-hooks module ships a sixth script, `.kaif/hooks/subagent-preamble.mjs`, and `wire-hooks` wires it for Claude Code on `PreToolUse` with the matcher `Agent|Task`: every subagent task gets a marked preamble in front of it — read in full the documents of step 1 of `/resume` (read from `.claude/skills/resume/SKILL.md` by the step's number, existing files only), quote one canon line bearing on the task first in the report, no subagents of its own, no commit, no push — through `updatedInput`, with no permission decision; a task already marked is left as it is; each firing appends one line to `.kaif/subagent-preamble.jsonl` (now in the ignore-first set). The guide's fable-loop section gains the rule \"A brief to a subagent has five parts\" (context · bounds · role · report · the main agent's duty after) with the skeleton `.kaif/_subagent-brief-template.md`, and the judge hunts \"subagent result relayed unverified\". MIGRATION — agent work: none; `wire-hooks` adds the group, `\"hooks\": \"off\"` keeps it out.",
@@ -3751,7 +3752,8 @@ session, naming what it saw), `prompt-resume-word.mjs` (2.7, epic RS: the prompt
 before it counts, the Russian noun as a heading with a colon does not (2.8) → the order to run `/resume` in full before the work;
 a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifier of "The owner's word mid-turn"); silent on every other message — Claude Code only,
 other systems' prompt field not verified), `clock-now.mjs` (2.10, epic PT; origin tickets #170 · #172: one context line with the
-machine's local moment on every prompt; on `PreToolUse` of Write · Edit · MultiEdit a time placeholder — the word NOW, NOW-ISO, DATE
+machine's local moment on every prompt, and on the owner's own prompt the presence mark `.kaif/owner-presence.json` that lifts the
+contour's quiet hours while fresh (#193); on `PreToolUse` of Write · Edit · MultiEdit a time placeholder — the word NOW, NOW-ISO, DATE
 or TIME between white square brackets — is filled by the clock through `updatedInput`, with no permission decision; silent on a write
 without one — Claude Code only), `subagent-preamble.mjs` (2.10, epic PT; origin tickets #166 · #168: on `PreToolUse` of `Agent|Task` a
 marked preamble in front of the subagent's task — read step 1 of `/resume`, quote one canon line first, no subagents of its own, no commit,
@@ -10724,6 +10726,8 @@ export function loadContourConfig(root) {
     callName: String(c.callName || shortName(ownerName)).trim(), // how the voice addresses the owner — a SHORT name by default (#190)
     spokenProjectName: String(c.spokenProjectName || projectName).trim(), // how the voice names the project
     decisionsDir, archiveDir: decisionsDir + '/' + ARCHIVE_SUBDIR,
+    ownerActiveMinutes: Number(c.ownerActiveMinutes) > 0 ? Number(c.ownerActiveMinutes) : null, // TK10 (c), #193: presence lifts the quiet hours
+    noCalls: Array.isArray(c.noCalls) ? c.noCalls : [],                // TK10 (c), #193: the owner's call-free windows — never lifted
     quietFrom: c.quietFrom || null, quietTo: c.quietTo || null, // I6: none by default
     closeQuietMs: Number(c.closeQuietMs) > 0 ? Number(c.closeQuietMs) : null, // LP (2.7, #66): `--close` refuses while the owner typed less than this ago (default in the generator: 180 s)
     markerFound: existsSync(resolve(root, KAIF_JSON)),
@@ -10759,6 +10763,30 @@ export function inQuietHours(now = new Date(), from = null, to = null) {
   const n = now.getHours() * 60 + now.getMinutes();
   const f = mins(from), t = mins(to);
   return f <= t ? (n >= f && n < t) : (n >= f || n < t); // second branch — across midnight
+}
+
+// 2.10 TK10 (c), origin #193: the quiet hours yield to the owner's presence — his own chat message younger than `contour.ownerActiveMinutes`
+// (default 60) lifts them; the mark is written by the prompt hook of the refresh-hooks module (`.kaif/owner-presence.json`). The windows
+// the owner himself named call-free (`contour.noCalls`: [{ "from": "HH:MM", "to": "HH:MM" }] — his meetings) are never lifted. Without the
+// mark, a stale mark or no hook — the quiet hours hold as before. Pure: the mark's moment is passed in.
+// [TESTED: 2026-11-06 12:45 +03:00 · functional — `tools/sandbox/probes/tk10c-quiet-presence.mjs`: a fresh deployment, quiet hours around now, the
+//  clock hook fed the owner's prompt wrote the mark → a real `--call` in quietEnv printed «Quiet hours (I6) lifted — the owner wrote 0 min
+//  ago»; the mark aged 61 min → «suppressed»; a task notification wrote none; hygiene — selftest cases «quiet + owner 5 min ago → voice» ·
+//  «61 min → off» · «no mark → off» · «owner window stays»; whether the owner HEARS a lifted call — his word only]
+export const OWNER_ACTIVE_MINUTES = 60;
+export const PRESENCE_FILE = '.kaif/owner-presence.json';
+export function ownerSeenAt(root) {
+  const j = readJson(resolve(root, PRESENCE_FILE));
+  const t = j && Date.parse(j.at);
+  return Number.isFinite(t) ? new Date(t) : null;
+}
+export function quietNow(now, cfg, seenAt) {
+  const hard = (Array.isArray(cfg.noCalls) ? cfg.noCalls : []).some((w) => w && inQuietHours(now, w.from, w.to));
+  if (hard) return { quiet: true, lifted: false, hard: true };
+  if (!inQuietHours(now, cfg.quietFrom, cfg.quietTo)) return { quiet: false, lifted: false };
+  const mins = Number(cfg.ownerActiveMinutes) > 0 ? Number(cfg.ownerActiveMinutes) : OWNER_ACTIVE_MINUTES;
+  const ago = seenAt ? (now - seenAt) / 60000 : Infinity;
+  return ago >= 0 && ago < mins ? { quiet: false, lifted: true, ago: Math.round(ago), mins } : { quiet: true, lifted: false };
 }
 
 // ── Document metadata (name contract): a fenced block at the head of the document ─────────────
@@ -11606,6 +11634,7 @@ import {
   readDecision, // OW6 (2.8): a repeated save is recognised against the decision it already made
   shortName, // TK10 (a), #190: the default spoken address — read by the selftest
   withImages, imageRefs, // TK10 (b), #187: pictures of a document shown as pictures
+  quietNow, ownerSeenAt, // TK10 (c), #193: the owner's presence lifts the quiet hours
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 
@@ -11985,11 +12014,13 @@ export function whenVoiceFree(root, then, { tick = VOICE_WAIT_TICK_MS } = {}) {
 }
 export function signalCall(root, rawPhrase, { quiet = null, log = console.log } = {}) {
   const cfg = cfgOf(root);
-  const isQuiet = quiet === null ? inQuietHours(new Date(), cfg.quietFrom, cfg.quietTo) : quiet;
+  const qn = quiet === null ? quietNow(new Date(), cfg, ownerSeenAt(root)) : { quiet, lifted: false };   // TK10 (c), #193
+  const isQuiet = qn.quiet;
   log('CALL' + (cfg.session ? ' · ' + cfg.session : '') + ': ' + rawPhrase); // C8: plain text to the console — an exit code does not prove a human heard it; OW4: the session
   // no markup in speech; 2.10 TK7 (c) (#165): the engine gets words of the deployment language — speakable()
   const phrase = speakable(rawPhrase.replace(/[*_`#>[\]()«»"]/g, ' ').replace(/\s{2,}/g, ' ').trim(), cfg);
-  if (isQuiet) { log('Quiet hours (I6) — beeps and voice suppressed; the page is up silently.'); return; }
+  if (qn.lifted) log('Quiet hours (I6) lifted — the owner wrote ' + qn.ago + ' min ago (under ' + qn.mins + ' min, origin #193).');
+  if (isQuiet) { log(qn.hard ? 'Call-free window of the owner (noCalls) — beeps and voice suppressed; the page is up silently.' : 'Quiet hours (I6) — beeps and voice suppressed; the page is up silently.'); return; }
   const lang = cfg.language;
   const dir = tmpDirOf(root);
   const psq = (p) => String(p).replace(/'/g, "''"); // a PowerShell single-quoted string
@@ -13848,6 +13879,17 @@ export async function selftest(log = console.log) {
   ok(inQuietHours(at(23, 30), '23:00', '09:00') && inQuietHours(at(3, 0), '23:00', '09:00') && !inQuietHours(at(12, 0), '23:00', '09:00'),
     'quiet hours: 23:30 and 03:00 inside 23:00–09:00, noon outside');
   ok(!inQuietHours(at(3, 0), null, null), 'quiet hours: no window — never quiet');
+  { // 2.10 TK10 (c), origin #193: the owner's own fresh message lifts the quiet hours; his named call-free windows never yield
+    const qc = { quietFrom: '00:00', quietTo: '08:00', ownerActiveMinutes: null, noCalls: [{ from: '13:00', to: '14:00' }] };
+    const at2 = (h, m) => new Date(2026, 10, 4, h, m, 0);
+    ok(quietNow(at2(7, 57), qc, at2(7, 52)).quiet === false && quietNow(at2(7, 57), qc, at2(7, 52)).lifted === true,
+      'quiet + owner 5 min ago → voice: the window 00:00–08:00 at 07:57, the owner wrote at 07:52 — the call sounds (#193)');
+    ok(quietNow(at2(7, 57), qc, at2(6, 56)).quiet === true, 'quiet + owner 61 min ago → off: the mark is stale — the call stays silent');
+    ok(quietNow(at2(7, 57), qc, null).quiet === true, 'quiet + no mark → off: no presence hook or no prompt yet — as before');
+    ok(quietNow(at2(13, 30), qc, at2(13, 29)).quiet === true && quietNow(at2(13, 30), qc, at2(13, 29)).hard === true,
+      'owner window stays: «noCalls» 13:00–14:00, the owner wrote a minute ago — still no call');
+    ok(quietNow(at2(12, 0), qc, null).quiet === false, 'outside every window — the call sounds');
+  }
 
   // C4: parsing rules
   const fx = '# Interview #099\n\n> Status: awaiting\n\n### Q1. Which?\n\n- **A) (Recommended)** first line\n  second line of the option\n- **B)** short\n\n**Answer:**\n\n---\ntail after the rule\n\n### Q2. Second?\n\n**Counter-question:** why?\n\n**Answer:** A\n';
@@ -19590,7 +19632,9 @@ if (IS_MAIN) {
 //  placeholder stayed literal and a new one got the minute (TK7z, judge hunt 4; testcases/reports/2026-10-30_tk7z-tk9-contour-clock.md); hygiene — --selftest 10/10, probe pt1-clock-now 8/8, the
 //  carried-word mutant red on exactly its three cases; 2026-10-30 18:57 · session 96: --selftest 11/11 (the escaped-carry case of the
 //  judge of session 95), the carried-word mutant (keep ignored) red on exactly its four cases]
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
+import { join, resolve, dirname } from 'node:path';
+import { tmpdir } from 'node:os';
 
 const L = '\u27E6', R = '\u27E7';   // white square brackets around a placeholder word
 const PLACEHOLDER = new RegExp('(\\\\?)' + L + '(NOW-ISO|NOW|DATE|TIME)' + R, 'g');
@@ -19598,6 +19642,29 @@ const WRITE_FIELDS = { Write: ['content'], Edit: ['new_string'], MultiEdit: [] }
 
 const pad = (n) => String(n).padStart(2, '0');
 // getTimezoneOffset() is minutes BEHIND UTC (positive west): Minsk returns -180 and is written +03:00.
+// 2.10 TK10 (c), origin #193: the owner's OWN prompt marks his presence — `.kaif/owner-presence.json` { "at": ISO } at the project root
+// (the nearest folder above `cwd` holding `.kaif/kaif.json`; CLAUDE_PROJECT_DIR wins). The contour reads it and lifts its quiet hours
+// while the mark is fresh: an owner typing in the chat is not asleep (the field owner: «but I asked» — a call he ordered at 07:57 was
+// silenced by the window 00:00–08:00). A background task's notification, the harness's text and a subagent's hand-back are not his.
+// Nothing is written outside a deployment; the mark is session state (ignored).
+export const PRESENCE = join('.kaif', 'owner-presence.json');
+const NOT_THE_OWNER = /^\s*<(?:task-notification|system-reminder|agent-message)\b/;
+function deploymentRoot(cwd) {
+  for (let d = resolve(cwd || '.'); ;) {
+    if (existsSync(join(d, '.kaif', 'kaif.json'))) return d;
+    const up = dirname(d);
+    if (up === d) return null;
+    d = up;
+  }
+}
+export function markPresence(root, prompt, now = new Date()) {
+  if (!root || NOT_THE_OWNER.test(String(prompt || ''))) return false;
+  const p = join(root, PRESENCE);
+  mkdirSync(dirname(p), { recursive: true });
+  writeFileSync(p, JSON.stringify({ at: now.toISOString() }));
+  return true;
+}
+
 export function zoneOf(offsetMinutes) {
   const ahead = -offsetMinutes;
   const sign = ahead >= 0 ? '+' : '-';
@@ -19667,6 +19734,19 @@ if (process.argv[2] === '--selftest') {
   ok(s && s.content === 'about ' + P('NOW') + ', real 07:05', 'a backslash keeps the placeholder literal');
   ok(rewrite('Write', { file_path: 'e.md', content: 'plain' }, v) === null && rewrite('Bash', { command: P('NOW') }, v) === null,
     'silence: a write without a placeholder, a tool that is not a write');
+  { // TK10 (c), #193: the owner's own prompt writes the presence mark; a notification, a harness text and a subagent's hand-back do not
+    const t = mkdtempSync(join(tmpdir(), 'kaif-clock-presence-'));
+    try {
+      const at = new Date(2026, 10, 4, 7, 50, 0);
+      const own = markPresence(t, 'login trouble — call me by voice', at);
+      const mark = existsSync(join(t, PRESENCE)) ? JSON.parse(readFileSync(join(t, PRESENCE), 'utf8').replace(/^\uFEFF/, '')) : null;
+      rmSync(join(t, PRESENCE), { force: true });
+      const others = ['<task-notification><task-id>x</task-id>', '<system-reminder>y', '<agent-message from="a">z'].map((p) => markPresence(t, p, at));
+      ok(own && mark && mark.at === at.toISOString() && others.every((x) => x === false) && !existsSync(join(t, PRESENCE)),
+        'presence (#193): the owner\'s prompt writes .kaif/owner-presence.json; a notification, a harness text, a hand-back — nothing');
+      ok(markPresence(null, 'hi', at) === false, 'presence: outside a deployment — nothing is written');
+    } finally { rmSync(t, { recursive: true, force: true }); }
+  }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
@@ -19680,6 +19760,7 @@ try {
   const event = input && input.hook_event_name;
   const v = values();
   if (event === 'UserPromptSubmit') {
+    try { markPresence(process.env.CLAUDE_PROJECT_DIR || deploymentRoot(input.cwd), input.prompt); } catch { /* the mark never stops the line */ }
     const line = `clock-now · ${v.NOW} (ISO ${v['NOW-ISO']}) — the machine's clock; write a moment as the NOW placeholder in white square ` +
       `brackets (NOW-ISO · DATE · TIME likewise) and this hook fills it on Write · Edit · MultiEdit.`;
     process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: line } }));
@@ -20146,7 +20227,7 @@ lacking them.
 | `prompt-refresh-timer.mjs` | `UserPromptSubmit` | marker age > 60 min (`--minutes N` to override) | on EVERY prompt until the marker is re-stamped — the marker is the only off switch | injects the refresh order; silent while the marker is fresh |
 | `stop-status-guard.mjs` | `Stop` | dirty worktree OR a commit within 3 h, AND STATUS.md untouched > 3 h (2.9: the reason names which) | **once per session** — the only suppression window in the module | soft block: update STATUS.md or say why nothing changed |
 | `prompt-resume-word.mjs` (2.7, epic RS) | `UserPromptSubmit` | the prompt's FIRST word is `resume` / `/resume` / the Russian shorthand of it — the owner's leading word (`AGENT_GUIDE.md` → "A leading skill word is an order"); the same word mid-sentence is prose and never fires; an imperative before it (`run resume`, its Russian mirror) is still the order, the Russian noun as a heading with a colon is prose (2.8) — any other first word from the family fires, including a file named `resume.log`: one extra entry ritual is the named price. **2.8, epic OW:** a leading `stop` (or its Russian word) → the order to stop in this turn — an amplifier of "The owner's word mid-turn": a hook firing on a message typed mid-turn is observed on one system, promised by none | on every message that opens with the word — each one is a separate order | injects the ORDER to run `/resume` in full before the rest of the message, or the ORDER to stop; silent on every other prompt and on an event without a `prompt` field |
-| `clock-now.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PreToolUse`, matcher `Write\|Edit\|MultiEdit` | prompt: none — one short line is the point; write: the tool input holds a time placeholder (below) | on every prompt; on every write that holds a placeholder | prompt: one context line with the machine's local moment; write: `updatedInput` with the placeholders filled by the clock — no permission decision, never a stop; silent on a write without a placeholder |
+| `clock-now.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PreToolUse`, matcher `Write\|Edit\|MultiEdit` | prompt: none — one short line is the point; write: the tool input holds a time placeholder (below) | on every prompt; on every write that holds a placeholder | prompt: one context line with the machine's local moment, and — on the owner's OWN prompt (not a task notification, a harness text or a subagent's hand-back) — the presence mark `.kaif/owner-presence.json`, by which the contour lifts its quiet hours for `contour.ownerActiveMinutes` (2.10, #193); write: `updatedInput` with the placeholders filled by the clock — no permission decision, never a stop; silent on a write without a placeholder |
 | `stop-farewell-capture.mjs` (2.10, epic PT) | `Stop` | the turn ran `/end-chat-soft` or `/end-chat-force` (a Skill call or the owner's slash command), and this closure has not written yet | once per closure — a later stop of the same closure (another Stop hook blocked) writes nothing | writes the turn's last message WHOLE into `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (temporary file + rename); never blocks, never speaks |
 | `subagent-preamble.mjs` (2.10, epic PT) | `PreToolUse`, matcher `Agent\|Task` | the launch carries a task without the preamble's marker | once per launch — a second pass over a marked task changes nothing | `updatedInput` with a marked preamble in front of the subagent's task: read step 1 of `/resume` (read from the skill, existing files only), quote one canon line first in the report, no nested subagents, no commit, no push; one journal line in `.kaif/subagent-preamble.jsonl` — no permission decision, never a stop |
 | `knowledge-moment.mjs` (2.10, epic MM) | `UserPromptSubmit`; `PostToolUse` and `PostToolUseFailure`, matcher `*` | STRONG moments speak at once — the owner's own prompt (a background task's notification is not), a failed tool call, a Read of a knowledge document (maps, `STATUS.md`, `EXPERIENCE.md`, `HOUSE_RULES.md`, `plans/`, `researches/`), the first touch in a session of a file whose component has `NOTES.md`; every other tool result adds weight 1, and the hook speaks at 12 | per moment; the weight resets after each line; component notes — once per session | one `additionalContext` line: write what you understood into the project document where it lives, in this turn — never a block, never a stop, never a document body; state per session in `.kaif/knowledge-moment.json` |
@@ -21726,7 +21807,7 @@ else the workspace directory) — and `review.mjs --call "<what is needed>" [--d
 
 Parameters are READ, never asked (owner rule #97, "a mechanic ships only complete"): `contour.projectName` (default: the project directory name), `contour.ownerName` (default: the owner row of
 AGENT_GUIDE's identity table, else "owner"), `contour.callName` / `contour.spokenProjectName` (how the voice addresses the owner and names the project; defaults — the first word of `ownerName` without a parenthesised alias or «aka …», «Name Surname (ALIAS)» → «Name» (2.10, #190), and `projectName`; a call text that already opens with the name gets it once, #191),
-`contour.decisionsDir` (default `interviews/decisions`), `contour.quietFrom/quietTo` (default none), texts by `language` (RU/EN shipped, others fall back to EN and the page says so).
+`contour.decisionsDir` (default `interviews/decisions`), `contour.quietFrom/quietTo` (default none; lifted while the owner's own chat message is younger than `contour.ownerActiveMinutes`, default 60 — the prompt hook writes `.kaif/owner-presence.json`, 2.10 #193), `contour.noCalls` (the owner's call-free windows `[{ "from": "HH:MM", "to": "HH:MM" }]` — never lifted), texts by `language` (RU/EN shipped, others fall back to EN and the page says so).
 
 ## 8. Acceptance in one minute
 

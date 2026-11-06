@@ -29,7 +29,9 @@
 //  placeholder stayed literal and a new one got the minute (TK7z, judge hunt 4; testcases/reports/2026-10-30_tk7z-tk9-contour-clock.md); hygiene — --selftest 10/10, probe pt1-clock-now 8/8, the
 //  carried-word mutant red on exactly its three cases; 2026-10-30 18:57 · session 96: --selftest 11/11 (the escaped-carry case of the
 //  judge of session 95), the carried-word mutant (keep ignored) red on exactly its four cases]
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
+import { join, resolve, dirname } from 'node:path';
+import { tmpdir } from 'node:os';
 
 const L = '\u27E6', R = '\u27E7';   // white square brackets around a placeholder word
 const PLACEHOLDER = new RegExp('(\\\\?)' + L + '(NOW-ISO|NOW|DATE|TIME)' + R, 'g');
@@ -37,6 +39,29 @@ const WRITE_FIELDS = { Write: ['content'], Edit: ['new_string'], MultiEdit: [] }
 
 const pad = (n) => String(n).padStart(2, '0');
 // getTimezoneOffset() is minutes BEHIND UTC (positive west): Minsk returns -180 and is written +03:00.
+// 2.10 TK10 (c), origin #193: the owner's OWN prompt marks his presence — `.kaif/owner-presence.json` { "at": ISO } at the project root
+// (the nearest folder above `cwd` holding `.kaif/kaif.json`; CLAUDE_PROJECT_DIR wins). The contour reads it and lifts its quiet hours
+// while the mark is fresh: an owner typing in the chat is not asleep (the field owner: «but I asked» — a call he ordered at 07:57 was
+// silenced by the window 00:00–08:00). A background task's notification, the harness's text and a subagent's hand-back are not his.
+// Nothing is written outside a deployment; the mark is session state (ignored).
+export const PRESENCE = join('.kaif', 'owner-presence.json');
+const NOT_THE_OWNER = /^\s*<(?:task-notification|system-reminder|agent-message)\b/;
+function deploymentRoot(cwd) {
+  for (let d = resolve(cwd || '.'); ;) {
+    if (existsSync(join(d, '.kaif', 'kaif.json'))) return d;
+    const up = dirname(d);
+    if (up === d) return null;
+    d = up;
+  }
+}
+export function markPresence(root, prompt, now = new Date()) {
+  if (!root || NOT_THE_OWNER.test(String(prompt || ''))) return false;
+  const p = join(root, PRESENCE);
+  mkdirSync(dirname(p), { recursive: true });
+  writeFileSync(p, JSON.stringify({ at: now.toISOString() }));
+  return true;
+}
+
 export function zoneOf(offsetMinutes) {
   const ahead = -offsetMinutes;
   const sign = ahead >= 0 ? '+' : '-';
@@ -106,6 +131,19 @@ if (process.argv[2] === '--selftest') {
   ok(s && s.content === 'about ' + P('NOW') + ', real 07:05', 'a backslash keeps the placeholder literal');
   ok(rewrite('Write', { file_path: 'e.md', content: 'plain' }, v) === null && rewrite('Bash', { command: P('NOW') }, v) === null,
     'silence: a write without a placeholder, a tool that is not a write');
+  { // TK10 (c), #193: the owner's own prompt writes the presence mark; a notification, a harness text and a subagent's hand-back do not
+    const t = mkdtempSync(join(tmpdir(), 'kaif-clock-presence-'));
+    try {
+      const at = new Date(2026, 10, 4, 7, 50, 0);
+      const own = markPresence(t, 'login trouble — call me by voice', at);
+      const mark = existsSync(join(t, PRESENCE)) ? JSON.parse(readFileSync(join(t, PRESENCE), 'utf8').replace(/^\uFEFF/, '')) : null;
+      rmSync(join(t, PRESENCE), { force: true });
+      const others = ['<task-notification><task-id>x</task-id>', '<system-reminder>y', '<agent-message from="a">z'].map((p) => markPresence(t, p, at));
+      ok(own && mark && mark.at === at.toISOString() && others.every((x) => x === false) && !existsSync(join(t, PRESENCE)),
+        'presence (#193): the owner\'s prompt writes .kaif/owner-presence.json; a notification, a harness text, a hand-back — nothing');
+      ok(markPresence(null, 'hi', at) === false, 'presence: outside a deployment — nothing is written');
+    } finally { rmSync(t, { recursive: true, force: true }); }
+  }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
@@ -119,6 +157,7 @@ try {
   const event = input && input.hook_event_name;
   const v = values();
   if (event === 'UserPromptSubmit') {
+    try { markPresence(process.env.CLAUDE_PROJECT_DIR || deploymentRoot(input.cwd), input.prompt); } catch { /* the mark never stops the line */ }
     const line = `clock-now · ${v.NOW} (ISO ${v['NOW-ISO']}) — the machine's clock; write a moment as the NOW placeholder in white square ` +
       `brackets (NOW-ISO · DATE · TIME likewise) and this hook fills it on Write · Edit · MultiEdit.`;
     process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: line } }));
