@@ -591,7 +591,10 @@ if (!exe) {
   const r2 = await w2;
   const d2 = decP();
   ok(st2 && r2.code === 0 && d2.answers && d2.answers.Q1 && d2.answers.Q2 && d2.records === 2 && gen4.exit() === null,
-     's22 D: ответ на Q2 → «Осталось вопросов: 1», decision.json СЛИВАЕТ Q1 и Q2 (records 2), сторож 0, процесс жив (OW6)', JSON.stringify(d2).slice(0, 300));
+     's22 D: ответ на Q2 → «Осталось вопросов: 1», decision.json СЛИВАЕТ Q1 и Q2 (records 2), сторож 0, процесс жив (OW6)',
+     // session 97: the red of 2026-11-06 10:12 printed only the record (truncated) — name each condition, so the next red says which one
+     'status «' + st2 + '» wait ' + r2.code + ' records ' + d2.records + ' gen ' + gen4.exit() + ' Q1 ' + !!(d2.answers && d2.answers.Q1) +
+     ' Q2 ' + !!(d2.answers && d2.answers.Q2) + ': ' + String(r2.out).slice(-160));
   // the stale tab: the agent rewrites Q3 while the page is open; the owner saves Q3 from the old revision
   await pick('Q3', 'A');
   writeFileSync(join(D, DOC_P), readFileSync(join(D, DOC_P), 'utf8').replace('Третий вопрос?', 'Третий вопрос, переписанный агентом?'));
