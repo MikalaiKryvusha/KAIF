@@ -55,7 +55,8 @@ Until one fires — don't stop, don't wait for confirmations, work.
    not to "done"; after 3 failed fix-judge cycles, record it honestly in `STATUS.md`/`bugs/` and take
    another task.
 5. **Document**: worklog in `plans/`, bug docs in `bugs/`, `STATUS.md` along the way; append the
-   approach-level lesson to `EXPERIENCE.md` after a meaningful success/failure (skill: `/experience`).
+   approach-level lesson to `EXPERIENCE.md` after a meaningful success/failure (skill: `/experience`). Then say the knowledge line:
+   `KNOWLEDGE: <what the item taught about the project · the document it is written in>` or `KNOWLEDGE: nothing new` (2.10, epic MM).
 6. **Commit and PUSH** (per `AGENT_GUIDE.md`): after each finished task or every ~20–30 minutes.
    `<COMMIT_COMMAND>`. **The one-step rule:** one meaningful change = one full gate run = one commit —
    no batch commits (a big diff can't be honestly reviewed; a judged failure rolls back one file, not a

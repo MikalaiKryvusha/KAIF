@@ -100,7 +100,7 @@
 9. If you changed any template or the narrative → REBUILD: node tools/build-framework.mjs
 10. Comment your code/tools; keep docs accurate   # + маркер тест-статуса: сырое — [NOT-TESTED]; проверено наблюдением — [TESTED: дата · как] (TESTING_FRAMEWORK.md)
 11. For bugs/process reflections → bugs/ (follow BUG_FIXING_FRAMEWORK.md)
-12. Capture EXPERIENCE.md          # after a meaningful success/failure, append the lesson (skill: /experience)
+12. Capture EXPERIENCE.md          # after a meaningful success/failure, append the lesson (skill: /experience); понял новое о проекте или документ говорит иначе, чем видишь, → впиши в карту · STATUS · опыт · HOUSE_RULES ТЕМ ЖЕ ходом, не только в чат (ритуалы закрытия и циклов спрашивают строкой KNOWLEDGE:)
 13. Periodically re-read the KEY canon docs   # ядро перечитывания (см. «Таксономия документов»;
                                   # триггеры и свидетельство — «Освежение контекста»): PHILOSOPHY /
                                   # AGENT_GUIDE / STATUS / GOAL / MASTER_PLAN / REQUIREMENTS_FRAMEWORK /

@@ -35,6 +35,9 @@ Update `STATUS.md`:
 - **Current position** — what works, what's in progress, where we are.
 - **The handover ("where to continue")** — a checklist written for a STRANGER: the next session knows
   nothing this chat knew. Commands, file paths, what to verify first, open questions with owners.
+- **The knowledge line** — `KNOWLEDGE: <what this chat understood anew or found stale · the document it is written in now>` or
+  `KNOWLEDGE: nothing new`. A finding that lives only in the chat is not recorded: write it into the project's maps, `STATUS.md`,
+  `EXPERIENCE.md` or the house rules first, then name the place (2.10, epic MM; origin #160 · #159).
 - Convert relative dates to absolute (find today's date from context / `date`).
 
 Reconcile with the active bug docs in `bugs/` and reflect their status. If a reusable lesson

@@ -33,7 +33,7 @@ import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { createHash } from 'node:crypto';
 import { tempRoot } from '../lib/temp-root.mjs';
-import { must, coreRunner, failed, quietEnv, QUIET_TIMEOUT_MS } from '../lib/sandbox-run.mjs';
+import { must, coreRunner, failed, quietEnv, QUIET_TIMEOUT_MS, CONTOUR_SELFTEST_TIMEOUT_MS } from '../lib/sandbox-run.mjs';
 import { findBrowser, headlessPage } from '../lib/cdp-mini.mjs'; // LP (2.7): the headless recovery run drives the real page
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -54,7 +54,8 @@ const run = coreRunner(ROOT);
 // «fresh · Interview #052 — проба». Окружение без программ в PATH делает окно и звук невозможными на любой
 // версии; жёсткий срок убивает страницу, которая всё же ждёт. Страж — преполёт полигона (tools/sandbox-suite.mjs).
 const runGen = (cwd, args) => {
-  try { return { code: 0, out: execFileSync(process.execPath, [join(cwd, '.kaif', 'tools', 'contour', 'review.mjs'), ...args], { cwd, stdio: 'pipe', maxBuffer: 64 * 1024 * 1024, env: quietEnv(), timeout: QUIET_TIMEOUT_MS }).toString() }; }
+  try { return { code: 0, out: execFileSync(process.execPath, [join(cwd, '.kaif', 'tools', 'contour', 'review.mjs'), ...args], { cwd, stdio: 'pipe', maxBuffer: 64 * 1024 * 1024, env: quietEnv(),
+    timeout: args[0] === '--selftest' ? CONTOUR_SELFTEST_TIMEOUT_MS : QUIET_TIMEOUT_MS }).toString() }; }   // session 97: the selftest outgrew 30 s
   catch (e) { return failed(e, { root: ROOT, cwd, args: 'contour ' + args.join(' ') }); }
 };
 const sha256 = (b) => createHash('sha256').update(b).digest('hex');

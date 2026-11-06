@@ -39,6 +39,6 @@ doesn't violate the structure.>`
 
 ---
 
-> Keep this map honest: when you add, move, or rename a file/directory, update the tree and the table in
-> the same change. The *internal* logic (abstractions, data/interaction flows) belongs in
+> Keep this map honest: when you add, move or rename a file/directory, or LEARN that the tree or the table
+> says otherwise than the disk, fix them in the same turn. The *internal* logic (abstractions, data/interaction flows) belongs in
 > `PROJECT_ARCHITECTURE_INTERNAL_MAP.md`.

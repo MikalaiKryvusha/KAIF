@@ -23,6 +23,8 @@ Update `STATUS.md`, tersely:
   falsehood is corrected where it stands"). Force mode may skip a ceremony; it never drops a lie left
   standing under the owner's name — a statement this session learned was false and corrected only in
   the chat is named here with every place, and the next session's first move is the five steps.
+- **The knowledge line** — `KNOWLEDGE: <what this chat understood anew or found stale · the document it is written in now>` or
+  `KNOWLEDGE: nothing new`; force mode writes the finding into the project's docs before it names it — a chat line is not a record.
 - Convert relative dates to absolute.
 
 Uncommitted work-in-progress that cannot land safely: name it in the handover (file, state, next

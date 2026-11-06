@@ -70,7 +70,8 @@ without those resources.
    "done"; after 3 failed fix-judge cycles, record it honestly in `STATUS.md`/`bugs/` and take another task.
 9. **Capture knowledge**: for bugs — reflection in `bugs/NN_*.md`; for features — status/date in
    `ideas/*`; update `STATUS.md`. After a meaningful success or failure, append the approach-level lesson
-   to `EXPERIENCE.md` (skill: `/experience`) — don't wait for the human.
+   to `EXPERIENCE.md` (skill: `/experience`) — don't wait for the human. Then say the knowledge line:
+   `KNOWLEDGE: <what the item taught about the project · the document it is written in>` or `KNOWLEDGE: nothing new` (2.10, epic MM).
 10. **Commit** a small commit (don't lose progress): `<COMMIT_COMMAND>` (style from `AGENT_GUIDE.md`,
    with the Co-Authored-By trailer). **The one-step rule:** one meaningful change = one full gate run
    (build + tests + checks) = one commit — never batch half a day of work into one commit: a big diff

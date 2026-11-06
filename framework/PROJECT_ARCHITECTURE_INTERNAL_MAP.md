@@ -43,6 +43,6 @@ if the code/text runs.>`
 
 ---
 
-> Keep this in sync with the real logic as it evolves. When you introduce or retire an abstraction, or
-> change how they interact, update this map in the same change. File/directory placement belongs in
+> Keep this in sync with the real logic: when you LEARN how a part works, or see it differ from this map, and
+> when you introduce, retire or rewire an abstraction — the line here changes in the same turn. File/directory placement belongs in
 > `PROJECT_STRUCTURE_EXTERNAL_MAP.md`.

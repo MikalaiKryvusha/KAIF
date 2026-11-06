@@ -26,7 +26,7 @@
       {
         "signature": "## Before every task — checklist",
         "class": "adaptive",
-        "sha256": "2de77080765e8982f0a84b8c78befd5f85e5d9dd00a71107d2f564466e5619fa",
+        "sha256": "1f15e04705472af282bc6f357707dba0aaacb1d2778d729664c0ba2c4d2c7715",
         "lines": [
           74,
           122
@@ -1072,7 +1072,7 @@
       {
         "signature": "## Entry points",
         "class": "owner",
-        "sha256": "b79766498fc4ea2c563ff7060357a05857f0a55e24591b445f19cec6a5e86416",
+        "sha256": "bdf089b3959f203d4dd5c6b19422fd910b8e372e5c439f17a95462ce7216a1a9",
         "lines": [
           36,
           45
@@ -1119,7 +1119,7 @@
       {
         "signature": "## Key decisions embedded in the architecture",
         "class": "owner",
-        "sha256": "ba6aa2cc9653d1a7f5a35d8044e1901360ba55d6746c81e1ebffbbee3ebf64df",
+        "sha256": "a6740cd3efe35d93b5c08b4ffcbd4c160657588d975cad5187d8530d70fca509",
         "lines": [
           40,
           49
@@ -1931,10 +1931,10 @@
       {
         "signature": "## The cycle (repeat per task)",
         "class": "adaptive",
-        "sha256": "49e8034da944acf8919545007a171e6092bb5245e6830ac34717320567703aaa",
+        "sha256": "480d2460b678ffd1421d2bf1915ccab6b0bf5f86cc9fd851fc79873531229ca2",
         "lines": [
           53,
-          80
+          81
         ]
       },
       {
@@ -1942,8 +1942,8 @@
         "class": "static",
         "sha256": "578e14d6c162189bf389de20dcdcc8fa11e820c1e2ebb96cea1a84ff692de724",
         "lines": [
-          81,
-          97
+          82,
+          98
         ]
       },
       {
@@ -1951,8 +1951,8 @@
         "class": "static",
         "sha256": "20e8ccecf0e86d74092e4ea77bac826b8bb092d0d7fce074e50f1fa10606ae7a",
         "lines": [
-          98,
-          113
+          99,
+          114
         ]
       },
       {
@@ -1960,8 +1960,8 @@
         "class": "static",
         "sha256": "87bda388e31713aabde191182d235803d83f9f074edf721a85a597d881daaa4b",
         "lines": [
-          114,
-          119
+          115,
+          120
         ]
       }
     ],
@@ -2274,10 +2274,10 @@
       {
         "signature": "## 🔁 The cycle (one iteration)",
         "class": "adaptive",
-        "sha256": "a820352f034c88b961bac3a78b8a456ac8ad2c90b371c8136da61e45acb65bac",
+        "sha256": "7e70c22c78be100c295fe1d1b325ad499b868f63e2129fae04403dc03228745f",
         "lines": [
           46,
-          84
+          85
         ]
       },
       {
@@ -2285,8 +2285,8 @@
         "class": "static",
         "sha256": "4d561d78fcb038a14b2aa34126c4cc053217933d29f913c3e347274471745bff",
         "lines": [
-          85,
-          97
+          86,
+          98
         ]
       },
       {
@@ -2294,8 +2294,8 @@
         "class": "static",
         "sha256": "2c1b12bb4f58080298152c09640b0a7e3a274a31ed8a167460db9c96a178b1be",
         "lines": [
-          98,
-          105
+          99,
+          106
         ]
       },
       {
@@ -2303,8 +2303,8 @@
         "class": "static",
         "sha256": "084a3df287ba22df0e5d06fa911c980799575e07b7b760f2223cd289b0e81c4a",
         "lines": [
-          106,
-          112
+          107,
+          113
         ]
       },
       {
@@ -2312,8 +2312,8 @@
         "class": "static",
         "sha256": "6e2435a3ebd3b775f57ed0b5a2c254a4313419ee7634dd44605103553ff85060",
         "lines": [
-          113,
-          117
+          114,
+          118
         ]
       }
     ],
@@ -2404,10 +2404,10 @@
       {
         "signature": "## Step 1. The handover — only what must not be lost",
         "class": "static",
-        "sha256": "a037b6b175afa0e970e8c204c7ce1a497a3dd5b8291d3642e98a20e7b4db1c2b",
+        "sha256": "aa7e3ab2a1bfa697df581e80afc69c990333ba90934428d47d7024fe6402f5b2",
         "lines": [
           11,
-          30
+          32
         ]
       },
       {
@@ -2415,8 +2415,8 @@
         "class": "static",
         "sha256": "7594a4a59edb861292332a5ac9a2c9d1f94673762047ad28371816f3415303ae",
         "lines": [
-          31,
-          42
+          33,
+          44
         ]
       },
       {
@@ -2424,8 +2424,8 @@
         "class": "static",
         "sha256": "8e6b9c8752aff9d7d8747839657e4efea4a2153f0dfd6d5bacf90f699dc08225",
         "lines": [
-          43,
-          47
+          45,
+          49
         ]
       },
       {
@@ -2433,8 +2433,8 @@
         "class": "static",
         "sha256": "89d0106b2f868f1034ced6324e7220eda1df9837e067fc79601b16ce83fe7b29",
         "lines": [
-          48,
-          55
+          50,
+          57
         ]
       },
       {
@@ -2442,8 +2442,8 @@
         "class": "static",
         "sha256": "d460cddf3c9477ef17f7b8ecd535bc20de3df7a8c51a226ead43be898506ca8f",
         "lines": [
-          56,
-          62
+          58,
+          64
         ]
       }
     ],
@@ -2487,10 +2487,10 @@
       {
         "signature": "### Step 1. Record status & the handover in STATUS.md",
         "class": "static",
-        "sha256": "c79d87ff8fe163809a346c92ef2aa5bc52ffb4a98625562b8d0c4984f3ac3402",
+        "sha256": "8ee32e238267274f87684991c15380ff5ac53afe66f32033173194bad8761234",
         "lines": [
           31,
-          95
+          98
         ]
       },
       {
@@ -2498,8 +2498,8 @@
         "class": "static",
         "sha256": "4e8599aeac84993369d303fdb7c012d1f1891acca2d35e1681076ae1c298d666",
         "lines": [
-          96,
-          100
+          99,
+          103
         ]
       },
       {
@@ -2507,8 +2507,8 @@
         "class": "static",
         "sha256": "c249136cd205896996db62b65d8aebc72f20c4c30b820c864d7cd2d721986329",
         "lines": [
-          101,
-          106
+          104,
+          109
         ]
       },
       {
@@ -2516,8 +2516,8 @@
         "class": "adaptive",
         "sha256": "6ea677b93aa18f56528e9b4778063f053a61e2b407611d33f5d5909350da5de7",
         "lines": [
-          107,
-          121
+          110,
+          124
         ]
       },
       {
@@ -2525,8 +2525,8 @@
         "class": "static",
         "sha256": "943f7ab63a9afcef7c3e5e15fe619275a1051a24e4619e5fb8a80e89b155b309",
         "lines": [
-          122,
-          139
+          125,
+          142
         ]
       },
       {
@@ -2534,8 +2534,8 @@
         "class": "static",
         "sha256": "18b2f1a2f80788a20798895b9080090c3d01bdce0905a7c888de1488e543b437",
         "lines": [
-          140,
-          152
+          143,
+          155
         ]
       }
     ],
@@ -2664,7 +2664,7 @@
       {
         "signature": "<preamble>",
         "class": "adaptive",
-        "sha256": "59f8831f9066da1ccb8065c41cac1a67c443024ad2b2df143d854d69fb67c882",
+        "sha256": "0b4187fcf2b6f512768c6df528d0f25703bc3768114ec56a086cba1794711cbc",
         "lines": [
           1,
           18
@@ -2682,10 +2682,10 @@
       {
         "signature": "## Default mode: judge the work",
         "class": "static",
-        "sha256": "04ddbea98d10d12ff76a6ebdce498802bf19d5418ee11261eb5dbdef53b0261f",
+        "sha256": "fb1f724a32322812eca1ac9df7ca0fddfdb94e40e381a3d20cabba1d66ab70c9",
         "lines": [
           23,
-          88
+          89
         ]
       },
       {
@@ -2693,8 +2693,8 @@
         "class": "static",
         "sha256": "f876b26ca5fd1ff851d5f6b33eb446ab1b024115b33fa00ee98d880dcfcd40e7",
         "lines": [
-          89,
-          94
+          90,
+          95
         ]
       }
     ],
@@ -3677,10 +3677,10 @@
       {
         "signature": "## 🔁 The cycle (one iteration)",
         "class": "adaptive",
-        "sha256": "0af5938f0dd61a20f3be54f5c8a665eece84170ed0a9dbbdf9eedde13e61d4e2",
+        "sha256": "e2a7f1b9ae840e6ef3018d5c2187aa53f1dd2310fe7f91e14aa148b88e8aadb2",
         "lines": [
           41,
-          69
+          70
         ]
       },
       {
@@ -3688,8 +3688,8 @@
         "class": "static",
         "sha256": "bb1cd662fe9f0e72ee8f4ed6a5c94ef3954804fa40eda8f4165b94d4156b2d50",
         "lines": [
-          70,
-          83
+          71,
+          84
         ]
       },
       {
@@ -3697,8 +3697,8 @@
         "class": "static",
         "sha256": "aae798188a8641ef5dbc9d9069b1523e1e5e7a4f361b5ee707b5abbb5a73a8ff",
         "lines": [
-          84,
-          92
+          85,
+          93
         ]
       },
       {
@@ -3706,8 +3706,8 @@
         "class": "static",
         "sha256": "aa4f5afaf1dd1b55033467a49b1012557b4ebf80c2a3c1826cf163c81ed6df42",
         "lines": [
-          93,
-          97
+          94,
+          98
         ]
       }
     ],

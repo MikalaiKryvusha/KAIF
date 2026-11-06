@@ -1246,6 +1246,30 @@ errors.push(...checkLinesUnknownToReference(readFileSync(join(ROOT, 'framework',
     // FR (2.7, origin issue #68): the obligation is a RULE of its own in both layers, the board row carries the
     // request, the constitution is in the seat's re-read core, the core compares a generated constitution against
     // the template, and the judge hunts both halves (the idle seat, and the seat refreshed without the document).
+    // MM1b (version KAIF 2.10, origin tickets #160 · #159): a finding is written into the project's documents in the same turn; the
+    // closing and loop rituals of both layers ask for it by the KNOWLEDGE: line, and the judge hunts the finding said but not written.
+    ['knowledge line ↔ /end-chat-soft asks for the KNOWLEDGE: line (payload)', 'framework/skills/end-chat-soft/SKILL.md',
+      ['`KNOWLEDGE: nothing new`']],
+    ['knowledge line ↔ /end-chat-soft asks for the KNOWLEDGE: line (wrapper)', '.claude/skills/end-chat-soft/SKILL.md',
+      ['`KNOWLEDGE: нового нет`']],
+    ['knowledge line ↔ /end-chat-force asks for the KNOWLEDGE: line (payload)', 'framework/skills/end-chat-force/SKILL.md',
+      ['`KNOWLEDGE: nothing new`']],
+    ['knowledge line ↔ /end-chat-force asks for the KNOWLEDGE: line (wrapper)', '.claude/skills/end-chat-force/SKILL.md',
+      ['`KNOWLEDGE: нового нет`']],
+    ['knowledge line ↔ /autoloop asks for the KNOWLEDGE: line (payload)', 'framework/skills/autoloop/SKILL.md',
+      ['`KNOWLEDGE: nothing new`']],
+    ['knowledge line ↔ /autoloop asks for the KNOWLEDGE: line (wrapper)', '.claude/skills/autoloop/SKILL.md',
+      ['`KNOWLEDGE: нового нет`']],
+    ['knowledge line ↔ /dayloop asks for the KNOWLEDGE: line (payload)', 'framework/skills/dayloop/SKILL.md',
+      ['`KNOWLEDGE: nothing new`']],
+    ['knowledge line ↔ /dayloop asks for the KNOWLEDGE: line (wrapper)', '.claude/skills/dayloop/SKILL.md',
+      ['`KNOWLEDGE: нового нет`']],
+    ['knowledge line ↔ /nightloop asks for the KNOWLEDGE: line (payload)', 'framework/skills/nightloop/SKILL.md',
+      ['`KNOWLEDGE: nothing new`']],
+    ['knowledge line ↔ /nightloop asks for the KNOWLEDGE: line (wrapper)', '.claude/skills/nightloop/SKILL.md',
+      ['`KNOWLEDGE: нового нет`']],
+    ['knowledge line ↔ /fable-judge hunts a finding said but not written', 'framework/skills/fable-judge/SKILL.md',
+      ['**Learned, not recorded (KAIF 2.10).**']],
     // TK4 (version KAIF 2.10, origin ticket #137): rule 8 gives the Manager the stop signal, rule 9 took the force from every message —
     // a worktree seat worked past "close now". The exception stands in rule 9 of both layers and in the guide's mid-turn rule, item 1.
     ['manager stop ↔ the constitution template executes the Manager\'s stop and close in the same turn (payload)',

@@ -26,7 +26,7 @@ import { readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { quietEnv, QUIET_TIMEOUT_MS } from '../lib/sandbox-run.mjs';
+import { quietEnv, QUIET_TIMEOUT_MS, CONTOUR_SELFTEST_TIMEOUT_MS } from '../lib/sandbox-run.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 let PASS = 0, FAIL = 0;
@@ -106,10 +106,16 @@ check('красное доказательство: ростер ЛОВИТ вы
 // Срок — сторож ЗАВИСАНИЯ, не потолок качества: самопроверка контура (три строки списка ниже — одна и та же) с шага TK7б
 // 2.10 идёт ≈ 20 с в одиночку (159 случаев; было 16 с), и под нагрузкой полигона общий QUIET_TIMEOUT_MS (30 с) убивал
 // здоровый прогон — красный «не уложился» дважды за сессию 91 при зелёном своде в одиночку. Втрое больше замера.
-const SELFTEST_TIMEOUT_MS = 3 * 20000;
+// Сессия 97 (2026-11-06): 173 случая — 34,6 с в одиночку; под полигоном прежние 60 с не хватило (красный 10:2x без причины в выводе).
+// Замер обновлён тем же правилом — втрое; и красный теперь называет причину: тайм-аут (сигнал) или код выхода с хвостом вывода.
+const SELFTEST_TIMEOUT_MS = CONTOUR_SELFTEST_TIMEOUT_MS;
 const run = (label, args) => {
   try { execFileSync(process.execPath, args.map((a) => join(ROOT, a) === a ? a : a), { cwd: ROOT, stdio: 'pipe', timeout: Math.max(SELFTEST_TIMEOUT_MS, QUIET_TIMEOUT_MS), env: quietEnv() }); return true; }
-  catch { return false; }
+  catch (e) {
+    const why = e && e.signal ? 'timeout — signal ' + e.signal : 'exit ' + (e && e.status) + ': ' + String((e && e.stdout) || '').slice(-200);
+    console.log('    ↳ ' + label + ' — ' + why);
+    return false;
+  }
 };
 // Список — источник истины И для прогона, И для счётчика в итоговой строке (EXP-0025: число
 // селфтестов прозой протухает молча; здесь оно вычисляется из того же массива).
