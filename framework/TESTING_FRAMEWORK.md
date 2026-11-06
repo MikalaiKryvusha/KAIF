@@ -40,6 +40,10 @@ user does, pressing the buttons, reading the lines, looking at the screen and re
 3. **`[NOT-TESTED]` is inadmissible to production.** Marker rule 2 flips on a functional run only; the
    run report carries it SEPARATE from hygiene (`Hygiene:` · `Functional run:` — never summed; `NONE` =
    *fixed, not tested*); a bug's closing status carries the same two lines (`/report-bug`).
+4. **The stand is the agent's.** The test's conditions — data, state, place, actors, inputs, time — the agent builds itself
+   with what the machine it was given allows (cheats, remotes, spawners, fixtures, a scratch copy of the data); a case not
+   yet observed is reported with the stand step that is done NEXT, never as "needs a stand" handed to the owner; the only
+   limits are the project's own — the owner's data that must not change, destructive and outward acts (the house rules).
 
 ## The testing activities — the chain that makes "tested" mean something
 
@@ -47,34 +51,29 @@ The trust contract below says how much to TRUST a result; this section says how 
 is done. Testing a feature is a chain of activities, not one observation — walk it in order, each
 step with its exit condition:
 
-1. **Analyze the test basis.** Name the source of truth for the expected behaviour — a
-   requirement, the owner's word, a spec, the canon map (`REQUIREMENTS_FRAMEWORK.md` shapes
-   these). *Exit:* every claim under test quotes where its expectation comes from; an expectation
-   that is missing or untestable goes back as a requirements defect (principle 3 — cheapest right
-   here). Studying the requirements to derive the test basis IS a testing activity, not somebody
-   else's chapter.
-2. **Design the observation set by named techniques.** Derive the cases with the standard
-   instruments: equivalence partitioning · boundary values · decision tables · state transitions ·
-   pairwise · use-case walk · error guessing. *Exit:* a written case list whose DIMENSIONS are
-   named — which partitions, boundaries and states are covered, and which are consciously not
-   (principle 2: prioritize by risk, and SAY what was left out).
-3. **Write the documentation before executing.** Test documentation lives in files, never in the
-   session's head: a plan (what and why) · a suite / checklist (the ordered set) · cases (steps ·
-   expected · status). Copy the shipped template into the project's test-doc home (default
-   `testcases/`, created on first use; the sphere or the project may name another):
-   `cp .kaif/_testcases-template.md testcases/TC_<feature>_<slug>.md` — an artifact class with no
-   home and no shape does not get written.
+1. **Analyze the test basis.** Name the source of truth for the expected behaviour — a requirement, the owner's word, a spec,
+   the canon map (`REQUIREMENTS_FRAMEWORK.md` shapes these). *Exit:* every claim under test quotes where its expectation
+   comes from; an expectation that is missing or untestable goes back as a requirements defect (principle 3 — cheapest right
+   here). Studying the requirements to derive the test basis IS a testing activity, not somebody else's chapter.
+2. **Design the observation set by named techniques.** Derive the cases with the standard instruments: equivalence
+   partitioning · boundary values · decision tables · state transitions · pairwise · use-case walk · error guessing. *Exit:*
+   a written case list whose DIMENSIONS are named — which partitions, boundaries and states are covered, and which are
+   consciously not (principle 2: prioritize by risk, and SAY what was left out).
+3. **Write the documentation before executing.** Test documentation lives in files, never in the session's head: a plan (what
+   and why) · a suite / checklist (the ordered set) · cases (steps · expected · status). Copy the shipped template into the
+   project's test-doc home (default `testcases/`, created on first use; the sphere or the project may name another): `cp
+   .kaif/_testcases-template.md testcases/TC_<feature>_<slug>.md` — an artifact class with no home and no shape does not get
+   written.
 4. **Execute with bookkeeping.** Every case ends in a status — `pass` · `fail` · `blocked` ·
    `skipped` — with the observation named (what ran, what was seen). *Exit:* no case without a
    status; coverage is the case list, never an impression.
 5. **Run the control case before calling the feature working.** Turn the controlling flag off /
    remove the controlling parameter and observe the feature NOT work: a feature check that cannot
    fail proves nothing (gate 5 below, applied at feature level).
-6. **Hunt the reproduction** when a defect or a reported phenomenon does not reproduce on the
-   first attempt: vary it over named axes — data and state · position · timing and races · entry
-   point · fresh vs accumulated account · stage vs production · network — and write every attempt
-   down. *Exit:* the steps reproduce it, or the report says "not reproduced" and lists at least
-   three variants tried, each with its outcome — one attempt is never a verdict.
+6. **Hunt the reproduction** when a defect or a reported phenomenon does not reproduce on the first attempt: vary it over
+   named axes — data and state · position · timing and races · entry point · fresh vs accumulated account · stage vs
+   production · network — and write every attempt down. *Exit:* the steps reproduce it, or the report says "not reproduced"
+   and lists at least three variants tried, each with its outcome — one attempt is never a verdict.
 7. **File defects in the defined shape** — the tester's report a developer reads: **Description ·
    Steps to reproduce · Expected result · Actual result**, plus **Build · Environment · Evidence** and the
    severity/priority the tracker takes; the steps are the user's path in the product, never state assembled

@@ -266,6 +266,11 @@ TB1 (эпик TB, `plans/124`; место под шаги 6–7 «Hunt the repro
 - «**Блок объявления стража как страж**» → буллет «**Его стражи**» того же раздела корневого `TESTING_FRAMEWORK.md` — слит с соседним
 - «**Форма отчёта прогона как страж**» → тот же буллет «**Его стражи**» корневого `TESTING_FRAMEWORK.md`, дополнен
 
+MM1б (эпик MM, `plans/138`, версия KAIF 2.10, сессия 97, коммит `2f8cc6c`; объявлено 2026-11-06 13:01 +03:00 — пропущено при коммите, найдено сверкой
+инвентаря перед HC10) — чек-лист «Перед каждой задачей» обоих слоёв, строка знаний «запиши понятое тем же ходом»:
+- «Check the map & blast radius # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change» → та же строка 10 чек-листа `framework/AGENT_GUIDE.md`, дополнен
+- «Capture EXPERIENCE.md # after a meaningful success/failure, append the lesson (skill: /experience)» → та же строка 12 чек-листа корневого `AGENT_GUIDE.md`, дополнен
+
 ### CK4 — файл домашних правил и правило владельца правилом (≈ 0,5 чата; детализировано на закрытии CK3, ≈ 2026-09-24 21:56 +03:00)
 
 Входы сверены (сессия 71): имя раздела заметок — «Notes from the human» в шаблоне и в ядре (`KAIF-CORE.mjs:863` пункт портрета,

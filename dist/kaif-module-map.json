@@ -608,19 +608,19 @@
       {
         "signature": "## What the word \"test\" means — a functional run on the real product, by the user's path",
         "class": "static",
-        "sha256": "071ed8fb58f8c21c49104f04f4646d06cd704239f8a4c709bd2c939b446d4e37",
+        "sha256": "dae2e3d607f54d22f5a1dd0593ded750230b7227216263e83a7592ddc4e40824",
         "lines": [
           26,
-          43
+          47
         ]
       },
       {
         "signature": "## The testing activities — the chain that makes \"tested\" mean something",
         "class": "static",
-        "sha256": "28541472d47c725f2aade340240d53a63d045cea4d9de8e92398098cef9253b6",
+        "sha256": "dc1ba001e7aa225f11a380b8ceb6bb3499f736ad2a1c4da4f277f742ec24ff5e",
         "lines": [
-          44,
-          83
+          48,
+          82
         ]
       },
       {
@@ -628,8 +628,8 @@
         "class": "static",
         "sha256": "dafe75ef2a65809e0e8e54a1235d85ed87ea0ffac734dc44bd81838ff0c4a7a8",
         "lines": [
-          84,
-          119
+          83,
+          118
         ]
       },
       {
@@ -637,8 +637,8 @@
         "class": "static",
         "sha256": "68e7c8fdac96d97b08cf17851e0ea66d828c340f26281611a1e17328f6ec2c1a",
         "lines": [
-          120,
-          139
+          119,
+          138
         ]
       },
       {
@@ -646,8 +646,8 @@
         "class": "static",
         "sha256": "fc232dd2e2ed6e50b7589ef1f3802b926349986a668700c22e64c12e7a469ee1",
         "lines": [
-          140,
-          168
+          139,
+          167
         ]
       },
       {
@@ -655,8 +655,8 @@
         "class": "static",
         "sha256": "957dc18756e31a76b916d97bcdaedfa14a5bc8f7cf367e0034a4685bb281f474",
         "lines": [
-          169,
-          220
+          168,
+          219
         ]
       },
       {
@@ -664,8 +664,8 @@
         "class": "static",
         "sha256": "892562f7c7c1a4739ed79a6c5242be280bc7e5b0f950b140370f0a3a43aa282f",
         "lines": [
-          221,
-          242
+          220,
+          241
         ]
       },
       {
@@ -673,8 +673,8 @@
         "class": "static",
         "sha256": "e22be2ed284056a7f46c6c74f9bfa66e5576d38d76c43049a5460c23808ebe99",
         "lines": [
-          243,
-          251
+          242,
+          250
         ]
       },
       {
@@ -682,8 +682,8 @@
         "class": "static",
         "sha256": "bd4cd41d3d9d56edd0bd6b5988a56d7e056caa4344ebf717935ce3acd00826d2",
         "lines": [
-          252,
-          271
+          251,
+          270
         ]
       }
     ],
@@ -2664,7 +2664,7 @@
       {
         "signature": "<preamble>",
         "class": "adaptive",
-        "sha256": "0b4187fcf2b6f512768c6df528d0f25703bc3768114ec56a086cba1794711cbc",
+        "sha256": "0e007e85fb1fb777246a3caef8747da990e2b4c219d8837a05b924a7c80963c7",
         "lines": [
           1,
           18
@@ -2682,10 +2682,10 @@
       {
         "signature": "## Default mode: judge the work",
         "class": "static",
-        "sha256": "fb1f724a32322812eca1ac9df7ca0fddfdb94e40e381a3d20cabba1d66ab70c9",
+        "sha256": "5cefc70120b852bd5b790bc5bdb44e8240deb31838882cd9244ac5896b0c356e",
         "lines": [
           23,
-          89
+          90
         ]
       },
       {
@@ -2693,8 +2693,8 @@
         "class": "static",
         "sha256": "f876b26ca5fd1ff851d5f6b33eb446ab1b024115b33fa00ee98d880dcfcd40e7",
         "lines": [
-          90,
-          95
+          91,
+          96
         ]
       }
     ],

@@ -1272,6 +1272,11 @@ errors.push(...checkLinesUnknownToReference(readFileSync(join(ROOT, 'framework',
       ['**Learned, not recorded (KAIF 2.10).**']],
     ['knowledge line ↔ /fable-judge hunts a finding said but not written (wrapper)', '.claude/skills/fable-judge/SKILL.md',
       ['**Learned, not recorded (KAIF 2.10).**']],
+    // HC10 (version KAIF 2.10, origin ticket #189): the stand is the agent's — the testing canon of both layers and the judge's hunt
+    ['stand ↔ the testing canon says the stand is the agent\'s (payload)', 'framework/TESTING_FRAMEWORK.md', ['4. **The stand is the agent\'s.**']],
+    ['stand ↔ the testing canon says the stand is the agent\'s (wrapper)', 'TESTING_FRAMEWORK.md', ['4. **Стенд — дело агента.**']],
+    ['stand ↔ /fable-judge hunts a case closed as «needs a stand» (payload)', 'framework/skills/fable-judge/SKILL.md', ['**Closed as "needs a stand" (KAIF 2.10).**']],
+    ['stand ↔ /fable-judge hunts a case closed as «needs a stand» (wrapper)', '.claude/skills/fable-judge/SKILL.md', ['**Closed as "needs a stand" (KAIF 2.10).**']],
     // TK4 (version KAIF 2.10, origin ticket #137): rule 8 gives the Manager the stop signal, rule 9 took the force from every message —
     // a worktree seat worked past "close now". The exception stands in rule 9 of both layers and in the guide's mid-turn rule, item 1.
     ['manager stop ↔ the constitution template executes the Manager\'s stop and close in the same turn (payload)',

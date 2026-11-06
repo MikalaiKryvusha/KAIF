@@ -53,6 +53,8 @@
 | 30 | ≈ 2026-11-06 12:46 +03:00 | `node framework/hooks/clock-now.mjs --selftest` · самопроверка контура · `node tools/sandbox/probes/tk10c-presence-mutant.mjs` · `node tools/sandbox/probes/tk10c-quiet-presence.mjs` | 0 · хук часов all ok (+2); контур 182; мутант — красный ровно «quiet + owner 5 min ago → voice»; функциональный 4/4 |
 | 31 | 2026-11-06 12:48:08 → 12:49:55 +03:00 | `node tools/verify-contour.mjs` | 0 |
 | 32 | 2026-11-06 12:49:55 → 12:57:32 +03:00 | `npm run test:core` (TK10 (в)) | 0 · «all 28 suites green» |
+| 33 | ≈ 2026-11-06 13:00 +03:00 | `node tools/canon-inventory.mjs --diff v2.7 --with framework/KAIF_REFERENCE.md --declared plans/118_epic117_CK_light_canon_budget_exits.md` | `lost 2` (строки чек-листа MM1б не объявлены) → после объявления — `lost 0` |
+| 34 | 2026-11-06 13:02:08 → 13:09:48 +03:00 | `npm run test:core` (HC10) | 0 · «all 28 suites green» |
 
 ## 4. Проверки
 
