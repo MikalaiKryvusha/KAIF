@@ -684,7 +684,8 @@ function canonicalName() {
 }
 
 // `https://login:token@host/x.git` → `https://host/x.git`; an scp-form `git@host:x.git` has no scheme and is left as it is
-const stripUrlUserinfo = (url) => String(url || '').replace(/^([a-z][a-z0-9+.-]*:\/\/)[^@/\s]+@/i, '$1');
+// `ssh://git@host/…` keeps its `git@` — the transport's user, part of the address, not a person (light judge, session 98)
+const stripUrlUserinfo = (url) => String(url || '').replace(/^([a-z][a-z0-9+.-]*:\/\/)(?!git@)[^@/\s]+@/i, '$1');
 function detectValues() {
   let pkg = null;
   try { pkg = readJson('package.json'); } catch { /* none */ }
@@ -695,8 +696,9 @@ function detectValues() {
     '<PROJECT_NAME>': name,
     '<SHORT_NAME>': name,
     '<AUTHOR>': sh('git config user.name') || null,
-    // the login (and any password) inside the remote URL is an access credential, never content — stripped in every mode (bugs/130,
-    // origin #135 R1: `https://<login>@<forge>/…` reached the docs and the deploy manifest of an anonymous deployment)
+    // the login (and any password) inside the remote URL is an access credential, never content — stripped from what is detected now,
+    // in every mode (bugs/130, origin #135 R1: `https://<login>@<forge>/…` reached the docs and the deploy manifest of an anonymous
+    // deployment); OPEN: a value an older version froze into the deploy manifest still wins on `update`, and the scp form `jdoe@host:x` keeps its login
     '<REPO_URL>': stripUrlUserinfo(sh('git remote get-url origin')) || null,
     '<LOCAL_PATH>': process.cwd(),
     '<LICENSE>': (pkg && pkg.license) || licenseFile || null,
