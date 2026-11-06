@@ -2,8 +2,8 @@
 // [TESTED: 2026-08-09 · зелёный в составе полигона — «sandbox suite: all 14 suites green» (npm run test:core)]
 // (манифест переживает самоочистку → bootstrap-update классифицирует), легаси без манифеста
 // получает синтетический слепок из релизного артефакта старой версии (--baseline).
-import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, cpSync, readdirSync, unlinkSync } from 'node:fs';
-import { execSync } from 'node:child_process';
+import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync, cpSync, readdirSync, unlinkSync, statSync } from 'node:fs';
+import { execSync, spawnSync } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
@@ -80,8 +80,18 @@ console.log('\n=== S13: anonymous — манифест переживает са
 const S13 = join(ROOT, 's13'); mkdirSync(S13); seed(S13);
 // собственный скрипт владельца с «кайфовым» именем — самоочистка обязана его пощадить
 writeFileSync(join(S13, 'package.json'), JSON.stringify({ name: 's13', scripts: { 'kaif:check': 'echo OWNER-OWN-SCRIPT' } }, null, 2) + '\n');
+// bugs/130 (origin #135 R1): a remote URL with a login inside — the login must reach no file of the tree (an access credential, not content)
+const g13 = (...a) => spawnSync('git', a, { cwd: S13, encoding: 'utf8', env: { ...process.env, GIT_OPTIONAL_LOCKS: '0' } });
+g13('init', '-q'); g13('remote', 'add', 'origin', 'https://jdoe-s13@forge.example/acme/shop.git');
 let r = run(S13, 'install --mode anonymous');
 ok(r.code === 0, 'S13 install --mode anonymous exit 0', r.out);
+{
+  const hits = [];
+  const walk13 = (d) => { for (const n of readdirSync(d)) { if (n === '.git') continue; const p = join(d, n);
+    if (statSync(p).isDirectory()) walk13(p); else if (readFileSync(p, 'latin1').includes('jdoe-s13@')) hits.push(p.slice(S13.length + 1)); } };
+  walk13(S13);
+  ok(hits.length === 0, 'S13 bugs/130: логин из адреса удалённого репозитория (jdoe-s13@) не попал ни в один файл дерева, манифест включён', hits.join(' · '));
+}
 fillAll(S13);
 must(run, S13, 'sync');   // раскатка зеркал — установочный шаг; свой ассерт у `sync` ниже, после самоочистки
 // L5/bugs/41: чекпоинт project-name исполняет гейт — канонное имя сначала записывается командой

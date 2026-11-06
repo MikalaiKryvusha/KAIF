@@ -683,6 +683,8 @@ function canonicalName() {
   return null;
 }
 
+// `https://login:token@host/x.git` → `https://host/x.git`; an scp-form `git@host:x.git` has no scheme and is left as it is
+const stripUrlUserinfo = (url) => String(url || '').replace(/^([a-z][a-z0-9+.-]*:\/\/)[^@/\s]+@/i, '$1');
 function detectValues() {
   let pkg = null;
   try { pkg = readJson('package.json'); } catch { /* none */ }
@@ -693,7 +695,9 @@ function detectValues() {
     '<PROJECT_NAME>': name,
     '<SHORT_NAME>': name,
     '<AUTHOR>': sh('git config user.name') || null,
-    '<REPO_URL>': sh('git remote get-url origin') || null,
+    // the login (and any password) inside the remote URL is an access credential, never content — stripped in every mode (bugs/130,
+    // origin #135 R1: `https://<login>@<forge>/…` reached the docs and the deploy manifest of an anonymous deployment)
+    '<REPO_URL>': stripUrlUserinfo(sh('git remote get-url origin')) || null,
     '<LOCAL_PATH>': process.cwd(),
     '<LICENSE>': (pkg && pkg.license) || licenseFile || null,
     '<BUILD_COMMAND>': pkg && pkg.scripts && pkg.scripts.build ? 'npm run build' : null,
