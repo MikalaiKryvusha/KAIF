@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "9aa08cda23e07598a791f59a9692a85d6e359285beb2b6d98a974a187701e851",
+    "sourceTree": "bbe5c5728f2f6c1fca3c3a8986c3b9ce1000ede996e7f6001d56df7a990d7ac6",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -10776,10 +10776,10 @@ export function inQuietHours(now = new Date(), from = null, to = null) {
 // (default 60) lifts them; the mark is written by the prompt hook of the refresh-hooks module (`.kaif/owner-presence.json`). The windows
 // the owner himself named call-free (`contour.noCalls`: [{ "from": "HH:MM", "to": "HH:MM" }] — his meetings) are never lifted. Without the
 // mark, a stale mark or no hook — the quiet hours hold as before. Pure: the mark's moment is passed in.
-// [TESTED: 2026-11-06 12:45 +03:00 · functional — `tools/sandbox/probes/tk10c-quiet-presence.mjs`: a fresh deployment, quiet hours around now, the
+// [TESTED: ≈ 2026-11-06 12:46 · functional — `tools/sandbox/probes/tk10c-quiet-presence.mjs`: a fresh deployment, quiet hours around now, the
 //  clock hook fed the owner's prompt wrote the mark → a real `--call` in quietEnv printed «Quiet hours (I6) lifted — the owner wrote 0 min
 //  ago»; the mark aged 61 min → «suppressed»; a task notification wrote none; hygiene — selftest cases «quiet + owner 5 min ago → voice» ·
-//  «61 min → off» · «no mark → off» · «owner window stays»; whether the owner HEARS a lifted call — his word only]
+//  «61 min → off» · «no mark → off» · «owner window stays»; whether the owner HEARS a lifted call — his word only; report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md row 30]
 export const OWNER_ACTIVE_MINUTES = 60;
 export const PRESENCE_FILE = '.kaif/owner-presence.json';
 export function ownerSeenAt(root) {
@@ -11324,7 +11324,7 @@ export const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, 
 //  interview with an existing and a missing picture → `--check` names the missing one, the built page carries the picture as a data: URI,
 //  a headless Edge snapshot read by eye — the picture inside Q1 above the options, the missing one as «[the lower]»; hygiene — selftest
 //  «#187 image» · «#187 missing image warns», mutant `tk10b-image-mutant.mjs` red exactly on «#187 image»; the click-to-full-size toggle
-//  NOT observed (a snapshot does not click)]
+//  NOT observed (a snapshot does not click); report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md rows 22–23]
 let IMAGE_SRC = null;
 export function withImages(resolver, fn) {
   const prev = IMAGE_SRC; IMAGE_SRC = resolver;
@@ -11350,11 +11350,12 @@ export function imageRefs(md) {
 function inline(s) {
   return s
     .replace(/`([^`]+)`/g, (_, c) => '<code>' + c + '</code>')
-    .replace(IMAGE_RE, (_, alt, p) => imageHtml(alt, p))   // TK10 (b), #187 — before links: «![a](p)» is a picture, not «!» + a link
+    // TK10 (b), #187 — before links: «![a](p)» is a picture, not «!» + a link; inside a code span it stays text (judge of session 97)
+    .replace(/(<code>[\s\S]*?<\/code>)|!\[([^\]]*)\]\(([^)\s]+)\)/g, (m, code, alt, p) => (code ? code : imageHtml(alt, p)))
     // a single star INSIDE bold is text ("kaif-*" in a bold phase list — origin #123, interview 018 of the origin): only a pair closes
     .replace(/\*\*((?:[^*]|\*(?!\*))+?)\*\*/g, '<strong>$1</strong>')
     .replace(/(^|[^*\p{L}\d])\*([^*]+)\*(?!\*)/gu, '$1<em>$2</em>')
-    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    .replace(/(<code>[\s\S]*?<\/code>)|\[([^\]]+)\]\(([^)\s]+)\)/g, (m, code, txt, href) => (code ? code : '<a href="' + href + '" target="_blank" rel="noopener">' + txt + '</a>'));   // a link quoted in a code span stays text (judge of session 97)
 }
 // 2.9, epic CP (origin #123): the owner's own answer shown on the page keeps its own markup (bold, code) — escaped first, then inline
 export const renderInline = (s) => inline(escapeHtml(s));
@@ -14297,6 +14298,8 @@ export async function selftest(log = console.log) {
         && html.includes('<span class="imgmissing">[the lower]</span>')
         && renderMd('![cap](assets/pic.png)').includes('<span class="imgmissing">[cap]</span>'),
         '#187 image: «![the upper](assets/pic.png)» → a picture as a data: URI from the document\'s folder; a missing file and a page without a resolver — «[caption]», never «!caption»');
+      ok(withImages(R, () => renderMd('Write `![cap](assets/pic.png)` here')).includes('<code>![cap](assets/pic.png)</code>'),
+        '#187 image in a code span stays text — the syntax quoted in backticks is not a picture (judge of session 97)');
       ok(R('https://example.org/x.png') === null && R('../../outside.png') === null && R('assets/pic.txt') === null
         && JSON.stringify(missingImages(root, 'interviews/interview_099_pics.md', md).map((m) => m.path)) === '["assets/none.png"]',
         '#187 missing image warns: the door names «assets/none.png»; a remote address, a path outside the project, a non-image — no picture');
@@ -19804,7 +19807,8 @@ process.exit(0);
 // [TESTED: 2026-11-06 13:15 +03:00 · functional — `tools/sandbox/probes/pt6-context-window.mjs` on the origin's own live transcript (session 97,
 //  claude-opus-5-5, 680 700 tokens → the 1M window by the vendor's rule, 68 %): the defaults 80 / 85 — silence; the project's 60 / 65 —
 //  the «finish to a logical cut, then /end-chat-soft» line; hygiene — --selftest 9/9, mutant «cache_read not counted» red on exactly the
-//  usage case; NOT YET: the 80 % line seen live in a session that crossed it]
+//  usage case (probe tools/sandbox/probes/pt6-context-window-mutant.mjs); report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md rows 35–36; judge of session 97 —
+//  the subagent guard and the windowOf edges added after; NOT YET: the 80 % line seen live in a session that crossed it]
 import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 
@@ -19817,14 +19821,12 @@ export const SMALL = 200000, LARGE = 1000000;
 
 // The window size by the vendor's rule (see the header); `seen` — the largest usage observed in this session.
 export function windowOf({ model = '', env = {}, tokens = null, seen = 0 } = {}) {
-  let w;
-  if (Number(tokens) > 0) w = Number(tokens);
-  else if (env.CLAUDE_CODE_DISABLE_1M_CONTEXT === '1') w = SMALL;
-  else w = /\[1m\]/i.test(model) || bigByDefault(model) ? LARGE : SMALL;
+  if (Number(tokens) > 0) return Number(tokens);   // the project's own word wins, the floor included (judge of session 97, finding 6)
+  const w = env.CLAUDE_CODE_DISABLE_1M_CONTEXT === '1' ? SMALL : /\[1m\]/i.test(model) || bigByDefault(model) ? LARGE : SMALL;
   return seen > w && w === SMALL ? LARGE : w;
 }
 function bigByDefault(model) {
-  const m = String(model).toLowerCase().match(/claude-(fable|sonnet|haiku|opus)-(\d+)(?:-(\d+))?/);
+  const m = String(model).toLowerCase().match(/claude-(fable|sonnet|haiku|opus)-(\d+)(?:-(\d{1,2})(?!\d))?/);
   if (!m) return false;
   const fam = m[1], maj = Number(m[2]), min = m[3] ? Number(m[3]) : 0;
   if (fam === 'fable') return maj >= 5;
@@ -19853,6 +19855,20 @@ export const LINES = {
   close: (pct, used, win) => `KAIF context: the window is ${pct} % full (${used} of ${win} tokens). Finish the current work to a logical cut, ` +
     'then start /end-chat-soft — the soft closure, never a forced one.',
 };
+// Judge of session 97 (finding 4, observed): Claude Code fires this hook on a SUBAGENT's tool calls too, under the parent's session id
+// and transcript — a line meant for the main agent landed in a subagent's context. A subagent's calls live in its own transcript
+// (`subagents/agent-*.jsonl`); the main thread's tool_use ids are in the session transcript. So a PostToolUse whose tool_use_id is not
+// among the main thread's ids in the transcript tail is a subagent's call — silence (a lagging transcript costs one silent event, never a
+// wrong line). An event without tool_use_id is judged as before.
+export function mainThreadCall(text, toolUseId) {
+  if (!toolUseId) return true;
+  const needle = '"id":"' + toolUseId + '"';
+  for (const line of String(text).split('\n')) {
+    if (!line.includes(needle)) continue;
+    try { const r = JSON.parse(line); if (r.type === 'assistant' && !r.isSidechain) return true; } catch { /* torn line */ }
+  }
+  return false;
+}
 // The decision — pure: (used, window, thresholds, levels already said) → { line, level } or null
 export function decide(used, win, cfg, said = []) {
   const warnPct = Number(cfg.warnPct) > 0 ? Number(cfg.warnPct) : DEFAULTS.warnPct;
@@ -19903,6 +19919,11 @@ if (process.argv[2] === '--selftest') {
     'window: the vendor\'s 1M families (Opus 4.7+, Sonnet 5+, Haiku 5.5, Fable 5+) and the [1m] suffix → 1 000 000; others → 200 000');
   ok(windowOf({ model: 'claude-opus-5-5', env: { CLAUDE_CODE_DISABLE_1M_CONTEXT: '1' } }) === SMALL && windowOf({ model: 'x', tokens: 500000 }) === 500000
     && windowOf({ model: 'claude-opus-4-6', seen: 300000 }) === LARGE, 'window: the env switch, the project\'s tokens, and the floor «used > 200 000 ⇒ 1 000 000»');
+  ok(windowOf({ model: 'claude-opus-5-5', tokens: 200000, seen: 300000 }) === 200000 && windowOf({ model: 'claude-haiku-5-20261001' }) === SMALL,
+    'window: the project\'s tokens win over the floor; a date suffix is not a minor version (judge of session 97)');
+  const tr = [JSON.stringify({ type: 'assistant', isSidechain: false, message: { content: [{ type: 'tool_use', id: 'toolu_MAIN' }] } })].join('\n');
+  ok(mainThreadCall(tr, 'toolu_MAIN') && !mainThreadCall(tr, 'toolu_SUB') && mainThreadCall(tr, undefined),
+    'a subagent\'s tool call (its id not in the main thread) — silence; the main agent\'s call and an event without an id — judged');
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
@@ -19913,8 +19934,8 @@ try {
     const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(ev.cwd);
     const marker = readJson(join(root, DEPLOYMENT)) || {};
     const cw = (marker.contextWindow && typeof marker.contextWindow === 'object') ? marker.contextWindow : {};
-    const lu = lastUsage(tailOf(ev.transcript_path));
-    if (lu) {
+    const tail = tailOf(ev.transcript_path), lu = lastUsage(tail);
+    if (lu && (ev.hook_event_name !== 'PostToolUse' || mainThreadCall(tail, ev.tool_use_id))) {
       const id = String(ev.session_id || 'no-session'), all = readJson(join(root, STATE)) || {};
       const st = all[id] || { said: [], seen: 0 };
       st.seen = Math.max(st.seen || 0, lu.used);
@@ -19962,8 +19983,9 @@ process.exit(0);
 //  model's context after twelve plain results, the PostToolUseFailure line after a failed Grep, the recall line after a Read of
 //  EXPERIENCE.md; a subagent's hand-back was read as the owner — fixed (the <agent-message> case), its live replay is silent; hygiene —
 //  --selftest 11/11, mutant «agent-message not excluded» red on exactly its case, s14 (+4 checks). NOT YET: the map scenarios of
-//  criteria 9 · 10 · 30 (probe of step MM3 of the origin's plans/138)]
-import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from 'node:fs';
+//  criteria 9 · 10 · 30 (probe of step MM3 of the origin's plans/138); the mutant — probe tools/sandbox/probes/mm3-knowledge-mutant.mjs;
+//  report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md row 28; the subagent guard — judge of session 97, after]
+import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync } from 'node:fs';
 import { join, dirname, resolve, relative, sep } from 'node:path';
 
 export const THRESHOLD = 12;          // weak tool results before one reminder (one reminder per ~a dozen calls of plain work)
@@ -20006,6 +20028,27 @@ export function notesOf(root, file, exists = existsSync) {
   return null;
 }
 const pathOf = (input) => String((input && (input.file_path || input.notebook_path)) || '');
+
+// Judge of session 97 (finding 4, observed): Claude Code fires this hook on a SUBAGENT's tool calls too, under the parent's session id
+// and transcript — a line meant for the main agent landed in a subagent's context. A subagent's calls live in its own transcript
+// (`subagents/agent-*.jsonl`); the main thread's tool_use ids are in the session transcript. So a PostToolUse whose tool_use_id is not
+// among the main thread's ids in the transcript tail is a subagent's call — silence (a lagging transcript costs one silent event, never a
+// wrong line). An event without tool_use_id is judged as before.
+export function mainThreadCall(text, toolUseId) {
+  if (!toolUseId) return true;
+  const needle = '"id":"' + toolUseId + '"';
+  for (const line of String(text).split('\n')) {
+    if (!line.includes(needle)) continue;
+    try { const r = JSON.parse(line); if (r.type === 'assistant' && !r.isSidechain) return true; } catch { /* torn line */ }
+  }
+  return false;
+}
+const TAIL_BYTES = 4 * 1024 * 1024;
+function tailOf(p) {
+  const fd = openSync(p, 'r');
+  try { const size = fstatSync(fd).size, n = Math.min(size, TAIL_BYTES), buf = Buffer.alloc(n); readSync(fd, buf, 0, n, size - n); return buf.toString('utf8'); }
+  finally { closeSync(fd); }
+}
 
 // The decision — pure: (event, the session's state, root, exists) → { line | null, state }.
 export function decide(ev, st, root, exists = existsSync) {
@@ -20071,12 +20114,16 @@ if (process.argv[2] === '--selftest') {
   ok(r.line === null, 'a root NOTES.md is not a component\'s notes');
   r = decide({ hook_event_name: 'Stop' }, {}, R, ex);
   ok(r.line === null, 'Stop: never speaks, never blocks');
+  const tr = JSON.stringify({ type: 'assistant', isSidechain: false, message: { content: [{ type: 'tool_use', id: 'toolu_MAIN' }] } });
+  ok(mainThreadCall(tr, 'toolu_MAIN') && !mainThreadCall(tr, 'toolu_SUB'), 'a subagent\'s tool call is not the main agent\'s moment (judge of session 97)');
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
 
 try {
   const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
+  // judge of session 97, finding 4: a subagent's tool call is not the main agent's moment — silence, the state untouched
+  if (/^PostToolUse/.test(String(ev.hook_event_name || '')) && ev.transcript_path && existsSync(ev.transcript_path) && !mainThreadCall(tailOf(ev.transcript_path), ev.tool_use_id)) process.exit(0);
   const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(ev.cwd);
   const id = String(ev.session_id || 'no-session');
   const all = readState(root);
@@ -20542,7 +20589,8 @@ owner set his own line: at 80 % a warning, at 85 % finish to a cut and close sof
 that, once per level; the warning carries no closing word. No hook event carries the window size, so the hook applies the vendor's rule
 (1M for the models that run with it by default and for a `[1m]` model, 200K otherwise, `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` holds 200K)
 unless the project states `contextWindow.tokens`; a usage above 200K always means the 1M window. A 1M window auto-compacts at ≈ 967K, so
-85 % comes first.
+85 % comes first. Claude Code fires both this hook and the knowledge hook on a subagent's tool calls too, under the parent's session: a
+call whose id is not in the main thread's transcript is a subagent's, and both hooks stay silent on it.
 
 **The knowledge hook — `knowledge-moment.mjs` (2.10, epic MM, origin #160 · #159 · #186) — is wired for Claude Code only.** A session
 understood how a part works, or saw a map say otherwise, and the finding stayed in the chat. The hook speaks at the moments a memory is

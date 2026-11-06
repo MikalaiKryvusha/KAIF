@@ -20,7 +20,8 @@
 // [TESTED: 2026-11-06 13:15 +03:00 · functional — `tools/sandbox/probes/pt6-context-window.mjs` on the origin's own live transcript (session 97,
 //  claude-opus-5-5, 680 700 tokens → the 1M window by the vendor's rule, 68 %): the defaults 80 / 85 — silence; the project's 60 / 65 —
 //  the «finish to a logical cut, then /end-chat-soft» line; hygiene — --selftest 9/9, mutant «cache_read not counted» red on exactly the
-//  usage case; NOT YET: the 80 % line seen live in a session that crossed it]
+//  usage case (probe tools/sandbox/probes/pt6-context-window-mutant.mjs); report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md rows 35–36; judge of session 97 —
+//  the subagent guard and the windowOf edges added after; NOT YET: the 80 % line seen live in a session that crossed it]
 import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 
@@ -33,14 +34,12 @@ export const SMALL = 200000, LARGE = 1000000;
 
 // The window size by the vendor's rule (see the header); `seen` — the largest usage observed in this session.
 export function windowOf({ model = '', env = {}, tokens = null, seen = 0 } = {}) {
-  let w;
-  if (Number(tokens) > 0) w = Number(tokens);
-  else if (env.CLAUDE_CODE_DISABLE_1M_CONTEXT === '1') w = SMALL;
-  else w = /\[1m\]/i.test(model) || bigByDefault(model) ? LARGE : SMALL;
+  if (Number(tokens) > 0) return Number(tokens);   // the project's own word wins, the floor included (judge of session 97, finding 6)
+  const w = env.CLAUDE_CODE_DISABLE_1M_CONTEXT === '1' ? SMALL : /\[1m\]/i.test(model) || bigByDefault(model) ? LARGE : SMALL;
   return seen > w && w === SMALL ? LARGE : w;
 }
 function bigByDefault(model) {
-  const m = String(model).toLowerCase().match(/claude-(fable|sonnet|haiku|opus)-(\d+)(?:-(\d+))?/);
+  const m = String(model).toLowerCase().match(/claude-(fable|sonnet|haiku|opus)-(\d+)(?:-(\d{1,2})(?!\d))?/);
   if (!m) return false;
   const fam = m[1], maj = Number(m[2]), min = m[3] ? Number(m[3]) : 0;
   if (fam === 'fable') return maj >= 5;
@@ -69,6 +68,20 @@ export const LINES = {
   close: (pct, used, win) => `KAIF context: the window is ${pct} % full (${used} of ${win} tokens). Finish the current work to a logical cut, ` +
     'then start /end-chat-soft — the soft closure, never a forced one.',
 };
+// Judge of session 97 (finding 4, observed): Claude Code fires this hook on a SUBAGENT's tool calls too, under the parent's session id
+// and transcript — a line meant for the main agent landed in a subagent's context. A subagent's calls live in its own transcript
+// (`subagents/agent-*.jsonl`); the main thread's tool_use ids are in the session transcript. So a PostToolUse whose tool_use_id is not
+// among the main thread's ids in the transcript tail is a subagent's call — silence (a lagging transcript costs one silent event, never a
+// wrong line). An event without tool_use_id is judged as before.
+export function mainThreadCall(text, toolUseId) {
+  if (!toolUseId) return true;
+  const needle = '"id":"' + toolUseId + '"';
+  for (const line of String(text).split('\n')) {
+    if (!line.includes(needle)) continue;
+    try { const r = JSON.parse(line); if (r.type === 'assistant' && !r.isSidechain) return true; } catch { /* torn line */ }
+  }
+  return false;
+}
 // The decision — pure: (used, window, thresholds, levels already said) → { line, level } or null
 export function decide(used, win, cfg, said = []) {
   const warnPct = Number(cfg.warnPct) > 0 ? Number(cfg.warnPct) : DEFAULTS.warnPct;
@@ -119,6 +132,11 @@ if (process.argv[2] === '--selftest') {
     'window: the vendor\'s 1M families (Opus 4.7+, Sonnet 5+, Haiku 5.5, Fable 5+) and the [1m] suffix → 1 000 000; others → 200 000');
   ok(windowOf({ model: 'claude-opus-5-5', env: { CLAUDE_CODE_DISABLE_1M_CONTEXT: '1' } }) === SMALL && windowOf({ model: 'x', tokens: 500000 }) === 500000
     && windowOf({ model: 'claude-opus-4-6', seen: 300000 }) === LARGE, 'window: the env switch, the project\'s tokens, and the floor «used > 200 000 ⇒ 1 000 000»');
+  ok(windowOf({ model: 'claude-opus-5-5', tokens: 200000, seen: 300000 }) === 200000 && windowOf({ model: 'claude-haiku-5-20261001' }) === SMALL,
+    'window: the project\'s tokens win over the floor; a date suffix is not a minor version (judge of session 97)');
+  const tr = [JSON.stringify({ type: 'assistant', isSidechain: false, message: { content: [{ type: 'tool_use', id: 'toolu_MAIN' }] } })].join('\n');
+  ok(mainThreadCall(tr, 'toolu_MAIN') && !mainThreadCall(tr, 'toolu_SUB') && mainThreadCall(tr, undefined),
+    'a subagent\'s tool call (its id not in the main thread) — silence; the main agent\'s call and an event without an id — judged');
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
@@ -129,8 +147,8 @@ try {
     const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(ev.cwd);
     const marker = readJson(join(root, DEPLOYMENT)) || {};
     const cw = (marker.contextWindow && typeof marker.contextWindow === 'object') ? marker.contextWindow : {};
-    const lu = lastUsage(tailOf(ev.transcript_path));
-    if (lu) {
+    const tail = tailOf(ev.transcript_path), lu = lastUsage(tail);
+    if (lu && (ev.hook_event_name !== 'PostToolUse' || mainThreadCall(tail, ev.tool_use_id))) {
       const id = String(ev.session_id || 'no-session'), all = readJson(join(root, STATE)) || {};
       const st = all[id] || { said: [], seen: 0 };
       st.seen = Math.max(st.seen || 0, lu.used);

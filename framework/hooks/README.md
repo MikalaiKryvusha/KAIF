@@ -169,7 +169,8 @@ owner set his own line: at 80 % a warning, at 85 % finish to a cut and close sof
 that, once per level; the warning carries no closing word. No hook event carries the window size, so the hook applies the vendor's rule
 (1M for the models that run with it by default and for a `[1m]` model, 200K otherwise, `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` holds 200K)
 unless the project states `contextWindow.tokens`; a usage above 200K always means the 1M window. A 1M window auto-compacts at ≈ 967K, so
-85 % comes first.
+85 % comes first. Claude Code fires both this hook and the knowledge hook on a subagent's tool calls too, under the parent's session: a
+call whose id is not in the main thread's transcript is a subagent's, and both hooks stay silent on it.
 
 **The knowledge hook — `knowledge-moment.mjs` (2.10, epic MM, origin #160 · #159 · #186) — is wired for Claude Code only.** A session
 understood how a part works, or saw a map say otherwise, and the finding stayed in the chat. The hook speaks at the moments a memory is

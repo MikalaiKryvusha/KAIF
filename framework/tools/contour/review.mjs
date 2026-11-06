@@ -2712,6 +2712,8 @@ export async function selftest(log = console.log) {
         && html.includes('<span class="imgmissing">[the lower]</span>')
         && renderMd('![cap](assets/pic.png)').includes('<span class="imgmissing">[cap]</span>'),
         '#187 image: «![the upper](assets/pic.png)» → a picture as a data: URI from the document\'s folder; a missing file and a page without a resolver — «[caption]», never «!caption»');
+      ok(withImages(R, () => renderMd('Write `![cap](assets/pic.png)` here')).includes('<code>![cap](assets/pic.png)</code>'),
+        '#187 image in a code span stays text — the syntax quoted in backticks is not a picture (judge of session 97)');
       ok(R('https://example.org/x.png') === null && R('../../outside.png') === null && R('assets/pic.txt') === null
         && JSON.stringify(missingImages(root, 'interviews/interview_099_pics.md', md).map((m) => m.path)) === '["assets/none.png"]',
         '#187 missing image warns: the door names «assets/none.png»; a remote address, a path outside the project, a non-image — no picture');

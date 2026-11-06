@@ -24,8 +24,9 @@
 //  model's context after twelve plain results, the PostToolUseFailure line after a failed Grep, the recall line after a Read of
 //  EXPERIENCE.md; a subagent's hand-back was read as the owner — fixed (the <agent-message> case), its live replay is silent; hygiene —
 //  --selftest 11/11, mutant «agent-message not excluded» red on exactly its case, s14 (+4 checks). NOT YET: the map scenarios of
-//  criteria 9 · 10 · 30 (probe of step MM3 of the origin's plans/138)]
-import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from 'node:fs';
+//  criteria 9 · 10 · 30 (probe of step MM3 of the origin's plans/138); the mutant — probe tools/sandbox/probes/mm3-knowledge-mutant.mjs;
+//  report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md row 28; the subagent guard — judge of session 97, after]
+import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync } from 'node:fs';
 import { join, dirname, resolve, relative, sep } from 'node:path';
 
 export const THRESHOLD = 12;          // weak tool results before one reminder (one reminder per ~a dozen calls of plain work)
@@ -68,6 +69,27 @@ export function notesOf(root, file, exists = existsSync) {
   return null;
 }
 const pathOf = (input) => String((input && (input.file_path || input.notebook_path)) || '');
+
+// Judge of session 97 (finding 4, observed): Claude Code fires this hook on a SUBAGENT's tool calls too, under the parent's session id
+// and transcript — a line meant for the main agent landed in a subagent's context. A subagent's calls live in its own transcript
+// (`subagents/agent-*.jsonl`); the main thread's tool_use ids are in the session transcript. So a PostToolUse whose tool_use_id is not
+// among the main thread's ids in the transcript tail is a subagent's call — silence (a lagging transcript costs one silent event, never a
+// wrong line). An event without tool_use_id is judged as before.
+export function mainThreadCall(text, toolUseId) {
+  if (!toolUseId) return true;
+  const needle = '"id":"' + toolUseId + '"';
+  for (const line of String(text).split('\n')) {
+    if (!line.includes(needle)) continue;
+    try { const r = JSON.parse(line); if (r.type === 'assistant' && !r.isSidechain) return true; } catch { /* torn line */ }
+  }
+  return false;
+}
+const TAIL_BYTES = 4 * 1024 * 1024;
+function tailOf(p) {
+  const fd = openSync(p, 'r');
+  try { const size = fstatSync(fd).size, n = Math.min(size, TAIL_BYTES), buf = Buffer.alloc(n); readSync(fd, buf, 0, n, size - n); return buf.toString('utf8'); }
+  finally { closeSync(fd); }
+}
 
 // The decision — pure: (event, the session's state, root, exists) → { line | null, state }.
 export function decide(ev, st, root, exists = existsSync) {
@@ -133,12 +155,16 @@ if (process.argv[2] === '--selftest') {
   ok(r.line === null, 'a root NOTES.md is not a component\'s notes');
   r = decide({ hook_event_name: 'Stop' }, {}, R, ex);
   ok(r.line === null, 'Stop: never speaks, never blocks');
+  const tr = JSON.stringify({ type: 'assistant', isSidechain: false, message: { content: [{ type: 'tool_use', id: 'toolu_MAIN' }] } });
+  ok(mainThreadCall(tr, 'toolu_MAIN') && !mainThreadCall(tr, 'toolu_SUB'), 'a subagent\'s tool call is not the main agent\'s moment (judge of session 97)');
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
 
 try {
   const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
+  // judge of session 97, finding 4: a subagent's tool call is not the main agent's moment — silence, the state untouched
+  if (/^PostToolUse/.test(String(ev.hook_event_name || '')) && ev.transcript_path && existsSync(ev.transcript_path) && !mainThreadCall(tailOf(ev.transcript_path), ev.tool_use_id)) process.exit(0);
   const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(ev.cwd);
   const id = String(ev.session_id || 'no-session');
   const all = readState(root);

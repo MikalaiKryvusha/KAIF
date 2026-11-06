@@ -1,5 +1,5 @@
 // TK10 (a) functional run, #190: a deployment WITHOUT contour.callName, the identity table holds «Ann Lee (ACE)» → the dry-run call
-// addresses «Ann». Runs the shipped generator from dist/ against a fresh temp project; quiet (dry run, no sound, no page).
+// addresses «Ann». Runs the generator of framework/tools/contour (the source of the shipped copy) against a fresh temp project; it prints for the eye and asserts nothing; quiet (dry run, no sound, no page).
 import { mkdtempSync, mkdirSync, writeFileSync, cpSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';

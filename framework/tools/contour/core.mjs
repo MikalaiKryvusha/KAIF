@@ -151,10 +151,10 @@ export function inQuietHours(now = new Date(), from = null, to = null) {
 // (default 60) lifts them; the mark is written by the prompt hook of the refresh-hooks module (`.kaif/owner-presence.json`). The windows
 // the owner himself named call-free (`contour.noCalls`: [{ "from": "HH:MM", "to": "HH:MM" }] — his meetings) are never lifted. Without the
 // mark, a stale mark or no hook — the quiet hours hold as before. Pure: the mark's moment is passed in.
-// [TESTED: 2026-11-06 12:45 +03:00 · functional — `tools/sandbox/probes/tk10c-quiet-presence.mjs`: a fresh deployment, quiet hours around now, the
+// [TESTED: ≈ 2026-11-06 12:46 · functional — `tools/sandbox/probes/tk10c-quiet-presence.mjs`: a fresh deployment, quiet hours around now, the
 //  clock hook fed the owner's prompt wrote the mark → a real `--call` in quietEnv printed «Quiet hours (I6) lifted — the owner wrote 0 min
 //  ago»; the mark aged 61 min → «suppressed»; a task notification wrote none; hygiene — selftest cases «quiet + owner 5 min ago → voice» ·
-//  «61 min → off» · «no mark → off» · «owner window stays»; whether the owner HEARS a lifted call — his word only]
+//  «61 min → off» · «no mark → off» · «owner window stays»; whether the owner HEARS a lifted call — his word only; report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md row 30]
 export const OWNER_ACTIVE_MINUTES = 60;
 export const PRESENCE_FILE = '.kaif/owner-presence.json';
 export function ownerSeenAt(root) {
@@ -699,7 +699,7 @@ export const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, 
 //  interview with an existing and a missing picture → `--check` names the missing one, the built page carries the picture as a data: URI,
 //  a headless Edge snapshot read by eye — the picture inside Q1 above the options, the missing one as «[the lower]»; hygiene — selftest
 //  «#187 image» · «#187 missing image warns», mutant `tk10b-image-mutant.mjs` red exactly on «#187 image»; the click-to-full-size toggle
-//  NOT observed (a snapshot does not click)]
+//  NOT observed (a snapshot does not click); report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md rows 22–23]
 let IMAGE_SRC = null;
 export function withImages(resolver, fn) {
   const prev = IMAGE_SRC; IMAGE_SRC = resolver;
@@ -725,11 +725,12 @@ export function imageRefs(md) {
 function inline(s) {
   return s
     .replace(/`([^`]+)`/g, (_, c) => '<code>' + c + '</code>')
-    .replace(IMAGE_RE, (_, alt, p) => imageHtml(alt, p))   // TK10 (b), #187 — before links: «![a](p)» is a picture, not «!» + a link
+    // TK10 (b), #187 — before links: «![a](p)» is a picture, not «!» + a link; inside a code span it stays text (judge of session 97)
+    .replace(/(<code>[\s\S]*?<\/code>)|!\[([^\]]*)\]\(([^)\s]+)\)/g, (m, code, alt, p) => (code ? code : imageHtml(alt, p)))
     // a single star INSIDE bold is text ("kaif-*" in a bold phase list — origin #123, interview 018 of the origin): only a pair closes
     .replace(/\*\*((?:[^*]|\*(?!\*))+?)\*\*/g, '<strong>$1</strong>')
     .replace(/(^|[^*\p{L}\d])\*([^*]+)\*(?!\*)/gu, '$1<em>$2</em>')
-    .replace(/\[([^\]]+)\]\(([^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    .replace(/(<code>[\s\S]*?<\/code>)|\[([^\]]+)\]\(([^)\s]+)\)/g, (m, code, txt, href) => (code ? code : '<a href="' + href + '" target="_blank" rel="noopener">' + txt + '</a>'));   // a link quoted in a code span stays text (judge of session 97)
 }
 // 2.9, epic CP (origin #123): the owner's own answer shown on the page keeps its own markup (bold, code) — escaped first, then inline
 export const renderInline = (s) => inline(escapeHtml(s));
