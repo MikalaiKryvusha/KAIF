@@ -167,8 +167,8 @@ understood how a part works, or saw a map say otherwise, and the finding stayed 
 written — the owner's word, an error of prediction (a failed call), a recalled document that may now be wrong, the first touch of a
 component with notes — and on the SUM of plain work (twelve results), never on a timer: a field prototype's single ten-minute window
 swallowed every novelty moment it was built for. It never blocks and never stops a turn (the field owner: «not a Stop hook!»). It sees
-events, not understanding: the canon carries the rest — the `KNOWLEDGE:` line of the closing and loop rituals. An owner's word that
-arrives mid-turn inside a tool result is not seen by it. Without the hook the `KNOWLEDGE:` line stands as written.
+events, not understanding: the canon carries the rest — the `KNOWLEDGE:` line of the closing and loop rituals. A queued message — a
+subagent's hand-back — reaches it as a prompt and is recognised as not the owner's; whether the owner's own mid-turn word reaches it is not yet observed. Without the hook the `KNOWLEDGE:` line stands as written.
 
 Reading the table: a ❌ is a statement about that system's published contract, not about the
 module. Where a system carries one hook out of three, wire that one — a partial mechanical

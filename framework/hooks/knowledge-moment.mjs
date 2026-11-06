@@ -18,9 +18,13 @@
 // a system reminder the model reads on its next request; at most 10 000 characters. Any internal error → exit 0 silently.
 // The lines are English on purpose: the agent reads them, not the owner (AGENT_GUIDE.md → languages are routed by audience).
 // GAP: the hook sees EVENTS, never the understanding itself — a finding born in the agent's reasoning has no event; the canon carries it
-// (the KNOWLEDGE: line of the closing and loop rituals, the checklist line «Check the map & blast radius»). An owner's word that arrives
-// mid-turn inside a tool result is not seen by this hook.
-// [NOT-TESTED]
+// (the KNOWLEDGE: line of the closing and loop rituals, the checklist line «Check the map & blast radius»). Observed live (origin session
+// 97): a queued message — a subagent's hand-back — reaches UserPromptSubmit; whether an owner's mid-turn word does is not yet observed.
+// [TESTED: 2026-11-06 · functional — the origin's own live Claude Code session 97 with this file wired: the weight line reached the
+//  model's context after twelve plain results, the PostToolUseFailure line after a failed Grep, the recall line after a Read of
+//  EXPERIENCE.md; a subagent's hand-back was read as the owner — fixed (the <agent-message> case), its live replay is silent; hygiene —
+//  --selftest 11/11, mutant «agent-message not excluded» red on exactly its case, s14 (+4 checks). NOT YET: the map scenarios of
+//  criteria 9 · 10 · 30 (probe of step MM3 of the origin's plans/138)]
 import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from 'node:fs';
 import { join, dirname, resolve, relative, sep } from 'node:path';
 
@@ -31,7 +35,7 @@ const DEPLOYMENT = join('.kaif', 'kaif.json');
 const NOTES = 'NOTES.md';
 const KNOWLEDGE_DOC = /(?:^|[\\/])(?:STATUS|EXPERIENCE|HOUSE_RULES|MASTER_PLAN|PROJECT_[A-Z_]+_MAP)\.md$|(?:^|[\\/])(?:plans|researches)[\\/][^\\/]+\.md$/i;
 const TOUCH_TOOLS = new Set(['Read', 'Edit', 'Write', 'MultiEdit', 'NotebookEdit']);
-const NOT_THE_OWNER = /^\s*<(?:task-notification|system-reminder)\b/;   // a background task's or the harness's text, not the owner's prompt
+const NOT_THE_OWNER = /^\s*<(?:task-notification|system-reminder|agent-message)\b/;   // a background task, the harness, a subagent's hand-back — not the owner
 
 const WRITE = 'Write it into the project document where it lives — a map, STATUS.md, EXPERIENCE.md, the house rules — in THIS turn, ' +
   'not only in the chat; nothing new — go on.';
@@ -110,6 +114,8 @@ if (process.argv[2] === '--selftest') {
   ok(r.line === LINES.owner, 'owner prompt: one line at once');
   r = decide({ hook_event_name: 'UserPromptSubmit', prompt: '<task-notification><task-id>x</task-id>' }, {}, R, ex);
   ok(r.line === null, 'a background task notification is not the owner');
+  r = decide({ hook_event_name: 'UserPromptSubmit', prompt: '<agent-message from="a1">\n[Subagent hand-back] report' }, {}, R, ex);
+  ok(r.line === null, 'a subagent hand-back (a queued <agent-message>) is not the owner');
   r = decide({ hook_event_name: 'PostToolUseFailure', tool_name: 'Bash' }, { weight: 5 }, R, ex);
   ok(r.line === LINES.failure && r.state.weight === 0, 'failed tool: at once, weight reset');
   r = decide(post('Read', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md'), {}, R, ex);
