@@ -24,7 +24,7 @@
 //  преполётный страж доказан красным на синтетической мутации — см. selfProof()]
 import { mkdtempSync, mkdirSync, rmSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve, relative, dirname } from 'node:path';
+import { join, resolve, relative, dirname, isAbsolute } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -45,6 +45,19 @@ export function tempRoot(name, explicit) {
     // поэтому единственное, что мы обязаны, — не падать стектрейсом, а НАЗВАТЬ ВЕРНЫЙ ХОД
     // (EXP-0008: ошибка инструмента несёт готовое решение, никогда — обход).
     const root = resolve(explicit);
+    // Сессия 97 (2026-11-06): `node tools/sandbox/s22-contour-shipped.mjs --help` принял флаг за путь и прогнал весь свод в `./--help`
+    // ВНУТРИ рабочего дерева истока (вложенный git-репозиторий, развёртывания); а явный путь здесь удаляется рекурсивно — `.` или путь
+    // репозитория стёр бы дерево. Флаг и путь внутри дерева истока — отказ до удаления, с верным ходом.
+    // [TESTED: 2026-11-06 · s06 с «--help» и с «.» — код 2 и строка отказа, каталог не создан, дерево цело; путь вне дерева
+    //  (D:/Temp/…) — прогон 0; без аргумента — прежний mkdtemp, 0]
+    const repo = resolve(HERE, '..', '..'), rel = relative(repo, root);
+    const isFlag = String(explicit).startsWith('-');
+    const insideRepo = rel === '' || (!rel.startsWith('..') && !isAbsolute(rel));   // другой диск Windows → абсолютный rel → снаружи
+    if (isFlag || insideRepo) {
+      console.error(`❌ явный корень прогона отказан: «${explicit}» — ${isFlag ? 'это флаг, а не путь' : 'путь внутри рабочего дерева истока ' + repo}`);
+      console.error('   Верный ход: запусти БЕЗ аргумента — корень будет уникальным во временном каталоге ОС (mkdtemp); ничего не удалено.');
+      process.exit(EXIT_ROOT_BUSY);
+    }
     try {
       rmSync(root, { recursive: true, force: true });
     } catch (e) {
