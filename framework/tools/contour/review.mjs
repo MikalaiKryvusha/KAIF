@@ -353,9 +353,12 @@ export function introduce(phrase, cfg) {
 export function callDoor(root, text, { dryRun = false, log = console.log } = {}) {
   const cfg = cfgOf(root);
   // 2.10 TK10 (a), origin #191: an agent that addresses the owner the natural way opens the text with his name — the door adds it once,
-  // never twice («Name, Name, …» in the field): a leading callName (any case) and the punctuation after it are dropped before the door adds its own
+  // never twice («Name, Name, …» in the field): a leading callName (any case) and the punctuation after it are dropped before the door adds its own.
+  // The owner's own first name counts too: with callName «Kit» and owner «Mark Lee», a text opened by «Mark,» was spoken
+  // «Kit, Mark, …» (judge of epics MM · TK10, session 97, finding 7) — either name at the head is the address, dropped once
   const body = String(text).trim();
-  const lead = cfg.callName ? new RegExp('^' + cfg.callName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![\\p{L}\\d])[\\s,.:;!—–-]*', 'iu') : null;
+  const names = [...new Set([cfg.callName, shortName(cfg.ownerName)].map((n) => String(n || '').trim()).filter(Boolean))];
+  const lead = names.length ? new RegExp('^(?:' + names.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')(?![\\p{L}\\d])[\\s,.:;!—–-]*', 'iu') : null;
   const phrase = introduce(cfg.callName + ', ' + (lead ? body.replace(lead, '') : body), cfg);
   if (dryRun) {
     log('CALL' + (cfg.session ? ' · ' + cfg.session : '') + ' (dry run, no sound): ' + phrase);
@@ -2697,6 +2700,15 @@ export async function selftest(log = console.log) {
     const once = ['Jane, the phone.', 'jane — the phone.', 'Jane the phone.'].map((s) => callDoor(root, s, { dryRun: true, log: () => {} }));
     ok(once.every((p) => /^Jane, the phone\.$/.test(p)) && callDoor(root, 'Janet called.', { dryRun: true, log: () => {} }) === 'Jane, Janet called.',
       '#191 name once: «Jane, …» · «jane — …» · «Jane …» → one «Jane,»; «Janet» is another word, not the name');
+    // the owner's own first name at the head, when callName is another name — the address once, never «Kit, Mark, …» (judge, session 97)
+    {
+      const cn = join(root, 'callname-other'); mkdirSync(join(cn, '.kaif'), { recursive: true });
+      writeFileSync(join(cn, '.kaif', 'kaif.json'), JSON.stringify({ framework: 'KAIF', version: '2.10', language: 'en', projectName: 'Probe',
+        contour: { ownerName: 'Mark Lee (ML)', callName: 'Kit' } }) + '\n');
+      const two = ['Mark, the phone.', 'Kit — the phone.', 'the phone.'].map((s) => callDoor(cn, s, { dryRun: true, log: () => {} }));
+      ok(two.every((p) => /^Kit, the phone\.$/.test(p)),
+        '#191 owner\'s own name once: callName «Kit», owner «Mark Lee» — «Mark, …» · «Kit — …» · «…» → one «Kit,», no «Mark»');
+    }
     // 2.10 TK10 (a), origin #190: the default spoken address is the first word without the alias; contour.callName still wins
     ok(shortName('Jane Owner aka JO') === 'Jane' && shortName('Ann Lee (ACE)') === 'Ann' && shortName('Ana') === 'Ana'
       && cfg.callName === 'Jane', '#190 short name: «Jane Owner aka JO» → «Jane», «Name Surname (ALIAS)» → «Name»; the loaded config speaks «Jane»');

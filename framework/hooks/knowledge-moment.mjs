@@ -26,7 +26,11 @@
 //  --selftest, mutant probe tools/sandbox/probes/mm3-knowledge-mutant.mjs (two mutants, each red on exactly its case), s14;
 //  2026-11-06 14:03 +03:00 · functional — tools/sandbox/probes/mm3-live-knowledge.mjs, 9 of 9 live headless sessions (claude -p --model haiku, KAIF
 //  installed by this build, hooks wired): the map got a line about an unnamed source file (3/3), a stale map line was corrected (3/3), the
-//  component notes were read before the first edit and appended (3/3); report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md]
+//  component notes were read before the first edit and appended (3/3); report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md;
+//  session 98 (judge of epics MM · TK10): the probe's predicates narrowed to their words — the map has a line on the component, the tax
+//  line says 20 %, the notes Read precedes the first code edit in the session's own tool calls; the noise cases (a config is not code, a
+//  generic name by its full path) — --selftest, six mutants (tools/sandbox/probes/mm3-knowledge-mutant.mjs); the live rerun on this file —
+//  report testcases/reports/2026-11-06_s98-judge-debt-mm-tk10.md]
 import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from 'node:fs';
 import { join, dirname, resolve, relative, sep } from 'node:path';
 
@@ -87,14 +91,18 @@ export const fromSubagent = (ev) => Boolean(ev && ev.agent_id);
 // agent learned anything; the moment of understanding was a Read of source code, which weighed 1. Recall by association closes it, the
 // way a cue brings a memory back: the first Read in a session of a project source file → the docs that name it are looked up; named →
 // the line quotes what they say («does the code say the same?»); named nowhere → «learned how it works? write a line into the map».
-const CODE_EXT = /\.(?:m?[jt]sx?|cjs|py|go|rs|java|kt|cs|c|cc|cpp|h|hpp|rb|php|swift|sh|ps1|sql|vue|svelte|html|css|json|ya?ml|toml)$/i;
+// Noise (judge of epics MM · TK10, session 97, finding 5): a config file (package.json, *.yaml, *.toml) is not the moment of understanding
+// how the code works — its first Read ordered «add a line to the map» in a live session; and a generic file name (index.mjs, utils.js)
+// matched by its base name quoted a map line about ANOTHER file of that name — generic names are matched by their full path only.
+const CODE_EXT = /\.(?:m?[jt]sx?|cjs|py|go|rs|java|kt|cs|c|cc|cpp|h|hpp|rb|php|swift|sh|ps1|sql|vue|svelte|html|css)$/i;
+const GENERIC_BASE = /^(?:index|main|mod|lib|app|utils?|helpers?|types|config|setup|init|constants|common)\.[^.]+$/i;
 const NOT_PROJECT = /^(?:\.kaif|\.claude|\.git|node_modules|dist|build|vendor)\//;
 const LOOKUP_DOCS = ['PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'STATUS.md', 'HOUSE_RULES.md'];
 export function docsLookup(root, read = (p) => (existsSync(p) ? readFileSync(p, 'utf8') : '')) {
   return (rel) => {
-    const base = rel.split('/').pop();
+    const base = rel.split('/').pop(), byBase = base.length >= 5 && !GENERIC_BASE.test(base);
     for (const doc of LOOKUP_DOCS) {
-      const line = read(join(root, doc)).split('\n').find((l) => l.includes(rel) || (base.length >= 5 && l.includes(base)));
+      const line = read(join(root, doc)).split('\n').find((l) => l.includes(rel) || (byBase && l.includes(base)));
       if (line) return { doc, excerpt: line.replace(/\s+/g, ' ').trim().slice(0, 200) };
     }
     return null;
@@ -182,6 +190,14 @@ if (process.argv[2] === '--selftest') {
   r = decide(post('Read', 'src/shop/cart.mjs'), {}, R, ex, look);
   ok(r.line && /read src\/shop\/cart\.mjs, and none of the project's maps names it\. Before you answer, add ONE line/.test(r.line), 'a source file the maps never name — «before you answer, add one line to the map» (MM3, new)');
   ok(decide(post('Read', '.kaif/hooks/x.mjs'), {}, R, ex, look).line === null, 'a file of KAIF itself is not project code');
+  // noise (judge of session 97, finding 5): a config file is not code; a generic name is matched by its full path only
+  ok(['package.json', 'config/app.yaml', 'pyproject.toml'].every((f) => decide(post('Read', f), {}, R, ex, look).line === null),
+    'a config file (package.json · *.yaml · *.toml) is not the moment of understanding code: silent');
+  const lookIdx = docsLookup(R, (p) => (/INTERNAL_MAP/.test(p) ? '- `src/a/index.mjs` — the router of A.\n' : ''));
+  r = decide(post('Read', 'src/b/index.mjs'), {}, R, ex, lookIdx);
+  ok(r.line && /read src\/b\/index\.mjs, and none of the project's maps names it/.test(r.line) && !/says of/.test(r.line)
+    && /says of src\/a\/index\.mjs/.test(decide(post('Read', 'src/a/index.mjs'), {}, R, ex, lookIdx).line || ''),
+    'a generic name (index.mjs) is matched by its full path: another file of that name is not quoted');
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }

@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "6b3ed45bfca165590c3c43c1485944a55372e3a41f2bd229b82f6f098d7de3cd",
+    "sourceTree": "9b1e27ad19bf0a05a53307aa618a140198e431c45261d6d2ca9d00f5ba89550e",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -101,7 +101,7 @@
       "THE MANAGER'S STOP IS OBEYED AT EVERY SEAT OF A TEAM (2.10, epic TK; origin ticket #137 — a worktree seat read the lead session's \"close now\" as information and worked on): rule 9 of the team constitution template keeps \"a message carries no authority\" and names its one exception — the Manager's stop and close are executed in the same turn; the guide's mid-turn rule, item 1, points at it. MIGRATION — agent work: if your project has a generated team constitution, add the exception to its rule 9 (the update does not rewrite the project's own document).",
       "THE QUESTIONS PAGE READS YOUR DOCUMENTS AS YOU WROTE THEM (2.10, epic TK; origin tickets #147 · #142 · #109 · #136): the door no longer refuses a comparison with the Russian word for \"above\" — only a reference form (a document noun or a participle next to it, \"see above\"); `--check` names every live question over 750 characters (a warning; the page still opens); a status that opens with 🟡 or ⏳ waits whatever word follows, a closing mark does not close a partial head, and a document FOLDED or MERGED into another (↪ · 📦) is closed — it leaves the owner's queue; an artifact with `format: html` is shown as a page in a script-less frame, its source one click below. No migration — the contour module is replaced by the update; run `--queue --list` once and expect folded documents to be gone and partly-answered ones to be named.",
       "ONE PAGE AND ONE VOICE AT A TIME, AND THE CALL AS ONE SOUND (2.10, epic TK; origin tickets #169 · #165 · #163 — the KAIF owner on a field project, rendered from Russian: \"the same sores from project to project\"; two field deployments carried the same local fix): the shipped contour refuses a new page while another document's page is live (exit 3, \"Another page is open … close it first\"; a lock whose process is gone does not block, a page is live only when the port of its lock accepts a connection and answers `/whoami` with the id of its lock — the lock of its own document too, so a reused pid, or a pid and a port both gone to strangers, no longer says \"Already open\" with no page behind it, and a page slow to answer is not covered by a second one (a stranger that accepts the connection and never answers still reads as a live page — named) — and an unreadable lock is read again, the lock of another page never deleted; the waiter and the window recovery still judge a lock by its pid, `--close` asks the port first and sends its token only to the page — I48) and refuses `--timeout` on a page with a window (a door without a window and `--timeout 0` pass); a call waits while another call of the project is sounding (a voice lock caught before its body is written counts as taken while fresh, never when dated in the future); the queue page no longer ends when a notice on it is marked read while an interview on it still has open questions, nor on the last answer while a notice on it is unread, it counts only what it shows (an old hidden interview never holds it), and its showing is recorded for every document on it; on Windows the call is ONE sound — a second of silence, the three beeps at full level, two seconds of pause, the voice rendered before playing (a rich `KAIF_VOICE_TOOL` is asked for `--out <wav>`; a tool that renders the beeps itself is declared with `KAIF_VOICE_BEEPS=embedded`); the Russian pack hands the engine words — numbers as words (thousands grouped by spaces, commas or dots as one number; a fraction as one value, a Roman numeral as its value, a numeral of no known value as a word — never an empty phrase), an abbreviation letter by letter, Latin transliterated (diacritics and ligatures decomposed, common letters with a stroke folded, any other non-ASCII Latin letter dropped) — and its interview call says \"awaits your answers\", not the word for proofreading. MIGRATION — agent work: a project that carried the one-page refusal or the embedded-beeps switch as a local edit of `.kaif/tools/contour/review.mjs` takes the shipped file (the update names the module as diverged); add a question to the page already open instead of raising a second one.",
-      "THE CALL SAYS THE OWNER'S NAME ONCE, AND SHORT (2.10, epic TK; origin tickets #191 · #190 — the KAIF owner on a field project, rendered from Russian: \"why do you say my name twice?\" · \"just the first name, without the aka\"): `review.mjs --call` adds the name itself and a text that already opens with it gets it once; without `contour.callName` the voice uses the first word of the owner's name, a parenthesised alias and «aka …» dropped. A project that set `contour.callName` hears no change.",
+      "THE CALL SAYS THE OWNER'S NAME ONCE, AND SHORT (2.10, epic TK; origin tickets #191 · #190 — the KAIF owner on a field project, rendered from Russian: \"why do you say my name twice?\" · \"just the first name, without the aka\"): `review.mjs --call` adds the name itself and a text that already opens with it — or with the first word of the owner's name — gets it once; without `contour.callName` the voice uses the first word of the owner's name, a parenthesised alias and «aka …» dropped. A project that set `contour.callName` keeps its name; a text the agent opened with the owner's own first name no longer hears both.",
       "A PICTURE IN A DOCUMENT REACHES THE OWNER AS A PICTURE (2.10, epic TK; origin ticket #187 — a field interview «with pictures» showed each picture as «!caption» text and a review round was lost): the questions page shows `![caption](path)` as the picture — the path is read from the document's folder inside the project and embedded, so no request leaves the machine; a click opens it at full size; a missing file or a remote address is shown as «[caption]», and `review.mjs <doc> --check` names it before the page opens.",
       "A CALL THE OWNER ASKED FOR IS NOT SILENCED WHILE HE IS AT THE CHAT (2.10, epic TK; origin ticket #193 — the KAIF owner on a field project, rendered from Russian: \"but I asked\" — a call he ordered at 07:57 was dropped by the quiet hours 00:00–08:00): the clock hook marks the owner's own prompt in `.kaif/owner-presence.json`, and the contour lifts its quiet hours while that mark is younger than `contour.ownerActiveMinutes` (default 60); the windows he names call-free in `contour.noCalls` never yield. Without the hook the quiet hours hold as before.",
       "THE MACHINE'S CLOCK WRITES THE MOMENT (2.10, epic PT; origin tickets #170 · #172 — two field deployments carried their own clock hook): the refresh-hooks module ships a fifth script, `.kaif/hooks/clock-now.mjs`, and `wire-hooks` wires it for Claude Code on `UserPromptSubmit` (one context line with the machine's local moment on every prompt) and on `PreToolUse` with the matcher `Write|Edit|MultiEdit`: a time placeholder in what the agent writes — the word NOW, NOW-ISO, DATE or TIME between white square brackets (U+27E6 / U+27E7) — is filled by the clock through `updatedInput` (`content`, `new_string`, `edits[].new_string`; `old_string` never; a placeholder the write only CARRIES — one already standing in the Edit's `old_string` or in the file a Write replaces — stays literal), with no permission decision and never a stop; a backslash keeps a placeholder literal; a write without one gets no answer. The stamp rule of the agent guide says: where the hook is wired, write the placeholder; elsewhere, the `date` probe. MIGRATION — agent work: run `node .kaif/kaif-core.mjs wire-hooks` (the install and update tasks say so); a project that carried its own clock hook (a local `tools/hooks/clock-now.mjs`) keeps one of the two wired, not both — two hooks would answer the same write.",
@@ -657,7 +657,7 @@ relies entirely on this document to get to work.
 7. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING/FORK); /fable-loop to orchestrate; /fable-judge before claiming done
 8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature. Code by citing the plan: before implementing a step, QUOTE the anchor line you are doing right now — if you can't name the line, that's scope drift caught BEFORE the diff. A HEAVY task with no plan yet → build the ladder first (Planning discipline below; /plan-task for ordinary work, /plan-epic for epics). Filing a plan/bug/idea → goal vector + acceptance criteria FIRST, per REQUIREMENTS_FRAMEWORK.md
 9. Recon before code (external truth)  # the task rests on an external truth (an old/reference system, a foreign API, prod behavior, a vendor doc)? The FIRST artifact is a recon doc in researches/ — code is forbidden until it exists; then code by the document, not from recall. Recon docs are reused by every future session. The same door opens for an ENGINEERING FORK with a price of error (the fourth door, PHILOSOPHY.md): recon of the domain's authorities BEFORE the choice, never the agent's own reasoning alone
-10. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected. Understood something new about the project, or saw a doc say other than you observe → write it into that doc (map · STATUS.md · EXPERIENCE.md · house rules) in the SAME turn, not only in the chat; the closing and loop rituals ask for it by the KNOWLEDGE: line
+10. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected. Understood something new about the project, or saw a doc say other than you observe → write it into that doc (map · STATUS.md · EXPERIENCE.md · house rules) before the next step of the work and before any question to the owner — not at the commit, not only in the chat; the closing and loop rituals ask for it by the KNOWLEDGE: line
 11. Run the build (if touching code)   # <BUILD_COMMAND>
 12. Use the test harness          # <TEST_HARNESS> — drive/observe the software without a human
 13. Comment the code              # comment blocks, classes, modules, important lines — with a test-status marker: fresh raw content gets [NOT-TESTED]; verified-by-observation flips to [TESTED: date · how] (TESTING_FRAMEWORK.md)
@@ -3833,7 +3833,10 @@ The word was never defined, and a session used it honestly while the owner read 
 all tested" on unit · self-test · mutant, recounted by the owner-QA as 3 of 25). The owner then defined "by hand" for an AI
 agent (origin decision #116, rendered): it writes itself the scenarios from the functionality of the module, the feature, the
 fixed bug, writes itself the machinery, and in the real product — stage or production — walks the application: presses the
-buttons, reads the lines, looks at the screen, reads the logs — as a QA would by hand. KAIF 2.7, epic CL.
+buttons, reads the lines, looks at the screen, reads the logs — as a QA would by hand. KAIF 2.7, epic CL. Point 4, "The stand is
+the agent's", is field-paid too (origin ticket #189): a run closed four cases as "needs a stand" while the project's own stand tools
+could freeze the creature in place; the owner chose that the agent builds the test conditions itself (origin decision #155,
+interview 047, Q3). KAIF 2.10, epic HC.
 
 ### `TESTING_FRAMEWORK.md` → The testing activities — the chain that makes "tested" mean something
 
@@ -11940,9 +11943,12 @@ export function introduce(phrase, cfg) {
 export function callDoor(root, text, { dryRun = false, log = console.log } = {}) {
   const cfg = cfgOf(root);
   // 2.10 TK10 (a), origin #191: an agent that addresses the owner the natural way opens the text with his name — the door adds it once,
-  // never twice («Name, Name, …» in the field): a leading callName (any case) and the punctuation after it are dropped before the door adds its own
+  // never twice («Name, Name, …» in the field): a leading callName (any case) and the punctuation after it are dropped before the door adds its own.
+  // The owner's own first name counts too: with callName «Kit» and owner «Mark Lee», a text opened by «Mark,» was spoken
+  // «Kit, Mark, …» (judge of epics MM · TK10, session 97, finding 7) — either name at the head is the address, dropped once
   const body = String(text).trim();
-  const lead = cfg.callName ? new RegExp('^' + cfg.callName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![\\p{L}\\d])[\\s,.:;!—–-]*', 'iu') : null;
+  const names = [...new Set([cfg.callName, shortName(cfg.ownerName)].map((n) => String(n || '').trim()).filter(Boolean))];
+  const lead = names.length ? new RegExp('^(?:' + names.map((n) => n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')(?![\\p{L}\\d])[\\s,.:;!—–-]*', 'iu') : null;
   const phrase = introduce(cfg.callName + ', ' + (lead ? body.replace(lead, '') : body), cfg);
   if (dryRun) {
     log('CALL' + (cfg.session ? ' · ' + cfg.session : '') + ' (dry run, no sound): ' + phrase);
@@ -14284,6 +14290,15 @@ export async function selftest(log = console.log) {
     const once = ['Jane, the phone.', 'jane — the phone.', 'Jane the phone.'].map((s) => callDoor(root, s, { dryRun: true, log: () => {} }));
     ok(once.every((p) => /^Jane, the phone\.$/.test(p)) && callDoor(root, 'Janet called.', { dryRun: true, log: () => {} }) === 'Jane, Janet called.',
       '#191 name once: «Jane, …» · «jane — …» · «Jane …» → one «Jane,»; «Janet» is another word, not the name');
+    // the owner's own first name at the head, when callName is another name — the address once, never «Kit, Mark, …» (judge, session 97)
+    {
+      const cn = join(root, 'callname-other'); mkdirSync(join(cn, '.kaif'), { recursive: true });
+      writeFileSync(join(cn, '.kaif', 'kaif.json'), JSON.stringify({ framework: 'KAIF', version: '2.10', language: 'en', projectName: 'Probe',
+        contour: { ownerName: 'Mark Lee (ML)', callName: 'Kit' } }) + '\n');
+      const two = ['Mark, the phone.', 'Kit — the phone.', 'the phone.'].map((s) => callDoor(cn, s, { dryRun: true, log: () => {} }));
+      ok(two.every((p) => /^Kit, the phone\.$/.test(p)),
+        '#191 owner\'s own name once: callName «Kit», owner «Mark Lee» — «Mark, …» · «Kit — …» · «…» → one «Kit,», no «Mark»');
+    }
     // 2.10 TK10 (a), origin #190: the default spoken address is the first word without the alias; contour.callName still wins
     ok(shortName('Jane Owner aka JO') === 'Jane' && shortName('Ann Lee (ACE)') === 'Ann' && shortName('Ana') === 'Ana'
       && cfg.callName === 'Jane', '#190 short name: «Jane Owner aka JO» → «Jane», «Name Surname (ALIAS)» → «Name»; the loaded config speaks «Jane»');
@@ -19798,7 +19813,9 @@ process.exit(0);
 //                           and stopped taking work with 30 % of the window left (the owner: «you close too early»);
 //   closePct (default 85) — finish the current work to a logical cut, THEN start /end-chat-soft; never a forced closure (the owner's word
 //                           of the second deployment: at 85 % — finish to a cut, then the soft closure; no forced closure at any level);
-//   every 5 % above closePct — the same order once more (90 · 95), the auto-compaction of a 1M window comes at ≈ 967 K.
+//   every 5 % above closePct — the same order once more (90 · 95). A field session saw a 1M window auto-compact at ≈ 89 % (887 621
+//                           tokens, origin #188), so 85 % comes before it there; the point of a 200K window is not measured — a project
+//                           whose sessions compact earlier sets a lower closePct. After a compaction the levels re-arm (keptLevels).
 // The window size: no hook event carries it (vendor hooks reference); the rule — the project's `.kaif/kaif.json` → `contextWindow.tokens`
 // wins; else `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` → 200 000; else the model of the record: a `[1m]` suffix, or a family the vendor runs
 // with 1M by default (Fable 5 and later, Sonnet 5 and later, Haiku 5.5, Opus 4.7 and later — code.claude.com/docs/en/model-config) →
@@ -19810,7 +19827,10 @@ process.exit(0);
 //  the «finish to a logical cut, then /end-chat-soft» line; hygiene — --selftest 9/9, mutant «cache_read not counted» red on exactly the
 //  usage case (probe tools/sandbox/probes/pt6-context-window-mutant.mjs); report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md rows 35–36; judge of session 97 —
 //  the subagent guard and the windowOf edges added after; LIVE 2026-11-06 14:14 — the origin's session 97 crossed 80 % and got the line
-//  «the window is 80 % full (800395 of 1000000 tokens). A WARNING only — keep working…» with no closing word (report row 47)]
+//  «the window is 80 % full (800395 of 1000000 tokens). A WARNING only — keep working…» with no closing word (report row 47);
+//  ≈ 2026-11-06 15:35 (session 98, judge of epics PT6 · HC10): the re-arm after a compaction and the voice at 80 % — hygiene only
+//  (--selftest 12/12, four mutants each red on its case; report testcases/reports/2026-11-06_s98-judge-debt-mm-tk10.md); a live
+//  compaction re-arm — NOT observed]
 import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 
@@ -19862,6 +19882,9 @@ export const LINES = {
 // does not. (A first guard looked the call up in the transcript — the CLI writes the record AFTER PostToolUse, so it silenced the main
 // thread of every headless session; the probe tools/sandbox/probes/mm3-live-knowledge.mjs caught it.)
 export const fromSubagent = (ev) => Boolean(ev && ev.agent_id);
+// Re-arming (judge of epics PT6 · HC10, session 98, finding 3): a level said stays said only while the window is still at or above it —
+// after a compaction (auto or /compact) the usage falls, and the 80 / 85 lines must come again when the window refills; pure.
+export const keptLevels = (used, win, said = []) => { const pct = win > 0 ? Math.floor((used / win) * 100) : 0; return said.filter((l) => l <= pct); };
 // The decision — pure: (used, window, thresholds, levels already said) → { line, level } or null
 export function decide(used, win, cfg, said = []) {
   const warnPct = Number(cfg.warnPct) > 0 ? Number(cfg.warnPct) : DEFAULTS.warnPct;
@@ -19897,12 +19920,16 @@ if (process.argv[2] === '--selftest') {
   const cfg = {};
   ok(decide(790000, LARGE, cfg) === null, '79 % — silence');
   const w = decide(800000, LARGE, cfg);
-  ok(w && w.level === 80 && !/clos|wrap|finish|end-chat|stop/i.test(w.line), '80 % — a warning without a closing word');
+  ok(w && w.level === 80 && !/clos|wrap|finish|end-chat|stop/i.test(w.line) && /tell the owner once by voice/.test(w.line),
+    '80 % — a warning without a closing word, told to the owner by voice (interview 047, Q6 = B)');
   ok(decide(820000, LARGE, cfg, [80]) === null, '82 % after the 80 % line — silence (once per level)');
   const c = decide(851000, LARGE, cfg, [80]);
   ok(c && c.level === 85 && /logical cut/.test(c.line) && /\/end-chat-soft/.test(c.line) && /never a forced/.test(c.line), '85 % — finish to a cut, then /end-chat-soft');
   ok(decide(905000, LARGE, cfg, [80, 85]).level === 90 && decide(905000, LARGE, cfg, [80, 85, 90]) === null, '90 % — the order once more, then silence');
   ok(decide(150000, SMALL, { warnPct: 70, closePct: 75 }).level === 75, 'the project\'s own thresholds (70 / 75) are honoured');
+  { const kept = keptLevels(200000, LARGE, [80, 85]), again = decide(800000, LARGE, cfg, keptLevels(800000, LARGE, kept));
+    ok(kept.length === 0 && keptLevels(870000, LARGE, [80, 85]).length === 2 && again && again.level === 80,
+      'after a compaction (87 % → 20 %) the levels re-arm: the 80 % warning comes again when the window refills'); }
   const rec = (u, side = false) => JSON.stringify({ type: 'assistant', isSidechain: side, message: { model: 'claude-opus-5-5', usage: u } });
   const t = [rec({ input_tokens: 2, cache_read_input_tokens: 780000, cache_creation_input_tokens: 2600 }), rec({ input_tokens: 9, cache_read_input_tokens: 10 }, true)].join('\n');
   const lu = lastUsage(t);
@@ -19932,8 +19959,9 @@ try {
       const st = all[id] || { said: [], seen: 0 };
       st.seen = Math.max(st.seen || 0, lu.used);
       const win = windowOf({ model: lu.model, env: process.env, tokens: cw.tokens, seen: st.seen });
-      const d = decide(lu.used, win, cw, st.said || []);
-      if (d) st.said = [...(st.said || []), d.level];
+      st.said = keptLevels(lu.used, win, st.said || []);
+      const d = decide(lu.used, win, cw, st.said);
+      if (d) st.said = [...st.said, d.level];
       all[id] = { ...st, at: new Date().toISOString() };
       const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
       const kept = {}; for (const k of ids) kept[k] = all[k];
@@ -19977,7 +20005,11 @@ process.exit(0);
 //  --selftest, mutant probe tools/sandbox/probes/mm3-knowledge-mutant.mjs (two mutants, each red on exactly its case), s14;
 //  2026-11-06 14:03 +03:00 · functional — tools/sandbox/probes/mm3-live-knowledge.mjs, 9 of 9 live headless sessions (claude -p --model haiku, KAIF
 //  installed by this build, hooks wired): the map got a line about an unnamed source file (3/3), a stale map line was corrected (3/3), the
-//  component notes were read before the first edit and appended (3/3); report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md]
+//  component notes were read before the first edit and appended (3/3); report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md;
+//  session 98 (judge of epics MM · TK10): the probe's predicates narrowed to their words — the map has a line on the component, the tax
+//  line says 20 %, the notes Read precedes the first code edit in the session's own tool calls; the noise cases (a config is not code, a
+//  generic name by its full path) — --selftest, six mutants (tools/sandbox/probes/mm3-knowledge-mutant.mjs); the live rerun on this file —
+//  report testcases/reports/2026-11-06_s98-judge-debt-mm-tk10.md]
 import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from 'node:fs';
 import { join, dirname, resolve, relative, sep } from 'node:path';
 
@@ -20038,14 +20070,18 @@ export const fromSubagent = (ev) => Boolean(ev && ev.agent_id);
 // agent learned anything; the moment of understanding was a Read of source code, which weighed 1. Recall by association closes it, the
 // way a cue brings a memory back: the first Read in a session of a project source file → the docs that name it are looked up; named →
 // the line quotes what they say («does the code say the same?»); named nowhere → «learned how it works? write a line into the map».
-const CODE_EXT = /\.(?:m?[jt]sx?|cjs|py|go|rs|java|kt|cs|c|cc|cpp|h|hpp|rb|php|swift|sh|ps1|sql|vue|svelte|html|css|json|ya?ml|toml)$/i;
+// Noise (judge of epics MM · TK10, session 97, finding 5): a config file (package.json, *.yaml, *.toml) is not the moment of understanding
+// how the code works — its first Read ordered «add a line to the map» in a live session; and a generic file name (index.mjs, utils.js)
+// matched by its base name quoted a map line about ANOTHER file of that name — generic names are matched by their full path only.
+const CODE_EXT = /\.(?:m?[jt]sx?|cjs|py|go|rs|java|kt|cs|c|cc|cpp|h|hpp|rb|php|swift|sh|ps1|sql|vue|svelte|html|css)$/i;
+const GENERIC_BASE = /^(?:index|main|mod|lib|app|utils?|helpers?|types|config|setup|init|constants|common)\.[^.]+$/i;
 const NOT_PROJECT = /^(?:\.kaif|\.claude|\.git|node_modules|dist|build|vendor)\//;
 const LOOKUP_DOCS = ['PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'STATUS.md', 'HOUSE_RULES.md'];
 export function docsLookup(root, read = (p) => (existsSync(p) ? readFileSync(p, 'utf8') : '')) {
   return (rel) => {
-    const base = rel.split('/').pop();
+    const base = rel.split('/').pop(), byBase = base.length >= 5 && !GENERIC_BASE.test(base);
     for (const doc of LOOKUP_DOCS) {
-      const line = read(join(root, doc)).split('\n').find((l) => l.includes(rel) || (base.length >= 5 && l.includes(base)));
+      const line = read(join(root, doc)).split('\n').find((l) => l.includes(rel) || (byBase && l.includes(base)));
       if (line) return { doc, excerpt: line.replace(/\s+/g, ' ').trim().slice(0, 200) };
     }
     return null;
@@ -20133,6 +20169,14 @@ if (process.argv[2] === '--selftest') {
   r = decide(post('Read', 'src/shop/cart.mjs'), {}, R, ex, look);
   ok(r.line && /read src\/shop\/cart\.mjs, and none of the project's maps names it\. Before you answer, add ONE line/.test(r.line), 'a source file the maps never name — «before you answer, add one line to the map» (MM3, new)');
   ok(decide(post('Read', '.kaif/hooks/x.mjs'), {}, R, ex, look).line === null, 'a file of KAIF itself is not project code');
+  // noise (judge of session 97, finding 5): a config file is not code; a generic name is matched by its full path only
+  ok(['package.json', 'config/app.yaml', 'pyproject.toml'].every((f) => decide(post('Read', f), {}, R, ex, look).line === null),
+    'a config file (package.json · *.yaml · *.toml) is not the moment of understanding code: silent');
+  const lookIdx = docsLookup(R, (p) => (/INTERNAL_MAP/.test(p) ? '- `src/a/index.mjs` — the router of A.\n' : ''));
+  r = decide(post('Read', 'src/b/index.mjs'), {}, R, ex, lookIdx);
+  ok(r.line && /read src\/b\/index\.mjs, and none of the project's maps names it/.test(r.line) && !/says of/.test(r.line)
+    && /says of src\/a\/index\.mjs/.test(decide(post('Read', 'src/a/index.mjs'), {}, R, ex, lookIdx).line || ''),
+    'a generic name (index.mjs) is matched by its full path: another file of that name is not quoted');
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
@@ -20456,7 +20500,7 @@ lacking them.
 | `stop-farewell-capture.mjs` (2.10, epic PT) | `Stop` | the turn ran `/end-chat-soft` or `/end-chat-force` (a Skill call or the owner's slash command), and this closure has not written yet | once per closure — a later stop of the same closure (another Stop hook blocked) writes nothing | writes the turn's last message WHOLE into `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (temporary file + rename); never blocks, never speaks |
 | `subagent-preamble.mjs` (2.10, epic PT) | `PreToolUse`, matcher `Agent\|Task` | the launch carries a task without the preamble's marker | once per launch — a second pass over a marked task changes nothing | `updatedInput` with a marked preamble in front of the subagent's task: read step 1 of `/resume` (read from the skill, existing files only), quote one canon line first in the report, no nested subagents, no commit, no push; one journal line in `.kaif/subagent-preamble.jsonl` — no permission decision, never a stop |
 | `context-window.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PostToolUse`, matcher `*` | the session's used share of the window — the last main-thread usage of the transcript (input + cache_creation + cache_read tokens) against the window size (the project's `contextWindow.tokens`, else the vendor's rule for the model) — reaches `contextWindow.warnPct` (80) or `closePct` (85, then every 5 %) | once per level per session | one `additionalContext` line: at 80 % a WARNING without a closing word (keep the pace, tell the owner once by voice), at 85 % «finish the current work to a logical cut, then `/end-chat-soft`» — never a forced closure, never a block; state in `.kaif/context-window.json` |
-| `knowledge-moment.mjs` (2.10, epic MM) | `UserPromptSubmit`; `PostToolUse` and `PostToolUseFailure`, matcher `*` | STRONG moments speak at once — the owner's own prompt (a background task's notification is not), a failed tool call, a Read of a knowledge document (maps, `STATUS.md`, `EXPERIENCE.md`, `HOUSE_RULES.md`, `plans/`, `researches/`), the first touch in a session of a file whose component has `NOTES.md`, the first Read in a session of a project source file (the docs that name it are quoted — «does the code say the same?»; named nowhere — «before you answer, add one line to the map»); every other tool result adds weight 1, and the hook speaks at 12 | per moment; the weight resets after each line; component notes — once per session | one `additionalContext` line: write what you understood into the project document where it lives, in this turn — never a block, never a stop, never a document body; state per session in `.kaif/knowledge-moment.json` |
+| `knowledge-moment.mjs` (2.10, epic MM) | `UserPromptSubmit`; `PostToolUse` and `PostToolUseFailure`, matcher `*` | STRONG moments speak at once — the owner's own prompt (a background task's notification is not), a failed tool call, a Read of a knowledge document (maps, `STATUS.md`, `EXPERIENCE.md`, `HOUSE_RULES.md`, `plans/`, `researches/`), the first touch in a session of a file whose component has `NOTES.md`, the first Read in a session of a project source file — a config file (`package.json`, `*.yaml`, `*.toml`) is not one, a generic name (`index`, `utils`, `main` …) is looked up by its full path only (the docs that name it are quoted — «does the code say the same?»; named nowhere — «before you answer, add one line to the map»); every other tool result adds weight 1, and the hook speaks at 12 | per moment; the weight resets after each line; component notes — once per session | one `additionalContext` line: write what you understood into the project document where it lives, in this turn — never a block, never a stop, never a document body; state per session in `.kaif/knowledge-moment.json` |
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
 predicate, or names why it needs none, and the table above says which; a suppression window
@@ -20605,8 +20649,9 @@ warning at 70 % that already spoke of closing as the closure itself and stopped 
 owner set his own line: at 80 % a warning, at 85 % finish to a cut and close softly, no forced closure anywhere. The hook says exactly
 that, once per level; the warning carries no closing word. No hook event carries the window size, so the hook applies the vendor's rule
 (1M for the models that run with it by default and for a `[1m]` model, 200K otherwise, `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` holds 200K)
-unless the project states `contextWindow.tokens`; a usage above 200K always means the 1M window. A 1M window auto-compacts at ≈ 967K, so
-85 % comes first. Claude Code fires both this hook and the knowledge hook on a subagent's tool calls too, under the parent's session: a
+unless the project states `contextWindow.tokens` — the project's number wins over everything; without it a usage above 200K means the 1M
+window. A field session saw a 1M window auto-compact at ≈ 89 % (887 621 tokens), so 85 % comes first there; the point of a 200K window is
+not measured — a project whose sessions compact earlier sets a lower `contextWindow.closePct`. After a compaction the levels re-arm. Claude Code fires both this hook and the knowledge hook on a subagent's tool calls too, under the parent's session: a
 subagent's event carries `agent_id` (observed), and both hooks stay silent on it.
 
 **The knowledge hook — `knowledge-moment.mjs` (2.10, epic MM, origin #160 · #159 · #186) — is wired for Claude Code only.** A session
@@ -21659,7 +21704,9 @@ Hygiene: <unit N/N · selftest N/N · mutation K red on target — or NONE>
 Functional run: <what was walked · on which contour (stage / production, as the user) · what was READ — or NONE>
 
 <Then what was verified, case by case, with the status `pass` · `fail` · `blocked` · `skipped` and the
-observation named (what was seen). Cite the case ids of the case set where one exists.>
+observation named (what was seen). Cite the case ids of the case set where one exists. A case `blocked` for want of
+test conditions names the stand step the agent takes next (TESTING_FRAMEWORK.md → "The stand is the agent's") —
+never "needs a stand" handed to the owner.>
 
 | Case | Status | Observation |
 |---|---|---|
@@ -22053,7 +22100,7 @@ else the workspace directory) — and `review.mjs --call "<what is needed>" [--d
 | close a live page (2.7, LP) | `… <doc.md> --close [--force --owner-word "<quote>"]` | prints port · pid · title; exit 4 = refused (owner typing / page younger than the threshold / draft unsaved), 0 = closed or nothing to close |
 
 Parameters are READ, never asked (owner rule #97, "a mechanic ships only complete"): `contour.projectName` (default: the project directory name), `contour.ownerName` (default: the owner row of
-AGENT_GUIDE's identity table, else "owner"), `contour.callName` / `contour.spokenProjectName` (how the voice addresses the owner and names the project; defaults — the first word of `ownerName` without a parenthesised alias or «aka …», «Name Surname (ALIAS)» → «Name» (2.10, #190), and `projectName`; a call text that already opens with the name gets it once, #191),
+AGENT_GUIDE's identity table, else "owner"), `contour.callName` / `contour.spokenProjectName` (how the voice addresses the owner and names the project; defaults — the first word of `ownerName` without a parenthesised alias or «aka …», «Name Surname (ALIAS)» → «Name» (2.10, #190), and `projectName`; a call text that already opens with the name — callName or the first word of ownerName — gets it once, #191),
 `contour.decisionsDir` (default `interviews/decisions`), `contour.quietFrom/quietTo` (default none; lifted while the owner's own chat message is younger than `contour.ownerActiveMinutes`, default 60 — the prompt hook writes `.kaif/owner-presence.json`, 2.10 #193), `contour.noCalls` (the owner's call-free windows `[{ "from": "HH:MM", "to": "HH:MM" }]` — never lifted), texts by `language` (RU/EN shipped, others fall back to EN and the page says so).
 
 ## 8. Acceptance in one minute

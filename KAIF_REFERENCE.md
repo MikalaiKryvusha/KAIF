@@ -688,7 +688,10 @@ The word was never defined, and a session used it honestly while the owner read 
 all tested" on unit · self-test · mutant, recounted by the owner-QA as 3 of 25). The owner then defined "by hand" for an AI
 agent (origin decision #116, rendered): it writes itself the scenarios from the functionality of the module, the feature, the
 fixed bug, writes itself the machinery, and in the real product — stage or production — walks the application: presses the
-buttons, reads the lines, looks at the screen, reads the logs — as a QA would by hand. KAIF 2.7, epic CL.
+buttons, reads the lines, looks at the screen, reads the logs — as a QA would by hand. KAIF 2.7, epic CL. Point 4, "The stand is
+the agent's", is field-paid too (origin ticket #189): a run closed four cases as "needs a stand" while the project's own stand tools
+could freeze the creature in place; the owner chose that the agent builds the test conditions itself (origin decision #155,
+interview 047, Q3). KAIF 2.10, epic HC.
 
 ### `TESTING_FRAMEWORK.md` → The testing activities — the chain that makes "tested" mean something
 

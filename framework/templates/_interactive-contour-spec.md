@@ -107,7 +107,7 @@ else the workspace directory) — and `review.mjs --call "<what is needed>" [--d
 | close a live page (2.7, LP) | `… <doc.md> --close [--force --owner-word "<quote>"]` | prints port · pid · title; exit 4 = refused (owner typing / page younger than the threshold / draft unsaved), 0 = closed or nothing to close |
 
 Parameters are READ, never asked (owner rule #97, "a mechanic ships only complete"): `contour.projectName` (default: the project directory name), `contour.ownerName` (default: the owner row of
-AGENT_GUIDE's identity table, else "owner"), `contour.callName` / `contour.spokenProjectName` (how the voice addresses the owner and names the project; defaults — the first word of `ownerName` without a parenthesised alias or «aka …», «Name Surname (ALIAS)» → «Name» (2.10, #190), and `projectName`; a call text that already opens with the name gets it once, #191),
+AGENT_GUIDE's identity table, else "owner"), `contour.callName` / `contour.spokenProjectName` (how the voice addresses the owner and names the project; defaults — the first word of `ownerName` without a parenthesised alias or «aka …», «Name Surname (ALIAS)» → «Name» (2.10, #190), and `projectName`; a call text that already opens with the name — callName or the first word of ownerName — gets it once, #191),
 `contour.decisionsDir` (default `interviews/decisions`), `contour.quietFrom/quietTo` (default none; lifted while the owner's own chat message is younger than `contour.ownerActiveMinutes`, default 60 — the prompt hook writes `.kaif/owner-presence.json`, 2.10 #193), `contour.noCalls` (the owner's call-free windows `[{ "from": "HH:MM", "to": "HH:MM" }]` — never lifted), texts by `language` (RU/EN shipped, others fall back to EN and the page says so).
 
 ## 8. Acceptance in one minute

@@ -1,6 +1,8 @@
 // PT6 (2.10), origin #188 — mutant proofs of the context-window hook on COPIES (EXP-0077): each mutant must turn exactly its own selftest
 // case red; the control copy stays green. (1) «cache_read not counted» — the field's own trap (0.1 % instead of 78 %); (2) «a subagent's
-// call judged» — the guard of the judge of session 97 removed. Run: node tools/sandbox/probes/pt6-context-window-mutant.mjs
+// call judged» — the guard of the judge of session 97 removed; (3) «levels never re-arm» and (4) «no voice at 80 %» — the judge of epics
+// PT6 · HC10 (session 98, findings 3 · 2). Run: node tools/sandbox/probes/pt6-context-window-mutant.mjs
+// [TESTED: ≈ 2026-11-06 15:35 · control 0 red, four mutants each red on exactly its case; report testcases/reports/2026-11-06_s98-judge-debt-mm-tk10.md]
 import { mkdtempSync, copyFileSync, readFileSync, writeFileSync, rmSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -10,6 +12,10 @@ const HOOK = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 
 const MUTANTS = [
   ['cache_read not counted', " + (Number(u.cache_read_input_tokens) || 0)", '', /usage = input \+ cache_creation \+ cache_read/],
   ['a subagent\'s call judged', "export const fromSubagent = (ev) => Boolean(ev && ev.agent_id);", "export const fromSubagent = (ev) => false;", /a subagent's tool call/],
+  // (3) judge of epics PT6 · HC10 (session 98, finding 3): a level said once stays said for the session — no warning after a compaction
+  ['levels never re-arm', 'return said.filter((l) => l <= pct); };', 'return said; };', /after a compaction .* re-arm/],
+  // (4) the same judge, finding 2: the owner's word (interview 047, Q6 = B) — at 80 % the owner is told BY VOICE
+  ['no voice at 80 %', "tell the owner once by voice that the window is at ' + pct + ' %.'", "' + pct + ' %.'", /told to the owner by voice/],
 ];
 const run = (mut) => {
   const d = mkdtempSync(join(tmpdir(), 'kaif-pt6m-'));

@@ -230,7 +230,7 @@ relies entirely on this document to get to work.
 7. Execute by the fable loop      # /fable-method: gates + forced artifacts (INTENT/AUTH/TWINS/PENDING/FORK); /fable-loop to orchestrate; /fable-judge before claiming done
 8. Read the relevant plan         # plans/<feature>.md, if the task touches a specific feature. Code by citing the plan: before implementing a step, QUOTE the anchor line you are doing right now — if you can't name the line, that's scope drift caught BEFORE the diff. A HEAVY task with no plan yet → build the ladder first (Planning discipline below; /plan-task for ordinary work, /plan-epic for epics). Filing a plan/bug/idea → goal vector + acceptance criteria FIRST, per REQUIREMENTS_FRAMEWORK.md
 9. Recon before code (external truth)  # the task rests on an external truth (an old/reference system, a foreign API, prod behavior, a vendor doc)? The FIRST artifact is a recon doc in researches/ — code is forbidden until it exists; then code by the document, not from recall. Recon docs are reused by every future session. The same door opens for an ENGINEERING FORK with a price of error (the fourth door, PHILOSOPHY.md): recon of the domain's authorities BEFORE the choice, never the agent's own reasoning alone
-10. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected. Understood something new about the project, or saw a doc say other than you observe → write it into that doc (map · STATUS.md · EXPERIENCE.md · house rules) in the SAME turn, not only in the chat; the closing and loop rituals ask for it by the KNOWLEDGE: line
+10. Check the map & blast radius   # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected. Understood something new about the project, or saw a doc say other than you observe → write it into that doc (map · STATUS.md · EXPERIENCE.md · house rules) before the next step of the work and before any question to the owner — not at the commit, not only in the chat; the closing and loop rituals ask for it by the KNOWLEDGE: line
 11. Run the build (if touching code)   # <BUILD_COMMAND>
 12. Use the test harness          # <TEST_HARNESS> — drive/observe the software without a human
 13. Comment the code              # comment blocks, classes, modules, important lines — with a test-status marker: fresh raw content gets [NOT-TESTED]; verified-by-observation flips to [TESTED: date · how] (TESTING_FRAMEWORK.md)
@@ -3419,7 +3419,10 @@ The word was never defined, and a session used it honestly while the owner read 
 all tested" on unit · self-test · mutant, recounted by the owner-QA as 3 of 25). The owner then defined "by hand" for an AI
 agent (origin decision #116, rendered): it writes itself the scenarios from the functionality of the module, the feature, the
 fixed bug, writes itself the machinery, and in the real product — stage or production — walks the application: presses the
-buttons, reads the lines, looks at the screen, reads the logs — as a QA would by hand. KAIF 2.7, epic CL.
+buttons, reads the lines, looks at the screen, reads the logs — as a QA would by hand. KAIF 2.7, epic CL. Point 4, "The stand is
+the agent's", is field-paid too (origin ticket #189): a run closed four cases as "needs a stand" while the project's own stand tools
+could freeze the creature in place; the owner chose that the agent builds the test conditions itself (origin decision #155,
+interview 047, Q3). KAIF 2.10, epic HC.
 
 ### `TESTING_FRAMEWORK.md` → The testing activities — the chain that makes "tested" mean something
 

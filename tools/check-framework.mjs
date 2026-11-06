@@ -963,6 +963,33 @@ for (const f of readdirSync(join(ROOT, 'framework', 'tools', 'contour')).filter(
   });
 }
 
+// 5x. No author identity in a shipped MODULE (version KAIF 2.10, EXP-0200 repeated by session 98: a selftest fixture of the contour
+//     carried the author's name twice in two sessions, and only the polygon — `s04`/`s01` S13, the scan of an anonymous install — saw
+//     it, ten minutes into the run). The tokens are the core's own AUTHOR_TOKEN_CLUSTERS (read from KAIF-CORE.mjs, never copied here);
+//     the zone is the modules an anonymous install deploys verbatim — framework/tools/** and framework/hooks/** — where the author's
+//     name is never legal (the brand expansions «Krinik AI Framework» are not a name). A refusal names the file, the line and the token.
+{
+  const core = readFileSync(join(ROOT, 'framework', 'installer', 'KAIF-CORE.mjs'), 'utf8');
+  const lit = (name) => { const m = new RegExp('const ' + name + ' = (\\[[^\\n]*\\]);').exec(core); return m ? JSON.parse(m[1].replace(/'/g, '"')) : null; };
+  const clusters = lit('AUTHOR_TOKEN_CLUSTERS'), brands = lit('ACRONYM_EXPANSIONS');
+  if (!Array.isArray(clusters) || !Array.isArray(brands)) errors.push('5x: AUTHOR_TOKEN_CLUSTERS / ACRONYM_EXPANSIONS not read from framework/installer/KAIF-CORE.mjs — the author-identity scan of shipped modules did not run');
+  else {
+    const tokens = clusters.flat();
+    const scan = (dir) => {
+      for (const n of readdirSync(dir)) {
+        const p = join(dir, n);
+        if (statSyncTop(p).isDirectory()) { scan(p); continue; }
+        if (!/\.(?:mjs|js|json|md)$/i.test(n)) continue;
+        readFileSync(p, 'utf8').split(/\r?\n/).forEach((line, i) => {
+          let l = line; for (const b of brands) l = l.split(b).join('');
+          const tok = tokens.find((t) => l.includes(t));
+          if (tok) errors.push(`5x: ${relative(ROOT, p).split('\\').join('/')}:${i + 1} carries the author's «${tok}» — a shipped module never names the author (an anonymous install deploys it verbatim); use an invented name`);
+        });
+      }
+    };
+    scan(join(ROOT, 'framework', 'tools')); scan(join(ROOT, 'framework', 'hooks'));
+  }
+}
 // 5r. The owner's message under the word sets the scope (2.9, decision #143 — the KAIF owner: "the entry skill tells you wrong"; a
 //     session answered "how much is left?" and then started the plan's next item by itself): the shipped /resume carries the scope
 //     rule and no longer carries the bare "If the plan is clear — start right after the short announcement" as its only exit; the

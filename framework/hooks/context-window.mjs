@@ -10,7 +10,9 @@
 //                           and stopped taking work with 30 % of the window left (the owner: «you close too early»);
 //   closePct (default 85) — finish the current work to a logical cut, THEN start /end-chat-soft; never a forced closure (the owner's word
 //                           of the second deployment: at 85 % — finish to a cut, then the soft closure; no forced closure at any level);
-//   every 5 % above closePct — the same order once more (90 · 95), the auto-compaction of a 1M window comes at ≈ 967 K.
+//   every 5 % above closePct — the same order once more (90 · 95). A field session saw a 1M window auto-compact at ≈ 89 % (887 621
+//                           tokens, origin #188), so 85 % comes before it there; the point of a 200K window is not measured — a project
+//                           whose sessions compact earlier sets a lower closePct. After a compaction the levels re-arm (keptLevels).
 // The window size: no hook event carries it (vendor hooks reference); the rule — the project's `.kaif/kaif.json` → `contextWindow.tokens`
 // wins; else `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` → 200 000; else the model of the record: a `[1m]` suffix, or a family the vendor runs
 // with 1M by default (Fable 5 and later, Sonnet 5 and later, Haiku 5.5, Opus 4.7 and later — code.claude.com/docs/en/model-config) →
@@ -22,7 +24,10 @@
 //  the «finish to a logical cut, then /end-chat-soft» line; hygiene — --selftest 9/9, mutant «cache_read not counted» red on exactly the
 //  usage case (probe tools/sandbox/probes/pt6-context-window-mutant.mjs); report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md rows 35–36; judge of session 97 —
 //  the subagent guard and the windowOf edges added after; LIVE 2026-11-06 14:14 — the origin's session 97 crossed 80 % and got the line
-//  «the window is 80 % full (800395 of 1000000 tokens). A WARNING only — keep working…» with no closing word (report row 47)]
+//  «the window is 80 % full (800395 of 1000000 tokens). A WARNING only — keep working…» with no closing word (report row 47);
+//  ≈ 2026-11-06 15:35 (session 98, judge of epics PT6 · HC10): the re-arm after a compaction and the voice at 80 % — hygiene only
+//  (--selftest 12/12, four mutants each red on its case; report testcases/reports/2026-11-06_s98-judge-debt-mm-tk10.md); a live
+//  compaction re-arm — NOT observed]
 import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 
@@ -74,6 +79,9 @@ export const LINES = {
 // does not. (A first guard looked the call up in the transcript — the CLI writes the record AFTER PostToolUse, so it silenced the main
 // thread of every headless session; the probe tools/sandbox/probes/mm3-live-knowledge.mjs caught it.)
 export const fromSubagent = (ev) => Boolean(ev && ev.agent_id);
+// Re-arming (judge of epics PT6 · HC10, session 98, finding 3): a level said stays said only while the window is still at or above it —
+// after a compaction (auto or /compact) the usage falls, and the 80 / 85 lines must come again when the window refills; pure.
+export const keptLevels = (used, win, said = []) => { const pct = win > 0 ? Math.floor((used / win) * 100) : 0; return said.filter((l) => l <= pct); };
 // The decision — pure: (used, window, thresholds, levels already said) → { line, level } or null
 export function decide(used, win, cfg, said = []) {
   const warnPct = Number(cfg.warnPct) > 0 ? Number(cfg.warnPct) : DEFAULTS.warnPct;
@@ -109,12 +117,16 @@ if (process.argv[2] === '--selftest') {
   const cfg = {};
   ok(decide(790000, LARGE, cfg) === null, '79 % — silence');
   const w = decide(800000, LARGE, cfg);
-  ok(w && w.level === 80 && !/clos|wrap|finish|end-chat|stop/i.test(w.line), '80 % — a warning without a closing word');
+  ok(w && w.level === 80 && !/clos|wrap|finish|end-chat|stop/i.test(w.line) && /tell the owner once by voice/.test(w.line),
+    '80 % — a warning without a closing word, told to the owner by voice (interview 047, Q6 = B)');
   ok(decide(820000, LARGE, cfg, [80]) === null, '82 % after the 80 % line — silence (once per level)');
   const c = decide(851000, LARGE, cfg, [80]);
   ok(c && c.level === 85 && /logical cut/.test(c.line) && /\/end-chat-soft/.test(c.line) && /never a forced/.test(c.line), '85 % — finish to a cut, then /end-chat-soft');
   ok(decide(905000, LARGE, cfg, [80, 85]).level === 90 && decide(905000, LARGE, cfg, [80, 85, 90]) === null, '90 % — the order once more, then silence');
   ok(decide(150000, SMALL, { warnPct: 70, closePct: 75 }).level === 75, 'the project\'s own thresholds (70 / 75) are honoured');
+  { const kept = keptLevels(200000, LARGE, [80, 85]), again = decide(800000, LARGE, cfg, keptLevels(800000, LARGE, kept));
+    ok(kept.length === 0 && keptLevels(870000, LARGE, [80, 85]).length === 2 && again && again.level === 80,
+      'after a compaction (87 % → 20 %) the levels re-arm: the 80 % warning comes again when the window refills'); }
   const rec = (u, side = false) => JSON.stringify({ type: 'assistant', isSidechain: side, message: { model: 'claude-opus-5-5', usage: u } });
   const t = [rec({ input_tokens: 2, cache_read_input_tokens: 780000, cache_creation_input_tokens: 2600 }), rec({ input_tokens: 9, cache_read_input_tokens: 10 }, true)].join('\n');
   const lu = lastUsage(t);
@@ -144,8 +156,9 @@ try {
       const st = all[id] || { said: [], seen: 0 };
       st.seen = Math.max(st.seen || 0, lu.used);
       const win = windowOf({ model: lu.model, env: process.env, tokens: cw.tokens, seen: st.seen });
-      const d = decide(lu.used, win, cw, st.said || []);
-      if (d) st.said = [...(st.said || []), d.level];
+      st.said = keptLevels(lu.used, win, st.said || []);
+      const d = decide(lu.used, win, cw, st.said);
+      if (d) st.said = [...st.said, d.level];
       all[id] = { ...st, at: new Date().toISOString() };
       const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
       const kept = {}; for (const k of ids) kept[k] = all[k];
