@@ -1791,7 +1791,8 @@ step with its exit condition:
    written.
 4. **Execute with bookkeeping.** Every case ends in a status — `pass` · `fail` · `blocked` ·
    `skipped` — with the observation named (what ran, what was seen). *Exit:* no case without a
-   status; coverage is the case list, never an impression.
+   status; coverage is the case list, never an impression. **The positive smoke runs first:** the set's `smoke` rows — the user's
+   main action and its read result — are `pass` before the boundary, negative and localisation rows (origin #173).
 5. **Run the control case before calling the feature working.** Turn the controlling flag off /
    remove the controlling parameter and observe the feature NOT work: a feature check that cannot
    fail proves nothing (gate 5 below, applied at feature level).
@@ -1836,7 +1837,8 @@ of the project language:
 7. **A FEATURE marker requires a designed set.** `[TESTED]` on a feature is legal only alongside the
    written case set with its covered dimensions (the activities chain above); a single observation
    flips the marker of a single CASE, never of the feature: "it worked once on the happy path" is a
-   case-level fact.
+   case-level fact. A feature marker and any "done / tested" are illegal while a `smoke` row is not `pass`; a "not verified" line
+   that names the feature's core equals a smoke not run.
 
 Markers are the persistent memory of verification: fable-method's Step 5 verifies *in the moment*; the
 marker preserves that fact **across sessions**, for future agents.
@@ -1892,9 +1894,8 @@ A run that left no artifact is indistinguishable from a run that never happened.
 
 ## Green tests ≠ working — the observation gates
 
-A green suite is one observation, not the verdict (principle 1): whole classes of defects are invisible
-to every test and obvious to one minute of looking. Before "done" on anything that runs, renders, or
-ships, walk the gates that apply:
+A green suite is one observation, not the verdict (principle 1): whole classes of defects are invisible to every test and obvious
+to one minute of looking. Before "done" on anything that runs, renders, or ships, walk the gates that apply:
 
 1. **Live smoke with your eyes on the log.** Run the real process (not only the tests) and read its
    first working cycle in the log — startup, the key operation, no silent error spam.
@@ -1927,11 +1928,9 @@ ships, walk the gates that apply:
    The optional tool module `kaif-guard-lint` (`.kaif/tools/`, `check` / `selftest`) reds on a block
    with a missing field or a rejected `DURABLE-AT`; it fires only on explicit `@guard` / `@forensic`
    markers and never guesses what a guard is.
-6. **After a deploy, the gate is production itself, entered as a user.** Sign in by whatever door
-   the product offers, walk the real screens, read the console — only then is "deployed" a fact.
-   A smoke that only walks public surfaces proves the landing page is alive, not the product: if
-   the product has authenticated state, an unauthenticated smoke is NOT evidence about the
-   product.
+6. **After a deploy, the gate is production itself, entered as a user.** Sign in by whatever door the product offers, walk the
+   real screens, read the console — only then is "deployed" a fact. A smoke that only walks public surfaces proves the landing
+   page is alive, not the product: if the product has authenticated state, an unauthenticated smoke is NOT evidence about it.
 7. **Artifact integrity before shipping.** "It built" and "it is one build" are different claims:
    the shipped bundle carries exactly ONE build identity, asserted mechanically before upload. An
    output directory that is not cleaned between builds ships a mixture of two builds — every
@@ -1942,13 +1941,20 @@ them itself and fails on any red step (where the agent system has hooks, deny th
 And a post-deploy smoke must be able to FAIL on a dead product: prove there was something to measure before
 painting green — a smoke that is greenest when the product is emptiest is worse than no smoke.
 
+## Red is a claim too — earn it like green
+
+A red run is a claim about the THING, and it is earned the way green is (origin #87; the KAIF owner, decision #149: doubt the green
+and the red alike). Before the verdict "broken", print the stand's state — language and locale · the starting state · the data ·
+what changed since the last green. Many reds sharing one condition are the sign of ONE error of measurement: look for the systemic
+cause in the tools and the method first, and call the subject broken only after that cause is ruled out by observation.
+`/fable-judge` hunts a red blamed on the subject with no stand printed (the red-attributed-to-the-subject-unverified hunt).
+
 ## The agent's stand is not the owner's real world — "done" about production comes after the real world
 
-The agent verifies its work on a clean, freshly built stand — a fresh browser, a clean checkout, a
-new user, today's build — and says "done". The owner's world is ACCUMULATED: an old session, a saved
-profile, his own edits in the deployed tree, the cache of the previous build — and there it breaks,
-while every instrument of the agent was green by construction. Before the word "done" about anything
-already in production, the report carries the difference line:
+The agent verifies its work on a clean, freshly built stand — a fresh browser, a clean checkout, a new user, today's build — and
+says "done". The owner's world is ACCUMULATED: an old session, a saved profile, his own edits in the deployed tree, the cache of the
+previous build — and there it breaks, while every instrument of the agent was green by construction. Before the word "done" about
+anything already in production, the report carries the difference line:
 
 ```
 REAL WORLD: accumulated — <what the owner's world already holds: sessions, profiles, data, edits>;
@@ -1966,29 +1972,24 @@ about production without the difference line (the done-without-the-real-world hu
 
 ## The taste class — when the observer must be human
 
-A subjectively-perceptual acceptance criterion (a perception adjective: beautiful, natural,
-pleasant, "feels right") is still verified by observation — but the OBSERVER is the human, by
-necessity, not the agent. The agent's role is to PREPARE the observation: produce a mock-up on the
-project's own material and hand over an artifact to perceive (`AGENT_GUIDE.md` → "The taste
-class"; the homework doc with its two standing fields). The agent's own "sounds good to me" is not
-a verification and never flips a marker; the owner's recorded verdict is.
+A subjectively-perceptual acceptance criterion (a perception adjective: beautiful, natural, pleasant, "feels right") is still
+verified by observation — but the OBSERVER is the human, by necessity, not the agent. The agent's role is to PREPARE the
+observation: produce a mock-up on the project's own material and hand over an artifact to perceive (`AGENT_GUIDE.md` → "The taste
+class"; the homework doc with its two standing fields). The agent's own "sounds good to me" is not a verification and never flips
+a marker; the owner's recorded verdict is.
 
 ## How this composes with the rest of KAIF
 
-- **`REQUIREMENTS_FRAMEWORK.md`** — shapes what is REQUIRED; this framework verifies what was MADE
-  against it. Principle 3 (early testing) is executed at the requirements stage there; deriving the test
-  basis FROM the requirements is step 1 of the chain here; bugs are born where the two meet (`BUG_FIXING_FRAMEWORK.md`).
-- **fable-method** — Step 5 (verify by observation) is HOW one check is done; this framework says WHAT carries a status.
-- **`/fable-judge`** — treats test-status markers as claims: a `[TESTED]` it cannot reproduce is REFUTED.
-- **Its guards** — optional tool modules in `.kaif/tools/` (`.kaif/KAIF_REFERENCE.md` §14): `kaif-guard-lint` (gate 5's
-  declaration block) and `kaif-testrun-lint` (the run report's seven fields; `bug` — the tester's report); advisory.
-- **`BUG_FIXING_FRAMEWORK.md`** — where testing's findings go (one doc per defect; 3 attempts → research).
-- **Spheres** (`.kaif/spheres/`) — the sphere's evidence, its meaning of "verified by observation", its fraud table (principle 6).
-- **The harness** — invest in tooling that makes verification observable and deterministic
-  (`AGENT_GUIDE.md` → Test harness); eyeballing is not testing.
-- **Why a rule here is the way it is** — the field history of the sections that have one (the ticket that
-  paid for a rule, the owner's word) lives in `.kaif/KAIF_REFERENCE.md` §17, under the same heading; read the
-  entry before changing or dropping a rule.
+- **`REQUIREMENTS_FRAMEWORK.md`** shapes what is REQUIRED, this framework verifies what was MADE against it (principle 3 runs
+  there; the test basis is step 1 of the chain here); bugs are born where the two meet, and **`BUG_FIXING_FRAMEWORK.md`** takes
+  them (one doc per defect; 3 attempts → research). **fable-method** Step 5 is HOW one check is done, this framework says WHAT
+  carries a status; **`/fable-judge`** treats markers as claims — a `[TESTED]` it cannot reproduce is REFUTED.
+- **Its guards** — `kaif-guard-lint` (gate 5's declaration block) and `kaif-testrun-lint` (the run report's seven fields; `bug` —
+  the tester's report), optional modules in `.kaif/tools/` (`.kaif/KAIF_REFERENCE.md` §14), advisory; **spheres** — the fraud table,
+  the evidence and the meaning of "verified by observation" of the project's sphere (`.kaif/spheres/`, principle 6); **the harness**
+  — invest in tooling that makes verification observable and deterministic (`AGENT_GUIDE.md` → Test harness); eyeballing is not testing.
+- **Why a rule here is the way it is** — the field history (the ticket that paid, the owner's word) lives in
+  `.kaif/KAIF_REFERENCE.md` §17 under the same heading; read the entry before changing or dropping a rule.
 
 *Grounding: the seven principles and the activities chain are the ISTQB canon (istqb.org; ru: testbase.ru);
 the run report is the ISO/IEC/IEEE 29119-3 test execution log and test completion report, distilled to seven fields.*
@@ -3468,6 +3469,15 @@ instead of any step). The machine hung, and the fuse built for it recorded nothi
 Gates 6–7 and their two placement rules (origin issue #18): three deploys in one night served an application that did not
 start at all, with every local instrument green. KAIF 2.3, epic X. The deploy door and the hook that denies the raw deploy
 command exist because a rule that lives only in a document is a rule the shipping session skips under pressure.
+
+### `TESTING_FRAMEWORK.md` → Red is a claim too — earn it like green
+
+Field-paid (origin #87, a QA deployment): every trust mechanism of the canon pointed one way — at the false green — while the red
+produced by the APPARATUS rather than the subject was no class anywhere, and in spheres where the agent builds the measuring rig it
+was the dominant cost. The KAIF owner, taking the ticket into 2.10 (origin decision #149, rendered): the agent must doubt the green
+and the red alike; many reds that turned red together point at the tools or the method, not at many broken screens. KAIF 2.10, epic HC. The positive smoke first and its marker sentence (activities chain step 4,
+marker rule 7) are field-paid too (origin #173, a QA deployment): the agent checked a template's date window, never pressed the
+template itself, wrote «Tested on build …» with a last line «Not verified: generation by the template …» and moved the ticket to Done.
 
 ### `TESTING_FRAMEWORK.md` → The agent's stand is not the owner's real world — "done" about production comes after the real world
 
@@ -6432,7 +6442,7 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait**, **claim-wider-than-the-observation**, **tested-on-hygiene-alone**, **contour-raised-outside-its-window**, **signal-filed-not-delivered**, **resume-word-ignored**, **standing-falsehood**, **idle-seat-ended-by-the-owner**, **team-seat-refreshed-without-the-constitution**, **live-page-closed-past-its-command**, **question-asked-past-its-archaeology**, **lesson-repeated-without-a-mechanism**, **budget-raised-instead-of-content-moved** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him · a claim is never wider than the observation behind it · hygiene is not a test · the owner's page rises as an app window with its draft alive · filing a KAIF ticket IS delivering it · the first word of the owner's message is an order · a falsehood is corrected where it stands, not in the chat · a free seat asks for work before its turn ends · the constitution is re-read like the core while the team is open · a live owner page is closed only by the command that checks it, and an answer saved on the owner's machine is picked up · a question to the owner is a claim that nothing has settled it yet, and the claim is searched before it is asked · a lesson repeated without a mechanism is a lesson that failed as text · a budget raised to make a gate green is the gate, not the document, being fixed); (8) the KAIF 2.8 hunts in the same block — **re-derived-own-work** (a task on a surface the project already worked on starts from the project's own prior work, cited), **owner's-word-mid-turn-ignored**, **hands-asked-in-the-chat-only**, **parked-and-dropped**, and the KAIF 2.10 hunts **learned-not-recorded** · **closed-as-needs-a-stand** (the system signs the author of a mid-turn message · the owner's hands are asked by a call · a switch parks the task first · a finding is written into the project's documents, not only said). In KAIF rituals this
+> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait**, **claim-wider-than-the-observation**, **tested-on-hygiene-alone**, **contour-raised-outside-its-window**, **signal-filed-not-delivered**, **resume-word-ignored**, **standing-falsehood**, **idle-seat-ended-by-the-owner**, **team-seat-refreshed-without-the-constitution**, **live-page-closed-past-its-command**, **question-asked-past-its-archaeology**, **lesson-repeated-without-a-mechanism**, **budget-raised-instead-of-content-moved** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him · a claim is never wider than the observation behind it · hygiene is not a test · the owner's page rises as an app window with its draft alive · filing a KAIF ticket IS delivering it · the first word of the owner's message is an order · a falsehood is corrected where it stands, not in the chat · a free seat asks for work before its turn ends · the constitution is re-read like the core while the team is open · a live owner page is closed only by the command that checks it, and an answer saved on the owner's machine is picked up · a question to the owner is a claim that nothing has settled it yet, and the claim is searched before it is asked · a lesson repeated without a mechanism is a lesson that failed as text · a budget raised to make a gate green is the gate, not the document, being fixed); (8) the KAIF 2.8 hunts in the same block — **re-derived-own-work** (a task on a surface the project already worked on starts from the project's own prior work, cited), **owner's-word-mid-turn-ignored**, **hands-asked-in-the-chat-only**, **parked-and-dropped**, and the KAIF 2.10 hunts **learned-not-recorded** · **closed-as-needs-a-stand** · **red-attributed-to-the-subject-unverified** · **done-with-the-core-unverified** (the system signs the author of a mid-turn message · the owner's hands are asked by a call · a switch parks the task first · a finding is written into the project's documents, not only said). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -6500,6 +6510,8 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Re-derived own work (KAIF 2.8).** The task sat on a surface the project had already worked on — a route, a device, a stand, a recipe recorded in the house-rules file, `researches/` or the project's tools — and the session re-derived it, or asked the owner for it, without citing its own prior work or writing "no own work found" (`AGENT_GUIDE.md` checklist step 2). Evidence: grep the house-rules file and `researches/` for the surface's name; a hit the report never cites is the finding.
    - **Learned, not recorded (KAIF 2.10).** The session understood something new about the project, or saw a project document say other than what it observed — the chat or the report says so («turns out», «actually it is», «the map is wrong») — and no project document (maps, `STATUS.md`, `EXPERIENCE.md`, the house rules) changed with it; or a closing or loop ritual ran without its `KNOWLEDGE:` line. Evidence: the finding's words in the transcript against `git diff` of the knowledge documents over the session; a `KNOWLEDGE:` line that names a document the diff does not touch is the same finding.
    - **Closed as "needs a stand" (KAIF 2.10).** A case or a settings row the run did not observe is closed with «needs a stand», «needs <state> to verify», «could not set up» — handed to the owner as a need — while the stand's tools exist on the machine (the project's own spawners, remotes, cheats, fixtures, a scratch copy of the data; `TESTING_FRAMEWORK.md` → «What the word "test" means», item 4). Evidence: the report's unobserved rows against the house rules and `tools/` — a stand tool the report never tried is the finding; the only legal stops are the project's own boundaries (the owner's data, destructive and outward acts), named.
+   - **Red attributed to the subject unverified (KAIF 2.10).** A run went red and the report calls the THING broken — «N screens broke», «the update is broken» — with no stand state printed (language and locale · starting state · data · what changed since the last green), or many reds that share one condition (one suite's setup, one locale, one data file) are reported as many defects: red is a claim and is earned like green (`TESTING_FRAMEWORK.md` → «Red is a claim too»). Evidence: the verdict against the stand lines of the same report; the shared condition of the reds. Fixture: yesterday 28 of 28 green, today 11 suites red together, the report files 11 defects — the finding: a red attributed to the subject unverified.
+   - **Done whose own comment lists the core as not verified (KAIF 2.10).** A "done / tested" or a feature `[TESTED]` while the case set's `smoke` row — the user's main action and its read result — is not `pass`, or while the same report's "not verified" line names the feature's main action (`TESTING_FRAMEWORK.md` → the activities chain step 4, marker rule 7). Evidence: the `smoke` row's status; the "not verified" lines against the feature's main action. Fixture: the boundary rows `pass`, the `smoke` row `not-run`, the report says «done» — the finding.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.

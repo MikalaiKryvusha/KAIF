@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.9",
   "released": "2026-10-16",
-  "moduleCount": 843,
+  "moduleCount": 845,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -617,19 +617,19 @@
       {
         "signature": "## The testing activities — the chain that makes \"tested\" mean something",
         "class": "static",
-        "sha256": "dc1ba001e7aa225f11a380b8ceb6bb3499f736ad2a1c4da4f277f742ec24ff5e",
+        "sha256": "a0b2b1f85b4a8bc361e10ad8aea3978d6809fb76fccaf742c54108513226caee",
         "lines": [
           48,
-          82
+          83
         ]
       },
       {
         "signature": "## Test-status markers — the trust contract",
         "class": "static",
-        "sha256": "dafe75ef2a65809e0e8e54a1235d85ed87ea0ffac734dc44bd81838ff0c4a7a8",
+        "sha256": "f09220bfed36c5c5c91d59d0746ebb1d4c5e47d6be9a6c2b7743332df39b6f09",
         "lines": [
-          83,
-          118
+          84,
+          120
         ]
       },
       {
@@ -637,8 +637,8 @@
         "class": "static",
         "sha256": "68e7c8fdac96d97b08cf17851e0ea66d828c340f26281611a1e17328f6ec2c1a",
         "lines": [
-          119,
-          138
+          121,
+          140
         ]
       },
       {
@@ -646,44 +646,53 @@
         "class": "static",
         "sha256": "fc232dd2e2ed6e50b7589ef1f3802b926349986a668700c22e64c12e7a469ee1",
         "lines": [
-          139,
-          167
+          141,
+          169
         ]
       },
       {
         "signature": "## Green tests ≠ working — the observation gates",
         "class": "static",
-        "sha256": "957dc18756e31a76b916d97bcdaedfa14a5bc8f7cf367e0034a4685bb281f474",
+        "sha256": "d46ad78d79510749888203a9255eec4327ad8e0031d568edfc2a34bc90f6e3e8",
         "lines": [
-          168,
-          219
+          170,
+          218
+        ]
+      },
+      {
+        "signature": "## Red is a claim too — earn it like green",
+        "class": "static",
+        "sha256": "b1a41eed6c8660eec11e59c95c274a679248b013806443c12eb02b153be1974f",
+        "lines": [
+          219,
+          226
         ]
       },
       {
         "signature": "## The agent's stand is not the owner's real world — \"done\" about production comes after the real world",
         "class": "static",
-        "sha256": "892562f7c7c1a4739ed79a6c5242be280bc7e5b0f950b140370f0a3a43aa282f",
+        "sha256": "20508b580749df0c27e51c820ccddf7d2cb5ddd3d3b804f9da7da4595b615124",
         "lines": [
-          220,
-          241
+          227,
+          247
         ]
       },
       {
         "signature": "## The taste class — when the observer must be human",
         "class": "static",
-        "sha256": "e22be2ed284056a7f46c6c74f9bfa66e5576d38d76c43049a5460c23808ebe99",
+        "sha256": "4cc0726bdd004786af1c1c22afe205280c0ad57d645d24ea5aa05d1baad62556",
         "lines": [
-          242,
-          250
+          248,
+          255
         ]
       },
       {
         "signature": "## How this composes with the rest of KAIF",
         "class": "static",
-        "sha256": "bd4cd41d3d9d56edd0bd6b5988a56d7e056caa4344ebf717935ce3acd00826d2",
+        "sha256": "a4acc9485d67a6c629ecd0a8b6c4492c51596fe554f5c4c1518574647a8e19e7",
         "lines": [
-          251,
-          270
+          256,
+          271
         ]
       }
     ],
@@ -1634,12 +1643,21 @@
         ]
       },
       {
+        "signature": "### `TESTING_FRAMEWORK.md` → Red is a claim too — earn it like green",
+        "class": "static",
+        "sha256": "2b681b6c64836963e93dce4e6e93a20d0ba1b54b6b165b9d734f82725f558e28",
+        "lines": [
+          740,
+          748
+        ]
+      },
+      {
         "signature": "### `TESTING_FRAMEWORK.md` → The agent's stand is not the owner's real world — \"done\" about production comes after the real world",
         "class": "static",
         "sha256": "826946b97cc4b1cfe8b0436ef94df455e5f4fd36a1a47631942879c479647aaf",
         "lines": [
-          740,
-          745
+          749,
+          754
         ]
       },
       {
@@ -1647,8 +1665,8 @@
         "class": "static",
         "sha256": "978a252ba4a8e44c79b42a7690f1137152355d50489cab33544504ac67429dfe",
         "lines": [
-          746,
-          773
+          755,
+          782
         ]
       },
       {
@@ -1656,8 +1674,8 @@
         "class": "static",
         "sha256": "fef4a9cd8b9166636f67870d0b6b3d29651a72afda1a2c921083073ee9877f5f",
         "lines": [
-          774,
-          812
+          783,
+          821
         ]
       },
       {
@@ -1665,8 +1683,8 @@
         "class": "static",
         "sha256": "1d6c9d864f839f77a25d160c64894f35bc8d0301f32360b99dce13f54cc1d287",
         "lines": [
-          813,
-          817
+          822,
+          826
         ]
       },
       {
@@ -1674,8 +1692,8 @@
         "class": "static",
         "sha256": "c1515f210fed3042b01d558d2e8c80b9b697a3f267b2e2bb4bbb1c22394e7a64",
         "lines": [
-          818,
-          822
+          827,
+          831
         ]
       },
       {
@@ -1683,8 +1701,8 @@
         "class": "static",
         "sha256": "7af7735e7828f03a80677aeb4da3b1b00e561dcc78be863fcbdfa48054175514",
         "lines": [
-          823,
-          833
+          832,
+          842
         ]
       },
       {
@@ -1692,8 +1710,8 @@
         "class": "static",
         "sha256": "6623e80c05377f674c5de22ca1dce0ecf413fd3a33f455e1581302aee8022622",
         "lines": [
-          834,
-          838
+          843,
+          847
         ]
       },
       {
@@ -1701,8 +1719,8 @@
         "class": "static",
         "sha256": "15b64e071993fe1280a6ed93d597b4d71fc45a3e86552aec746f5c3b71b95f35",
         "lines": [
-          839,
-          845
+          848,
+          854
         ]
       },
       {
@@ -1710,8 +1728,8 @@
         "class": "static",
         "sha256": "bbec52047f81840075f57f1bc71267543b664b776ea3c7dbf59b28774f3760d1",
         "lines": [
-          846,
-          871
+          855,
+          880
         ]
       },
       {
@@ -1719,8 +1737,8 @@
         "class": "static",
         "sha256": "780561c508848fd6231edb22a7c2b6af355bac3ee5042d1a5a4bdfed68dfc78c",
         "lines": [
-          872,
-          885
+          881,
+          894
         ]
       },
       {
@@ -1728,8 +1746,8 @@
         "class": "static",
         "sha256": "37270bdb49877ebc54fb99fbe8468b16bddd65c83b0d5c03ab93afd9eab883ef",
         "lines": [
-          886,
-          894
+          895,
+          903
         ]
       },
       {
@@ -1737,8 +1755,8 @@
         "class": "static",
         "sha256": "9811ab96edcfd4a192ac5af1654029b54a29e6f971a66d8c56af275a0acbf91d",
         "lines": [
-          895,
-          905
+          904,
+          914
         ]
       },
       {
@@ -1746,8 +1764,8 @@
         "class": "static",
         "sha256": "5639bdfbaca5ee8c80f4d969046e0c29592c2090cb463d21e7eb9179439703cd",
         "lines": [
-          906,
-          912
+          915,
+          921
         ]
       },
       {
@@ -1755,8 +1773,8 @@
         "class": "static",
         "sha256": "886030ff7772213a7eecbb2d5c708e9129b98b65af4a26cd4c2565f8fdeab406",
         "lines": [
-          913,
-          918
+          922,
+          927
         ]
       },
       {
@@ -1764,8 +1782,8 @@
         "class": "static",
         "sha256": "edc770e5d3fc57562a917bba949792b7f7632f740769440ab6a2bd6250f597d3",
         "lines": [
-          919,
-          923
+          928,
+          932
         ]
       },
       {
@@ -1773,8 +1791,8 @@
         "class": "static",
         "sha256": "c008f51946a3babc7d769a80a6bcc91691d316c3e29d795d3c9c9ba72f87172c",
         "lines": [
-          924,
-          929
+          933,
+          938
         ]
       },
       {
@@ -1782,8 +1800,8 @@
         "class": "static",
         "sha256": "c6bcce46ea3dcfecf55938dbb3dc74ba4ca762d696e75ecf8b8286e9af18cc47",
         "lines": [
-          930,
-          936
+          939,
+          945
         ]
       },
       {
@@ -1791,8 +1809,8 @@
         "class": "static",
         "sha256": "f3b1b877673c263545adbc32cda0cc3e3bc0e9459f9bbfbc97a84df8658924b9",
         "lines": [
-          937,
-          942
+          946,
+          951
         ]
       },
       {
@@ -1800,8 +1818,8 @@
         "class": "static",
         "sha256": "0d503ab49ceb631eaee2884db612d0745a553a31f70328764a928c6a49263555",
         "lines": [
-          943,
-          947
+          952,
+          956
         ]
       }
     ],
@@ -2664,7 +2682,7 @@
       {
         "signature": "<preamble>",
         "class": "adaptive",
-        "sha256": "0e007e85fb1fb777246a3caef8747da990e2b4c219d8837a05b924a7c80963c7",
+        "sha256": "3c3fb58306ddf7f980df3560ddaddf702408e0839d37ac0f9ee4bfc308dfa7e1",
         "lines": [
           1,
           18
@@ -2682,10 +2700,10 @@
       {
         "signature": "## Default mode: judge the work",
         "class": "static",
-        "sha256": "5cefc70120b852bd5b790bc5bdb44e8240deb31838882cd9244ac5896b0c356e",
+        "sha256": "35d0c2ed227f4fe9904987bba26baac4ec0073665b4cd26205ed586d6f017535",
         "lines": [
           23,
-          90
+          92
         ]
       },
       {
@@ -2693,8 +2711,8 @@
         "class": "static",
         "sha256": "f876b26ca5fd1ff851d5f6b33eb446ab1b024115b33fa00ee98d880dcfcd40e7",
         "lines": [
-          91,
-          96
+          93,
+          98
         ]
       }
     ],

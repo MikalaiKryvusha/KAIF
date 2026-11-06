@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "914e577b0895be8dd7483651b306976af8c75697a9134e289a69dc8d1681c49c",
+    "sourceTree": "80bb0cca571301efc0f5a065cc297c9c66d3df47902ba8ca9db6cd89945ceb63",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -110,6 +110,7 @@
       "A FINDING IS WRITTEN WHERE IT LIVES, IN THE SAME TURN (2.10, epic MM; origin tickets #160 · #159 — the KAIF owner on a field project, rendered from Russian: \"something changed? the knowledge documents say otherwise? you MUST edit them\"): the closing rituals (`/end-chat-soft`, `/end-chat-force` step 1) and the loops (`/autoloop` step 9, `/dayloop` and `/nightloop` step 5) say a `KNOWLEDGE:` line — what was understood anew or found stale and the document it is written in now, or «nothing new»; the checklist line «Check the map & blast radius» and the footnotes of both maps ask for the line in the same turn, not on a commit; `/fable-judge` hunts «Learned, not recorded». Nothing to migrate: the rule acts from the next session.",
       "THE KNOWLEDGE HOOK SPEAKS AT THE MOMENTS A MEMORY IS WRITTEN (2.10, epic MM; origin tickets #160 · #159 · #186 — a field deployment carried its own knowledge hook, whose one ten-minute window swallowed every novelty moment): the refresh-hooks module ships an eighth script, `.kaif/hooks/knowledge-moment.mjs` — on the owner's prompt, a failed tool call, a Read of a knowledge document and the first touch of a component with `NOTES.md`, and on the first Read of a project source file (quoting what the docs say of it, or ordering one line into the map when no doc names it), it puts one line into the context: write what you understood into the project document where it lives, in this turn; plain tool results add weight and it speaks once per twelve. It never blocks and never stops a turn; its state is `.kaif/knowledge-moment.json` (ignored). `wire-hooks` wires it under UserPromptSubmit, PostToolUse and PostToolUseFailure; Claude Code only.",
       "THE WINDOW WARNS AT 80 %, THE SOFT CLOSURE STARTS AT 85 % (2.10, epic PT; origin ticket #188 and its comment — two field deployments carried their own budget hook; one agent read a warning that spoke of closing as the closure and stopped working with 30 % of the window left): the refresh-hooks module ships a ninth script, `.kaif/hooks/context-window.mjs` — on the owner's prompt and after each tool result it reads the session's used share of the window; at `contextWindow.warnPct` (80) one warning with no closing word, at `closePct` (85) «finish to a logical cut, then /end-chat-soft», never a forced closure. The window size follows the vendor's model rule unless `contextWindow.tokens` is set. A project that wired its own budget hook keeps it — compare the thresholds and keep one.",
+      "RED IS A CLAIM TOO, AND THE POSITIVE SMOKE RUNS FIRST (2.10, epic HC; origin tickets #87 · #173 — two QA deployments: a red produced by the measuring rig was no class anywhere; a feature was moved to Done with its main action never pressed): `TESTING_FRAMEWORK.md` gains the section \"Red is a claim too — earn it like green\" (before the verdict \"broken\" print the stand — language and locale · starting state · data · what changed since the last green; many reds sharing one condition are one error of measurement until ruled out), the activities chain step 4 runs the `smoke` rows first, and marker rule 7 makes a feature marker and any \"done / tested\" illegal while a `smoke` row is not `pass`; `/fable-judge` hunts both. The section \"How this composes\" is shortened by merged bullets, nothing dropped. A localized deployment carries the new section in the owner's language.",
       "YOU WROTE CODE — RUN IT BEFORE YOU STOP (2.10, epic HC; origin tickets #175 · #176 — two field deployments of one owner carried their own testing hook; the owner, rendered from Russian: \"the agent wrote code → the hook ORDERS it tested\" · \"the agent does not ask the owner's permission\"): the refresh-hooks module ships a tenth script, `.kaif/hooks/test-after-code.mjs` — a write of a file that changes the product becomes a test debt, only a run of its own kind clears it (a build, a linter, `--check`, `--help`, a heredoc body never do), and the stop of a turn with debt is refused once with the list; a repeated stop with nothing new written passes. Without project data it judges source files and clears a file by running it; a project that has a game, a device or a deploy names its kinds, runs and deploys in `.kaif/kaif.json` → `testHook`. `wire-hooks` adds it under `PostToolUse` and `Stop`; a project that carried its own testing hook keeps only its kinds and patterns as data.",
       "THE STAND IS THE AGENT'S (2.10, epic HC; origin ticket #189 — the KAIF owner on a field project, rendered from Russian: \"the whole machine with the game is yours — set up for yourself whatever you need\"): the testing canon says it in «What the word \"test\" means», item 4 — the test's conditions are built by the agent with what its machine allows, an unobserved case is reported with the stand step done next, never as «needs a stand» handed to the owner; `/fable-judge` hunts «Closed as \"needs a stand\"». A project whose house rules already say it keeps them; nothing to migrate.",
       "POINTERS FOLLOW THE ROWS 2.8 MOVED (2.10, epic HC; origin ticket #119, second case): the harness rule of the bug-fixing canon now writes a new harness command's row into `HOUSE_RULES.md` → \"Stands, environments and devices\" (it said \"document it in AGENT_GUIDE.md\"), and `/code-revision`, `/autoloop` and `/resume` point at the house-rules tables, not the guide; the build refuses the old forms. MIGRATION — agent work: none, unless your own texts repeat one of these pointers."
@@ -563,6 +564,12 @@
     "files": {
       ".claude/skills/resume/SKILL.md": [
         "## Step 0. The chat's FIRST `/resume` — read the previous chat's farewell"
+      ],
+      ".kaif/KAIF_REFERENCE.md": [
+        "### `TESTING_FRAMEWORK.md` → Red is a claim too — earn it like green"
+      ],
+      "TESTING_FRAMEWORK.md": [
+        "## Red is a claim too — earn it like green"
       ]
     }
   }
@@ -2217,7 +2224,8 @@ step with its exit condition:
    written.
 4. **Execute with bookkeeping.** Every case ends in a status — `pass` · `fail` · `blocked` ·
    `skipped` — with the observation named (what ran, what was seen). *Exit:* no case without a
-   status; coverage is the case list, never an impression.
+   status; coverage is the case list, never an impression. **The positive smoke runs first:** the set's `smoke` rows — the user's
+   main action and its read result — are `pass` before the boundary, negative and localisation rows (origin #173).
 5. **Run the control case before calling the feature working.** Turn the controlling flag off /
    remove the controlling parameter and observe the feature NOT work: a feature check that cannot
    fail proves nothing (gate 5 below, applied at feature level).
@@ -2262,7 +2270,8 @@ of the project language:
 7. **A FEATURE marker requires a designed set.** `[TESTED]` on a feature is legal only alongside the
    written case set with its covered dimensions (the activities chain above); a single observation
    flips the marker of a single CASE, never of the feature: "it worked once on the happy path" is a
-   case-level fact.
+   case-level fact. A feature marker and any "done / tested" are illegal while a `smoke` row is not `pass`; a "not verified" line
+   that names the feature's core equals a smoke not run.
 
 Markers are the persistent memory of verification: fable-method's Step 5 verifies *in the moment*; the
 marker preserves that fact **across sessions**, for future agents.
@@ -2318,9 +2327,8 @@ A run that left no artifact is indistinguishable from a run that never happened.
 
 ## Green tests ≠ working — the observation gates
 
-A green suite is one observation, not the verdict (principle 1): whole classes of defects are invisible
-to every test and obvious to one minute of looking. Before "done" on anything that runs, renders, or
-ships, walk the gates that apply:
+A green suite is one observation, not the verdict (principle 1): whole classes of defects are invisible to every test and obvious
+to one minute of looking. Before "done" on anything that runs, renders, or ships, walk the gates that apply:
 
 1. **Live smoke with your eyes on the log.** Run the real process (not only the tests) and read its
    first working cycle in the log — startup, the key operation, no silent error spam.
@@ -2353,11 +2361,9 @@ ships, walk the gates that apply:
    The optional tool module `kaif-guard-lint` (`.kaif/tools/`, `check` / `selftest`) reds on a block
    with a missing field or a rejected `DURABLE-AT`; it fires only on explicit `@guard` / `@forensic`
    markers and never guesses what a guard is.
-6. **After a deploy, the gate is production itself, entered as a user.** Sign in by whatever door
-   the product offers, walk the real screens, read the console — only then is "deployed" a fact.
-   A smoke that only walks public surfaces proves the landing page is alive, not the product: if
-   the product has authenticated state, an unauthenticated smoke is NOT evidence about the
-   product.
+6. **After a deploy, the gate is production itself, entered as a user.** Sign in by whatever door the product offers, walk the
+   real screens, read the console — only then is "deployed" a fact. A smoke that only walks public surfaces proves the landing
+   page is alive, not the product: if the product has authenticated state, an unauthenticated smoke is NOT evidence about it.
 7. **Artifact integrity before shipping.** "It built" and "it is one build" are different claims:
    the shipped bundle carries exactly ONE build identity, asserted mechanically before upload. An
    output directory that is not cleaned between builds ships a mixture of two builds — every
@@ -2368,13 +2374,20 @@ them itself and fails on any red step (where the agent system has hooks, deny th
 And a post-deploy smoke must be able to FAIL on a dead product: prove there was something to measure before
 painting green — a smoke that is greenest when the product is emptiest is worse than no smoke.
 
+## Red is a claim too — earn it like green
+
+A red run is a claim about the THING, and it is earned the way green is (origin #87; the KAIF owner, decision #149: doubt the green
+and the red alike). Before the verdict "broken", print the stand's state — language and locale · the starting state · the data ·
+what changed since the last green. Many reds sharing one condition are the sign of ONE error of measurement: look for the systemic
+cause in the tools and the method first, and call the subject broken only after that cause is ruled out by observation.
+`/fable-judge` hunts a red blamed on the subject with no stand printed (the red-attributed-to-the-subject-unverified hunt).
+
 ## The agent's stand is not the owner's real world — "done" about production comes after the real world
 
-The agent verifies its work on a clean, freshly built stand — a fresh browser, a clean checkout, a
-new user, today's build — and says "done". The owner's world is ACCUMULATED: an old session, a saved
-profile, his own edits in the deployed tree, the cache of the previous build — and there it breaks,
-while every instrument of the agent was green by construction. Before the word "done" about anything
-already in production, the report carries the difference line:
+The agent verifies its work on a clean, freshly built stand — a fresh browser, a clean checkout, a new user, today's build — and
+says "done". The owner's world is ACCUMULATED: an old session, a saved profile, his own edits in the deployed tree, the cache of the
+previous build — and there it breaks, while every instrument of the agent was green by construction. Before the word "done" about
+anything already in production, the report carries the difference line:
 
 ```
 REAL WORLD: accumulated — <what the owner's world already holds: sessions, profiles, data, edits>;
@@ -2392,29 +2405,24 @@ about production without the difference line (the done-without-the-real-world hu
 
 ## The taste class — when the observer must be human
 
-A subjectively-perceptual acceptance criterion (a perception adjective: beautiful, natural,
-pleasant, "feels right") is still verified by observation — but the OBSERVER is the human, by
-necessity, not the agent. The agent's role is to PREPARE the observation: produce a mock-up on the
-project's own material and hand over an artifact to perceive (`AGENT_GUIDE.md` → "The taste
-class"; the homework doc with its two standing fields). The agent's own "sounds good to me" is not
-a verification and never flips a marker; the owner's recorded verdict is.
+A subjectively-perceptual acceptance criterion (a perception adjective: beautiful, natural, pleasant, "feels right") is still
+verified by observation — but the OBSERVER is the human, by necessity, not the agent. The agent's role is to PREPARE the
+observation: produce a mock-up on the project's own material and hand over an artifact to perceive (`AGENT_GUIDE.md` → "The taste
+class"; the homework doc with its two standing fields). The agent's own "sounds good to me" is not a verification and never flips
+a marker; the owner's recorded verdict is.
 
 ## How this composes with the rest of KAIF
 
-- **`REQUIREMENTS_FRAMEWORK.md`** — shapes what is REQUIRED; this framework verifies what was MADE
-  against it. Principle 3 (early testing) is executed at the requirements stage there; deriving the test
-  basis FROM the requirements is step 1 of the chain here; bugs are born where the two meet (`BUG_FIXING_FRAMEWORK.md`).
-- **fable-method** — Step 5 (verify by observation) is HOW one check is done; this framework says WHAT carries a status.
-- **`/fable-judge`** — treats test-status markers as claims: a `[TESTED]` it cannot reproduce is REFUTED.
-- **Its guards** — optional tool modules in `.kaif/tools/` (`.kaif/KAIF_REFERENCE.md` §14): `kaif-guard-lint` (gate 5's
-  declaration block) and `kaif-testrun-lint` (the run report's seven fields; `bug` — the tester's report); advisory.
-- **`BUG_FIXING_FRAMEWORK.md`** — where testing's findings go (one doc per defect; 3 attempts → research).
-- **Spheres** (`.kaif/spheres/`) — the sphere's evidence, its meaning of "verified by observation", its fraud table (principle 6).
-- **The harness** — invest in tooling that makes verification observable and deterministic
-  (`AGENT_GUIDE.md` → Test harness); eyeballing is not testing.
-- **Why a rule here is the way it is** — the field history of the sections that have one (the ticket that
-  paid for a rule, the owner's word) lives in `.kaif/KAIF_REFERENCE.md` §17, under the same heading; read the
-  entry before changing or dropping a rule.
+- **`REQUIREMENTS_FRAMEWORK.md`** shapes what is REQUIRED, this framework verifies what was MADE against it (principle 3 runs
+  there; the test basis is step 1 of the chain here); bugs are born where the two meet, and **`BUG_FIXING_FRAMEWORK.md`** takes
+  them (one doc per defect; 3 attempts → research). **fable-method** Step 5 is HOW one check is done, this framework says WHAT
+  carries a status; **`/fable-judge`** treats markers as claims — a `[TESTED]` it cannot reproduce is REFUTED.
+- **Its guards** — `kaif-guard-lint` (gate 5's declaration block) and `kaif-testrun-lint` (the run report's seven fields; `bug` —
+  the tester's report), optional modules in `.kaif/tools/` (`.kaif/KAIF_REFERENCE.md` §14), advisory; **spheres** — the fraud table,
+  the evidence and the meaning of "verified by observation" of the project's sphere (`.kaif/spheres/`, principle 6); **the harness**
+  — invest in tooling that makes verification observable and deterministic (`AGENT_GUIDE.md` → Test harness); eyeballing is not testing.
+- **Why a rule here is the way it is** — the field history (the ticket that paid, the owner's word) lives in
+  `.kaif/KAIF_REFERENCE.md` §17 under the same heading; read the entry before changing or dropping a rule.
 
 *Grounding: the seven principles and the activities chain are the ISTQB canon (istqb.org; ru: testbase.ru);
 the run report is the ISO/IEC/IEEE 29119-3 test execution log and test completion report, distilled to seven fields.*
@@ -3884,6 +3892,15 @@ instead of any step). The machine hung, and the fuse built for it recorded nothi
 Gates 6–7 and their two placement rules (origin issue #18): three deploys in one night served an application that did not
 start at all, with every local instrument green. KAIF 2.3, epic X. The deploy door and the hook that denies the raw deploy
 command exist because a rule that lives only in a document is a rule the shipping session skips under pressure.
+
+### `TESTING_FRAMEWORK.md` → Red is a claim too — earn it like green
+
+Field-paid (origin #87, a QA deployment): every trust mechanism of the canon pointed one way — at the false green — while the red
+produced by the APPARATUS rather than the subject was no class anywhere, and in spheres where the agent builds the measuring rig it
+was the dominant cost. The KAIF owner, taking the ticket into 2.10 (origin decision #149, rendered): the agent must doubt the green
+and the red alike; many reds that turned red together point at the tools or the method, not at many broken screens. KAIF 2.10, epic HC. The positive smoke first and its marker sentence (activities chain step 4,
+marker rule 7) are field-paid too (origin #173, a QA deployment): the agent checked a template's date window, never pressed the
+template itself, wrote «Tested on build …» with a last line «Not verified: generation by the template …» and moved the ticket to Done.
 
 ### `TESTING_FRAMEWORK.md` → The agent's stand is not the owner's real world — "done" about production comes after the real world
 
@@ -5531,7 +5548,7 @@ description: Adversarial verification of finished work. Treats any "done" as a s
 > KAIF 2.1–2.2 hunts inside that block — **identity-without-an-author**, **timer-fed heartbeat**,
 > **mutation addressivity**, **refresh-witness** (judgment boundaries · the guarded loop · craft
 > prostheses · the context-refresh contour); (5) the KAIF 2.5 hunts in the same block —
-> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait**, **claim-wider-than-the-observation**, **tested-on-hygiene-alone**, **contour-raised-outside-its-window**, **signal-filed-not-delivered**, **resume-word-ignored**, **standing-falsehood**, **idle-seat-ended-by-the-owner**, **team-seat-refreshed-without-the-constitution**, **live-page-closed-past-its-command**, **question-asked-past-its-archaeology**, **lesson-repeated-without-a-mechanism**, **budget-raised-instead-of-content-moved** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him · a claim is never wider than the observation behind it · hygiene is not a test · the owner's page rises as an app window with its draft alive · filing a KAIF ticket IS delivering it · the first word of the owner's message is an order · a falsehood is corrected where it stands, not in the chat · a free seat asks for work before its turn ends · the constitution is re-read like the core while the team is open · a live owner page is closed only by the command that checks it, and an answer saved on the owner's machine is picked up · a question to the owner is a claim that nothing has settled it yet, and the claim is searched before it is asked · a lesson repeated without a mechanism is a lesson that failed as text · a budget raised to make a gate green is the gate, not the document, being fixed); (8) the KAIF 2.8 hunts in the same block — **re-derived-own-work** (a task on a surface the project already worked on starts from the project's own prior work, cited), **owner's-word-mid-turn-ignored**, **hands-asked-in-the-chat-only**, **parked-and-dropped**, and the KAIF 2.10 hunts **learned-not-recorded** · **closed-as-needs-a-stand** (the system signs the author of a mid-turn message · the owner's hands are asked by a call · a switch parks the task first · a finding is written into the project's documents, not only said). In KAIF rituals this
+> **fork-without-recon**, **early-finish** (the fourth door · the guarded loop's armed boundary); (6) the KAIF 2.6 hunts in the same block — **question-without-scenario**, **mechanic-asks-the-owner**, **confusion-as-verdict**, **recency-ranked-over-metric**, **done-without-the-real-world**, **owner-text-in-agent-vocabulary** (the customer's language · complete mechanics only · the owner's proposal is researched, never declared broken · the fresh word is ranked by the metric · "done" about production comes after the owner's real world · the owner reads meanings, never the agent's codes); (7) the KAIF 2.7 hunts in the same block — **agent-decision-worn-as-the-owner's-word**, **tested-without-a-run-report**, **owner-text-past-the-portrait**, **claim-wider-than-the-observation**, **tested-on-hygiene-alone**, **contour-raised-outside-its-window**, **signal-filed-not-delivered**, **resume-word-ignored**, **standing-falsehood**, **idle-seat-ended-by-the-owner**, **team-seat-refreshed-without-the-constitution**, **live-page-closed-past-its-command**, **question-asked-past-its-archaeology**, **lesson-repeated-without-a-mechanism**, **budget-raised-instead-of-content-moved** (the authorship of a decision: the owner's word is a quote, the agent's word is signed · an executed run leaves a seven-field report and the claim names it · a text the owner reads as his own is written BY his voice portrait, checked independently by it, fixed — and only then written and brought to him · a claim is never wider than the observation behind it · hygiene is not a test · the owner's page rises as an app window with its draft alive · filing a KAIF ticket IS delivering it · the first word of the owner's message is an order · a falsehood is corrected where it stands, not in the chat · a free seat asks for work before its turn ends · the constitution is re-read like the core while the team is open · a live owner page is closed only by the command that checks it, and an answer saved on the owner's machine is picked up · a question to the owner is a claim that nothing has settled it yet, and the claim is searched before it is asked · a lesson repeated without a mechanism is a lesson that failed as text · a budget raised to make a gate green is the gate, not the document, being fixed); (8) the KAIF 2.8 hunts in the same block — **re-derived-own-work** (a task on a surface the project already worked on starts from the project's own prior work, cited), **owner's-word-mid-turn-ignored**, **hands-asked-in-the-chat-only**, **parked-and-dropped**, and the KAIF 2.10 hunts **learned-not-recorded** · **closed-as-needs-a-stand** · **red-attributed-to-the-subject-unverified** · **done-with-the-core-unverified** (the system signs the author of a mid-turn message · the owner's hands are asked by a call · a switch parks the task first · a finding is written into the project's documents, not only said). In KAIF rituals this
 > judge pass is MANDATORY before a cycle marks a backlog item done, **before EVERY push and every
 > deploy** (the cheapest point where everything still rolls back), and before `/release` publishes.
 > Sync ritual: before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
@@ -5599,6 +5616,8 @@ Target: the most recent completed piece of work in this conversation, or whateve
    - **Re-derived own work (KAIF 2.8).** The task sat on a surface the project had already worked on — a route, a device, a stand, a recipe recorded in the house-rules file, `researches/` or the project's tools — and the session re-derived it, or asked the owner for it, without citing its own prior work or writing "no own work found" (`AGENT_GUIDE.md` checklist step 2). Evidence: grep the house-rules file and `researches/` for the surface's name; a hit the report never cites is the finding.
    - **Learned, not recorded (KAIF 2.10).** The session understood something new about the project, or saw a project document say other than what it observed — the chat or the report says so («turns out», «actually it is», «the map is wrong») — and no project document (maps, `STATUS.md`, `EXPERIENCE.md`, the house rules) changed with it; or a closing or loop ritual ran without its `KNOWLEDGE:` line. Evidence: the finding's words in the transcript against `git diff` of the knowledge documents over the session; a `KNOWLEDGE:` line that names a document the diff does not touch is the same finding.
    - **Closed as "needs a stand" (KAIF 2.10).** A case or a settings row the run did not observe is closed with «needs a stand», «needs <state> to verify», «could not set up» — handed to the owner as a need — while the stand's tools exist on the machine (the project's own spawners, remotes, cheats, fixtures, a scratch copy of the data; `TESTING_FRAMEWORK.md` → «What the word "test" means», item 4). Evidence: the report's unobserved rows against the house rules and `tools/` — a stand tool the report never tried is the finding; the only legal stops are the project's own boundaries (the owner's data, destructive and outward acts), named.
+   - **Red attributed to the subject unverified (KAIF 2.10).** A run went red and the report calls the THING broken — «N screens broke», «the update is broken» — with no stand state printed (language and locale · starting state · data · what changed since the last green), or many reds that share one condition (one suite's setup, one locale, one data file) are reported as many defects: red is a claim and is earned like green (`TESTING_FRAMEWORK.md` → «Red is a claim too»). Evidence: the verdict against the stand lines of the same report; the shared condition of the reds. Fixture: yesterday 28 of 28 green, today 11 suites red together, the report files 11 defects — the finding: a red attributed to the subject unverified.
+   - **Done whose own comment lists the core as not verified (KAIF 2.10).** A "done / tested" or a feature `[TESTED]` while the case set's `smoke` row — the user's main action and its read result — is not `pass`, or while the same report's "not verified" line names the feature's main action (`TESTING_FRAMEWORK.md` → the activities chain step 4, marker rule 7). Evidence: the `smoke` row's status; the "not verified" lines against the feature's main action. Fixture: the boundary rows `pass`, the `smoke` row `not-run`, the report says «done» — the finding.
    **Non-code work is judged by its sphere's fraud table.** If the work is not software (the project's sphere in `.kaif/kaif.json` is science, design, business, or another), read the project's deployed KAIF sphere library and hunt ITS fraud table (fabricated statistics, stale figures, budget fiction, silent data cleaning...) with the same stance: the deliverable's claims are verified against the sources and rules the sphere names, e.g. copy checked line-by-line against the brand doc, figures re-fetched, arithmetic recomputed.
 5. **Deliver the verdict, evidence first.**
    - **VERIFIED** - every load-bearing claim reproduced, no frauds found.
@@ -21481,8 +21500,8 @@ process.exit(0);
 // Kinds and patterns are the PROJECT's data (`.kaif/kaif.json` → `testHook`, shape below); the mechanism is the framework's. Without data
 // one kind `code`: a source file of the project (the extensions of the knowledge hook, configs excluded) cleared by a command that RUNS
 // the file — its name in the command, the command not hygiene.
-//   "testHook": { "kinds": { "<kind>": { "files": ["<regex on the path from the root>", …], "runs": ["<regex on the command>", …] } },
-//                 "hygiene": ["<regex>", …], "deploys": ["<regex on the command>", …], "deployKind": "<kind a deploy is debt of>" }
+//   "testHook": { "kinds": { "<kind>": { "files": ["<regex on the path from the root>", …], "runs": ["<regex on a segment of the command>", …] } },
+//                 "hygiene": ["<regex>", …], "deploys": ["<regex on a segment of the command>", …], "deployKind": "<kind a deploy is debt of>" }
 // A run that does not match the project's own self-tests is the project's job: keep `runs` disjoint from them (field: a guards self-test
 // matched the game-run pattern and cleared a deploy debt).
 //   node .kaif/hooks/test-after-code.mjs                    # a Claude Code event on stdin
@@ -21499,9 +21518,12 @@ process.exit(0);
 //  itself 3/3, no debt left; the same with «do not run anything» — the stop refused with the list 3/3, the session still ended 3/3 (two
 //  waived with the owner's reason, one ended with the debt standing — the repeated stop passed); control on the v2.9 dist
 //  (16:26:28 → 16:27:21): no hook, the session ran the file 0/3; after the light judge's fixes (a run = the file as an interpreter's
-//  script; once per debt signature) the same probe 16:41:21 → 16:44:11 — 3/3 · 3/3 in both scenarios; hygiene — --selftest 19 cases, six
+//  script; once per debt signature) the same probe 16:41:21 → 16:44:11 — 3/3 · 3/3 in both scenarios; hygiene — --selftest 20 cases, seven
 //  mutants (tools/sandbox/probes/hc8-test-hook-mutant.mjs), s14, polygon 28/28 (16:44:11 → 16:53:41); ON THE ORIGIN'S REAL PATH — wired
-//  in session 98, it ordered runs after the session's own edits and counted the runs; report testcases/reports/2026-11-06_s98-hc8-testing-hook.md]
+//  in session 98, it ordered runs after the session's own edits and counted the runs; it also showed a defect there (≈ 17:03: a chain
+//  «node --check x && node x» was read as hygiene whole) — hygiene is judged per segment since, continuation lines joined first, a
+//  deploy judged per segment (light judge, s98) — these three fixes are proven by hygiene only (--selftest 22 cases, eight mutants),
+//  the live probe above ran on the hook before them; report testcases/reports/2026-11-06_s98-hc8-testing-hook.md]
 import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { join, dirname, resolve, relative, isAbsolute, basename, sep } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -21564,16 +21586,21 @@ export function withoutHeredocBodies(cmd) {
   }
   return out.join('\n');
 }
+// The segments of a shell command: continuation lines joined FIRST (a trailing `\` in bash, a trailing backtick in PowerShell — one
+// line; light judge of session 98: `node x.mjs \` ⏎ `--help` split into a «run» and a lone «--help»), heredoc bodies dropped, slashes
+// normalised, then cut at `;` · `&&` · `||` · a newline
+export const segmentsOf = (command) => withoutHeredocBodies(String(command || '').replace(/[\\`][^\S\n]*\r?\n/g, ' '))
+  .split('\\').join('/').split(/;|&&|\|\||\n/).filter((s) => s.trim());
 // The debt keys a command clears, from the debt as it stands
 export function cleared(command, debt, rules) {
-  const cmd = withoutHeredocBodies(String(command || '').split('\\').join('/'));
-  if (rules.hygiene.some((r) => r.test(cmd))) return [];
+  // hygiene is judged per SEGMENT of a chained command: `node --check x && node x` is a check AND a run (origin session 98, live —
+  // the whole chain was read as hygiene and the real run in its second half did not count)
+  const segments = segmentsOf(command).filter((s) => !rules.hygiene.some((r) => r.test(s)));
   const out = [];
   for (const [key, d] of Object.entries(debt)) {
     const k = rules.kinds.find((x) => x.name === d.kind);
-    if (key.startsWith('deploy:')) { if (k && k.runs.some((r) => r.test(cmd))) out.push(key); continue; }
-    if (k && k.runs.length) { if (k.runs.some((r) => r.test(cmd))) out.push(key); continue; }
-    if (runsFile(cmd, key)) out.push(key);                // no run pattern: running the file itself
+    const hit = (seg) => (k && k.runs.length) ? k.runs.some((r) => r.test(seg)) : (!key.startsWith('deploy:') && runsFile(seg, key));
+    if (segments.some(hit)) out.push(key);   // a deploy debt clears only by its kind's runs; a source file without runs — by running it
   }
   return out;
 }
@@ -21628,9 +21655,10 @@ export function handle(ev, st, root, rules, now) {
     const command = String((ev.tool_input || {}).command || '');
     const done = cleared(command, s.debt, rules);
     for (const k of done) delete s.debt[k];
-    const cmd = withoutHeredocBodies(command.split('\\').join('/'));
-    // the key names what was deployed — the matched text of the command, never the pattern
-    const deployed = rules.hygiene.some((r) => r.test(cmd)) ? [] : rules.deploys.map((r) => r.exec(cmd)).filter(Boolean).map((m) => 'deploy:' + m[0].trim());
+    // a deploy is judged per segment too (`npm run build && pwsh deploy.ps1` deploys); the key names what was deployed — the matched
+    // text of the command, never the pattern
+    const deployed = [...new Set(segmentsOf(command).filter((seg) => !rules.hygiene.some((r) => r.test(seg)))
+      .flatMap((seg) => rules.deploys.map((r) => r.exec(seg)).filter(Boolean).map((m) => 'deploy:' + m[0].trim())))];
     if (deployed.length) {
       const first = !Object.keys(s.debt).length;
       for (const k of deployed) s.debt[k] = { kind: rules.deployKind, at: now };
@@ -21691,6 +21719,10 @@ if (argv[0] === '--selftest') {
       && s.debt['src/app.mjs'] && s.debt['src/build.mjs'], 'the file\'s name in a command that does not run it (git add · cat · grep · a commit tool · another build.mjs) is not a run');
     s = session(D); s.edit('src/app.mjs'); s.sh('cd src && node app.mjs');
     ok(!s.debt['src/app.mjs'], 'a run from the file\'s own folder (`node app.mjs`) counts');
+    s = session(D); s.edit('src/app.mjs'); s.sh('node --check src/app.mjs && node src/app.mjs');
+    ok(!s.debt['src/app.mjs'], 'a chain «check && run» counts its run — hygiene is judged per segment (origin session 98, live)');
+    s = session(D); s.edit('src/app.mjs'); s.sh('node src/app.mjs \\\n  --help'); s.sh('node src/app.mjs `\n  --help');
+    ok(s.debt['src/app.mjs'], 'a continued line (`\\` · PowerShell backtick) is ONE segment: «node src/app.mjs ⏎ --help» is --help, not a run (light judge, s98)');
     s = session(D); s.edit('src/app.mjs'); s.stop(false);
     ok(s.stop(false) === null && s.debt['src/app.mjs'], 'a later turn with the same debt is not refused again (once per debt signature); the debt stays');
     s = session(D);
@@ -21710,6 +21742,8 @@ if (argv[0] === '--selftest') {
     s = session(P);
     ok(s.sh('pwsh deploy-pack.ps1 -DryRun') === null && /RUN it/.test(ctx(s.sh('pwsh deploy-pack.ps1 -Target live'))) && s.debt['deploy:deploy-pack.ps1']
       && s.debt['deploy:deploy-pack.ps1'].kind === 'game', 'a real deploy is debt of its kind; a dry run is not');
+    s = session(P); s.sh('npm run build && pwsh deploy-pack.ps1 -Target live');
+    ok(s.debt['deploy:deploy-pack.ps1'], 'a deploy chained after a build is debt — a deploy is judged per segment too (light judge, s98)');
     s = session(P); s.sh('pwsh deploy-pack.ps1 -Target live'); s.sh('node tools/run-game.mjs');
     ok(Object.keys(s.debt).length === 0, 'a game run after the deploy clears it');
     ok(kindOf('.kaif/hooks/x.mjs', D) === null && kindOf('node_modules/a/b.js', D) === null, 'KAIF\'s own files and dependencies are not the product');

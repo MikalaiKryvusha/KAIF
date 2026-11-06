@@ -21,13 +21,18 @@ const MUTANTS = [
     // every case that needs a WRITTEN debt; the deploy cases write their debt by another line and stay green
     addressees: ['criterion 28: an edit of src/app.mjs', 'a second file', 'hygiene', 'a heredoc body', 'criterion 28: the stop with debt', 'criterion 28: a repeated stop',
       'a run of the file itself', 'a NEW write', 'project kinds', "the project's guards", 'a game run clears the game kind',
-      "the file's name in a command", 'a later turn'] },
-  { name: 'hygiene clears', from: '  if (rules.hygiene.some((r) => r.test(cmd))) return [];\n', to: '\n', addressees: ['hygiene'] },
-  { name: 'heredoc body is a command', from: 'const cmd = withoutHeredocBodies(String(command', to: 'const cmd = ((x) => x)(String(command', addressees: ['a heredoc body'] },
+      "the file's name in a command", 'a later turn', 'a continued line'] },
+  { name: 'hygiene clears', from: "const segments = segmentsOf(command).filter((s) => !rules.hygiene.some((r) => r.test(s)));", to: "const segments = segmentsOf(command);", addressees: ['hygiene', 'a continued line'] },
+  { name: 'heredoc body is a command', from: "withoutHeredocBodies(String(command || '').replace(", to: "((x) => x)(String(command || '').replace(", addressees: ['a heredoc body'] },
+  // light judge of session 98: a continued line («node x \\ ⏎ --help») split into a run and a lone --help
+  { name: 'continuations not joined', from: ".replace(/[\\\\`][^\\S\\n]*\\r?\\n/g, ' ')", to: "", addressees: ['a continued line'] },
+  // origin session 98, live: a chain «node --check x && node x» was read as hygiene whole — its run did not count
+  { name: 'hygiene judged on the whole chain', from: "const segments = segmentsOf(command).filter((s) => !rules.hygiene.some((r) => r.test(s)));",
+    to: "const segments = segmentsOf(command).filter((s) => !rules.hygiene.some((r) => r.test(command)));", addressees: ['a chain «check && run»'] },
   { name: 'stop refused forever', from: 'if (s.lastStop === sig) return { out: null, state: s };', to: 'if (false) return { out: null, state: s };',
     addressees: ['criterion 28: a repeated stop', 'a NEW write', 'a later turn'] },
   // light judge of session 98: the file's name anywhere in a command counted as a run; a later turn with the old debt was refused again
-  { name: 'name anywhere clears', from: 'if (runsFile(cmd, key)) out.push(key);', to: 'if (cmd.includes(basename(key))) out.push(key);',
+  { name: 'name anywhere clears', from: "(!key.startsWith('deploy:') && runsFile(seg, key))", to: "(!key.startsWith('deploy:') && seg.includes(basename(key)))",
     addressees: ["the file's name in a command"] },
   { name: 'stop needs stop_hook_active', from: 'if (s.lastStop === sig) return { out: null, state: s };', to: 'if (ev.stop_hook_active && s.lastStop === sig) return { out: null, state: s };',
     addressees: ['a later turn'] },

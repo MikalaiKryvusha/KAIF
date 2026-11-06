@@ -738,6 +738,15 @@ Gates 6–7 and their two placement rules (origin issue #18): three deploys in o
 start at all, with every local instrument green. KAIF 2.3, epic X. The deploy door and the hook that denies the raw deploy
 command exist because a rule that lives only in a document is a rule the shipping session skips under pressure.
 
+### `TESTING_FRAMEWORK.md` → Red is a claim too — earn it like green
+
+Field-paid (origin #87, a QA deployment): every trust mechanism of the canon pointed one way — at the false green — while the red
+produced by the APPARATUS rather than the subject was no class anywhere, and in spheres where the agent builds the measuring rig it
+was the dominant cost. The KAIF owner, taking the ticket into 2.10 (origin decision #149, rendered): the agent must doubt the green
+and the red alike; many reds that turned red together point at the tools or the method, not at many broken screens. KAIF 2.10, epic HC. The positive smoke first and its marker sentence (activities chain step 4,
+marker rule 7) are field-paid too (origin #173, a QA deployment): the agent checked a template's date window, never pressed the
+template itself, wrote «Tested on build …» with a last line «Not verified: generation by the template …» and moved the ticket to Done.
+
 ### `TESTING_FRAMEWORK.md` → The agent's stand is not the owner's real world — "done" about production comes after the real world
 
 KAIF 2.6, origin issue #52; the owner's word: the agent is OBLIGED to verify on the real world so as not to break what is

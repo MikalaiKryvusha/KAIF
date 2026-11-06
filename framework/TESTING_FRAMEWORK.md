@@ -66,7 +66,8 @@ step with its exit condition:
    written.
 4. **Execute with bookkeeping.** Every case ends in a status — `pass` · `fail` · `blocked` ·
    `skipped` — with the observation named (what ran, what was seen). *Exit:* no case without a
-   status; coverage is the case list, never an impression.
+   status; coverage is the case list, never an impression. **The positive smoke runs first:** the set's `smoke` rows — the user's
+   main action and its read result — are `pass` before the boundary, negative and localisation rows (origin #173).
 5. **Run the control case before calling the feature working.** Turn the controlling flag off /
    remove the controlling parameter and observe the feature NOT work: a feature check that cannot
    fail proves nothing (gate 5 below, applied at feature level).
@@ -111,7 +112,8 @@ of the project language:
 7. **A FEATURE marker requires a designed set.** `[TESTED]` on a feature is legal only alongside the
    written case set with its covered dimensions (the activities chain above); a single observation
    flips the marker of a single CASE, never of the feature: "it worked once on the happy path" is a
-   case-level fact.
+   case-level fact. A feature marker and any "done / tested" are illegal while a `smoke` row is not `pass`; a "not verified" line
+   that names the feature's core equals a smoke not run.
 
 Markers are the persistent memory of verification: fable-method's Step 5 verifies *in the moment*; the
 marker preserves that fact **across sessions**, for future agents.
@@ -167,9 +169,8 @@ A run that left no artifact is indistinguishable from a run that never happened.
 
 ## Green tests ≠ working — the observation gates
 
-A green suite is one observation, not the verdict (principle 1): whole classes of defects are invisible
-to every test and obvious to one minute of looking. Before "done" on anything that runs, renders, or
-ships, walk the gates that apply:
+A green suite is one observation, not the verdict (principle 1): whole classes of defects are invisible to every test and obvious
+to one minute of looking. Before "done" on anything that runs, renders, or ships, walk the gates that apply:
 
 1. **Live smoke with your eyes on the log.** Run the real process (not only the tests) and read its
    first working cycle in the log — startup, the key operation, no silent error spam.
@@ -202,11 +203,9 @@ ships, walk the gates that apply:
    The optional tool module `kaif-guard-lint` (`.kaif/tools/`, `check` / `selftest`) reds on a block
    with a missing field or a rejected `DURABLE-AT`; it fires only on explicit `@guard` / `@forensic`
    markers and never guesses what a guard is.
-6. **After a deploy, the gate is production itself, entered as a user.** Sign in by whatever door
-   the product offers, walk the real screens, read the console — only then is "deployed" a fact.
-   A smoke that only walks public surfaces proves the landing page is alive, not the product: if
-   the product has authenticated state, an unauthenticated smoke is NOT evidence about the
-   product.
+6. **After a deploy, the gate is production itself, entered as a user.** Sign in by whatever door the product offers, walk the
+   real screens, read the console — only then is "deployed" a fact. A smoke that only walks public surfaces proves the landing
+   page is alive, not the product: if the product has authenticated state, an unauthenticated smoke is NOT evidence about it.
 7. **Artifact integrity before shipping.** "It built" and "it is one build" are different claims:
    the shipped bundle carries exactly ONE build identity, asserted mechanically before upload. An
    output directory that is not cleaned between builds ships a mixture of two builds — every
@@ -217,13 +216,20 @@ them itself and fails on any red step (where the agent system has hooks, deny th
 And a post-deploy smoke must be able to FAIL on a dead product: prove there was something to measure before
 painting green — a smoke that is greenest when the product is emptiest is worse than no smoke.
 
+## Red is a claim too — earn it like green
+
+A red run is a claim about the THING, and it is earned the way green is (origin #87; the KAIF owner, decision #149: doubt the green
+and the red alike). Before the verdict "broken", print the stand's state — language and locale · the starting state · the data ·
+what changed since the last green. Many reds sharing one condition are the sign of ONE error of measurement: look for the systemic
+cause in the tools and the method first, and call the subject broken only after that cause is ruled out by observation.
+`/fable-judge` hunts a red blamed on the subject with no stand printed (the red-attributed-to-the-subject-unverified hunt).
+
 ## The agent's stand is not the owner's real world — "done" about production comes after the real world
 
-The agent verifies its work on a clean, freshly built stand — a fresh browser, a clean checkout, a
-new user, today's build — and says "done". The owner's world is ACCUMULATED: an old session, a saved
-profile, his own edits in the deployed tree, the cache of the previous build — and there it breaks,
-while every instrument of the agent was green by construction. Before the word "done" about anything
-already in production, the report carries the difference line:
+The agent verifies its work on a clean, freshly built stand — a fresh browser, a clean checkout, a new user, today's build — and
+says "done". The owner's world is ACCUMULATED: an old session, a saved profile, his own edits in the deployed tree, the cache of the
+previous build — and there it breaks, while every instrument of the agent was green by construction. Before the word "done" about
+anything already in production, the report carries the difference line:
 
 ```
 REAL WORLD: accumulated — <what the owner's world already holds: sessions, profiles, data, edits>;
@@ -241,29 +247,24 @@ about production without the difference line (the done-without-the-real-world hu
 
 ## The taste class — when the observer must be human
 
-A subjectively-perceptual acceptance criterion (a perception adjective: beautiful, natural,
-pleasant, "feels right") is still verified by observation — but the OBSERVER is the human, by
-necessity, not the agent. The agent's role is to PREPARE the observation: produce a mock-up on the
-project's own material and hand over an artifact to perceive (`AGENT_GUIDE.md` → "The taste
-class"; the homework doc with its two standing fields). The agent's own "sounds good to me" is not
-a verification and never flips a marker; the owner's recorded verdict is.
+A subjectively-perceptual acceptance criterion (a perception adjective: beautiful, natural, pleasant, "feels right") is still
+verified by observation — but the OBSERVER is the human, by necessity, not the agent. The agent's role is to PREPARE the
+observation: produce a mock-up on the project's own material and hand over an artifact to perceive (`AGENT_GUIDE.md` → "The taste
+class"; the homework doc with its two standing fields). The agent's own "sounds good to me" is not a verification and never flips
+a marker; the owner's recorded verdict is.
 
 ## How this composes with the rest of KAIF
 
-- **`REQUIREMENTS_FRAMEWORK.md`** — shapes what is REQUIRED; this framework verifies what was MADE
-  against it. Principle 3 (early testing) is executed at the requirements stage there; deriving the test
-  basis FROM the requirements is step 1 of the chain here; bugs are born where the two meet (`BUG_FIXING_FRAMEWORK.md`).
-- **fable-method** — Step 5 (verify by observation) is HOW one check is done; this framework says WHAT carries a status.
-- **`/fable-judge`** — treats test-status markers as claims: a `[TESTED]` it cannot reproduce is REFUTED.
-- **Its guards** — optional tool modules in `.kaif/tools/` (`.kaif/KAIF_REFERENCE.md` §14): `kaif-guard-lint` (gate 5's
-  declaration block) and `kaif-testrun-lint` (the run report's seven fields; `bug` — the tester's report); advisory.
-- **`BUG_FIXING_FRAMEWORK.md`** — where testing's findings go (one doc per defect; 3 attempts → research).
-- **Spheres** (`.kaif/spheres/`) — the sphere's evidence, its meaning of "verified by observation", its fraud table (principle 6).
-- **The harness** — invest in tooling that makes verification observable and deterministic
-  (`AGENT_GUIDE.md` → Test harness); eyeballing is not testing.
-- **Why a rule here is the way it is** — the field history of the sections that have one (the ticket that
-  paid for a rule, the owner's word) lives in `.kaif/KAIF_REFERENCE.md` §17, under the same heading; read the
-  entry before changing or dropping a rule.
+- **`REQUIREMENTS_FRAMEWORK.md`** shapes what is REQUIRED, this framework verifies what was MADE against it (principle 3 runs
+  there; the test basis is step 1 of the chain here); bugs are born where the two meet, and **`BUG_FIXING_FRAMEWORK.md`** takes
+  them (one doc per defect; 3 attempts → research). **fable-method** Step 5 is HOW one check is done, this framework says WHAT
+  carries a status; **`/fable-judge`** treats markers as claims — a `[TESTED]` it cannot reproduce is REFUTED.
+- **Its guards** — `kaif-guard-lint` (gate 5's declaration block) and `kaif-testrun-lint` (the run report's seven fields; `bug` —
+  the tester's report), optional modules in `.kaif/tools/` (`.kaif/KAIF_REFERENCE.md` §14), advisory; **spheres** — the fraud table,
+  the evidence and the meaning of "verified by observation" of the project's sphere (`.kaif/spheres/`, principle 6); **the harness**
+  — invest in tooling that makes verification observable and deterministic (`AGENT_GUIDE.md` → Test harness); eyeballing is not testing.
+- **Why a rule here is the way it is** — the field history (the ticket that paid, the owner's word) lives in
+  `.kaif/KAIF_REFERENCE.md` §17 under the same heading; read the entry before changing or dropping a rule.
 
 *Grounding: the seven principles and the activities chain are the ISTQB canon (istqb.org; ru: testbase.ru);
 the run report is the ISO/IEC/IEEE 29119-3 test execution log and test completion report, distilled to seven fields.*

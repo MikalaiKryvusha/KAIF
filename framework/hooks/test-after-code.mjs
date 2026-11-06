@@ -17,8 +17,8 @@
 // Kinds and patterns are the PROJECT's data (`.kaif/kaif.json` → `testHook`, shape below); the mechanism is the framework's. Without data
 // one kind `code`: a source file of the project (the extensions of the knowledge hook, configs excluded) cleared by a command that RUNS
 // the file — its name in the command, the command not hygiene.
-//   "testHook": { "kinds": { "<kind>": { "files": ["<regex on the path from the root>", …], "runs": ["<regex on the command>", …] } },
-//                 "hygiene": ["<regex>", …], "deploys": ["<regex on the command>", …], "deployKind": "<kind a deploy is debt of>" }
+//   "testHook": { "kinds": { "<kind>": { "files": ["<regex on the path from the root>", …], "runs": ["<regex on a segment of the command>", …] } },
+//                 "hygiene": ["<regex>", …], "deploys": ["<regex on a segment of the command>", …], "deployKind": "<kind a deploy is debt of>" }
 // A run that does not match the project's own self-tests is the project's job: keep `runs` disjoint from them (field: a guards self-test
 // matched the game-run pattern and cleared a deploy debt).
 //   node .kaif/hooks/test-after-code.mjs                    # a Claude Code event on stdin
@@ -35,9 +35,12 @@
 //  itself 3/3, no debt left; the same with «do not run anything» — the stop refused with the list 3/3, the session still ended 3/3 (two
 //  waived with the owner's reason, one ended with the debt standing — the repeated stop passed); control on the v2.9 dist
 //  (16:26:28 → 16:27:21): no hook, the session ran the file 0/3; after the light judge's fixes (a run = the file as an interpreter's
-//  script; once per debt signature) the same probe 16:41:21 → 16:44:11 — 3/3 · 3/3 in both scenarios; hygiene — --selftest 19 cases, six
+//  script; once per debt signature) the same probe 16:41:21 → 16:44:11 — 3/3 · 3/3 in both scenarios; hygiene — --selftest 20 cases, seven
 //  mutants (tools/sandbox/probes/hc8-test-hook-mutant.mjs), s14, polygon 28/28 (16:44:11 → 16:53:41); ON THE ORIGIN'S REAL PATH — wired
-//  in session 98, it ordered runs after the session's own edits and counted the runs; report testcases/reports/2026-11-06_s98-hc8-testing-hook.md]
+//  in session 98, it ordered runs after the session's own edits and counted the runs; it also showed a defect there (≈ 17:03: a chain
+//  «node --check x && node x» was read as hygiene whole) — hygiene is judged per segment since, continuation lines joined first, a
+//  deploy judged per segment (light judge, s98) — these three fixes are proven by hygiene only (--selftest 22 cases, eight mutants),
+//  the live probe above ran on the hook before them; report testcases/reports/2026-11-06_s98-hc8-testing-hook.md]
 import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { join, dirname, resolve, relative, isAbsolute, basename, sep } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -100,16 +103,21 @@ export function withoutHeredocBodies(cmd) {
   }
   return out.join('\n');
 }
+// The segments of a shell command: continuation lines joined FIRST (a trailing `\` in bash, a trailing backtick in PowerShell — one
+// line; light judge of session 98: `node x.mjs \` ⏎ `--help` split into a «run» and a lone «--help»), heredoc bodies dropped, slashes
+// normalised, then cut at `;` · `&&` · `||` · a newline
+export const segmentsOf = (command) => withoutHeredocBodies(String(command || '').replace(/[\\`][^\S\n]*\r?\n/g, ' '))
+  .split('\\').join('/').split(/;|&&|\|\||\n/).filter((s) => s.trim());
 // The debt keys a command clears, from the debt as it stands
 export function cleared(command, debt, rules) {
-  const cmd = withoutHeredocBodies(String(command || '').split('\\').join('/'));
-  if (rules.hygiene.some((r) => r.test(cmd))) return [];
+  // hygiene is judged per SEGMENT of a chained command: `node --check x && node x` is a check AND a run (origin session 98, live —
+  // the whole chain was read as hygiene and the real run in its second half did not count)
+  const segments = segmentsOf(command).filter((s) => !rules.hygiene.some((r) => r.test(s)));
   const out = [];
   for (const [key, d] of Object.entries(debt)) {
     const k = rules.kinds.find((x) => x.name === d.kind);
-    if (key.startsWith('deploy:')) { if (k && k.runs.some((r) => r.test(cmd))) out.push(key); continue; }
-    if (k && k.runs.length) { if (k.runs.some((r) => r.test(cmd))) out.push(key); continue; }
-    if (runsFile(cmd, key)) out.push(key);                // no run pattern: running the file itself
+    const hit = (seg) => (k && k.runs.length) ? k.runs.some((r) => r.test(seg)) : (!key.startsWith('deploy:') && runsFile(seg, key));
+    if (segments.some(hit)) out.push(key);   // a deploy debt clears only by its kind's runs; a source file without runs — by running it
   }
   return out;
 }
@@ -164,9 +172,10 @@ export function handle(ev, st, root, rules, now) {
     const command = String((ev.tool_input || {}).command || '');
     const done = cleared(command, s.debt, rules);
     for (const k of done) delete s.debt[k];
-    const cmd = withoutHeredocBodies(command.split('\\').join('/'));
-    // the key names what was deployed — the matched text of the command, never the pattern
-    const deployed = rules.hygiene.some((r) => r.test(cmd)) ? [] : rules.deploys.map((r) => r.exec(cmd)).filter(Boolean).map((m) => 'deploy:' + m[0].trim());
+    // a deploy is judged per segment too (`npm run build && pwsh deploy.ps1` deploys); the key names what was deployed — the matched
+    // text of the command, never the pattern
+    const deployed = [...new Set(segmentsOf(command).filter((seg) => !rules.hygiene.some((r) => r.test(seg)))
+      .flatMap((seg) => rules.deploys.map((r) => r.exec(seg)).filter(Boolean).map((m) => 'deploy:' + m[0].trim())))];
     if (deployed.length) {
       const first = !Object.keys(s.debt).length;
       for (const k of deployed) s.debt[k] = { kind: rules.deployKind, at: now };
@@ -227,6 +236,10 @@ if (argv[0] === '--selftest') {
       && s.debt['src/app.mjs'] && s.debt['src/build.mjs'], 'the file\'s name in a command that does not run it (git add · cat · grep · a commit tool · another build.mjs) is not a run');
     s = session(D); s.edit('src/app.mjs'); s.sh('cd src && node app.mjs');
     ok(!s.debt['src/app.mjs'], 'a run from the file\'s own folder (`node app.mjs`) counts');
+    s = session(D); s.edit('src/app.mjs'); s.sh('node --check src/app.mjs && node src/app.mjs');
+    ok(!s.debt['src/app.mjs'], 'a chain «check && run» counts its run — hygiene is judged per segment (origin session 98, live)');
+    s = session(D); s.edit('src/app.mjs'); s.sh('node src/app.mjs \\\n  --help'); s.sh('node src/app.mjs `\n  --help');
+    ok(s.debt['src/app.mjs'], 'a continued line (`\\` · PowerShell backtick) is ONE segment: «node src/app.mjs ⏎ --help» is --help, not a run (light judge, s98)');
     s = session(D); s.edit('src/app.mjs'); s.stop(false);
     ok(s.stop(false) === null && s.debt['src/app.mjs'], 'a later turn with the same debt is not refused again (once per debt signature); the debt stays');
     s = session(D);
@@ -246,6 +259,8 @@ if (argv[0] === '--selftest') {
     s = session(P);
     ok(s.sh('pwsh deploy-pack.ps1 -DryRun') === null && /RUN it/.test(ctx(s.sh('pwsh deploy-pack.ps1 -Target live'))) && s.debt['deploy:deploy-pack.ps1']
       && s.debt['deploy:deploy-pack.ps1'].kind === 'game', 'a real deploy is debt of its kind; a dry run is not');
+    s = session(P); s.sh('npm run build && pwsh deploy-pack.ps1 -Target live');
+    ok(s.debt['deploy:deploy-pack.ps1'], 'a deploy chained after a build is debt — a deploy is judged per segment too (light judge, s98)');
     s = session(P); s.sh('pwsh deploy-pack.ps1 -Target live'); s.sh('node tools/run-game.mjs');
     ok(Object.keys(s.debt).length === 0, 'a game run after the deploy clears it');
     ok(kindOf('.kaif/hooks/x.mjs', D) === null && kindOf('node_modules/a/b.js', D) === null, 'KAIF\'s own files and dependencies are not the product');

@@ -271,6 +271,15 @@ MM1б (эпик MM, `plans/138`, версия KAIF 2.10, сессия 97, ком
 - «Check the map & blast radius # before editing code: PROJECT_ARCHITECTURE_INTERNAL_MAP.md — who is affected; update the map if relations change» → та же строка 10 чек-листа `framework/AGENT_GUIDE.md`, дополнен
 - «Capture EXPERIENCE.md # after a meaningful success/failure, append the lesson (skill: /experience)» → та же строка 12 чек-листа корневого `AGENT_GUIDE.md`, дополнен
 
+HC5 (эпик HC, `plans/140`, версия KAIF 2.10, сессия 98; объявлено 2026-11-06 17:03 +03:00) — место под раздел «Red is a claim too», шаг «позитивный смоук
+первым» и предложение правила маркеров 7 (критерии 17 · 26); канон тестирования поставки стоит на потолке 270:
+- «**A FEATURE marker requires a designed set.**» → то же правило 7 маркеров `framework/TESTING_FRAMEWORK.md`, дополнен (предложение о строке `smoke`)
+- «**Маркер на ФИЧЕ требует спроектированного набора.**» → то же правило 7 маркеров корневого `TESTING_FRAMEWORK.md`, дополнен
+- «**`REQUIREMENTS_FRAMEWORK.md`** — shapes what is REQUIRED» → первый буллет раздела «How this composes with the rest of KAIF» `framework/TESTING_FRAMEWORK.md` — слит с соседними (fable-method · `/fable-judge`), смысл каждого сохранён
+- «**`BUG_FIXING_FRAMEWORK.md`** — where testing's findings go» → тот же первый буллет раздела «How this composes» `framework/TESTING_FRAMEWORK.md` — слит с соседним
+- «**Spheres** (`.kaif/spheres/`)» → буллет «**Its guards**» того же раздела `framework/TESTING_FRAMEWORK.md` — слит с соседним
+- «**The harness** — invest in tooling» → буллет «**Its guards**» того же раздела `framework/TESTING_FRAMEWORK.md` — слит с соседним (ссылка `AGENT_GUIDE.md` → Test harness на месте)
+
 ### CK4 — файл домашних правил и правило владельца правилом (≈ 0,5 чата; детализировано на закрытии CK3, ≈ 2026-09-24 21:56 +03:00)
 
 Входы сверены (сессия 71): имя раздела заметок — «Notes from the human» в шаблоне и в ядре (`KAIF-CORE.mjs:863` пункт портрета,
