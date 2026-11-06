@@ -39,6 +39,12 @@
             "command": "node",
             "args": ["${CLAUDE_PROJECT_DIR}/framework/hooks/knowledge-moment.mjs"],
             "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/framework/hooks/context-window.mjs"],
+            "timeout": 15
           }
         ]
       }
@@ -51,6 +57,12 @@
             "type": "command",
             "command": "node",
             "args": ["${CLAUDE_PROJECT_DIR}/framework/hooks/knowledge-moment.mjs"],
+            "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/framework/hooks/context-window.mjs"],
             "timeout": 15
           }
         ]
