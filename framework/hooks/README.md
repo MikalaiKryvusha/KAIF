@@ -20,6 +20,7 @@ lacking them.
 | `subagent-preamble.mjs` (2.10, epic PT) | `PreToolUse`, matcher `Agent\|Task` | the launch carries a task without the preamble's marker | once per launch — a second pass over a marked task changes nothing | `updatedInput` with a marked preamble in front of the subagent's task: read step 1 of `/resume` (read from the skill, existing files only), quote one canon line first in the report, no nested subagents, no commit, no push; one journal line in `.kaif/subagent-preamble.jsonl` — no permission decision, never a stop |
 | `context-window.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PostToolUse`, matcher `*` | the session's used share of the window — the last main-thread usage of the transcript (input + cache_creation + cache_read tokens) against the window size (the project's `contextWindow.tokens`, else the vendor's rule for the model) — reaches `contextWindow.warnPct` (80) or `closePct` (85, then every 5 %) | once per level, re-armed after a compaction | one `additionalContext` line: at 80 % a WARNING without a closing word (keep the pace, tell the owner once by voice), at 85 % «finish the current work to a logical cut, then `/end-chat-soft`» — never a forced closure, never a block; state in `.kaif/context-window.json` |
 | `knowledge-moment.mjs` (2.10, epic MM) | `UserPromptSubmit`; `PostToolUse` and `PostToolUseFailure`, matcher `*` | STRONG moments speak at once — the owner's own prompt (a background task's notification is not), a failed tool call, a Read of a knowledge document (maps, `STATUS.md`, `EXPERIENCE.md`, `HOUSE_RULES.md`, `plans/`, `researches/`), the first touch in a session of a file whose component has `NOTES.md`, the first Read in a session of a project source file — a config file (`package.json`, `*.yaml`, `*.toml`) is not one, a generic name (`index`, `utils`, `main` …) is looked up by its full path only (the docs that name it are quoted — «does the code say the same?»; named nowhere — «before you answer, add one line to the map»); every other tool result adds weight 1, and the hook speaks at 12 | per moment; the weight resets after each line; component notes — once per session | one `additionalContext` line: write what you understood into the project document where it lives, in this turn — never a block, never a stop, never a document body; state per session in `.kaif/knowledge-moment.json` |
+| `test-after-code.mjs` (2.10, epic HC) | `PostToolUse`, matcher `*`; `Stop` | a write of a product file (the project's kinds in `.kaif/kaif.json` → `testHook`, else a source file, configs excluded); a shell command that is a RUN of its kind clears it — a build, a linter, `--check`, `--help`, a heredoc body never do | per write; the stop is refused once per debt signature, a repeated stop with nothing new written passes | the order «run it before you stop», the list of what was not run; state in `.kaif/test-debt.json`; `--waive "<why>"` · `--status` · `--selftest` |
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
 predicate, or names why it needs none, and the table above says which; a suppression window
@@ -67,7 +68,8 @@ Claude Code treats any exit code but 2 as a non-blocking error — but it prints
 1. Open the sample of your system — `.kaif/hooks/settings-fragment.json` for Claude Code, `sample-*.json` for the others.
 2. Merge its `hooks` object into that system's config — for Claude Code `.claude/settings.json` (shared with the team, committed)
    or `.claude/settings.local.json` (personal).
-3. Reload the session (hook configs are read at session start), then smoke the scripts by hand
+3. Reload the session if a hook stays silent (observed in Claude Code, VS Code, 2026-11-06: an edit of `.claude/settings.json` took effect
+   within the running session, a few tool calls later — whether every client and version does so is not verified), then smoke the scripts by hand
    from the project root, with no `.kaif/refresh-marker.json` present. Use the block of YOUR
    shell — a redirect or a `printf` that one shell understands is a parse error in another.
 
@@ -180,6 +182,17 @@ component with notes — and on the SUM of plain work (twelve results), never on
 swallowed every novelty moment it was built for. It never blocks and never stops a turn (the field owner: «not a Stop hook!»). It sees
 events, not understanding: the canon carries the rest — the `KNOWLEDGE:` line of the closing and loop rituals. A queued message — a
 subagent's hand-back — reaches it as a prompt and is recognised as not the owner's; whether the owner's own mid-turn word reaches it is not yet observed. Without the hook the `KNOWLEDGE:` line stands as written.
+
+**The testing hook — `test-after-code.mjs` (2.10, epic HC, origin #175 · #176) — is wired for Claude Code only.** Two field
+deployments of one owner built it the same week: a session wrote code, checked its syntax and said "done", or asked the owner whether
+to test it. Every write of a file that changes the product becomes a test debt; only a RUN of its own kind clears it — a build, a
+linter, `--check`, `--help` never do, and the body of a heredoc is data; the stop of a turn with debt is refused once per debt with the
+list (a repeated stop with nothing new written passes, in this turn or a later one — no loop). Without project data one kind `code`
+(source files, configs excluded) is cleared by a command that runs the file itself — an interpreter with the file as its script; its
+name elsewhere in a command (`git add`, `cat`, a commit tool) is not a run; a project names its kinds, runs, hygiene and deploys in
+`.kaif/kaif.json` → `testHook` (the shape is in the script's header). When no run is possible or the owner forbade it —
+`node .kaif/hooks/test-after-code.mjs --waive "<why>"`: the reason is
+kept for the judge. A subagent's events are not judged (`agent_id`). State — `.kaif/test-debt.json`.
 
 Reading the table: a ❌ is a statement about that system's published contract, not about the
 module. Where a system carries one hook out of three, wire that one — a partial mechanical

@@ -89,6 +89,12 @@
             "command": "node",
             "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/context-window.mjs"],
             "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/test-after-code.mjs"],
+            "timeout": 15
           }
         ]
       }
@@ -119,6 +125,12 @@
             "type": "command",
             "command": "node",
             "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/stop-farewell-capture.mjs"],
+            "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/test-after-code.mjs"],
             "timeout": 15
           }
         ]

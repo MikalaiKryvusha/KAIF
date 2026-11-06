@@ -601,7 +601,7 @@ refuses a copy that drifted from the core's block.
 
 A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refresh-hooks module**:
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
-agent systems with lifecycle hooks. Six scripts speaking the Claude Code hook contract —
+agent systems with lifecycle hooks. Ten scripts speaking the Claude Code hook contract —
 `session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
 (refresh-marker age over 60 minutes → refresh order; silent while fresh),
 `stop-status-guard.mjs` (a dirty worktree or a commit within 3 h while `STATUS.md` went stale → one soft block per
@@ -625,7 +625,13 @@ twelve plain tool results; state per session in `.kaif/knowledge-moment.json`; n
 (2.10, epic PT; origin ticket #188: the session's used share of the context window — the last main-thread usage of the transcript
 against the window size by the vendor's model rule or the project's `contextWindow.tokens` — at `contextWindow.warnPct` (80) one warning
 line with no closing word, at `closePct` (85, then every 5 %) «finish to a logical cut, then `/end-chat-soft`»; once per level, the
-levels re-armed when a compaction lowers the share; state in `.kaif/context-window.json`; never a block, never a forced closure — Claude Code only) — plus
+levels re-armed when a compaction lowers the share; state in `.kaif/context-window.json`; never a block, never a forced closure — Claude Code only),
+`test-after-code.mjs` (2.10, epic HC; origin tickets #175 · #176: a write of a file that changes the product — the project's kinds in
+`.kaif/kaif.json` → `testHook`, else a source file, configs excluded — is a test debt; only a run of its own kind clears it (for a source
+file — an interpreter with the file as its script; its name elsewhere in a command is not a run), a build, a linter, `--check`, `--help`
+and a heredoc body never do; the stop of a turn with debt is refused ONCE per debt with the list, a repeated stop with nothing new
+written passes, in this turn or a later one; `--waive "<why>"` keeps the reason for the judge; state in `.kaif/test-debt.json`; a subagent's events are not
+judged — Claude Code only) — plus
 `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
 suppression window exists, on the STATUS guard; injections are orders, never document bodies. RETIRED in 2.9 (origin ticket #144, the
 KAIF owner's verdict on the field): `pretool-owner-word.mjs` (2.8, `PreToolUse` — refused the next call after a mid-turn word) and the

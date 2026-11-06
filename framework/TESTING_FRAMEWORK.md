@@ -32,7 +32,7 @@ user does, pressing the buttons, reading the lines, looking at the screen and re
 1. **A test is a functional run on the REAL product (stage or production), by the user's path, whose
    result is READ.** The agent derives the scenarios from the functionality under test (the chain
    below), writes the machinery that walks them (a browser driver, a CLI session, a log reader) and runs
-   it as the user would, READING the screen, the lines, the logs; never "the owner will test" — his eye judges taste.
+   it as the user would, READING the screen, the lines, the logs; never "the owner will test", never "may I test it?" — his eye judges taste.
 2. **Hygiene is not a test.** Lint, unit tests, self-tests, mutation proofs, guards — mandatory (gate 5
    stays), never called "testing" in a report, a marker or a handover: they prove the check can fail, not
    that the thing works for a person. Machinery that returns only an exit code is an instrument, not a

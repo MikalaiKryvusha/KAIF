@@ -512,6 +512,7 @@ function ignoreFirstWanted() {
     '.kaif/knowledge-moment.json', // the knowledge hook's weight and touched component notes per session (2.10, epic MM) — session state
     '.kaif/owner-presence.json',   // the moment of the owner's last own prompt — the contour lifts its quiet hours while fresh (2.10, #193)
     '.kaif/context-window.json',   // the context-window hook's levels already said per session (2.10, #188) — session state
+    '.kaif/test-debt.json',        // the testing hook's debt and waivers (2.10, epic HC, #175 · #176) — runtime state, not history
     '.kaif/contour-window/',      // the owner page's own browser profile IN THE PROJECT (2.7, epic LP, origin issue #66)
     '.kaif/.contour-tmp/',        // the contour's renders and the call phrase (2.9, #126) — a sweeping commit took a page of questions along
     contourDecisionsDir() + '/*.lock', // the contour's window locks (2.9, #126) — a killed server's lock stays on purpose (I29)

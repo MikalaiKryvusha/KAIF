@@ -34,6 +34,9 @@ tools/.review-tmp/
 # Хук окна контекста 2.10 (#188): уровни, уже сказанные в сессии — состояние сессии
 .kaif/context-window.json
 .kaif/context-window.json.tmp
+# Хук тестирования 2.10 (эпик HC, #175 · #176): долг непрогнанного кода и отказы — состояние, не история
+.kaif/test-debt.json
+.kaif/test-debt.json.tmp
 
 # Защищённый цикл (2.5, CN4): взведённая граница until — состояние прогона, как и пульс
 .kaif/guarded-loop.json
