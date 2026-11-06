@@ -4,12 +4,12 @@
   "released": "2026-10-16",
   "codename": "Distilled KAIF",
   "sha256": {
-    "KAIF-CORE.mjs": "1f3eb95bc22d367bd448caafef65d0557ee6394111c52215228264f69bd40b73",
-    "KAIF-CORE-BUNDLE.md": "7ff41bebeb13d8a018e7775f6c2231c9472e8e845ac04eb0d0dd703913d5420c"
+    "KAIF-CORE.mjs": "cba2e29c6f3f7e052be64bfe3be7f72fddc0fd1890cbf05cfb2dba4fbfccede2",
+    "KAIF-CORE-BUNDLE.md": "6101f473a94aacb36700df138f8896f99dfc6ad7756f93636171e3d724357cb2"
   },
   "sourceTree": {
-    "sha256": "ec535b556e771826ad1ca3edf5267001469527915507ca8667a071a12ed580d0",
-    "files": 212
+    "sha256": "659402c3205d7bbe092f9fe0609d41a881859741a7d707671860b204ebf3bc28",
+    "files": 213
   },
   "prerelease": "2.10",
   "assets": {

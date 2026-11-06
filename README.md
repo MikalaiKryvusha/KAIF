@@ -551,7 +551,7 @@ artifacts are never hand-edited.
 4. Discipline is enforced by documents and rituals; without the optional tool modules and hooks
    there is no runtime enforcement — an agent that skips `/resume` works without the canon.
 5. The delivery holds 14 documents + 7 READMEs + 37 skills + 1 unpacker = 59 embedded files;
-   188 bundle blocks; 843 modules.
+   189 bundle blocks; 843 modules.
 
 ## License
 
@@ -1109,7 +1109,7 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 4. Дисциплина держится на документах и ритуалах; без опциональных tool-модулей и хуков
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.
 5. В поставке 14 документов + 7 README + 37 навыков + 1 распаковщик = 59 встроенных файлов;
-   188 блоков бандла; 843 модуля.
+   189 блоков бандла; 843 модуля.
 
 ## Лицензия
 

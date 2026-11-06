@@ -509,6 +509,7 @@ function ignoreFirstWanted() {
     '.kaif/subagent-preamble.jsonl', // the subagent-preamble hook's journal (2.10, epic PT) — session state, the same class
     '/FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md', // the closing chat's farewell (2.10, epic PT, #181) — written AFTER the closing commit, a tracked file would stay dirty
     '.kaif/farewell-capture.json', // the farewell hook's record of which closure wrote last — session state
+    '.kaif/knowledge-moment.json', // the knowledge hook's weight and touched component notes per session (2.10, epic MM) — session state
     '.kaif/contour-window/',      // the owner page's own browser profile IN THE PROJECT (2.7, epic LP, origin issue #66)
     '.kaif/.contour-tmp/',        // the contour's renders and the call phrase (2.9, #126) — a sweeping commit took a page of questions along
     contourDecisionsDir() + '/*.lock', // the contour's window locks (2.9, #126) — a killed server's lock stays on purpose (I29)

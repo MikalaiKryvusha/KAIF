@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "ec535b556e771826ad1ca3edf5267001469527915507ca8667a071a12ed580d0",
+    "sourceTree": "659402c3205d7bbe092f9fe0609d41a881859741a7d707671860b204ebf3bc28",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -105,6 +105,7 @@
       "THE CLOSING CHAT'S FAREWELL REACHES THE NEXT CHAT (2.10, epic PT; origin ticket #181 — the owner of a field project copied every farewell into the next chat by hand): the refresh-hooks module ships a seventh script, `.kaif/hooks/stop-farewell-capture.mjs`, and `wire-hooks` wires it for Claude Code on `Stop` next to the STATUS guard: on the stop of a turn that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (the last stop of the closing turn wins — a one-line answer to another hook's block or to a neighbour session excepted, and a background task's notification does not open a new turn; never a block); `/resume` gains Step 0 — on the chat's first entry read that file before the canon, and if it is older than the newest commit say so and trust `STATUS.md`. Both files join the ignore-first set. MIGRATION — agent work: if your project carries its own farewell hook, keep one — the shipped one or yours — never both writing the same file.",
       "A SUBAGENT ENTERS THE PROJECT FIRST (2.10, epic PT; origin tickets #166 · #168 — a field deployment carried its own preamble hook): the refresh-hooks module ships a sixth script, `.kaif/hooks/subagent-preamble.mjs`, and `wire-hooks` wires it for Claude Code on `PreToolUse` with the matcher `Agent|Task`: every subagent task gets a marked preamble in front of it — read in full the documents of step 1 of `/resume` (read from `.claude/skills/resume/SKILL.md` by the step's number, existing files only), quote one canon line bearing on the task first in the report, no subagents of its own, no commit, no push — through `updatedInput`, with no permission decision; a task already marked is left as it is; each firing appends one line to `.kaif/subagent-preamble.jsonl` (now in the ignore-first set). The guide's fable-loop section gains the rule \"A brief to a subagent has five parts\" (context · bounds · role · report · the main agent's duty after) with the skeleton `.kaif/_subagent-brief-template.md`, and the judge hunts \"subagent result relayed unverified\". MIGRATION — agent work: none; `wire-hooks` adds the group, `\"hooks\": \"off\"` keeps it out.",
       "A FINDING IS WRITTEN WHERE IT LIVES, IN THE SAME TURN (2.10, epic MM; origin tickets #160 · #159 — the KAIF owner on a field project, rendered from Russian: \"something changed? the knowledge documents say otherwise? you MUST edit them\"): the closing rituals (`/end-chat-soft`, `/end-chat-force` step 1) and the loops (`/autoloop` step 9, `/dayloop` and `/nightloop` step 5) say a `KNOWLEDGE:` line — what was understood anew or found stale and the document it is written in now, or «nothing new»; the checklist line «Check the map & blast radius» and the footnotes of both maps ask for the line in the same turn, not on a commit; `/fable-judge` hunts «Learned, not recorded». Nothing to migrate: the rule acts from the next session.",
+      "THE KNOWLEDGE HOOK SPEAKS AT THE MOMENTS A MEMORY IS WRITTEN (2.10, epic MM; origin tickets #160 · #159 · #186 — a field deployment carried its own knowledge hook, whose one ten-minute window swallowed every novelty moment): the refresh-hooks module ships an eighth script, `.kaif/hooks/knowledge-moment.mjs` — on the owner's prompt, a failed tool call, a Read of a knowledge document and the first touch of a component with `NOTES.md` it puts one line into the context: write what you understood into the project document where it lives, in this turn; plain tool results add weight and it speaks once per twelve. It never blocks and never stops a turn; its state is `.kaif/knowledge-moment.json` (ignored). `wire-hooks` wires it under UserPromptSubmit, PostToolUse and PostToolUseFailure; Claude Code only.",
       "POINTERS FOLLOW THE ROWS 2.8 MOVED (2.10, epic HC; origin ticket #119, second case): the harness rule of the bug-fixing canon now writes a new harness command's row into `HOUSE_RULES.md` → \"Stands, environments and devices\" (it said \"document it in AGENT_GUIDE.md\"), and `/code-revision`, `/autoloop` and `/resume` point at the house-rules tables, not the guide; the build refuses the old forms. MIGRATION — agent work: none, unless your own texts repeat one of these pointers."
     ],
     "2.9": [
@@ -413,6 +414,7 @@
     ".kaif/_testcases-template.md": "framework/templates/_testcases-template.md",
     ".kaif/_testrun-report-template.md": "framework/templates/_testrun-report-template.md",
     ".kaif/hooks/clock-now.mjs": "framework/hooks/clock-now.mjs",
+    ".kaif/hooks/knowledge-moment.mjs": "framework/hooks/knowledge-moment.mjs",
     ".kaif/hooks/prompt-refresh-timer.mjs": "framework/hooks/prompt-refresh-timer.mjs",
     ".kaif/hooks/prompt-resume-word.mjs": "framework/hooks/prompt-resume-word.mjs",
     ".kaif/hooks/README.md": "framework/hooks/README.md",
@@ -3754,7 +3756,10 @@ marked preamble in front of the subagent's task — read step 1 of `/resume`, qu
 no push — through `updatedInput`, with no permission decision; a marked task is left as it is; a journal line in
 `.kaif/subagent-preamble.jsonl` — Claude Code only), `stop-farewell-capture.mjs` (2.10, epic PT; origin ticket #181: on `Stop` of a turn
 that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the
-project root — the last stop of the closing turn wins, a one-line answer to another hook's block or to a neighbour session excepted; never a block; `/resume` reads it on the chat's first entry — Claude Code only) — plus
+project root — the last stop of the closing turn wins, a one-line answer to another hook's block or to a neighbour session excepted; never a block; `/resume` reads it on the chat's first entry — Claude Code only), `knowledge-moment.mjs` (2.10, epic MM; origin tickets #160 · #159 · #186: one line «write it into
+the project document where it lives, in this turn» on the strong moments — the owner's prompt, a failed tool call
+(`PostToolUseFailure`), a Read of a knowledge document, the first touch of a component that has `NOTES.md` — and once per
+twelve plain tool results; state per session in `.kaif/knowledge-moment.json`; never a block — Claude Code only) — plus
 `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
 suppression window exists, on the STATUS guard; injections are orders, never document bodies. RETIRED in 2.9 (origin ticket #144, the
 KAIF owner's verdict on the field): `pretool-owner-word.mjs` (2.8, `PreToolUse` — refused the next call after a mid-turn word) and the
@@ -19584,6 +19589,155 @@ try {
 process.exit(0);
 ``````
 
+> **FILE: `.kaif/hooks/knowledge-moment.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
+
+``````js
+#!/usr/bin/env node
+// knowledge-moment.mjs — the "a finding is written where it lives" hook (KAIF 2.10, epic MM, step MM2; origin tickets #160 · #159 · #186;
+// optional refresh-hooks module, deployed to .kaif/hooks/). Claude Code events: UserPromptSubmit · PostToolUse · PostToolUseFailure.
+//
+// What it does: at the moments a brain writes memory — a prediction error, a recalled memory that may now be wrong, a salient word — it
+// puts ONE line into the agent's context: write what you understood into the project's documents in this turn. It never blocks a tool,
+// never stops a turn, never reads the documents into the context (the field owner: «not a Stop hook!» · «not on every git commit, NO!»).
+// The moments (form B of step MM1, origin plans/138; recon — researches/39 §4):
+//   STRONG — speak at once: the owner's own prompt · a failed tool call (PostToolUseFailure — the vendor names the failure there, never by
+//            the words of an output) · a Read of a project knowledge document (maps, STATUS, EXPERIENCE, house rules, plans, researches) ·
+//            the first touch in a session of a file whose component has notes (NOTES.md in its directory or above, below the root);
+//   WEAK   — every other tool result adds weight 1; at THRESHOLD the hook speaks once and the weight resets (Generative Agents: reflection
+//            on the SUM of importance, never on a timer — the field prototype's one 10-minute window swallowed 3 of 3 novelty moments).
+// State — per session_id in .kaif/knowledge-moment.json (never in the project tree, never shared by sessions — class of origin bugs/119);
+// the newest SESSIONS_KEPT sessions are kept.
+// Contract (Claude Code hooks reference, code.claude.com/docs/en/hooks, checked in step MM1): stdin — JSON with `hook_event_name`,
+// `session_id`, `cwd`, `tool_name`, `tool_input`, `prompt`; stdout on exit 0 — {"hookSpecificOutput": {"hookEventName", "additionalContext"}},
+// a system reminder the model reads on its next request; at most 10 000 characters. Any internal error → exit 0 silently.
+// The lines are English on purpose: the agent reads them, not the owner (AGENT_GUIDE.md → languages are routed by audience).
+// GAP: the hook sees EVENTS, never the understanding itself — a finding born in the agent's reasoning has no event; the canon carries it
+// (the KNOWLEDGE: line of the closing and loop rituals, the checklist line «Check the map & blast radius»). An owner's word that arrives
+// mid-turn inside a tool result is not seen by this hook.
+// [NOT-TESTED]
+import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from 'node:fs';
+import { join, dirname, resolve, relative, sep } from 'node:path';
+
+export const THRESHOLD = 12;          // weak tool results before one reminder (one reminder per ~a dozen calls of plain work)
+const SESSIONS_KEPT = 20;             // state of older sessions is dropped
+const STATE = join('.kaif', 'knowledge-moment.json');
+const DEPLOYMENT = join('.kaif', 'kaif.json');
+const NOTES = 'NOTES.md';
+const KNOWLEDGE_DOC = /(?:^|[\\/])(?:STATUS|EXPERIENCE|HOUSE_RULES|MASTER_PLAN|PROJECT_[A-Z_]+_MAP)\.md$|(?:^|[\\/])(?:plans|researches)[\\/][^\\/]+\.md$/i;
+const TOUCH_TOOLS = new Set(['Read', 'Edit', 'Write', 'MultiEdit', 'NotebookEdit']);
+const NOT_THE_OWNER = /^\s*<(?:task-notification|system-reminder)\b/;   // a background task's or the harness's text, not the owner's prompt
+
+const WRITE = 'Write it into the project document where it lives — a map, STATUS.md, EXPERIENCE.md, the house rules — in THIS turn, ' +
+  'not only in the chat; nothing new — go on.';
+export const LINES = {
+  owner: `KAIF knowledge: the owner spoke. A new rule, decision, correction or fact in it? ${WRITE}`,
+  failure: `KAIF knowledge: a tool call failed — you expected one thing and got another. What did the project's documents not know? ${WRITE}`,
+  recall: (doc) => `KAIF knowledge: you re-read ${doc}. Does it say what you know now? It differs — fix it there, in this turn: add the new, ` +
+    'correct or delete the stale.',
+  notes: (file, notes) => `KAIF knowledge: ${file} belongs to a component with notes — read ${notes} before you change it, and append ` +
+    'there what you find.',
+  weight: `KAIF knowledge: a stretch of work since the last check. Learned how something works, or saw a document say otherwise? ${WRITE}`,
+};
+
+function projectRoot(cwd) {
+  for (let d = resolve(cwd || '.'); ;) {
+    if (existsSync(join(d, DEPLOYMENT))) return d;
+    const up = dirname(d);
+    if (up === d) return resolve(cwd || '.');
+    d = up;
+  }
+}
+// The notes file of a component: NOTES.md in the file's directory or a parent, below the project root (a root NOTES.md is not a component's).
+export function notesOf(root, file, exists = existsSync) {
+  const abs = resolve(root, file);
+  if (!abs.startsWith(resolve(root) + sep)) return null;
+  for (let d = dirname(abs); d.startsWith(resolve(root) + sep); d = dirname(d)) {
+    const n = join(d, NOTES);
+    if (exists(n)) return relative(root, n).split(sep).join('/');
+  }
+  return null;
+}
+const pathOf = (input) => String((input && (input.file_path || input.notebook_path)) || '');
+
+// The decision — pure: (event, the session's state, root, exists) → { line | null, state }.
+export function decide(ev, st, root, exists = existsSync) {
+  const s = { weight: st.weight || 0, notes: Array.isArray(st.notes) ? st.notes.slice() : [] };
+  const name = ev.hook_event_name;
+  if (name === 'UserPromptSubmit') {
+    if (NOT_THE_OWNER.test(String(ev.prompt || ''))) return { line: null, state: s };
+    s.weight = 0; return { line: LINES.owner, state: s };
+  }
+  if (name === 'PostToolUseFailure') { s.weight = 0; return { line: LINES.failure, state: s }; }
+  if (name !== 'PostToolUse') return { line: null, state: s };
+  const tool = String(ev.tool_name || ''), file = pathOf(ev.tool_input);
+  if (TOUCH_TOOLS.has(tool) && file) {
+    const rel = relative(root, resolve(root, file)).split(sep).join('/');
+    if (tool === 'Read' && KNOWLEDGE_DOC.test(rel)) { s.weight = 0; return { line: LINES.recall(rel), state: s }; }
+    const notes = notesOf(root, file, exists);
+    if (notes && rel !== notes && !s.notes.includes(notes)) {
+      s.notes.push(notes); s.weight = 0; return { line: LINES.notes(rel, notes), state: s };
+    }
+  }
+  s.weight += 1;
+  if (s.weight >= THRESHOLD) { s.weight = 0; return { line: LINES.weight, state: s }; }
+  return { line: null, state: s };
+}
+
+function readState(root) {
+  try { const j = JSON.parse(readFileSync(join(root, STATE), 'utf8').replace(/^\uFEFF/, '')); return j && typeof j === 'object' ? j : {}; }
+  catch { return {}; }
+}
+function writeState(root, all) {
+  const ids = Object.keys(all).sort((a, b) => (all[b].at || '').localeCompare(all[a].at || ''));
+  const kept = {}; for (const id of ids.slice(0, SESSIONS_KEPT)) kept[id] = all[id];
+  const p = join(root, STATE), tmp = p + '.tmp';
+  mkdirSync(dirname(p), { recursive: true });
+  writeFileSync(tmp, JSON.stringify(kept)); renameSync(tmp, p);
+}
+
+if (process.argv[2] === '--selftest') {
+  let bad = 0; const ok = (c, n) => { if (!c) { bad++; console.log('  x ' + n); } else console.log('  v ' + n); };
+  const R = resolve('/proj'), has = (set) => (p) => set.has(resolve(p));
+  const ex = has(new Set([join(R, 'src', 'contour', NOTES)]));
+  const post = (tool, file) => ({ hook_event_name: 'PostToolUse', tool_name: tool, tool_input: { file_path: join(R, file) } });
+  let r = decide({ hook_event_name: 'UserPromptSubmit', prompt: 'the build is make, not npm' }, {}, R, ex);
+  ok(r.line === LINES.owner, 'owner prompt: one line at once');
+  r = decide({ hook_event_name: 'UserPromptSubmit', prompt: '<task-notification><task-id>x</task-id>' }, {}, R, ex);
+  ok(r.line === null, 'a background task notification is not the owner');
+  r = decide({ hook_event_name: 'PostToolUseFailure', tool_name: 'Bash' }, { weight: 5 }, R, ex);
+  ok(r.line === LINES.failure && r.state.weight === 0, 'failed tool: at once, weight reset');
+  r = decide(post('Read', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md'), {}, R, ex);
+  ok(r.line && r.line.includes('re-read PROJECT_ARCHITECTURE_INTERNAL_MAP.md'), 'recall: a Read of a map names the map');
+  r = decide(post('Read', 'src/app.mjs'), {}, R, ex);
+  ok(r.line === null && r.state.weight === 1, 'plain Read: silent, weight 1');
+  let st = {}; let said = 0;
+  for (let i = 0; i < THRESHOLD; i++) { r = decide(post('Read', 'src/app.mjs'), st, R, ex); st = r.state; if (r.line) said++; }
+  ok(said === 1 && r.line === LINES.weight && st.weight === 0, `weight: ${THRESHOLD} plain results → exactly one line, then reset`);
+  r = decide(post('Edit', 'src/contour/page.mjs'), {}, R, ex);
+  ok(r.line && r.line.includes('read src/contour/NOTES.md before you change it'), 'component notes: first touch names the notes file');
+  r = decide(post('Read', 'src/contour/page.mjs'), r.state, R, ex);
+  ok(r.line === null, 'component notes: second touch in the session is silent');
+  r = decide(post('Read', 'NOTES.md'), {}, R, has(new Set([join(R, NOTES)])));
+  ok(r.line === null, 'a root NOTES.md is not a component\'s notes');
+  r = decide({ hook_event_name: 'Stop' }, {}, R, ex);
+  ok(r.line === null, 'Stop: never speaks, never blocks');
+  console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
+  process.exit(bad ? 1 : 0);
+}
+
+try {
+  const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
+  const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(ev.cwd);
+  const id = String(ev.session_id || 'no-session');
+  const all = readState(root);
+  const { line, state } = decide(ev, all[id] || {}, root);
+  all[id] = { ...state, at: new Date().toISOString() };
+  writeState(root, all);
+  if (line) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: ev.hook_event_name, additionalContext: line } }));
+} catch { /* a hook never breaks the session */ }
+process.exit(0);
+``````
+
 > **FILE: `.kaif/hooks/prompt-refresh-timer.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
 
 ``````js
@@ -19887,6 +20041,7 @@ lacking them.
 | `clock-now.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PreToolUse`, matcher `Write\|Edit\|MultiEdit` | prompt: none — one short line is the point; write: the tool input holds a time placeholder (below) | on every prompt; on every write that holds a placeholder | prompt: one context line with the machine's local moment; write: `updatedInput` with the placeholders filled by the clock — no permission decision, never a stop; silent on a write without a placeholder |
 | `stop-farewell-capture.mjs` (2.10, epic PT) | `Stop` | the turn ran `/end-chat-soft` or `/end-chat-force` (a Skill call or the owner's slash command), and this closure has not written yet | once per closure — a later stop of the same closure (another Stop hook blocked) writes nothing | writes the turn's last message WHOLE into `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (temporary file + rename); never blocks, never speaks |
 | `subagent-preamble.mjs` (2.10, epic PT) | `PreToolUse`, matcher `Agent\|Task` | the launch carries a task without the preamble's marker | once per launch — a second pass over a marked task changes nothing | `updatedInput` with a marked preamble in front of the subagent's task: read step 1 of `/resume` (read from the skill, existing files only), quote one canon line first in the report, no nested subagents, no commit, no push; one journal line in `.kaif/subagent-preamble.jsonl` — no permission decision, never a stop |
+| `knowledge-moment.mjs` (2.10, epic MM) | `UserPromptSubmit`; `PostToolUse` and `PostToolUseFailure`, matcher `*` | STRONG moments speak at once — the owner's own prompt (a background task's notification is not), a failed tool call, a Read of a knowledge document (maps, `STATUS.md`, `EXPERIENCE.md`, `HOUSE_RULES.md`, `plans/`, `researches/`), the first touch in a session of a file whose component has `NOTES.md`; every other tool result adds weight 1, and the hook speaks at 12 | per moment; the weight resets after each line; component notes — once per session | one `additionalContext` line: write what you understood into the project document where it lives, in this turn — never a block, never a stop, never a document body; state per session in `.kaif/knowledge-moment.json` |
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
 predicate, or names why it needs none, and the table above says which; a suppression window
@@ -20029,6 +20184,14 @@ wins, except a stop that only answers another Stop hook's block or a neighbour s
 task's notification does not open a new turn: a closing turn that waited on a polygon and wrote its farewell after the notification
 replaces the interim line. `stop_hook_active` is not the test — it is already true on the first stop after the closure when a guard
 blocked earlier in the turn. `.kaif/farewell-capture.json` records which closure wrote last. Both files are session state (ignored). Without the hook the owner's paste under `resume` stands as before.
+
+**The knowledge hook — `knowledge-moment.mjs` (2.10, epic MM, origin #160 · #159 · #186) — is wired for Claude Code only.** A session
+understood how a part works, or saw a map say otherwise, and the finding stayed in the chat. The hook speaks at the moments a memory is
+written — the owner's word, an error of prediction (a failed call), a recalled document that may now be wrong, the first touch of a
+component with notes — and on the SUM of plain work (twelve results), never on a timer: a field prototype's single ten-minute window
+swallowed every novelty moment it was built for. It never blocks and never stops a turn (the field owner: «not a Stop hook!»). It sees
+events, not understanding: the canon carries the rest — the `KNOWLEDGE:` line of the closing and loop rituals. An owner's word that
+arrives mid-turn inside a tool result is not seen by it. Without the hook the `KNOWLEDGE:` line stands as written.
 
 Reading the table: a ❌ is a statement about that system's published contract, not about the
 module. Where a system carries one hook out of three, wire that one — a partial mechanical
@@ -20320,6 +20483,12 @@ process.exit(0);
             "command": "node",
             "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/clock-now.mjs"],
             "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/knowledge-moment.mjs"],
+            "timeout": 15
           }
         ]
       }
@@ -20343,6 +20512,32 @@ process.exit(0);
             "type": "command",
             "command": "node",
             "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/subagent-preamble.mjs"],
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/knowledge-moment.mjs"],
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/knowledge-moment.mjs"],
             "timeout": 15
           }
         ]

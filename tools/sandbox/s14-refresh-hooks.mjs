@@ -59,6 +59,7 @@ const HOOK_FILES = ['session-start-refresh.mjs', 'prompt-refresh-timer.mjs', 'st
                     'clock-now.mjs',          // 2.10, эпик PT, PT1 (#170 · #172): момент в записи ставят часы машины
                     'subagent-preamble.mjs',  // 2.10, эпик PT, PT2 (#166 · #168): субагент сначала входит в проект по канону
                     'stop-farewell-capture.mjs', // 2.10, эпик PT, PT5 (#181): прощание закрывающего чата — в файл для следующего
+                    'knowledge-moment.mjs',   // 2.10, эпик MM, MM2 (#160 · #159 · #186): находка пишется в документ проекта тем же ходом
                     // 2.9, эпик WH (тикет #144): pretool-owner-word (2.8) и stop-owner-answer сняты словом владельца — их нет в поставке
                     'settings-fragment.json', 'README.md',
                     // фаза O5: образцы под остальные системы с ПОДТВЕРЖДЁННЫМ живым контрактом
@@ -79,8 +80,14 @@ ok(!!(frag.hooks && frag.hooks.SessionStart && frag.hooks.UserPromptSubmit && fr
 ok(frag.hooks && frag.hooks.SessionStart?.[0]?.matcher === 'compact|clear',
    's14 фрагмент конфига: SessionStart с matcher compact|clear');
 const fragTxt = JSON.stringify(frag);
-ok(HOOK_FILES.slice(0, 7).every((f) => fragTxt.includes(`.kaif/hooks/${f}`)),
-   's14 фрагмент конфига: команды указывают на все семь развёрнутых скриптов (четвёртый — resume-word, 2.7; пятый — clock-now, шестой — subagent-preamble, 2.10)');
+ok(HOOK_FILES.slice(0, 8).every((f) => fragTxt.includes(`.kaif/hooks/${f}`)),
+   's14 фрагмент конфига: команды указывают на все восемь развёрнутых скриптов (четвёртый — resume-word, 2.7; пятый — clock-now, шестой — subagent-preamble, седьмой — прощание, восьмой — knowledge-moment, 2.10)');
+// 2.10 MM2: хук знаний — на промпте, после КАЖДОГО результата инструмента и после провала (матчер «*»); остановку он не трогает (№144)
+ok(['UserPromptSubmit', 'PostToolUse', 'PostToolUseFailure'].every((ev) => JSON.stringify(frag.hooks?.[ev] || []).includes('knowledge-moment.mjs'))
+   && (frag.hooks?.PostToolUse || []).every((g) => g.matcher === '*') && (frag.hooks?.PostToolUseFailure || []).every((g) => g.matcher === '*')
+   && !JSON.stringify(frag.hooks?.Stop || []).includes('knowledge-moment.mjs'),
+   's14 MM2: knowledge-moment подключён на UserPromptSubmit · PostToolUse «*» · PostToolUseFailure «*», на Stop — нет',
+   JSON.stringify({ p: frag.hooks?.PostToolUse, f: frag.hooks?.PostToolUseFailure }).slice(0, 300));
 // 2.9, эпик WH (тикет #144, слово владельца «Убрать это!!!! ИЗ КАИФ НАХУЙ УБРАТ!»): снятых хуков нет ни в образце, ни на диске развёртывания.
 // 2.10 PT1: событие PreToolUse вернулось во фрагмент с хуком часов (он ничего не останавливает — №144) — поэтому снятие стерегут ИМЕНА
 // снятых скриптов, а не отсутствие события (прежний ассерт «нет PreToolUse» судил бы новый хук как снятый; researches/41 «PT0 (в)»).
@@ -92,6 +99,25 @@ ok(!/pretool-owner-word|stop-owner-answer/.test(fragTxt)
 ok(JSON.stringify((frag.hooks?.PreToolUse || []).map((g) => [g.matcher, (g.hooks || []).map((h) => (h.args || []).join(' ').match(/hooks\/([\w.-]+)/)?.[1])]))
    === JSON.stringify([['Write|Edit|MultiEdit', ['clock-now.mjs']], ['Agent|Task', ['subagent-preamble.mjs']]]),
    's14 PT1 · PT2: PreToolUse фрагмента — группа Write|Edit|MultiEdit с clock-now и группа Agent|Task с subagent-preamble, иного нет', JSON.stringify(frag.hooks?.PreToolUse || null).slice(0, 300));
+
+// ---------------------------------------------------------------- поведение: knowledge-moment (2.10, эпик MM, MM2; #160 · #159 · #186, критерии 9 · 30)
+// Развёрнутый хук знаний: самопроверка (моменты B строки FORK MM1 — промпт владельца, провал, чтение документа знаний, первое касание
+// компонента с конспектом, вес обычных результатов до порога) и живой вызов: событие промпта на stdin → одна строка additionalContext;
+// уведомление фоновой задачи → тишина; состояние — в .kaif/knowledge-moment.json, не в дереве проекта.
+{
+  const hook = join(S, '.kaif', 'hooks', 'knowledge-moment.mjs');
+  const st = spawnSync(process.execPath, [hook, '--selftest'], { encoding: 'utf8', timeout: 60000 });
+  ok(st.status === 0 && /selftest: all ok/.test(st.stdout || '') && /v component notes: first touch names the notes file/.test(st.stdout || ''),
+     's14 MM2: самопроверка развёрнутого хука знаний зелёная (с конспектом компонента — критерий 30)', `${st.status} ${(st.stdout || '').slice(-600)}`);
+  const ev = (o) => spawnSync(process.execPath, [hook], { input: JSON.stringify({ session_id: 's14', cwd: S, ...o }), encoding: 'utf8', timeout: 30000,
+    env: { ...process.env, CLAUDE_PROJECT_DIR: S } });
+  const a = ev({ hook_event_name: 'UserPromptSubmit', prompt: 'сборка теперь npm run build' });
+  let ctx = ''; try { ctx = JSON.parse(a.stdout).hookSpecificOutput.additionalContext; } catch { /* красный ниже */ }
+  ok(a.status === 0 && /^KAIF knowledge: the owner spoke/.test(ctx) && existsSync(join(S, '.kaif', 'knowledge-moment.json')),
+     's14 MM2: живой промпт владельца → одна строка additionalContext, состояние в .kaif/knowledge-moment.json', `${a.status} ${(a.stdout || '').slice(0, 300)}`);
+  const n = ev({ hook_event_name: 'UserPromptSubmit', prompt: '<task-notification><task-id>x</task-id></task-notification>' });
+  ok(n.status === 0 && (n.stdout || '') === '', 's14 MM2: уведомление фоновой задачи — тишина (не слово владельца)', `${n.status} «${(n.stdout || '').slice(0, 200)}»`);
+}
 
 // ---------------------------------------------------------------- поведение: clock-now (2.10, эпик PT, PT1; #170 · #172, критерий 24)
 // Развёрнутый хук часов (а не исходник `framework/hooks/`) — тот, что получит поле: исполнимая приёмка шага, написанная ДО кода
@@ -464,7 +490,7 @@ const SAMPLES = [
   ['Antigravity', 'sample-antigravity-hooks.json', 'antigravity'],
 ];
 // Хуки только Claude Code: поле prompt и запись сессии чужих событий с доки не сняты — образцы их не обещают (README модуля)
-const CLAUDE_ONLY = ['prompt-resume-word.mjs'];
+const CLAUDE_ONLY = ['prompt-resume-word.mjs', 'knowledge-moment.mjs'];   // MM2: события инструментов Claude Code — чужой контракт не снят
 // bugs/118 №2 (2.9 HK): форма вывода судится ТОКЕНАМИ команды, а не подстрокой — у каждой команды, зовущей скрипт модуля, ровно один
 // `--emit` ровно с этим значением (`--emit cursorX` и лишний `--emit cursor` ПЕРЕД требуемым проходили `includes`).
 const emitsOf = (cmd) => { const t = cmd.split(/\s+/); return t.flatMap((w, i) => (w === '--emit' ? [t[i + 1] ?? ''] : [])); };
@@ -528,7 +554,8 @@ console.log('\n=== s14/O5: имена событий образцов проти
 const EVENT_CONTRACT = {
   // bugs/118 F1: фрагмент Claude Code — ЕДИНСТВЕННЫЙ конфиг, который владелец мержит себе руками, — в ось
   // не попадал: охват брался по паттерну имени `sample-*.json`. Теперь судится каждый `*.json` модуля.
-  'settings-fragment.json':        ['PreToolUse', 'SessionStart', 'Stop', 'UserPromptSubmit'], // researches/19 §Claude Code (таблица событий); PreToolUse (2.8) ушло с хуком pretool-owner-word — 2.9 WH, тикет #144; вернулось с хуком часов — 2.10 PT1, контракт `updatedInput` — researches/41
+  // 2.10 MM2: PostToolUse · PostToolUseFailure — справка вендора code.claude.com/docs/en/hooks, сверка шага MM1 2026-11-06 (plans/138).
+  'settings-fragment.json':        ['PostToolUse', 'PostToolUseFailure', 'PreToolUse', 'SessionStart', 'Stop', 'UserPromptSubmit'], // researches/19 §Claude Code (таблица событий); PreToolUse (2.8) ушло с хуком pretool-owner-word — 2.9 WH, тикет #144; вернулось с хуком часов — 2.10 PT1, контракт `updatedInput` — researches/41
   'sample-codex-hooks.json':       ['SessionStart', 'UserPromptSubmit'],  // researches/19 §OpenAI Codex
   'sample-cursor-hooks.json':      ['sessionStart'],                      // researches/19 §Cursor
   'sample-copilot-hooks.json':     ['sessionStart'],                      // researches/19 §GitHub Copilot
@@ -598,7 +625,7 @@ const PAIR_AXIS = ['settings-fragment.json', 'sample-codex-hooks.json'];
 // 2.10 PT1: шапка скрипта называет ОДНО событие («Claude Code event: X») или НЕСКОЛЬКО («Claude Code events: X and Y (…)») — хук часов
 // стоит под двумя; набор событий берётся словами из названного списка событий Claude Code, не любым словом в регистре PascalCase
 // (иначе «MultiEdit» в скобке стал бы событием)
-const CC_EVENTS = ['SessionStart', 'SessionEnd', 'UserPromptSubmit', 'PreToolUse', 'PostToolUse', 'Stop', 'SubagentStart', 'SubagentStop', 'PreCompact', 'Notification'];
+const CC_EVENTS = ['SessionStart', 'SessionEnd', 'UserPromptSubmit', 'PreToolUse', 'PostToolUse', 'PostToolUseFailure', 'Stop', 'SubagentStart', 'SubagentStop', 'PreCompact', 'Notification'];
 const headerEventsOf = (script) => {
   try {
     const line = (readFileSync(join(S, '.kaif', 'hooks', script), 'utf8').match(/Claude Code events?: ([^\n]+)/) || [])[1] || '';
@@ -639,9 +666,9 @@ for (const f of PAIR_AXIS) {
 {
   // 2.10 PT1: каждый развёрнутый скрипт подключён ровно под каждым событием своей шапки, по одному разу (хук часов — дважды, двумя событиями)
   const fragPairs = pairsOf(readJson(join(S, '.kaif', 'hooks', 'settings-fragment.json')) || {}).map(([s, e]) => `${s}@${e}`).sort();
-  const wantPairs = HOOK_FILES.slice(0, 7).flatMap((s) => headerEventsOf(s).map((e) => `${s}@${e}`)).sort();
-  ok(fragPairs.length === 8 && JSON.stringify(fragPairs) === JSON.stringify(wantPairs),
-     's14 ось пар: фрагмент подключает семь развёрнутых скриптов, каждый под каждым событием шапки один раз — восемь пар (2.9 WH: два хука слова владельца сняты; 2.10 PT1: хук часов; PT2: преамбула субагенту; PT5: прощание)', fragPairs.join(', '));
+  const wantPairs = HOOK_FILES.slice(0, 8).flatMap((s) => headerEventsOf(s).map((e) => `${s}@${e}`)).sort();
+  ok(fragPairs.length === 11 && JSON.stringify(fragPairs) === JSON.stringify(wantPairs),
+     's14 ось пар: фрагмент подключает восемь развёрнутых скриптов, каждый под каждым событием шапки один раз — одиннадцать пар (2.9 WH: два хука слова владельца сняты; 2.10 PT1: хук часов; PT2: преамбула субагенту; PT5: прощание; MM2: хук знаний — три события)', fragPairs.join(', '));
   // Мутационное доказательство живёт В СВОДЕ (EXP-0016): обмен двух скриптов в разобранной КОПИИ (EXP-0077).
   const p = join(S, '.kaif', 'hooks', 'settings-fragment.json');
   const bytesBefore = (() => { try { return readFileSync(p); } catch { return Buffer.alloc(0); } })();
@@ -701,7 +728,7 @@ const scriptsOf = (hooksObj) => Object.entries(hooksObj || {}).flatMap(([ev, gro
   (Array.isArray(groups) ? groups : []).flatMap((g) => (g.hooks || []).map((h) => `${ev}:${scriptOfCmd(h)}`)).filter((s) => !s.endsWith(':undefined')));
 const FRAG = readJson(join(S, '.kaif', 'hooks', 'settings-fragment.json')) || {};
 const WANT = scriptsOf(FRAG.hooks).sort();
-ok(WANT.length === 8, 's14 SW2: фрагмент несёт восемь записей «событие:хук» — эталон для случаев ниже (2.9 WH: два сняты; 2.10 PT1: хук часов под UserPromptSubmit и PreToolUse; PT2: преамбула субагенту под PreToolUse; PT5: прощание под Stop)', WANT.join(' · '));
+ok(WANT.length === 11, 's14 SW2: фрагмент несёт одиннадцать записей «событие:хук» — эталон для случаев ниже (2.9 WH: два сняты; 2.10 PT1: хук часов под UserPromptSubmit и PreToolUse; PT2: преамбула субагенту под PreToolUse; PT5: прощание под Stop)', WANT.join(' · '));
 let wcase = 0;
 const wcopy = (settings, local) => {
   const d = join(ROOT, `wire-${++wcase}`);
@@ -725,13 +752,13 @@ let W = wcopy(null, null), wr = runAll(W, ['check']);
 ok(wr.code === 0 && new RegExp(`${WANT.length} delivered hook\\(s\\) not wired`).test(wr.out) && /wire-hooks/.test(wr.out),
    's14 SW2: поставленные хуки не подключены → `check` называет их числом и командой, выход 0 (предупреждение, не отказ)', wr.out.slice(-300));
 
-// (2) файл владельца с чужим хуком → свои записи живы и первыми, наши восемь записей добавлены, отступ файла сохранён
+// (2) файл владельца с чужим хуком → свои записи живы и первыми, наши одиннадцать записей добавлены, отступ файла сохранён
 W = wcopy(OWNER_SETTINGS, null); wr = runAll(W, ['wire-hooks']);
 let wj = null; try { wj = JSON.parse(settingsOf(W)); } catch { /* ассерт ниже честно красный */ }
 ok(wr.code === 0 && wj && JSON.stringify(wj.permissions) === JSON.stringify(OWNER_OBJ.permissions)
    && JSON.stringify(wj.hooks.PreToolUse[0]) === JSON.stringify(OWNER_OBJ.hooks.PreToolUse[0])
    && WANT.every((s) => scriptsOf(wj.hooks).includes(s)) && /\n {4}"permissions"/.test(settingsOf(W) || ''),
-   's14 SW2: wire-hooks — чужой PreToolUse владельца и его права сохранены и стоят первыми, восемь записей хуков KAIF добавлены (группы часов и преамбулы — после группы владельца в его PreToolUse), отступ 4 сохранён', `${wr.out.slice(-300)} | ${String(settingsOf(W)).slice(0, 200)}`);
+   's14 SW2: wire-hooks — чужой PreToolUse владельца и его права сохранены и стоят первыми, одиннадцать записей хуков KAIF добавлены (группы часов и преамбулы — после группы владельца в его PreToolUse), отступ 4 сохранён', `${wr.out.slice(-300)} | ${String(settingsOf(W)).slice(0, 200)}`);
 const wiredOnce = settingsOf(W);
 wr = runAll(W, ['wire-hooks']);
 ok(wr.code === 0 && settingsOf(W) === wiredOnce && /already wired/.test(wr.out),
@@ -823,8 +850,8 @@ W = wcopy(null, null); wr = runAll(W, ['checkpoint', 'wire-hooks']);
 ok(wr.code !== 0 && /NOT wired/.test(wr.out) && /--verdict/.test(wr.out),
    's14 SW2: `checkpoint wire-hooks` без подключения — отказ, названы команда и запись отказа харнесса', wr.out.slice(-300));
 wr = runAll(W, ['wire-hooks']);   // результат судится до следующей команды (страж немых команд, bugs/61)
-// 2.10 PT1 · PT2 · PT5: восемь записей «событие:хук» (хук часов — под UserPromptSubmit и PreToolUse, преамбула — под PreToolUse); число — из эталона WANT
-ok(wr.code === 0 && new RegExp(`${WANT.length} of ${WANT.length} KAIF hooks added`).test(wr.out), 's14 SW2: wire-hooks на свежей копии — все записи фрагмента добавлены (8 из 8)', wr.out.slice(-200));
+// 2.10 PT1 · PT2 · PT5: одиннадцать записей «событие:хук» (хук часов — под UserPromptSubmit и PreToolUse, преамбула — под PreToolUse); число — из эталона WANT
+ok(wr.code === 0 && new RegExp(`${WANT.length} of ${WANT.length} KAIF hooks added`).test(wr.out), 's14 SW2: wire-hooks на свежей копии — все записи фрагмента добавлены (11 из 11)', wr.out.slice(-200));
 const wck = runAll(W, ['checkpoint', 'wire-hooks']);
 ok(wck.code === 0 && /wire-hooks done/.test(readFileSync(join(W, 'KAIF_ADAPTATION_TASK.md'), 'utf8')),
    's14 SW2: после wire-hooks чекпоинт записан в задании установки', wck.out.slice(-200));

@@ -44,7 +44,7 @@ KAIF/
 │   ├── templates/_interactive-contour-spec.md  # одностраничный контракт интерактивного контура → .kaif/INTERACTIVE_CONTOUR_SPEC.md (2.6, эпик IC)
 │   ├── tools/*.mjs                        # опциональные модули поставки (kaif-provenance, kaif-canon-lint, kaif-requirements-lint, kaif-guard-lint, kaif-scenario-lint, kaif-ranking-lint, kaif-attribution-lint, kaif-testrun-lint, kaif-voice-lint, kaif-experience-lint → .kaif/tools/);
 │   │                                      # с 2.6 сборщик обходит поддиректории (framework/tools/contour/ → .kaif/tools/contour/ — генератор контура, эпик IC, шаг IC3)
-│   ├── hooks/*                            # опциональный модуль refresh-hooks → .kaif/hooks/ (7 скриптов + образец конфига + README; эпик O; четвёртый — prompt-resume-word, эпик RS 2.7; пятый — clock-now, шестой — subagent-preamble, седьмой — stop-farewell-capture, эпик PT 2.10; pretool-owner-word (OW 2.8) и stop-owner-answer (OA 2.9) сняты словом владельца — эпик WH 2.9, №144)
+│   ├── hooks/*                            # опциональный модуль refresh-hooks → .kaif/hooks/ (8 скриптов + образец конфига + README; эпик O; четвёртый — prompt-resume-word, эпик RS 2.7; пятый — clock-now, шестой — subagent-preamble, седьмой — stop-farewell-capture, эпик PT 2.10; восьмой — knowledge-moment, эпик MM 2.10; pretool-owner-word (OW 2.8) и stop-owner-answer (OA 2.9) сняты словом владельца — эпик WH 2.9, №144)
 │   ├── kaif-unpack.mjs                    # механический распаковщик (встраивается FILE:-блоком)
 │   ├── module-classes.json                # ручные оверрайды классов модулей (классы иначе вычисляются)
 │   ├── spheres/*                          # библиотеки терминов по сферам (+ _index, _template)
