@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "77c9fdc73ab5c273b8f240e3fe2bbe29d87ea73f507080fae2c67c9f4c21f4e8",
+    "sourceTree": "5a25edc70096ba4f7201b6d9d406f7f7078dbd60a5da40de374fe7747c2f326a",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -102,6 +102,7 @@
       "THE QUESTIONS PAGE READS YOUR DOCUMENTS AS YOU WROTE THEM (2.10, epic TK; origin tickets #147 · #142 · #109 · #136): the door no longer refuses a comparison with the Russian word for \"above\" — only a reference form (a document noun or a participle next to it, \"see above\"); `--check` names every live question over 750 characters (a warning; the page still opens); a status that opens with 🟡 or ⏳ waits whatever word follows, a closing mark does not close a partial head, and a document FOLDED or MERGED into another (↪ · 📦) is closed — it leaves the owner's queue; an artifact with `format: html` is shown as a page in a script-less frame, its source one click below. No migration — the contour module is replaced by the update; run `--queue --list` once and expect folded documents to be gone and partly-answered ones to be named.",
       "ONE PAGE AND ONE VOICE AT A TIME, AND THE CALL AS ONE SOUND (2.10, epic TK; origin tickets #169 · #165 · #163 — the KAIF owner on a field project, rendered from Russian: \"the same sores from project to project\"; two field deployments carried the same local fix): the shipped contour refuses a new page while another document's page is live (exit 3, \"Another page is open … close it first\"; a lock whose process is gone does not block, a page is live only when the port of its lock accepts a connection and answers `/whoami` with the id of its lock — the lock of its own document too, so a reused pid, or a pid and a port both gone to strangers, no longer says \"Already open\" with no page behind it, and a page slow to answer is not covered by a second one (a stranger that accepts the connection and never answers still reads as a live page — named) — and an unreadable lock is read again, the lock of another page never deleted; the waiter and the window recovery still judge a lock by its pid, `--close` asks the port first and sends its token only to the page — I48) and refuses `--timeout` on a page with a window (a door without a window and `--timeout 0` pass); a call waits while another call of the project is sounding (a voice lock caught before its body is written counts as taken while fresh, never when dated in the future); the queue page no longer ends when a notice on it is marked read while an interview on it still has open questions, nor on the last answer while a notice on it is unread, it counts only what it shows (an old hidden interview never holds it), and its showing is recorded for every document on it; on Windows the call is ONE sound — a second of silence, the three beeps at full level, two seconds of pause, the voice rendered before playing (a rich `KAIF_VOICE_TOOL` is asked for `--out <wav>`; a tool that renders the beeps itself is declared with `KAIF_VOICE_BEEPS=embedded`); the Russian pack hands the engine words — numbers as words (thousands grouped by spaces, commas or dots as one number; a fraction as one value, a Roman numeral as its value, a numeral of no known value as a word — never an empty phrase), an abbreviation letter by letter, Latin transliterated (diacritics and ligatures decomposed, common letters with a stroke folded, any other non-ASCII Latin letter dropped) — and its interview call says \"awaits your answers\", not the word for proofreading. MIGRATION — agent work: a project that carried the one-page refusal or the embedded-beeps switch as a local edit of `.kaif/tools/contour/review.mjs` takes the shipped file (the update names the module as diverged); add a question to the page already open instead of raising a second one.",
       "THE CALL SAYS THE OWNER'S NAME ONCE, AND SHORT (2.10, epic TK; origin tickets #191 · #190 — the KAIF owner on a field project, rendered from Russian: \"why do you say my name twice?\" · \"just the first name, without the aka\"): `review.mjs --call` adds the name itself and a text that already opens with it gets it once; without `contour.callName` the voice uses the first word of the owner's name, a parenthesised alias and «aka …» dropped. A project that set `contour.callName` hears no change.",
+      "A PICTURE IN A DOCUMENT REACHES THE OWNER AS A PICTURE (2.10, epic TK; origin ticket #187 — a field interview «with pictures» showed each picture as «!caption» text and a review round was lost): the questions page shows `![caption](path)` as the picture — the path is read from the document's folder inside the project and embedded, so no request leaves the machine; a click opens it at full size; a missing file or a remote address is shown as «[caption]», and `review.mjs <doc> --check` names it before the page opens.",
       "THE MACHINE'S CLOCK WRITES THE MOMENT (2.10, epic PT; origin tickets #170 · #172 — two field deployments carried their own clock hook): the refresh-hooks module ships a fifth script, `.kaif/hooks/clock-now.mjs`, and `wire-hooks` wires it for Claude Code on `UserPromptSubmit` (one context line with the machine's local moment on every prompt) and on `PreToolUse` with the matcher `Write|Edit|MultiEdit`: a time placeholder in what the agent writes — the word NOW, NOW-ISO, DATE or TIME between white square brackets (U+27E6 / U+27E7) — is filled by the clock through `updatedInput` (`content`, `new_string`, `edits[].new_string`; `old_string` never; a placeholder the write only CARRIES — one already standing in the Edit's `old_string` or in the file a Write replaces — stays literal), with no permission decision and never a stop; a backslash keeps a placeholder literal; a write without one gets no answer. The stamp rule of the agent guide says: where the hook is wired, write the placeholder; elsewhere, the `date` probe. MIGRATION — agent work: run `node .kaif/kaif-core.mjs wire-hooks` (the install and update tasks say so); a project that carried its own clock hook (a local `tools/hooks/clock-now.mjs`) keeps one of the two wired, not both — two hooks would answer the same write.",
       "THE CLOSING CHAT'S FAREWELL REACHES THE NEXT CHAT (2.10, epic PT; origin ticket #181 — the owner of a field project copied every farewell into the next chat by hand): the refresh-hooks module ships a seventh script, `.kaif/hooks/stop-farewell-capture.mjs`, and `wire-hooks` wires it for Claude Code on `Stop` next to the STATUS guard: on the stop of a turn that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (the last stop of the closing turn wins — a one-line answer to another hook's block or to a neighbour session excepted, and a background task's notification does not open a new turn; never a block); `/resume` gains Step 0 — on the chat's first entry read that file before the canon, and if it is older than the newest commit say so and trust `STATUS.md`. Both files join the ignore-first set. MIGRATION — agent work: if your project carries its own farewell hook, keep one — the shipped one or yours — never both writing the same file.",
       "A SUBAGENT ENTERS THE PROJECT FIRST (2.10, epic PT; origin tickets #166 · #168 — a field deployment carried its own preamble hook): the refresh-hooks module ships a sixth script, `.kaif/hooks/subagent-preamble.mjs`, and `wire-hooks` wires it for Claude Code on `PreToolUse` with the matcher `Agent|Task`: every subagent task gets a marked preamble in front of it — read in full the documents of step 1 of `/resume` (read from `.claude/skills/resume/SKILL.md` by the step's number, existing files only), quote one canon line bearing on the task first in the report, no subagents of its own, no commit, no push — through `updatedInput`, with no permission decision; a task already marked is left as it is; each firing appends one line to `.kaif/subagent-preamble.jsonl` (now in the ignore-first set). The guide's fable-loop section gains the rule \"A brief to a subagent has five parts\" (context · bounds · role · report · the main agent's duty after) with the skeleton `.kaif/_subagent-brief-template.md`, and the judge hunts \"subagent result relayed unverified\". MIGRATION — agent work: none; `wire-hooks` adds the group, `\"hooks\": \"off\"` keeps it out.",
@@ -10702,7 +10703,10 @@ export function sessionName(root, env = process.env) {
 // 2.10 TK10 (a), origin #190: the identity table holds the legal name with an alias («Name Surname (ALIAS)», «Name Surname aka ALIAS») — a
 // voice that reads it whole addresses the owner by a form he never uses (the field owner: «just NIKOLAI» · «without the aka»). The default
 // spoken address is the FIRST word, parenthesised parts and everything from «aka» dropped; `contour.callName` still wins.
-// [TESTED: 2026-11-06 · contour selftest «#190 short name» — «Jane Owner aka JO» → «Jane», «Ann Lee (ACE)» → «Ann»]
+// [TESTED: ≈ 2026-11-06 12:14 · functional — `tools/sandbox/probes/tk10a-call-name.mjs`: a fresh deployment without callName, identity
+//  «Ann Lee (ACE)» → the dry-run call «Ann, the phone needs unlocking», a text opened by «Ann,» — one «Ann»; the origin's own
+//  `review.mjs --call … --dry-run` with its own callName — three forms → the name once (#191); hygiene — selftest «#190 short name» · «#191 name once»;
+//  report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md]
 export function shortName(name) {
   const bare = String(name || '').replace(/\([^)]*\)/g, ' ').replace(/\s+(?:aka|a\.k\.a\.)\s.*$/i, ' ').trim();
   return bare.split(/\s+/)[0] || String(name || '').trim();
@@ -11276,9 +11280,42 @@ export function checkForm(md) {
 
 // ── P8 + I24: markdown mini-renderer (escaping is the FIRST action) ───────────────────────────
 export const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+// 2.10 TK10 (b), origin #187: a picture in a document reaches the owner AS A PICTURE. A field interview «with pictures» showed each
+// `![caption](path)` as «!caption» text — the options «the upper / the lower picture» pointed at nothing and a review round was lost.
+// The page that renders a document sets a resolver (withImages): a path relative to the document → a data: URI of a local image file
+// (no request leaves the machine); no resolver, a remote address or a missing file → «[caption]» marked as missing, never «!link».
+// A click on the picture toggles its full size.
+// [TESTED: 2026-11-06 12:17 · functional — `tools/sandbox/probes/tk10b-image-functional.mjs`: a fresh project with this contour, an
+//  interview with an existing and a missing picture → `--check` names the missing one, the built page carries the picture as a data: URI,
+//  a headless Edge snapshot read by eye — the picture inside Q1 above the options, the missing one as «[the lower]»; hygiene — selftest
+//  «#187 image» · «#187 missing image warns», mutant `tk10b-image-mutant.mjs` red exactly on «#187 image»; the click-to-full-size toggle
+//  NOT observed (a snapshot does not click)]
+let IMAGE_SRC = null;
+export function withImages(resolver, fn) {
+  const prev = IMAGE_SRC; IMAGE_SRC = resolver;
+  try { return fn(); } finally { IMAGE_SRC = prev; }
+}
+const unescapeHtml = (s) => s.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+function imageHtml(alt, path) {
+  const uri = IMAGE_SRC ? IMAGE_SRC(unescapeHtml(path)) : null;
+  if (!uri) return '<span class="imgmissing">[' + (alt || path) + ']</span>';
+  return '<img class="docimg" src="' + uri + '" alt="' + alt + '" title="' + alt + '" onclick="this.classList.toggle(\'full\')">';
+}
+export const IMAGE_RE = /!\[([^\]]*)\]\(([^)\s]+)\)/g;
+// The pictures a document refers to, outside code fences — for the door's warning about a missing file
+export function imageRefs(md) {
+  const out = []; let fence = false;
+  normalize(md).split('\n').forEach((l, i) => {
+    if (/^\s*```/.test(l)) { fence = !fence; return; }
+    if (fence) return;
+    for (const m of l.replace(/`[^`]*`/g, '').matchAll(IMAGE_RE)) out.push({ alt: m[1], path: m[2], line: i + 1 });
+  });
+  return out;
+}
 function inline(s) {
   return s
     .replace(/`([^`]+)`/g, (_, c) => '<code>' + c + '</code>')
+    .replace(IMAGE_RE, (_, alt, p) => imageHtml(alt, p))   // TK10 (b), #187 — before links: «![a](p)» is a picture, not «!» + a link
     // a single star INSIDE bold is text ("kaif-*" in a bold phase list — origin #123, interview 018 of the origin): only a pair closes
     .replace(/\*\*((?:[^*]|\*(?!\*))+?)\*\*/g, '<strong>$1</strong>')
     .replace(/(^|[^*\p{L}\d])\*([^*]+)\*(?!\*)/gu, '$1<em>$2</em>')
@@ -11555,7 +11592,7 @@ import { createServer, request as httpRequest } from 'node:http';
 import { connect as netConnect, createServer as netCreateServer } from 'node:net';
 import { randomBytes, createHash } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
-import { join, resolve, basename, relative, extname, isAbsolute } from 'node:path';
+import { join, resolve, basename, relative, extname, isAbsolute, dirname } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import {
   loadContourConfig, normalize, bodyHash, provenance, inQuietHours, parseMetaBlock, parseQuestions,
@@ -11568,6 +11605,7 @@ import {
   sessionName, // OW4 (2.8, #95 · #98): the calling session's name
   readDecision, // OW6 (2.8): a repeated save is recognised against the decision it already made
   shortName, // TK10 (a), #190: the default spoken address — read by the selftest
+  withImages, imageRefs, // TK10 (b), #187: pictures of a document shown as pictures
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 
@@ -11650,6 +11688,23 @@ const KIND_NOTICE = 'notice';
 const FACES = ['interview', 'proofread', 'mockup'];
 const IMAGE_MIME = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif',
   '.webp': 'image/webp', '.svg': 'image/svg+xml' };
+// 2.10 TK10 (b), origin #187: the picture resolver of a document page — a path relative to the document's folder, inside the project
+// root, with a known image extension → a data: URI; anything else (a remote address, a path outside the project, a missing file) → null
+export function imageResolver(root, docRel) {
+  const base = dirname(resolve(root, docRel));
+  return (p) => {
+    if (/^[a-z][a-z0-9+.-]*:/i.test(p)) return null;
+    const abs = resolve(base, p), mime = IMAGE_MIME[extname(abs).toLowerCase()];
+    const rel = relative(resolve(root), abs);
+    if (!mime || rel.startsWith('..') || isAbsolute(rel) || !existsSync(abs)) return null;
+    try { return 'data:' + mime + ';base64,' + readFileSync(abs).toString('base64'); } catch { return null; }
+  };
+}
+// The pictures of a document the page could not show — the door (`--check`) names each one before the page opens (#187)
+export function missingImages(root, docRel, md) {
+  const R = imageResolver(root, docRel);
+  return imageRefs(md).filter((r) => !R(r.path));
+}
 const IS_WIN = platform() === 'win32', IS_MAC = platform() === 'darwin';
 const CLI_NAME = 'node .kaif/tools/contour/review.mjs'; // how the rituals call it
 // LP (2.7): every flag the CLI knows. An unknown flag REFUSES before any page, sound or call (the core's bug-33 rule):
@@ -12288,7 +12343,8 @@ const TARGET_LINE_RE = new RegExp('^\\s*\\*{0,2}(?:' + PARSER.targetLabels + ')\
 const OPTION_LINE_RE = OPTION_START_RE; // CP (2.9, #127): one option regex for the parse and the card prose — the copy is gone
 const QSECTION_RE = new RegExp('^#{1,3}\\s+(?:' + PARSER.questionsSectionHeadings + ')(?![\\p{L}\\d])', 'iu');
 
-export function buildPage(root, docPath) {
+export function buildPage(root, docPath) { return withImages(imageResolver(root, docPath), () => buildPageBody(root, docPath)); }
+function buildPageBody(root, docPath) {
   const cfg = cfgOf(root), t = T(cfg);
   const md = readFileSync(resolve(root, docPath), 'utf8');
   const meta = parseMetaBlock(md);
@@ -12384,7 +12440,8 @@ export function buildPage(root, docPath) {
 }
 
 // I37: the NOTICE page — the whole document, an optional comment, the EXPLICIT "read" mark.
-export function buildNoticePage(root, docPath) {
+export function buildNoticePage(root, docPath) { return withImages(imageResolver(root, docPath), () => buildNoticePageBody(root, docPath)); }
+function buildNoticePageBody(root, docPath) {
   const cfg = cfgOf(root), t = T(cfg);
   const md = readFileSync(resolve(root, docPath), 'utf8');
   const rel = relDoc(root, docPath);
@@ -12400,7 +12457,8 @@ export function buildNoticePage(root, docPath) {
 
 // The PROOFREADING face (new in 2.6, owner scenario B of interview #024): every paragraph of the
 // document with a comment field under it and one Done button. Record: kind "proofread", comments { p<N> }.
-export function buildProofreadPage(root, docPath) {
+export function buildProofreadPage(root, docPath) { return withImages(imageResolver(root, docPath), () => buildProofreadPageBody(root, docPath)); }
+function buildProofreadPageBody(root, docPath) {
   const cfg = cfgOf(root), t = T(cfg);
   const md = readFileSync(resolve(root, docPath), 'utf8');
   const rel = relDoc(root, docPath);
@@ -12456,7 +12514,7 @@ export function buildQueuePage(root, docs, notices = pendingNotices(root)) {
       notices.map(({ doc }) => {
         const md = readFileSync(resolve(root, doc), 'utf8');
         return '<section class="group notice"><h3>' + esc(docTitle(md, doc)) + ' <small class="kind">' + esc(doc) + '</small></h3>' +
-          '<div class="doc">' + renderMd(md) + '</div>' + noticeCommentBlock(doc, t) +
+          '<div class="doc">' + withImages(imageResolver(root, doc), () => renderMd(md)) + '</div>' + noticeCommentBlock(doc, t) +
           '<p><button type="button" class="savedoc" data-doc="' + esc(doc) + '">' + t.btn.read + '</button></p></section>';
       }).join('\n<hr>\n')
     : '';
@@ -12622,6 +12680,8 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   .pid { font-size:12px; color:var(--muted); font-family:ui-monospace,Consolas,monospace } .ptext p { margin:6px 0 }
   .mock { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px; margin:10px 0; text-align:center }
   .mock img { max-width:100%; height:auto }
+  .docimg { max-width:100%; height:auto; cursor:zoom-in; display:block; margin:8px 0 } .docimg.full { max-width:none; cursor:zoom-out }
+  .imgmissing { color:#b00020; font-style:italic }
   textarea, input[type=text] { width:100%; background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:8px; font:inherit }
   /* QL4 (2.7, origin issue #60 — the owner's word: the Save button is a FAB at the top right): a control pinned to the
      BOTTOM edge is unreachable when the window is taller than the screen (remote desktop, phone) — the owner typed
@@ -13609,6 +13669,7 @@ export function checkDoc(root, docPath, log = console.log) {
     : t.check.archaeologyOld(arch.headerDate, arch.since));
   // TK5 (b) (2.10, origin #142): a live question over the length budget is named — a warning, the page may still open
   for (const w of lengthWarnings(md)) log(t.check.long(w.id, w.chars, w.budget));
+  for (const m of missingImages(root, docPath, md)) log(t.check.image(m.path, m.line));   // TK10 (b), #187: a picture the page cannot show
   const gate = gateForOpen(root, docPath); // pre-flight + render self-check — the same gate the show runs
   if (gate) for (const l of gate) log(l);
   if (gate || cf.unrecognised.length) { log(t.check.refused); return EXIT_PREFLIGHT; }
@@ -14175,6 +14236,22 @@ export async function selftest(log = console.log) {
     // 2.10 TK10 (a), origin #190: the default spoken address is the first word without the alias; contour.callName still wins
     ok(shortName('Jane Owner aka JO') === 'Jane' && shortName('Ann Lee (ACE)') === 'Ann' && shortName('Ana') === 'Ana'
       && cfg.callName === 'Jane', '#190 short name: «Jane Owner aka JO» → «Jane», «Name Surname (ALIAS)» → «Name»; the loaded config speaks «Jane»');
+    // 2.10 TK10 (b), origin #187: a picture of a document is shown as a picture — resolved from the document's folder as a data: URI;
+    // without a resolver, a remote address or a missing file — «[caption]» marked missing, never the «!caption» text of the field
+    {
+      mkdirSync(join(root, 'interviews', 'assets'), { recursive: true });
+      writeFileSync(join(root, 'interviews', 'assets', 'pic.png'), Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64'));
+      const R = imageResolver(root, 'interviews/interview_099_pics.md');
+      const md = 'Which one?\n\n![the upper](assets/pic.png)\n\n![the lower](assets/none.png)\n';
+      const html = withImages(R, () => renderMd(md));
+      ok(html.includes('<img class="docimg" src="data:image/png;base64,iVBOR') && html.includes('alt="the upper"') && !html.includes('!the upper')
+        && html.includes('<span class="imgmissing">[the lower]</span>')
+        && renderMd('![cap](assets/pic.png)').includes('<span class="imgmissing">[cap]</span>'),
+        '#187 image: «![the upper](assets/pic.png)» → a picture as a data: URI from the document\'s folder; a missing file and a page without a resolver — «[caption]», never «!caption»');
+      ok(R('https://example.org/x.png') === null && R('../../outside.png') === null && R('assets/pic.txt') === null
+        && JSON.stringify(missingImages(root, 'interviews/interview_099_pics.md', md).map((m) => m.path)) === '["assets/none.png"]',
+        '#187 missing image warns: the door names «assets/none.png»; a remote address, a path outside the project, a non-image — no picture');
+    }
     rmSync(join(root, 'ws'), { recursive: true, force: true });
   }
 
@@ -15103,6 +15180,7 @@ const EN = {
       + (date ? date : 'none') + ' is before ' + since + ' (the axis judges forward; old documents stay silent)',
     long: (id, n, budget) => 'WARNING: ' + id + ' is ' + n + ' characters, above the budget of ' + budget + ' — the owner tires of long questions'
       + ' (origin #142): cut it to what he chooses by, or split the fork; the page may still open.',
+    image: (path, line) => 'WARNING: line ' + line + ' shows the picture «' + path + '», but the page cannot show it (no such image file in the project, or a remote address) — the owner would see only its caption (origin #187)',
     ok: 'check OK — the page may open; nothing was shown and nobody was called (--check never serves).',
     refused: 'check REFUSED (exit 3) — fix the form before any page opens; nothing was shown and nobody was called.',
     partial: (n) => 'WARNING: ' + n + ' block(s) look like questions but are not recognised — the page opens WITHOUT them (run --check to see which).',
@@ -15282,6 +15360,7 @@ const RU = {
       + (date ? date : 'отсутствует') + ' раньше ' + since + ' (ось действует вперёд; старые документы молчат)',
     long: (id, n, budget) => 'ВНИМАНИЕ: в ' + id + ' ' + n + ' знаков — больше бюджета ' + budget + '; длинные вопросы владельца утомляют'
       + ' (origin #142): сожми до того, по чему он выбирает, или раздели развилку; страница всё равно откроется.',
+    image: (path, line) => 'ВНИМАНИЕ: строка ' + line + ' показывает картинку «' + path + '», но страница её не покажет (файла картинки в проекте нет, или это адрес в сети) — владелец увидит только подпись (origin #187)',
     ok: 'проверка OK — страницу можно открывать; ничего не показано, никто не позван (--check не поднимает страницу).',
     refused: 'проверка ОТКАЗАЛА (код 3) — поправь форму до открытия страницы; ничего не показано, никто не позван.',
     partial: (n) => 'ВНИМАНИЕ: ' + n + ' блок(ов) похожи на вопрос, но не узнаны — страница открывается БЕЗ них (--check покажет, какие).',

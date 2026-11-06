@@ -231,6 +231,7 @@ const EN = {
       + (date ? date : 'none') + ' is before ' + since + ' (the axis judges forward; old documents stay silent)',
     long: (id, n, budget) => 'WARNING: ' + id + ' is ' + n + ' characters, above the budget of ' + budget + ' — the owner tires of long questions'
       + ' (origin #142): cut it to what he chooses by, or split the fork; the page may still open.',
+    image: (path, line) => 'WARNING: line ' + line + ' shows the picture «' + path + '», but the page cannot show it (no such image file in the project, or a remote address) — the owner would see only its caption (origin #187)',
     ok: 'check OK — the page may open; nothing was shown and nobody was called (--check never serves).',
     refused: 'check REFUSED (exit 3) — fix the form before any page opens; nothing was shown and nobody was called.',
     partial: (n) => 'WARNING: ' + n + ' block(s) look like questions but are not recognised — the page opens WITHOUT them (run --check to see which).',
@@ -410,6 +411,7 @@ const RU = {
       + (date ? date : 'отсутствует') + ' раньше ' + since + ' (ось действует вперёд; старые документы молчат)',
     long: (id, n, budget) => 'ВНИМАНИЕ: в ' + id + ' ' + n + ' знаков — больше бюджета ' + budget + '; длинные вопросы владельца утомляют'
       + ' (origin #142): сожми до того, по чему он выбирает, или раздели развилку; страница всё равно откроется.',
+    image: (path, line) => 'ВНИМАНИЕ: строка ' + line + ' показывает картинку «' + path + '», но страница её не покажет (файла картинки в проекте нет, или это адрес в сети) — владелец увидит только подпись (origin #187)',
     ok: 'проверка OK — страницу можно открывать; ничего не показано, никто не позван (--check не поднимает страницу).',
     refused: 'проверка ОТКАЗАЛА (код 3) — поправь форму до открытия страницы; ничего не показано, никто не позван.',
     partial: (n) => 'ВНИМАНИЕ: ' + n + ' блок(ов) похожи на вопрос, но не узнаны — страница открывается БЕЗ них (--check покажет, какие).',

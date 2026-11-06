@@ -87,7 +87,10 @@ export function sessionName(root, env = process.env) {
 // 2.10 TK10 (a), origin #190: the identity table holds the legal name with an alias («Name Surname (ALIAS)», «Name Surname aka ALIAS») — a
 // voice that reads it whole addresses the owner by a form he never uses (the field owner: «just NIKOLAI» · «without the aka»). The default
 // spoken address is the FIRST word, parenthesised parts and everything from «aka» dropped; `contour.callName` still wins.
-// [TESTED: 2026-11-06 · contour selftest «#190 short name» — «Jane Owner aka JO» → «Jane», «Ann Lee (ACE)» → «Ann»]
+// [TESTED: ≈ 2026-11-06 12:14 · functional — `tools/sandbox/probes/tk10a-call-name.mjs`: a fresh deployment without callName, identity
+//  «Ann Lee (ACE)» → the dry-run call «Ann, the phone needs unlocking», a text opened by «Ann,» — one «Ann»; the origin's own
+//  `review.mjs --call … --dry-run` with its own callName — three forms → the name once (#191); hygiene — selftest «#190 short name» · «#191 name once»;
+//  report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md]
 export function shortName(name) {
   const bare = String(name || '').replace(/\([^)]*\)/g, ' ').replace(/\s+(?:aka|a\.k\.a\.)\s.*$/i, ' ').trim();
   return bare.split(/\s+/)[0] || String(name || '').trim();
@@ -661,9 +664,42 @@ export function checkForm(md) {
 
 // ── P8 + I24: markdown mini-renderer (escaping is the FIRST action) ───────────────────────────
 export const escapeHtml = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+// 2.10 TK10 (b), origin #187: a picture in a document reaches the owner AS A PICTURE. A field interview «with pictures» showed each
+// `![caption](path)` as «!caption» text — the options «the upper / the lower picture» pointed at nothing and a review round was lost.
+// The page that renders a document sets a resolver (withImages): a path relative to the document → a data: URI of a local image file
+// (no request leaves the machine); no resolver, a remote address or a missing file → «[caption]» marked as missing, never «!link».
+// A click on the picture toggles its full size.
+// [TESTED: 2026-11-06 12:17 · functional — `tools/sandbox/probes/tk10b-image-functional.mjs`: a fresh project with this contour, an
+//  interview with an existing and a missing picture → `--check` names the missing one, the built page carries the picture as a data: URI,
+//  a headless Edge snapshot read by eye — the picture inside Q1 above the options, the missing one as «[the lower]»; hygiene — selftest
+//  «#187 image» · «#187 missing image warns», mutant `tk10b-image-mutant.mjs` red exactly on «#187 image»; the click-to-full-size toggle
+//  NOT observed (a snapshot does not click)]
+let IMAGE_SRC = null;
+export function withImages(resolver, fn) {
+  const prev = IMAGE_SRC; IMAGE_SRC = resolver;
+  try { return fn(); } finally { IMAGE_SRC = prev; }
+}
+const unescapeHtml = (s) => s.replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+function imageHtml(alt, path) {
+  const uri = IMAGE_SRC ? IMAGE_SRC(unescapeHtml(path)) : null;
+  if (!uri) return '<span class="imgmissing">[' + (alt || path) + ']</span>';
+  return '<img class="docimg" src="' + uri + '" alt="' + alt + '" title="' + alt + '" onclick="this.classList.toggle(\'full\')">';
+}
+export const IMAGE_RE = /!\[([^\]]*)\]\(([^)\s]+)\)/g;
+// The pictures a document refers to, outside code fences — for the door's warning about a missing file
+export function imageRefs(md) {
+  const out = []; let fence = false;
+  normalize(md).split('\n').forEach((l, i) => {
+    if (/^\s*```/.test(l)) { fence = !fence; return; }
+    if (fence) return;
+    for (const m of l.replace(/`[^`]*`/g, '').matchAll(IMAGE_RE)) out.push({ alt: m[1], path: m[2], line: i + 1 });
+  });
+  return out;
+}
 function inline(s) {
   return s
     .replace(/`([^`]+)`/g, (_, c) => '<code>' + c + '</code>')
+    .replace(IMAGE_RE, (_, alt, p) => imageHtml(alt, p))   // TK10 (b), #187 — before links: «![a](p)» is a picture, not «!» + a link
     // a single star INSIDE bold is text ("kaif-*" in a bold phase list — origin #123, interview 018 of the origin): only a pair closes
     .replace(/\*\*((?:[^*]|\*(?!\*))+?)\*\*/g, '<strong>$1</strong>')
     .replace(/(^|[^*\p{L}\d])\*([^*]+)\*(?!\*)/gu, '$1<em>$2</em>')

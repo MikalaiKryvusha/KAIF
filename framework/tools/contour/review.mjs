@@ -42,7 +42,7 @@ import { createServer, request as httpRequest } from 'node:http';
 import { connect as netConnect, createServer as netCreateServer } from 'node:net';
 import { randomBytes, createHash } from 'node:crypto';
 import { spawn, spawnSync } from 'node:child_process';
-import { join, resolve, basename, relative, extname, isAbsolute } from 'node:path';
+import { join, resolve, basename, relative, extname, isAbsolute, dirname } from 'node:path';
 import { pathToFileURL, fileURLToPath } from 'node:url';
 import {
   loadContourConfig, normalize, bodyHash, provenance, inQuietHours, parseMetaBlock, parseQuestions,
@@ -55,6 +55,7 @@ import {
   sessionName, // OW4 (2.8, #95 · #98): the calling session's name
   readDecision, // OW6 (2.8): a repeated save is recognised against the decision it already made
   shortName, // TK10 (a), #190: the default spoken address — read by the selftest
+  withImages, imageRefs, // TK10 (b), #187: pictures of a document shown as pictures
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 
@@ -137,6 +138,23 @@ const KIND_NOTICE = 'notice';
 const FACES = ['interview', 'proofread', 'mockup'];
 const IMAGE_MIME = { '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.gif': 'image/gif',
   '.webp': 'image/webp', '.svg': 'image/svg+xml' };
+// 2.10 TK10 (b), origin #187: the picture resolver of a document page — a path relative to the document's folder, inside the project
+// root, with a known image extension → a data: URI; anything else (a remote address, a path outside the project, a missing file) → null
+export function imageResolver(root, docRel) {
+  const base = dirname(resolve(root, docRel));
+  return (p) => {
+    if (/^[a-z][a-z0-9+.-]*:/i.test(p)) return null;
+    const abs = resolve(base, p), mime = IMAGE_MIME[extname(abs).toLowerCase()];
+    const rel = relative(resolve(root), abs);
+    if (!mime || rel.startsWith('..') || isAbsolute(rel) || !existsSync(abs)) return null;
+    try { return 'data:' + mime + ';base64,' + readFileSync(abs).toString('base64'); } catch { return null; }
+  };
+}
+// The pictures of a document the page could not show — the door (`--check`) names each one before the page opens (#187)
+export function missingImages(root, docRel, md) {
+  const R = imageResolver(root, docRel);
+  return imageRefs(md).filter((r) => !R(r.path));
+}
 const IS_WIN = platform() === 'win32', IS_MAC = platform() === 'darwin';
 const CLI_NAME = 'node .kaif/tools/contour/review.mjs'; // how the rituals call it
 // LP (2.7): every flag the CLI knows. An unknown flag REFUSES before any page, sound or call (the core's bug-33 rule):
@@ -775,7 +793,8 @@ const TARGET_LINE_RE = new RegExp('^\\s*\\*{0,2}(?:' + PARSER.targetLabels + ')\
 const OPTION_LINE_RE = OPTION_START_RE; // CP (2.9, #127): one option regex for the parse and the card prose — the copy is gone
 const QSECTION_RE = new RegExp('^#{1,3}\\s+(?:' + PARSER.questionsSectionHeadings + ')(?![\\p{L}\\d])', 'iu');
 
-export function buildPage(root, docPath) {
+export function buildPage(root, docPath) { return withImages(imageResolver(root, docPath), () => buildPageBody(root, docPath)); }
+function buildPageBody(root, docPath) {
   const cfg = cfgOf(root), t = T(cfg);
   const md = readFileSync(resolve(root, docPath), 'utf8');
   const meta = parseMetaBlock(md);
@@ -871,7 +890,8 @@ export function buildPage(root, docPath) {
 }
 
 // I37: the NOTICE page — the whole document, an optional comment, the EXPLICIT "read" mark.
-export function buildNoticePage(root, docPath) {
+export function buildNoticePage(root, docPath) { return withImages(imageResolver(root, docPath), () => buildNoticePageBody(root, docPath)); }
+function buildNoticePageBody(root, docPath) {
   const cfg = cfgOf(root), t = T(cfg);
   const md = readFileSync(resolve(root, docPath), 'utf8');
   const rel = relDoc(root, docPath);
@@ -887,7 +907,8 @@ export function buildNoticePage(root, docPath) {
 
 // The PROOFREADING face (new in 2.6, owner scenario B of interview #024): every paragraph of the
 // document with a comment field under it and one Done button. Record: kind "proofread", comments { p<N> }.
-export function buildProofreadPage(root, docPath) {
+export function buildProofreadPage(root, docPath) { return withImages(imageResolver(root, docPath), () => buildProofreadPageBody(root, docPath)); }
+function buildProofreadPageBody(root, docPath) {
   const cfg = cfgOf(root), t = T(cfg);
   const md = readFileSync(resolve(root, docPath), 'utf8');
   const rel = relDoc(root, docPath);
@@ -943,7 +964,7 @@ export function buildQueuePage(root, docs, notices = pendingNotices(root)) {
       notices.map(({ doc }) => {
         const md = readFileSync(resolve(root, doc), 'utf8');
         return '<section class="group notice"><h3>' + esc(docTitle(md, doc)) + ' <small class="kind">' + esc(doc) + '</small></h3>' +
-          '<div class="doc">' + renderMd(md) + '</div>' + noticeCommentBlock(doc, t) +
+          '<div class="doc">' + withImages(imageResolver(root, doc), () => renderMd(md)) + '</div>' + noticeCommentBlock(doc, t) +
           '<p><button type="button" class="savedoc" data-doc="' + esc(doc) + '">' + t.btn.read + '</button></p></section>';
       }).join('\n<hr>\n')
     : '';
@@ -1109,6 +1130,8 @@ function pageShell(cfg, { title, kind, heading, main, questions, artifacts = [],
   .pid { font-size:12px; color:var(--muted); font-family:ui-monospace,Consolas,monospace } .ptext p { margin:6px 0 }
   .mock { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:10px; margin:10px 0; text-align:center }
   .mock img { max-width:100%; height:auto }
+  .docimg { max-width:100%; height:auto; cursor:zoom-in; display:block; margin:8px 0 } .docimg.full { max-width:none; cursor:zoom-out }
+  .imgmissing { color:#b00020; font-style:italic }
   textarea, input[type=text] { width:100%; background:var(--bg); color:var(--ink); border:1px solid var(--line); border-radius:8px; padding:8px; font:inherit }
   /* QL4 (2.7, origin issue #60 — the owner's word: the Save button is a FAB at the top right): a control pinned to the
      BOTTOM edge is unreachable when the window is taller than the screen (remote desktop, phone) — the owner typed
@@ -2096,6 +2119,7 @@ export function checkDoc(root, docPath, log = console.log) {
     : t.check.archaeologyOld(arch.headerDate, arch.since));
   // TK5 (b) (2.10, origin #142): a live question over the length budget is named — a warning, the page may still open
   for (const w of lengthWarnings(md)) log(t.check.long(w.id, w.chars, w.budget));
+  for (const m of missingImages(root, docPath, md)) log(t.check.image(m.path, m.line));   // TK10 (b), #187: a picture the page cannot show
   const gate = gateForOpen(root, docPath); // pre-flight + render self-check — the same gate the show runs
   if (gate) for (const l of gate) log(l);
   if (gate || cf.unrecognised.length) { log(t.check.refused); return EXIT_PREFLIGHT; }
@@ -2662,6 +2686,22 @@ export async function selftest(log = console.log) {
     // 2.10 TK10 (a), origin #190: the default spoken address is the first word without the alias; contour.callName still wins
     ok(shortName('Jane Owner aka JO') === 'Jane' && shortName('Ann Lee (ACE)') === 'Ann' && shortName('Ana') === 'Ana'
       && cfg.callName === 'Jane', '#190 short name: «Jane Owner aka JO» → «Jane», «Name Surname (ALIAS)» → «Name»; the loaded config speaks «Jane»');
+    // 2.10 TK10 (b), origin #187: a picture of a document is shown as a picture — resolved from the document's folder as a data: URI;
+    // without a resolver, a remote address or a missing file — «[caption]» marked missing, never the «!caption» text of the field
+    {
+      mkdirSync(join(root, 'interviews', 'assets'), { recursive: true });
+      writeFileSync(join(root, 'interviews', 'assets', 'pic.png'), Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==', 'base64'));
+      const R = imageResolver(root, 'interviews/interview_099_pics.md');
+      const md = 'Which one?\n\n![the upper](assets/pic.png)\n\n![the lower](assets/none.png)\n';
+      const html = withImages(R, () => renderMd(md));
+      ok(html.includes('<img class="docimg" src="data:image/png;base64,iVBOR') && html.includes('alt="the upper"') && !html.includes('!the upper')
+        && html.includes('<span class="imgmissing">[the lower]</span>')
+        && renderMd('![cap](assets/pic.png)').includes('<span class="imgmissing">[cap]</span>'),
+        '#187 image: «![the upper](assets/pic.png)» → a picture as a data: URI from the document\'s folder; a missing file and a page without a resolver — «[caption]», never «!caption»');
+      ok(R('https://example.org/x.png') === null && R('../../outside.png') === null && R('assets/pic.txt') === null
+        && JSON.stringify(missingImages(root, 'interviews/interview_099_pics.md', md).map((m) => m.path)) === '["assets/none.png"]',
+        '#187 missing image warns: the door names «assets/none.png»; a remote address, a path outside the project, a non-image — no picture');
+    }
     rmSync(join(root, 'ws'), { recursive: true, force: true });
   }
 
