@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "5c370740a27c2691214516d7b22df4dd5b4e7174104488728080f00ca1734183",
+    "sourceTree": "6b3ed45bfca165590c3c43c1485944a55372e3a41f2bd229b82f6f098d7de3cd",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -19809,7 +19809,8 @@ process.exit(0);
 //  claude-opus-5-5, 680 700 tokens → the 1M window by the vendor's rule, 68 %): the defaults 80 / 85 — silence; the project's 60 / 65 —
 //  the «finish to a logical cut, then /end-chat-soft» line; hygiene — --selftest 9/9, mutant «cache_read not counted» red on exactly the
 //  usage case (probe tools/sandbox/probes/pt6-context-window-mutant.mjs); report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md rows 35–36; judge of session 97 —
-//  the subagent guard and the windowOf edges added after; NOT YET: the 80 % line seen live in a session that crossed it]
+//  the subagent guard and the windowOf edges added after; LIVE 2026-11-06 14:14 — the origin's session 97 crossed 80 % and got the line
+//  «the window is 80 % full (800395 of 1000000 tokens). A WARNING only — keep working…» with no closing word (report row 47)]
 import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 

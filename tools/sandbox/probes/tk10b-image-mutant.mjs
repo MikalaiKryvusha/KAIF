@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { quietEnv } from '../../lib/sandbox-run.mjs';
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const SRC = join(REPO, 'framework', 'tools', 'contour');
-const RULE = '.replace(IMAGE_RE, (_, alt, p) => imageHtml(alt, p))';
+const RULE = '(code ? code : imageHtml(alt, p))';   // the picture rule since the code-span fix (8992c43)
 const run = (mutate) => {
   const d = mkdtempSync(join(tmpdir(), 'kaif-tk10b-'));
   try {

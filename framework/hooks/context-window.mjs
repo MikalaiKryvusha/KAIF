@@ -21,7 +21,8 @@
 //  claude-opus-5-5, 680 700 tokens → the 1M window by the vendor's rule, 68 %): the defaults 80 / 85 — silence; the project's 60 / 65 —
 //  the «finish to a logical cut, then /end-chat-soft» line; hygiene — --selftest 9/9, mutant «cache_read not counted» red on exactly the
 //  usage case (probe tools/sandbox/probes/pt6-context-window-mutant.mjs); report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md rows 35–36; judge of session 97 —
-//  the subagent guard and the windowOf edges added after; NOT YET: the 80 % line seen live in a session that crossed it]
+//  the subagent guard and the windowOf edges added after; LIVE 2026-11-06 14:14 — the origin's session 97 crossed 80 % and got the line
+//  «the window is 80 % full (800395 of 1000000 tokens). A WARNING only — keep working…» with no closing word (report row 47)]
 import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 
