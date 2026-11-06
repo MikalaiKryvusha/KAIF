@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 const HOOK = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'framework', 'hooks', 'context-window.mjs');
 const MUTANTS = [
   ['cache_read not counted', " + (Number(u.cache_read_input_tokens) || 0)", '', /usage = input \+ cache_creation \+ cache_read/],
-  ['a subagent\'s call judged', "catch { /* torn line */ }\n  }\n  return false;", "catch { /* torn line */ }\n  }\n  return true;", /a subagent's tool call/],
+  ['a subagent\'s call judged', "export const fromSubagent = (ev) => Boolean(ev && ev.agent_id);", "export const fromSubagent = (ev) => false;", /a subagent's tool call/],
 ];
 const run = (mut) => {
   const d = mkdtempSync(join(tmpdir(), 'kaif-pt6m-'));

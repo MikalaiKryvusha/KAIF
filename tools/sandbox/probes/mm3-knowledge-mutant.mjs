@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 const HOOK = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'framework', 'hooks', 'knowledge-moment.mjs');
 const MUTANTS = [
   ['agent-message not excluded', '|system-reminder|agent-message)', '|system-reminder)', /a subagent hand-back/],
-  ['a subagent\'s call judged', "catch { /* torn line */ }\n  }\n  return false;", "catch { /* torn line */ }\n  }\n  return true;", /a subagent's tool call/],
+  ['a subagent\'s call judged', "export const fromSubagent = (ev) => Boolean(ev && ev.agent_id);", "export const fromSubagent = (ev) => false;", /a subagent's tool call/],
 ];
 const run = (mut) => {
   const d = mkdtempSync(join(tmpdir(), 'kaif-mm3m-'));

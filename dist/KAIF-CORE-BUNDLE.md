@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "bbe5c5728f2f6c1fca3c3a8986c3b9ce1000ede996e7f6001d56df7a990d7ac6",
+    "sourceTree": "5c370740a27c2691214516d7b22df4dd5b4e7174104488728080f00ca1734183",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -108,7 +108,7 @@
       "THE CLOSING CHAT'S FAREWELL REACHES THE NEXT CHAT (2.10, epic PT; origin ticket #181 — the owner of a field project copied every farewell into the next chat by hand): the refresh-hooks module ships a seventh script, `.kaif/hooks/stop-farewell-capture.mjs`, and `wire-hooks` wires it for Claude Code on `Stop` next to the STATUS guard: on the stop of a turn that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (the last stop of the closing turn wins — a one-line answer to another hook's block or to a neighbour session excepted, and a background task's notification does not open a new turn; never a block); `/resume` gains Step 0 — on the chat's first entry read that file before the canon, and if it is older than the newest commit say so and trust `STATUS.md`. Both files join the ignore-first set. MIGRATION — agent work: if your project carries its own farewell hook, keep one — the shipped one or yours — never both writing the same file.",
       "A SUBAGENT ENTERS THE PROJECT FIRST (2.10, epic PT; origin tickets #166 · #168 — a field deployment carried its own preamble hook): the refresh-hooks module ships a sixth script, `.kaif/hooks/subagent-preamble.mjs`, and `wire-hooks` wires it for Claude Code on `PreToolUse` with the matcher `Agent|Task`: every subagent task gets a marked preamble in front of it — read in full the documents of step 1 of `/resume` (read from `.claude/skills/resume/SKILL.md` by the step's number, existing files only), quote one canon line bearing on the task first in the report, no subagents of its own, no commit, no push — through `updatedInput`, with no permission decision; a task already marked is left as it is; each firing appends one line to `.kaif/subagent-preamble.jsonl` (now in the ignore-first set). The guide's fable-loop section gains the rule \"A brief to a subagent has five parts\" (context · bounds · role · report · the main agent's duty after) with the skeleton `.kaif/_subagent-brief-template.md`, and the judge hunts \"subagent result relayed unverified\". MIGRATION — agent work: none; `wire-hooks` adds the group, `\"hooks\": \"off\"` keeps it out.",
       "A FINDING IS WRITTEN WHERE IT LIVES, IN THE SAME TURN (2.10, epic MM; origin tickets #160 · #159 — the KAIF owner on a field project, rendered from Russian: \"something changed? the knowledge documents say otherwise? you MUST edit them\"): the closing rituals (`/end-chat-soft`, `/end-chat-force` step 1) and the loops (`/autoloop` step 9, `/dayloop` and `/nightloop` step 5) say a `KNOWLEDGE:` line — what was understood anew or found stale and the document it is written in now, or «nothing new»; the checklist line «Check the map & blast radius» and the footnotes of both maps ask for the line in the same turn, not on a commit; `/fable-judge` hunts «Learned, not recorded». Nothing to migrate: the rule acts from the next session.",
-      "THE KNOWLEDGE HOOK SPEAKS AT THE MOMENTS A MEMORY IS WRITTEN (2.10, epic MM; origin tickets #160 · #159 · #186 — a field deployment carried its own knowledge hook, whose one ten-minute window swallowed every novelty moment): the refresh-hooks module ships an eighth script, `.kaif/hooks/knowledge-moment.mjs` — on the owner's prompt, a failed tool call, a Read of a knowledge document and the first touch of a component with `NOTES.md` it puts one line into the context: write what you understood into the project document where it lives, in this turn; plain tool results add weight and it speaks once per twelve. It never blocks and never stops a turn; its state is `.kaif/knowledge-moment.json` (ignored). `wire-hooks` wires it under UserPromptSubmit, PostToolUse and PostToolUseFailure; Claude Code only.",
+      "THE KNOWLEDGE HOOK SPEAKS AT THE MOMENTS A MEMORY IS WRITTEN (2.10, epic MM; origin tickets #160 · #159 · #186 — a field deployment carried its own knowledge hook, whose one ten-minute window swallowed every novelty moment): the refresh-hooks module ships an eighth script, `.kaif/hooks/knowledge-moment.mjs` — on the owner's prompt, a failed tool call, a Read of a knowledge document and the first touch of a component with `NOTES.md`, and on the first Read of a project source file (quoting what the docs say of it, or ordering one line into the map when no doc names it), it puts one line into the context: write what you understood into the project document where it lives, in this turn; plain tool results add weight and it speaks once per twelve. It never blocks and never stops a turn; its state is `.kaif/knowledge-moment.json` (ignored). `wire-hooks` wires it under UserPromptSubmit, PostToolUse and PostToolUseFailure; Claude Code only.",
       "THE WINDOW WARNS AT 80 %, THE SOFT CLOSURE STARTS AT 85 % (2.10, epic PT; origin ticket #188 and its comment — two field deployments carried their own budget hook; one agent read a warning that spoke of closing as the closure and stopped working with 30 % of the window left): the refresh-hooks module ships a ninth script, `.kaif/hooks/context-window.mjs` — on the owner's prompt and after each tool result it reads the session's used share of the window; at `contextWindow.warnPct` (80) one warning with no closing word, at `closePct` (85) «finish to a logical cut, then /end-chat-soft», never a forced closure. The window size follows the vendor's model rule unless `contextWindow.tokens` is set. A project that wired its own budget hook keeps it — compare the thresholds and keep one.",
       "THE STAND IS THE AGENT'S (2.10, epic HC; origin ticket #189 — the KAIF owner on a field project, rendered from Russian: \"the whole machine with the game is yours — set up for yourself whatever you need\"): the testing canon says it in «What the word \"test\" means», item 4 — the test's conditions are built by the agent with what its machine allows, an unobserved case is reported with the stand step done next, never as «needs a stand» handed to the owner; `/fable-judge` hunts «Closed as \"needs a stand\"». A project whose house rules already say it keeps them; nothing to migrate.",
       "POINTERS FOLLOW THE ROWS 2.8 MOVED (2.10, epic HC; origin ticket #119, second case): the harness rule of the bug-fixing canon now writes a new harness command's row into `HOUSE_RULES.md` → \"Stands, environments and devices\" (it said \"document it in AGENT_GUIDE.md\"), and `/code-revision`, `/autoloop` and `/resume` point at the house-rules tables, not the guide; the build refuses the old forms. MIGRATION — agent work: none, unless your own texts repeat one of these pointers."
@@ -3764,7 +3764,8 @@ no push — through `updatedInput`, with no permission decision; a marked task i
 that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the
 project root — the last stop of the closing turn wins, a one-line answer to another hook's block or to a neighbour session excepted; never a block; `/resume` reads it on the chat's first entry — Claude Code only), `knowledge-moment.mjs` (2.10, epic MM; origin tickets #160 · #159 · #186: one line «write it into
 the project document where it lives, in this turn» on the strong moments — the owner's prompt, a failed tool call
-(`PostToolUseFailure`), a Read of a knowledge document, the first touch of a component that has `NOTES.md` — and once per
+(`PostToolUseFailure`), a Read of a knowledge document, the first touch of a component that has `NOTES.md`, the first Read of a project
+source file (what the docs say of it is quoted; named nowhere — an order to add one line to the map) — and once per
 twelve plain tool results; state per session in `.kaif/knowledge-moment.json`; never a block — Claude Code only), `context-window.mjs`
 (2.10, epic PT; origin ticket #188: the session's used share of the context window — the last main-thread usage of the transcript
 against the window size by the vendor's model rule or the project's `contextWindow.tokens` — at `contextWindow.warnPct` (80) one warning
@@ -19855,20 +19856,11 @@ export const LINES = {
   close: (pct, used, win) => `KAIF context: the window is ${pct} % full (${used} of ${win} tokens). Finish the current work to a logical cut, ` +
     'then start /end-chat-soft — the soft closure, never a forced one.',
 };
-// Judge of session 97 (finding 4, observed): Claude Code fires this hook on a SUBAGENT's tool calls too, under the parent's session id
-// and transcript — a line meant for the main agent landed in a subagent's context. A subagent's calls live in its own transcript
-// (`subagents/agent-*.jsonl`); the main thread's tool_use ids are in the session transcript. So a PostToolUse whose tool_use_id is not
-// among the main thread's ids in the transcript tail is a subagent's call — silence (a lagging transcript costs one silent event, never a
-// wrong line). An event without tool_use_id is judged as before.
-export function mainThreadCall(text, toolUseId) {
-  if (!toolUseId) return true;
-  const needle = '"id":"' + toolUseId + '"';
-  for (const line of String(text).split('\n')) {
-    if (!line.includes(needle)) continue;
-    try { const r = JSON.parse(line); if (r.type === 'assistant' && !r.isSidechain) return true; } catch { /* torn line */ }
-  }
-  return false;
-}
+// Judge of session 97 (finding 4): Claude Code fires this hook on a SUBAGENT's tool calls too, under the parent's session and transcript.
+// Observed live (origin session 97, a temporary logging hook): a subagent's event carries `agent_id` and `agent_type`, the main thread's
+// does not. (A first guard looked the call up in the transcript — the CLI writes the record AFTER PostToolUse, so it silenced the main
+// thread of every headless session; the probe tools/sandbox/probes/mm3-live-knowledge.mjs caught it.)
+export const fromSubagent = (ev) => Boolean(ev && ev.agent_id);
 // The decision — pure: (used, window, thresholds, levels already said) → { line, level } or null
 export function decide(used, win, cfg, said = []) {
   const warnPct = Number(cfg.warnPct) > 0 ? Number(cfg.warnPct) : DEFAULTS.warnPct;
@@ -19921,9 +19913,8 @@ if (process.argv[2] === '--selftest') {
     && windowOf({ model: 'claude-opus-4-6', seen: 300000 }) === LARGE, 'window: the env switch, the project\'s tokens, and the floor «used > 200 000 ⇒ 1 000 000»');
   ok(windowOf({ model: 'claude-opus-5-5', tokens: 200000, seen: 300000 }) === 200000 && windowOf({ model: 'claude-haiku-5-20261001' }) === SMALL,
     'window: the project\'s tokens win over the floor; a date suffix is not a minor version (judge of session 97)');
-  const tr = [JSON.stringify({ type: 'assistant', isSidechain: false, message: { content: [{ type: 'tool_use', id: 'toolu_MAIN' }] } })].join('\n');
-  ok(mainThreadCall(tr, 'toolu_MAIN') && !mainThreadCall(tr, 'toolu_SUB') && mainThreadCall(tr, undefined),
-    'a subagent\'s tool call (its id not in the main thread) — silence; the main agent\'s call and an event without an id — judged');
+  ok(fromSubagent({ hook_event_name: 'PostToolUse', agent_id: 'a1', agent_type: 'general-purpose' }) && !fromSubagent({ hook_event_name: 'PostToolUse' }),
+    'a subagent\'s tool call (the event carries agent_id) — silence; the main agent\'s call — judged');
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
@@ -19935,7 +19926,7 @@ try {
     const marker = readJson(join(root, DEPLOYMENT)) || {};
     const cw = (marker.contextWindow && typeof marker.contextWindow === 'object') ? marker.contextWindow : {};
     const tail = tailOf(ev.transcript_path), lu = lastUsage(tail);
-    if (lu && (ev.hook_event_name !== 'PostToolUse' || mainThreadCall(tail, ev.tool_use_id))) {
+    if (lu && !fromSubagent(ev)) {
       const id = String(ev.session_id || 'no-session'), all = readJson(join(root, STATE)) || {};
       const st = all[id] || { said: [], seen: 0 };
       st.seen = Math.max(st.seen || 0, lu.used);
@@ -19982,10 +19973,11 @@ process.exit(0);
 // [TESTED: 2026-11-06 · functional — the origin's own live Claude Code session 97 with this file wired: the weight line reached the
 //  model's context after twelve plain results, the PostToolUseFailure line after a failed Grep, the recall line after a Read of
 //  EXPERIENCE.md; a subagent's hand-back was read as the owner — fixed (the <agent-message> case), its live replay is silent; hygiene —
-//  --selftest 11/11, mutant «agent-message not excluded» red on exactly its case, s14 (+4 checks). NOT YET: the map scenarios of
-//  criteria 9 · 10 · 30 (probe of step MM3 of the origin's plans/138); the mutant — probe tools/sandbox/probes/mm3-knowledge-mutant.mjs;
-//  report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md row 28; the subagent guard — judge of session 97, after]
-import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync } from 'node:fs';
+//  --selftest, mutant probe tools/sandbox/probes/mm3-knowledge-mutant.mjs (two mutants, each red on exactly its case), s14;
+//  2026-11-06 14:03 +03:00 · functional — tools/sandbox/probes/mm3-live-knowledge.mjs, 9 of 9 live headless sessions (claude -p --model haiku, KAIF
+//  installed by this build, hooks wired): the map got a line about an unnamed source file (3/3), a stale map line was corrected (3/3), the
+//  component notes were read before the first edit and appended (3/3); report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md]
+import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from 'node:fs';
 import { join, dirname, resolve, relative, sep } from 'node:path';
 
 export const THRESHOLD = 12;          // weak tool results before one reminder (one reminder per ~a dozen calls of plain work)
@@ -20004,8 +19996,14 @@ export const LINES = {
   failure: `KAIF knowledge: a tool call failed — you expected one thing and got another. What did the project's documents not know? ${WRITE}`,
   recall: (doc) => `KAIF knowledge: you re-read ${doc}. Does it say what you know now? It differs — fix it there, in this turn: add the new, ` +
     'correct or delete the stale.',
-  notes: (file, notes) => `KAIF knowledge: ${file} belongs to a component with notes — read ${notes} before you change it, and append ` +
-    'there what you find.',
+  notes: (file, notes) => `KAIF knowledge: ${file} belongs to a component with notes — read ${notes} before you change it; after the ` +
+    'change, append ONE line there: what you changed or found (an order — live probe, session 97).',
+  known: (file, doc, excerpt) => `KAIF knowledge: ${doc} says of ${file}: «${excerpt}». Does the code say the same? It differs — fix ${doc} ` +
+    'in this turn: add the new, correct or delete the stale.',
+  // an ORDER, not a question (live probe, session 97: the question form was read as advice — 0 of 3 sessions wrote; the field owner's own
+  // word for this hook: «you MUST document it»)
+  unknown: (file) => `KAIF knowledge: you have just read ${file}, and none of the project\'s maps names it. Before you answer, add ONE line ` +
+    'about what it does to PROJECT_ARCHITECTURE_INTERNAL_MAP.md — the map is how the next session knows the project.',
   weight: `KAIF knowledge: a stretch of work since the last check. Learned how something works, or saw a document say otherwise? ${WRITE}`,
 };
 
@@ -20029,30 +20027,33 @@ export function notesOf(root, file, exists = existsSync) {
 }
 const pathOf = (input) => String((input && (input.file_path || input.notebook_path)) || '');
 
-// Judge of session 97 (finding 4, observed): Claude Code fires this hook on a SUBAGENT's tool calls too, under the parent's session id
-// and transcript — a line meant for the main agent landed in a subagent's context. A subagent's calls live in its own transcript
-// (`subagents/agent-*.jsonl`); the main thread's tool_use ids are in the session transcript. So a PostToolUse whose tool_use_id is not
-// among the main thread's ids in the transcript tail is a subagent's call — silence (a lagging transcript costs one silent event, never a
-// wrong line). An event without tool_use_id is judged as before.
-export function mainThreadCall(text, toolUseId) {
-  if (!toolUseId) return true;
-  const needle = '"id":"' + toolUseId + '"';
-  for (const line of String(text).split('\n')) {
-    if (!line.includes(needle)) continue;
-    try { const r = JSON.parse(line); if (r.type === 'assistant' && !r.isSidechain) return true; } catch { /* torn line */ }
-  }
-  return false;
-}
-const TAIL_BYTES = 4 * 1024 * 1024;
-function tailOf(p) {
-  const fd = openSync(p, 'r');
-  try { const size = fstatSync(fd).size, n = Math.min(size, TAIL_BYTES), buf = Buffer.alloc(n); readSync(fd, buf, 0, n, size - n); return buf.toString('utf8'); }
-  finally { closeSync(fd); }
+// Judge of session 97 (finding 4): Claude Code fires this hook on a SUBAGENT's tool calls too, under the parent's session and transcript.
+// Observed live (origin session 97, a temporary logging hook): a subagent's event carries `agent_id` and `agent_type`, the main thread's
+// does not. (A first guard looked the call up in the transcript — the CLI writes the record AFTER PostToolUse, so it silenced the main
+// thread of every headless session; the probe tools/sandbox/probes/mm3-live-knowledge.mjs caught it.)
+export const fromSubagent = (ev) => Boolean(ev && ev.agent_id);
+
+// MM3, live probe of session 97 (origin plans/138): in the «new» and «stale» scenarios the only line came at the prompt — BEFORE the
+// agent learned anything; the moment of understanding was a Read of source code, which weighed 1. Recall by association closes it, the
+// way a cue brings a memory back: the first Read in a session of a project source file → the docs that name it are looked up; named →
+// the line quotes what they say («does the code say the same?»); named nowhere → «learned how it works? write a line into the map».
+const CODE_EXT = /\.(?:m?[jt]sx?|cjs|py|go|rs|java|kt|cs|c|cc|cpp|h|hpp|rb|php|swift|sh|ps1|sql|vue|svelte|html|css|json|ya?ml|toml)$/i;
+const NOT_PROJECT = /^(?:\.kaif|\.claude|\.git|node_modules|dist|build|vendor)\//;
+const LOOKUP_DOCS = ['PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'STATUS.md', 'HOUSE_RULES.md'];
+export function docsLookup(root, read = (p) => (existsSync(p) ? readFileSync(p, 'utf8') : '')) {
+  return (rel) => {
+    const base = rel.split('/').pop();
+    for (const doc of LOOKUP_DOCS) {
+      const line = read(join(root, doc)).split('\n').find((l) => l.includes(rel) || (base.length >= 5 && l.includes(base)));
+      if (line) return { doc, excerpt: line.replace(/\s+/g, ' ').trim().slice(0, 200) };
+    }
+    return null;
+  };
 }
 
-// The decision — pure: (event, the session's state, root, exists) → { line | null, state }.
-export function decide(ev, st, root, exists = existsSync) {
-  const s = { weight: st.weight || 0, notes: Array.isArray(st.notes) ? st.notes.slice() : [] };
+// The decision — pure: (event, the session's state, root, exists, lookup) → { line | null, state }.
+export function decide(ev, st, root, exists = existsSync, lookup = docsLookup(root)) {
+  const s = { weight: st.weight || 0, notes: Array.isArray(st.notes) ? st.notes.slice() : [], code: Array.isArray(st.code) ? st.code.slice() : [] };
   const name = ev.hook_event_name;
   if (name === 'UserPromptSubmit') {
     if (NOT_THE_OWNER.test(String(ev.prompt || ''))) return { line: null, state: s };
@@ -20067,6 +20068,12 @@ export function decide(ev, st, root, exists = existsSync) {
     const notes = notesOf(root, file, exists);
     if (notes && rel !== notes && !s.notes.includes(notes)) {
       s.notes.push(notes); s.weight = 0; return { line: LINES.notes(rel, notes), state: s };
+    }
+    // a file of a component with notes is covered by its notes (the line above) — no second line for it
+    if (tool === 'Read' && !notes && CODE_EXT.test(rel) && !NOT_PROJECT.test(rel) && !rel.startsWith('..') && !s.code.includes(rel)) {
+      s.code.push(rel); s.weight = 0;
+      const hit = lookup(rel);
+      return { line: hit ? LINES.known(rel, hit.doc, hit.excerpt) : LINES.unknown(rel), state: s };
     }
   }
   s.weight += 1;
@@ -20101,10 +20108,10 @@ if (process.argv[2] === '--selftest') {
   ok(r.line === LINES.failure && r.state.weight === 0, 'failed tool: at once, weight reset');
   r = decide(post('Read', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md'), {}, R, ex);
   ok(r.line && r.line.includes('re-read PROJECT_ARCHITECTURE_INTERNAL_MAP.md'), 'recall: a Read of a map names the map');
-  r = decide(post('Read', 'src/app.mjs'), {}, R, ex);
-  ok(r.line === null && r.state.weight === 1, 'plain Read: silent, weight 1');
+  r = decide(post('Read', 'docs/guide.txt'), {}, R, ex, () => null);
+  ok(r.line === null && r.state.weight === 1, 'plain Read (not code, not a knowledge doc): silent, weight 1');
   let st = {}; let said = 0;
-  for (let i = 0; i < THRESHOLD; i++) { r = decide(post('Read', 'src/app.mjs'), st, R, ex); st = r.state; if (r.line) said++; }
+  for (let i = 0; i < THRESHOLD; i++) { r = decide(post('Read', 'docs/guide.txt'), st, R, ex, () => null); st = r.state; if (r.line) said++; }
   ok(said === 1 && r.line === LINES.weight && st.weight === 0, `weight: ${THRESHOLD} plain results → exactly one line, then reset`);
   r = decide(post('Edit', 'src/contour/page.mjs'), {}, R, ex);
   ok(r.line && r.line.includes('read src/contour/NOTES.md before you change it'), 'component notes: first touch names the notes file');
@@ -20114,8 +20121,17 @@ if (process.argv[2] === '--selftest') {
   ok(r.line === null, 'a root NOTES.md is not a component\'s notes');
   r = decide({ hook_event_name: 'Stop' }, {}, R, ex);
   ok(r.line === null, 'Stop: never speaks, never blocks');
-  const tr = JSON.stringify({ type: 'assistant', isSidechain: false, message: { content: [{ type: 'tool_use', id: 'toolu_MAIN' }] } });
-  ok(mainThreadCall(tr, 'toolu_MAIN') && !mainThreadCall(tr, 'toolu_SUB'), 'a subagent\'s tool call is not the main agent\'s moment (judge of session 97)');
+  ok(fromSubagent({ hook_event_name: 'PostToolUse', agent_id: 'a1' }) && !fromSubagent({ hook_event_name: 'PostToolUse' }),
+    'a subagent\'s tool call (the event carries agent_id) is not the main agent\'s moment (judge of session 97)');
+  const look = docsLookup(R, (p) => (/INTERNAL_MAP/.test(p) ? '## Billing\n- `src/billing/invoice.mjs` — invoice total; tax rate 10 %.\n' : ''));
+  r = decide(post('Read', 'src/billing/invoice.mjs'), {}, R, ex, look);
+  ok(r.line && /PROJECT_ARCHITECTURE_INTERNAL_MAP\.md says of src\/billing\/invoice\.mjs: «- `src\/billing\/invoice\.mjs` — invoice total; tax rate 10 %\.»/.test(r.line),
+    'recall by association: the first Read of a source file the map names quotes the map\'s line (MM3, stale)');
+  const r2 = decide(post('Read', 'src/billing/invoice.mjs'), r.state, R, ex, look);
+  ok(r2.line === null, 'the same source file again in the session — silent');
+  r = decide(post('Read', 'src/shop/cart.mjs'), {}, R, ex, look);
+  ok(r.line && /read src\/shop\/cart\.mjs, and none of the project's maps names it\. Before you answer, add ONE line/.test(r.line), 'a source file the maps never name — «before you answer, add one line to the map» (MM3, new)');
+  ok(decide(post('Read', '.kaif/hooks/x.mjs'), {}, R, ex, look).line === null, 'a file of KAIF itself is not project code');
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
@@ -20123,7 +20139,7 @@ if (process.argv[2] === '--selftest') {
 try {
   const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
   // judge of session 97, finding 4: a subagent's tool call is not the main agent's moment — silence, the state untouched
-  if (/^PostToolUse/.test(String(ev.hook_event_name || '')) && ev.transcript_path && existsSync(ev.transcript_path) && !mainThreadCall(tailOf(ev.transcript_path), ev.tool_use_id)) process.exit(0);
+  if (fromSubagent(ev)) process.exit(0);
   const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(ev.cwd);
   const id = String(ev.session_id || 'no-session');
   const all = readState(root);
@@ -20439,7 +20455,7 @@ lacking them.
 | `stop-farewell-capture.mjs` (2.10, epic PT) | `Stop` | the turn ran `/end-chat-soft` or `/end-chat-force` (a Skill call or the owner's slash command), and this closure has not written yet | once per closure — a later stop of the same closure (another Stop hook blocked) writes nothing | writes the turn's last message WHOLE into `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (temporary file + rename); never blocks, never speaks |
 | `subagent-preamble.mjs` (2.10, epic PT) | `PreToolUse`, matcher `Agent\|Task` | the launch carries a task without the preamble's marker | once per launch — a second pass over a marked task changes nothing | `updatedInput` with a marked preamble in front of the subagent's task: read step 1 of `/resume` (read from the skill, existing files only), quote one canon line first in the report, no nested subagents, no commit, no push; one journal line in `.kaif/subagent-preamble.jsonl` — no permission decision, never a stop |
 | `context-window.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PostToolUse`, matcher `*` | the session's used share of the window — the last main-thread usage of the transcript (input + cache_creation + cache_read tokens) against the window size (the project's `contextWindow.tokens`, else the vendor's rule for the model) — reaches `contextWindow.warnPct` (80) or `closePct` (85, then every 5 %) | once per level per session | one `additionalContext` line: at 80 % a WARNING without a closing word (keep the pace, tell the owner once by voice), at 85 % «finish the current work to a logical cut, then `/end-chat-soft`» — never a forced closure, never a block; state in `.kaif/context-window.json` |
-| `knowledge-moment.mjs` (2.10, epic MM) | `UserPromptSubmit`; `PostToolUse` and `PostToolUseFailure`, matcher `*` | STRONG moments speak at once — the owner's own prompt (a background task's notification is not), a failed tool call, a Read of a knowledge document (maps, `STATUS.md`, `EXPERIENCE.md`, `HOUSE_RULES.md`, `plans/`, `researches/`), the first touch in a session of a file whose component has `NOTES.md`; every other tool result adds weight 1, and the hook speaks at 12 | per moment; the weight resets after each line; component notes — once per session | one `additionalContext` line: write what you understood into the project document where it lives, in this turn — never a block, never a stop, never a document body; state per session in `.kaif/knowledge-moment.json` |
+| `knowledge-moment.mjs` (2.10, epic MM) | `UserPromptSubmit`; `PostToolUse` and `PostToolUseFailure`, matcher `*` | STRONG moments speak at once — the owner's own prompt (a background task's notification is not), a failed tool call, a Read of a knowledge document (maps, `STATUS.md`, `EXPERIENCE.md`, `HOUSE_RULES.md`, `plans/`, `researches/`), the first touch in a session of a file whose component has `NOTES.md`, the first Read in a session of a project source file (the docs that name it are quoted — «does the code say the same?»; named nowhere — «before you answer, add one line to the map»); every other tool result adds weight 1, and the hook speaks at 12 | per moment; the weight resets after each line; component notes — once per session | one `additionalContext` line: write what you understood into the project document where it lives, in this turn — never a block, never a stop, never a document body; state per session in `.kaif/knowledge-moment.json` |
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
 predicate, or names why it needs none, and the table above says which; a suppression window
@@ -20590,7 +20606,7 @@ that, once per level; the warning carries no closing word. No hook event carries
 (1M for the models that run with it by default and for a `[1m]` model, 200K otherwise, `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` holds 200K)
 unless the project states `contextWindow.tokens`; a usage above 200K always means the 1M window. A 1M window auto-compacts at ≈ 967K, so
 85 % comes first. Claude Code fires both this hook and the knowledge hook on a subagent's tool calls too, under the parent's session: a
-call whose id is not in the main thread's transcript is a subagent's, and both hooks stay silent on it.
+subagent's event carries `agent_id` (observed), and both hooks stay silent on it.
 
 **The knowledge hook — `knowledge-moment.mjs` (2.10, epic MM, origin #160 · #159 · #186) — is wired for Claude Code only.** A session
 understood how a part works, or saw a map say otherwise, and the finding stayed in the chat. The hook speaks at the moments a memory is

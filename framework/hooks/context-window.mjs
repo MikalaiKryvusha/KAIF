@@ -68,20 +68,11 @@ export const LINES = {
   close: (pct, used, win) => `KAIF context: the window is ${pct} % full (${used} of ${win} tokens). Finish the current work to a logical cut, ` +
     'then start /end-chat-soft — the soft closure, never a forced one.',
 };
-// Judge of session 97 (finding 4, observed): Claude Code fires this hook on a SUBAGENT's tool calls too, under the parent's session id
-// and transcript — a line meant for the main agent landed in a subagent's context. A subagent's calls live in its own transcript
-// (`subagents/agent-*.jsonl`); the main thread's tool_use ids are in the session transcript. So a PostToolUse whose tool_use_id is not
-// among the main thread's ids in the transcript tail is a subagent's call — silence (a lagging transcript costs one silent event, never a
-// wrong line). An event without tool_use_id is judged as before.
-export function mainThreadCall(text, toolUseId) {
-  if (!toolUseId) return true;
-  const needle = '"id":"' + toolUseId + '"';
-  for (const line of String(text).split('\n')) {
-    if (!line.includes(needle)) continue;
-    try { const r = JSON.parse(line); if (r.type === 'assistant' && !r.isSidechain) return true; } catch { /* torn line */ }
-  }
-  return false;
-}
+// Judge of session 97 (finding 4): Claude Code fires this hook on a SUBAGENT's tool calls too, under the parent's session and transcript.
+// Observed live (origin session 97, a temporary logging hook): a subagent's event carries `agent_id` and `agent_type`, the main thread's
+// does not. (A first guard looked the call up in the transcript — the CLI writes the record AFTER PostToolUse, so it silenced the main
+// thread of every headless session; the probe tools/sandbox/probes/mm3-live-knowledge.mjs caught it.)
+export const fromSubagent = (ev) => Boolean(ev && ev.agent_id);
 // The decision — pure: (used, window, thresholds, levels already said) → { line, level } or null
 export function decide(used, win, cfg, said = []) {
   const warnPct = Number(cfg.warnPct) > 0 ? Number(cfg.warnPct) : DEFAULTS.warnPct;
@@ -134,9 +125,8 @@ if (process.argv[2] === '--selftest') {
     && windowOf({ model: 'claude-opus-4-6', seen: 300000 }) === LARGE, 'window: the env switch, the project\'s tokens, and the floor «used > 200 000 ⇒ 1 000 000»');
   ok(windowOf({ model: 'claude-opus-5-5', tokens: 200000, seen: 300000 }) === 200000 && windowOf({ model: 'claude-haiku-5-20261001' }) === SMALL,
     'window: the project\'s tokens win over the floor; a date suffix is not a minor version (judge of session 97)');
-  const tr = [JSON.stringify({ type: 'assistant', isSidechain: false, message: { content: [{ type: 'tool_use', id: 'toolu_MAIN' }] } })].join('\n');
-  ok(mainThreadCall(tr, 'toolu_MAIN') && !mainThreadCall(tr, 'toolu_SUB') && mainThreadCall(tr, undefined),
-    'a subagent\'s tool call (its id not in the main thread) — silence; the main agent\'s call and an event without an id — judged');
+  ok(fromSubagent({ hook_event_name: 'PostToolUse', agent_id: 'a1', agent_type: 'general-purpose' }) && !fromSubagent({ hook_event_name: 'PostToolUse' }),
+    'a subagent\'s tool call (the event carries agent_id) — silence; the main agent\'s call — judged');
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
@@ -148,7 +138,7 @@ try {
     const marker = readJson(join(root, DEPLOYMENT)) || {};
     const cw = (marker.contextWindow && typeof marker.contextWindow === 'object') ? marker.contextWindow : {};
     const tail = tailOf(ev.transcript_path), lu = lastUsage(tail);
-    if (lu && (ev.hook_event_name !== 'PostToolUse' || mainThreadCall(tail, ev.tool_use_id))) {
+    if (lu && !fromSubagent(ev)) {
       const id = String(ev.session_id || 'no-session'), all = readJson(join(root, STATE)) || {};
       const st = all[id] || { said: [], seen: 0 };
       st.seen = Math.max(st.seen || 0, lu.used);

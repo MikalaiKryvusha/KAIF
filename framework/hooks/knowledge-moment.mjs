@@ -23,10 +23,11 @@
 // [TESTED: 2026-11-06 · functional — the origin's own live Claude Code session 97 with this file wired: the weight line reached the
 //  model's context after twelve plain results, the PostToolUseFailure line after a failed Grep, the recall line after a Read of
 //  EXPERIENCE.md; a subagent's hand-back was read as the owner — fixed (the <agent-message> case), its live replay is silent; hygiene —
-//  --selftest 11/11, mutant «agent-message not excluded» red on exactly its case, s14 (+4 checks). NOT YET: the map scenarios of
-//  criteria 9 · 10 · 30 (probe of step MM3 of the origin's plans/138); the mutant — probe tools/sandbox/probes/mm3-knowledge-mutant.mjs;
-//  report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md row 28; the subagent guard — judge of session 97, after]
-import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync } from 'node:fs';
+//  --selftest, mutant probe tools/sandbox/probes/mm3-knowledge-mutant.mjs (two mutants, each red on exactly its case), s14;
+//  2026-11-06 14:03 +03:00 · functional — tools/sandbox/probes/mm3-live-knowledge.mjs, 9 of 9 live headless sessions (claude -p --model haiku, KAIF
+//  installed by this build, hooks wired): the map got a line about an unnamed source file (3/3), a stale map line was corrected (3/3), the
+//  component notes were read before the first edit and appended (3/3); report testcases/reports/2026-11-06_s97-polygon-scenario-lint.md]
+import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from 'node:fs';
 import { join, dirname, resolve, relative, sep } from 'node:path';
 
 export const THRESHOLD = 12;          // weak tool results before one reminder (one reminder per ~a dozen calls of plain work)
@@ -45,8 +46,14 @@ export const LINES = {
   failure: `KAIF knowledge: a tool call failed — you expected one thing and got another. What did the project's documents not know? ${WRITE}`,
   recall: (doc) => `KAIF knowledge: you re-read ${doc}. Does it say what you know now? It differs — fix it there, in this turn: add the new, ` +
     'correct or delete the stale.',
-  notes: (file, notes) => `KAIF knowledge: ${file} belongs to a component with notes — read ${notes} before you change it, and append ` +
-    'there what you find.',
+  notes: (file, notes) => `KAIF knowledge: ${file} belongs to a component with notes — read ${notes} before you change it; after the ` +
+    'change, append ONE line there: what you changed or found (an order — live probe, session 97).',
+  known: (file, doc, excerpt) => `KAIF knowledge: ${doc} says of ${file}: «${excerpt}». Does the code say the same? It differs — fix ${doc} ` +
+    'in this turn: add the new, correct or delete the stale.',
+  // an ORDER, not a question (live probe, session 97: the question form was read as advice — 0 of 3 sessions wrote; the field owner's own
+  // word for this hook: «you MUST document it»)
+  unknown: (file) => `KAIF knowledge: you have just read ${file}, and none of the project\'s maps names it. Before you answer, add ONE line ` +
+    'about what it does to PROJECT_ARCHITECTURE_INTERNAL_MAP.md — the map is how the next session knows the project.',
   weight: `KAIF knowledge: a stretch of work since the last check. Learned how something works, or saw a document say otherwise? ${WRITE}`,
 };
 
@@ -70,30 +77,33 @@ export function notesOf(root, file, exists = existsSync) {
 }
 const pathOf = (input) => String((input && (input.file_path || input.notebook_path)) || '');
 
-// Judge of session 97 (finding 4, observed): Claude Code fires this hook on a SUBAGENT's tool calls too, under the parent's session id
-// and transcript — a line meant for the main agent landed in a subagent's context. A subagent's calls live in its own transcript
-// (`subagents/agent-*.jsonl`); the main thread's tool_use ids are in the session transcript. So a PostToolUse whose tool_use_id is not
-// among the main thread's ids in the transcript tail is a subagent's call — silence (a lagging transcript costs one silent event, never a
-// wrong line). An event without tool_use_id is judged as before.
-export function mainThreadCall(text, toolUseId) {
-  if (!toolUseId) return true;
-  const needle = '"id":"' + toolUseId + '"';
-  for (const line of String(text).split('\n')) {
-    if (!line.includes(needle)) continue;
-    try { const r = JSON.parse(line); if (r.type === 'assistant' && !r.isSidechain) return true; } catch { /* torn line */ }
-  }
-  return false;
-}
-const TAIL_BYTES = 4 * 1024 * 1024;
-function tailOf(p) {
-  const fd = openSync(p, 'r');
-  try { const size = fstatSync(fd).size, n = Math.min(size, TAIL_BYTES), buf = Buffer.alloc(n); readSync(fd, buf, 0, n, size - n); return buf.toString('utf8'); }
-  finally { closeSync(fd); }
+// Judge of session 97 (finding 4): Claude Code fires this hook on a SUBAGENT's tool calls too, under the parent's session and transcript.
+// Observed live (origin session 97, a temporary logging hook): a subagent's event carries `agent_id` and `agent_type`, the main thread's
+// does not. (A first guard looked the call up in the transcript — the CLI writes the record AFTER PostToolUse, so it silenced the main
+// thread of every headless session; the probe tools/sandbox/probes/mm3-live-knowledge.mjs caught it.)
+export const fromSubagent = (ev) => Boolean(ev && ev.agent_id);
+
+// MM3, live probe of session 97 (origin plans/138): in the «new» and «stale» scenarios the only line came at the prompt — BEFORE the
+// agent learned anything; the moment of understanding was a Read of source code, which weighed 1. Recall by association closes it, the
+// way a cue brings a memory back: the first Read in a session of a project source file → the docs that name it are looked up; named →
+// the line quotes what they say («does the code say the same?»); named nowhere → «learned how it works? write a line into the map».
+const CODE_EXT = /\.(?:m?[jt]sx?|cjs|py|go|rs|java|kt|cs|c|cc|cpp|h|hpp|rb|php|swift|sh|ps1|sql|vue|svelte|html|css|json|ya?ml|toml)$/i;
+const NOT_PROJECT = /^(?:\.kaif|\.claude|\.git|node_modules|dist|build|vendor)\//;
+const LOOKUP_DOCS = ['PROJECT_ARCHITECTURE_INTERNAL_MAP.md', 'PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'STATUS.md', 'HOUSE_RULES.md'];
+export function docsLookup(root, read = (p) => (existsSync(p) ? readFileSync(p, 'utf8') : '')) {
+  return (rel) => {
+    const base = rel.split('/').pop();
+    for (const doc of LOOKUP_DOCS) {
+      const line = read(join(root, doc)).split('\n').find((l) => l.includes(rel) || (base.length >= 5 && l.includes(base)));
+      if (line) return { doc, excerpt: line.replace(/\s+/g, ' ').trim().slice(0, 200) };
+    }
+    return null;
+  };
 }
 
-// The decision — pure: (event, the session's state, root, exists) → { line | null, state }.
-export function decide(ev, st, root, exists = existsSync) {
-  const s = { weight: st.weight || 0, notes: Array.isArray(st.notes) ? st.notes.slice() : [] };
+// The decision — pure: (event, the session's state, root, exists, lookup) → { line | null, state }.
+export function decide(ev, st, root, exists = existsSync, lookup = docsLookup(root)) {
+  const s = { weight: st.weight || 0, notes: Array.isArray(st.notes) ? st.notes.slice() : [], code: Array.isArray(st.code) ? st.code.slice() : [] };
   const name = ev.hook_event_name;
   if (name === 'UserPromptSubmit') {
     if (NOT_THE_OWNER.test(String(ev.prompt || ''))) return { line: null, state: s };
@@ -108,6 +118,12 @@ export function decide(ev, st, root, exists = existsSync) {
     const notes = notesOf(root, file, exists);
     if (notes && rel !== notes && !s.notes.includes(notes)) {
       s.notes.push(notes); s.weight = 0; return { line: LINES.notes(rel, notes), state: s };
+    }
+    // a file of a component with notes is covered by its notes (the line above) — no second line for it
+    if (tool === 'Read' && !notes && CODE_EXT.test(rel) && !NOT_PROJECT.test(rel) && !rel.startsWith('..') && !s.code.includes(rel)) {
+      s.code.push(rel); s.weight = 0;
+      const hit = lookup(rel);
+      return { line: hit ? LINES.known(rel, hit.doc, hit.excerpt) : LINES.unknown(rel), state: s };
     }
   }
   s.weight += 1;
@@ -142,10 +158,10 @@ if (process.argv[2] === '--selftest') {
   ok(r.line === LINES.failure && r.state.weight === 0, 'failed tool: at once, weight reset');
   r = decide(post('Read', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md'), {}, R, ex);
   ok(r.line && r.line.includes('re-read PROJECT_ARCHITECTURE_INTERNAL_MAP.md'), 'recall: a Read of a map names the map');
-  r = decide(post('Read', 'src/app.mjs'), {}, R, ex);
-  ok(r.line === null && r.state.weight === 1, 'plain Read: silent, weight 1');
+  r = decide(post('Read', 'docs/guide.txt'), {}, R, ex, () => null);
+  ok(r.line === null && r.state.weight === 1, 'plain Read (not code, not a knowledge doc): silent, weight 1');
   let st = {}; let said = 0;
-  for (let i = 0; i < THRESHOLD; i++) { r = decide(post('Read', 'src/app.mjs'), st, R, ex); st = r.state; if (r.line) said++; }
+  for (let i = 0; i < THRESHOLD; i++) { r = decide(post('Read', 'docs/guide.txt'), st, R, ex, () => null); st = r.state; if (r.line) said++; }
   ok(said === 1 && r.line === LINES.weight && st.weight === 0, `weight: ${THRESHOLD} plain results → exactly one line, then reset`);
   r = decide(post('Edit', 'src/contour/page.mjs'), {}, R, ex);
   ok(r.line && r.line.includes('read src/contour/NOTES.md before you change it'), 'component notes: first touch names the notes file');
@@ -155,8 +171,17 @@ if (process.argv[2] === '--selftest') {
   ok(r.line === null, 'a root NOTES.md is not a component\'s notes');
   r = decide({ hook_event_name: 'Stop' }, {}, R, ex);
   ok(r.line === null, 'Stop: never speaks, never blocks');
-  const tr = JSON.stringify({ type: 'assistant', isSidechain: false, message: { content: [{ type: 'tool_use', id: 'toolu_MAIN' }] } });
-  ok(mainThreadCall(tr, 'toolu_MAIN') && !mainThreadCall(tr, 'toolu_SUB'), 'a subagent\'s tool call is not the main agent\'s moment (judge of session 97)');
+  ok(fromSubagent({ hook_event_name: 'PostToolUse', agent_id: 'a1' }) && !fromSubagent({ hook_event_name: 'PostToolUse' }),
+    'a subagent\'s tool call (the event carries agent_id) is not the main agent\'s moment (judge of session 97)');
+  const look = docsLookup(R, (p) => (/INTERNAL_MAP/.test(p) ? '## Billing\n- `src/billing/invoice.mjs` — invoice total; tax rate 10 %.\n' : ''));
+  r = decide(post('Read', 'src/billing/invoice.mjs'), {}, R, ex, look);
+  ok(r.line && /PROJECT_ARCHITECTURE_INTERNAL_MAP\.md says of src\/billing\/invoice\.mjs: «- `src\/billing\/invoice\.mjs` — invoice total; tax rate 10 %\.»/.test(r.line),
+    'recall by association: the first Read of a source file the map names quotes the map\'s line (MM3, stale)');
+  const r2 = decide(post('Read', 'src/billing/invoice.mjs'), r.state, R, ex, look);
+  ok(r2.line === null, 'the same source file again in the session — silent');
+  r = decide(post('Read', 'src/shop/cart.mjs'), {}, R, ex, look);
+  ok(r.line && /read src\/shop\/cart\.mjs, and none of the project's maps names it\. Before you answer, add ONE line/.test(r.line), 'a source file the maps never name — «before you answer, add one line to the map» (MM3, new)');
+  ok(decide(post('Read', '.kaif/hooks/x.mjs'), {}, R, ex, look).line === null, 'a file of KAIF itself is not project code');
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
@@ -164,7 +189,7 @@ if (process.argv[2] === '--selftest') {
 try {
   const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
   // judge of session 97, finding 4: a subagent's tool call is not the main agent's moment — silence, the state untouched
-  if (/^PostToolUse/.test(String(ev.hook_event_name || '')) && ev.transcript_path && existsSync(ev.transcript_path) && !mainThreadCall(tailOf(ev.transcript_path), ev.tool_use_id)) process.exit(0);
+  if (fromSubagent(ev)) process.exit(0);
   const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(ev.cwd);
   const id = String(ev.session_id || 'no-session');
   const all = readState(root);
