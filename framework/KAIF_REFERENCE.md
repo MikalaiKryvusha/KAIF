@@ -619,7 +619,11 @@ that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces 
 project root — the last stop of the closing turn wins, a one-line answer to another hook's block or to a neighbour session excepted; never a block; `/resume` reads it on the chat's first entry — Claude Code only), `knowledge-moment.mjs` (2.10, epic MM; origin tickets #160 · #159 · #186: one line «write it into
 the project document where it lives, in this turn» on the strong moments — the owner's prompt, a failed tool call
 (`PostToolUseFailure`), a Read of a knowledge document, the first touch of a component that has `NOTES.md` — and once per
-twelve plain tool results; state per session in `.kaif/knowledge-moment.json`; never a block — Claude Code only) — plus
+twelve plain tool results; state per session in `.kaif/knowledge-moment.json`; never a block — Claude Code only), `context-window.mjs`
+(2.10, epic PT; origin ticket #188: the session's used share of the context window — the last main-thread usage of the transcript
+against the window size by the vendor's model rule or the project's `contextWindow.tokens` — at `contextWindow.warnPct` (80) one warning
+line with no closing word, at `closePct` (85, then every 5 %) «finish to a logical cut, then `/end-chat-soft`»; once per level per session,
+state in `.kaif/context-window.json`; never a block, never a forced closure — Claude Code only) — plus
 `settings-fragment.json`, the ready sample config. Each hook carries a predicate; one
 suppression window exists, on the STATUS guard; injections are orders, never document bodies. RETIRED in 2.9 (origin ticket #144, the
 KAIF owner's verdict on the field): `pretool-owner-word.mjs` (2.8, `PreToolUse` — refused the next call after a mid-turn word) and the

@@ -31,6 +31,9 @@ tools/.review-tmp/
 .kaif/knowledge-moment.json.tmp
 # Хук часов 2.10 (TK10 (в), #193): момент последнего сообщения владельца — состояние сессии
 .kaif/owner-presence.json
+# Хук окна контекста 2.10 (#188): уровни, уже сказанные в сессии — состояние сессии
+.kaif/context-window.json
+.kaif/context-window.json.tmp
 
 # Защищённый цикл (2.5, CN4): взведённая граница until — состояние прогона, как и пульс
 .kaif/guarded-loop.json

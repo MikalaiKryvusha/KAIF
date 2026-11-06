@@ -55,6 +55,8 @@
 | 32 | 2026-11-06 12:49:55 → 12:57:32 +03:00 | `npm run test:core` (TK10 (в)) | 0 · «all 28 suites green» |
 | 33 | ≈ 2026-11-06 13:00 +03:00 | `node tools/canon-inventory.mjs --diff v2.7 --with framework/KAIF_REFERENCE.md --declared plans/118_epic117_CK_light_canon_budget_exits.md` | `lost 2` (строки чек-листа MM1б не объявлены) → после объявления — `lost 0` |
 | 34 | 2026-11-06 13:02:08 → 13:09:48 +03:00 | `npm run test:core` (HC10) | 0 · «all 28 suites green» |
+| 35 | ≈ 2026-11-06 13:15 +03:00 | `node framework/hooks/context-window.mjs --selftest` · мутант «без cache_read» на копии · `node tools/sandbox/probes/pt6-context-window.mjs <запись сессии 97> 60 65` · `node tools/sandbox/s14-refresh-hooks.mjs` | 0 · 9/9; мутант — «x» ровно случай формулы; живая запись: 68 % окна 1M — по умолчанию тишина, 60/65 — строка «до среза»; `s14` 0 |
+| 36 | 2026-11-06 13:16:57 → 13:23:58 +03:00 | `npm run test:core` (PT6) | 0 · «all 28 suites green» |
 
 ## 4. Проверки
 
