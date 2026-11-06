@@ -33,6 +33,38 @@
             "command": "node",
             "args": ["${CLAUDE_PROJECT_DIR}/framework/hooks/clock-now.mjs"],
             "timeout": 15
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/framework/hooks/knowledge-moment.mjs"],
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/framework/hooks/knowledge-moment.mjs"],
+            "timeout": 15
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/framework/hooks/knowledge-moment.mjs"],
+            "timeout": 15
           }
         ]
       }
