@@ -1,0 +1,17 @@
+{
+  "kind": "interview",
+  "document": "interviews/interview_048_kaif_2.10_owner_name_in_anonymous_install.md",
+  "by": "Mikalai Kryvusha (KOT KRINIK)",
+  "at": "2026-11-07T09:09:26.944Z",
+  "atHuman": "7 ноября 2026, 12:09 (+03:00)",
+  "comment": "",
+  "answers": {
+    "Q1": {
+      "choice": "A",
+      "text": "",
+      "comment": ""
+    }
+  },
+  "rev": "2bf758e58429697bdd905d17b0a2f325f5d6a051282015dd9e02493d9eec9faa",
+  "revAfter": "7cd96fabb773ec84263346d74e5014e10d0b7ffe51c612fdb65b09f7504cfed4"
+}
