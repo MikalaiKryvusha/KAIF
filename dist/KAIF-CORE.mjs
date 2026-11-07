@@ -1244,6 +1244,12 @@ function withdrawnPlaces(meta, fromVersion) {
     if (text == null) continue;
     const lines = text.split(/\r?\n/);
     lines.forEach((line, i) => {
+      // 2.10, epic UB, step UB6 (e) (two field update reports #148 · #153): a line that RECORDS the withdrawal (a journal entry, a decision)
+      // is not a place — the item told it «stays as it is», yet the count grew with every honest record (13 → 17 on one field). The
+      // declared exception, as with stale-claims: `KAIF-WITHDRAWN-OK` (or the `KAIF-VERSION-OK` the field already puts on its journal) on
+      // the line or on the line above it; a table row carries it inside the row (the line above a row is another row)
+      // [NOT-TESTED]
+      if (/KAIF-(WITHDRAWN|VERSION)-OK/i.test(line) || (i > 0 && !/^\s*\|/.test(line) && /KAIF-(WITHDRAWN|VERSION)-OK/i.test(lines[i - 1]))) return;
       const win = () => lines.slice(Math.max(0, i - 1), i + 2).join(' ');
       const hit = probes.filter((q) => q.re.test(line) && (!q.notWith || (f !== q.notWith && !win().includes(q.notWith))) && (!q.ctx || q.ctx.test(win())))
         .map((q) => ({ ...q, p: q.p || line.match(q.re)[0] }));
@@ -1258,7 +1264,7 @@ const fmtPlaces = (w) => !w ? '' : !w.places.length ? ' The machinery scanned th
 function withdrawnPhrasesItem(meta, fromVersion) {
   const withdrawn = withdrawnOf(meta, fromVersion);
   if (!withdrawn.length) return null;
-  return `Upstream WITHDREW a feature your own texts may still build on — the places are named below; give EVERY place a fate: ${withdrawn.map((d) => d.pattern ? `${d.reason} (${d.since}) — a place that sends its reader to the old section for a table row is re-pointed to ${d.successor}` : `${d.reason} (${d.since}) — search: ${d.search.map((p) => '"' + p + '"').join(', ')} → \`git grep -n -F ${d.search.map((p) => '-e "' + p + '"').join(' ')}\``).join(' · ')}. Fate by SIGNATURE: an order signed by the agent ([AI]) is removed as the agent's own decision; one signed by the owner ([OWNER]) goes to the owner as ONE question — never removed silently; a question in interviews/ the withdrawal made moot is withdrawn with \`node .kaif/tools/contour/review.mjs --mark-withdrawn <doc> <Q> --why "<the withdrawal>"\` — never answered on the owner's behalf — and a document whose every open question is withdrawn or implemented closes its status (the queue names it until then); a KAIF ticket it resolved takes \`**Delivered upstream:** resolved in origin ${meta.version}\`; a line that RECORDS the withdrawal itself (a history note, a lesson, \"the X line is no more\") stays as it is.${fmtPlaces(withdrawnPlaces(meta, fromVersion))}`;
+  return `Upstream WITHDREW a feature your own texts may still build on — the places are named below; give EVERY place a fate: ${withdrawn.map((d) => d.pattern ? `${d.reason} (${d.since}) — a place that sends its reader to the old section for a table row is re-pointed to ${d.successor}` : `${d.reason} (${d.since}) — search: ${d.search.map((p) => '"' + p + '"').join(', ')} → \`git grep -n -F ${d.search.map((p) => '-e "' + p + '"').join(' ')}\``).join(' · ')}. Fate by SIGNATURE: an order signed by the agent ([AI]) is removed as the agent's own decision; one signed by the owner ([OWNER]) goes to the owner as ONE question — never removed silently; a question in interviews/ the withdrawal made moot is withdrawn with \`node .kaif/tools/contour/review.mjs --mark-withdrawn <doc> <Q> --why "<the withdrawal>"\` — never answered on the owner's behalf — and a document whose every open question is withdrawn or implemented closes its status (the queue names it until then); a KAIF ticket it resolved takes \`**Delivered upstream:** resolved in origin ${meta.version}\`; a line that RECORDS the withdrawal itself (a history note, a lesson, \"the X line is no more\") stays as it is and takes \`<!-- KAIF-WITHDRAWN-OK: <why> -->\` on it or on the line above — then it is no longer counted as a place.${fmtPlaces(withdrawnPlaces(meta, fromVersion))}`;
 }
 
 // ── KAIF-WALK:BEGIN — ONE safe tree walker (2.8, epic SC; origin #77 · Q-R1′). The set of files is the one git sees
@@ -1492,7 +1498,7 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
       // unwrapped before the strip, and the pair is judged as everywhere else (the framework's word within reach of the version)
       // [TESTED: 2026-11-07 · s29 C15 (three forms named, the attribution silent), red on the previous core; the #117 field tree at the
       //  commit before its hand fix — AGENTS.md:3 named, the 13 other places unchanged; eight live deployments — 0 added — testcases/reports/2026-11-07_hc2-stale-claims-version-paren.md]
-      if (isProse) scan = scan.replace(/(?<!\])\(\s*((?:v|ver|version|версия|версии|release|релиз)\.?\s*\d+(?:\.\d+)+)[^)]*\)/giu, ' $1 ');
+      if (isProse) scan = scan.replace(/(?<!\])\(\s*((?:v|ver|version|версия|версии|release|релиз)\.?\s*\d+(?:\.\d+)+)\s*\)/giu, ' $1 '); // only a parenthesis that holds the version ALONE — «(версия 2.9 ядра голоса)» names another core (judge HC, hunt 3)
       let judged = isProse ? scan.replace(/(?<!\])\([^)]*\)/g, '') : scan;
       // a parenthesis WRAPPED onto the next line (N4 · K-R4: «(KAIF 2.6; origin issue #52; the» ⏎ «field owner …) and»): the head of a line
       // up to an unmatched `)` continues a parenthesis from above, and an unclosed `(` runs to the end of its line

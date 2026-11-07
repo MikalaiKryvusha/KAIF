@@ -71,13 +71,14 @@ Claude Code treats any exit code but 2 as a non-blocking error — but it prints
 3. Reload the session if a hook stays silent (observed in Claude Code, VS Code, 2026-11-06: an edit of `.claude/settings.json` took effect
    within the running session, a few tool calls later — whether every client and version does so is not verified), then smoke the scripts by hand
    from the project root, with no `.kaif/refresh-marker.json` present. Use the block of YOUR
-   shell — a redirect or a `printf` that one shell understands is a parse error in another.
+   shell — a redirect or a `printf` that one shell understands is a parse error in another. The lines carry no backslash: an agent's
+   tool layer strips one escaping level, and `resume\nplan` reached the hook as `resumenplan` — no order (origin #151).
 
    POSIX shells (bash, zsh, sh — Git Bash on Windows too):
 
    ```sh
    node .kaif/hooks/prompt-refresh-timer.mjs < /dev/null
-   printf '{"prompt":"resume\\nplan the day"}' | node .kaif/hooks/prompt-resume-word.mjs
+   printf '{"prompt":"resume plan the day"}' | node .kaif/hooks/prompt-resume-word.mjs
    printf '{"prompt":"plan the day"}' | node .kaif/hooks/prompt-resume-word.mjs
    ```
 
@@ -85,7 +86,7 @@ Claude Code treats any exit code but 2 as a non-blocking error — but it prints
 
    ```powershell
    '' | node .kaif/hooks/prompt-refresh-timer.mjs
-   '{"prompt":"resume\nplan the day"}' | node .kaif/hooks/prompt-resume-word.mjs
+   '{"prompt":"resume plan the day"}' | node .kaif/hooks/prompt-resume-word.mjs
    '{"prompt":"plan the day"}' | node .kaif/hooks/prompt-resume-word.mjs
    ```
 

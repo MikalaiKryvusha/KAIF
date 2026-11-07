@@ -3240,7 +3240,8 @@ machinery-deployed paths and excludes token clusters matching the project owner'
 the owner's name is not a leak. And since 2.10 (epic HC; origin #135 R1, the KAIF owner's decision of interview 048 of the
 origin) an anonymous deployment does not WRITE the owner's git name either: `<AUTHOR>` is the neutral words "the project owner" —
 the creed reads THE PROJECT OWNER'S VISION and the agent renders it in the owner's language — over a value an older version froze
-into the deploy manifest too; the login inside the remote URL is stripped in every mode.
+into the deploy manifest too; the login inside a remote URL WITH A SCHEME is stripped at fresh discovery, in
+every mode; the scp form `user@host:path` and a URL an older version froze into the deploy manifest still carry it (open, origin #135 R1).
 
 ## 12. Schemas
 

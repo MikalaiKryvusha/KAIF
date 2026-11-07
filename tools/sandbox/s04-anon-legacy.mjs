@@ -184,7 +184,8 @@ ok(existsSync(join(S13, '.kaif', 'deploy-manifest.json')), '🔴 S13 обезл�
 ok(existsSync(join(S13, '.kaif', 'kaif-core.mjs')), 'S13 ядро СОХРАНЕНО анонимизированным (bug 29)');
 const core13 = readFileSync(join(S13, '.kaif', 'kaif-core.mjs'), 'utf8');
 ok(!core13.includes('MikalaiKryvusha'), 'S13 в оставленном ядре нет origin-аккаунта');
-{ // bugs/130 (№157), полный маршрут: после самоочистки ни один файл дерева не несёт токенов имени автора KAIF — у полевого владельца KAIF они и
+{ // РЕГРЕССИОННЫЙ страж (судья HC, охота 2: зелёный и на сборке до HC4 — починку HC4 доказывает соседний ассерт «git-имя … не попало»)
+  // bugs/130 (№157), полный маршрут: после самоочистки ни один файл дерева не несёт токенов имени автора KAIF — у полевого владельца KAIF они и
   // есть его имя (функциональный прогон tools/sandbox/probes/hc4-anon-real-identity.mjs нашёл их в оставленном ядре)
   const AUTHOR13 = ['Kryvusha', 'Кривуша', 'Mikalai', 'KRINIK', 'Krinik', 'Криник'];
   const left = [];
@@ -390,6 +391,15 @@ ok(task14d.includes('- **withdrawn-phrases**') && wd14d.includes('FIXTURE-RETIRE
   const rc14d = run(S14d, 'checkpoint recheck');
   ok(/withdrawn phrases \([^)]*\) — places left now: The machinery found 1 place\(s\)/.test(rc14d.out) && /plans\/fixture_plan\.md:2 «wire-hooks»/.test(rc14d.out) && !/fixture_plan\.md:1 /.test(rc14d.out),
      'S14d/UT1: после правки агента `checkpoint recheck` называет оставшееся место (одно), убранного нет', rc14d.out.slice(-500));
+  // UB6 (е) (2.10; #148 · #153): строка, ЗАПИСЫВАЮЩАЯ снятие, с маркером на ней или строкой выше — не место (счёт не растёт от честной записи);
+  // маркер поля `KAIF-VERSION-OK` на строке журнала тоже исключает; строка без маркера — по-прежнему место
+  writeFileSync(join(S14d, 'plans', 'fixture_plan.md'), 'FIXTURE-RETIRED-PHRASE-EXTRA is another tool.\nCall wire-hooks by hand after every pull.\n'
+    + 'FIXTURE-RETIRED-PHRASE was retired by the update. <!-- KAIF-WITHDRAWN-OK: a record of the withdrawal -->\n'
+    + '<!-- KAIF-WITHDRAWN-OK: the journal line below records it -->\n- 2026-11-07: we stopped calling FIXTURE-RETIRED-PHRASE.\n'
+    + '- the old wire-hooks call is gone <!-- KAIF-VERSION-OK: journal -->\n');
+  const rcUB = run(S14d, 'checkpoint recheck');
+  ok(/places left now: The machinery found 1 place\(s\)/.test(rcUB.out) && /plans\/fixture_plan\.md:2 «wire-hooks»/.test(rcUB.out) && !/fixture_plan\.md:[3-7] /.test(rcUB.out),
+     'S14d/UB6 (е): записи снятия с маркером KAIF-WITHDRAWN-OK (на строке или строкой выше) и KAIF-VERSION-OK — не места; место без маркера осталось одно', rcUB.out.slice(-500));
   // Критерий 16 сценарием: проект 3 раза шлёт за строкой таблицы в раздел руководства, перенесённый 2.8 в HOUSE_RULES.md, и 1 раз — к
   // отставной команде `/end-chat` (2.4). Интервал прыжка от версии старше 2.4 моделируется записью истории маркера (её читает recheck);
   // перенос и отставка — НАСТОЯЩИЕ записи меты этой сборки. `/end-chat-soft` — живая команда, не место.

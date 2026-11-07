@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "2fa14b8522338b2f86412325edb66e11a1b3de14c7f16c7110e9d30335cb7c97",
+    "sourceTree": "3aa4b346ba3b23ecffaedc9db004c75a21858545b45688d947d20b10aa0193a8",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -3669,7 +3669,8 @@ machinery-deployed paths and excludes token clusters matching the project owner'
 the owner's name is not a leak. And since 2.10 (epic HC; origin #135 R1, the KAIF owner's decision of interview 048 of the
 origin) an anonymous deployment does not WRITE the owner's git name either: `<AUTHOR>` is the neutral words "the project owner" —
 the creed reads THE PROJECT OWNER'S VISION and the agent renders it in the owner's language — over a value an older version froze
-into the deploy manifest too; the login inside the remote URL is stripped in every mode.
+into the deploy manifest too; the login inside a remote URL WITH A SCHEME is stripped at fresh discovery, in
+every mode; the scp form `user@host:path` and a URL an older version froze into the deploy manifest still carry it (open, origin #135 R1).
 
 ## 12. Schemas
 
@@ -20895,13 +20896,14 @@ Claude Code treats any exit code but 2 as a non-blocking error — but it prints
 3. Reload the session if a hook stays silent (observed in Claude Code, VS Code, 2026-11-06: an edit of `.claude/settings.json` took effect
    within the running session, a few tool calls later — whether every client and version does so is not verified), then smoke the scripts by hand
    from the project root, with no `.kaif/refresh-marker.json` present. Use the block of YOUR
-   shell — a redirect or a `printf` that one shell understands is a parse error in another.
+   shell — a redirect or a `printf` that one shell understands is a parse error in another. The lines carry no backslash: an agent's
+   tool layer strips one escaping level, and `resume\nplan` reached the hook as `resumenplan` — no order (origin #151).
 
    POSIX shells (bash, zsh, sh — Git Bash on Windows too):
 
    ```sh
    node .kaif/hooks/prompt-refresh-timer.mjs < /dev/null
-   printf '{"prompt":"resume\\nplan the day"}' | node .kaif/hooks/prompt-resume-word.mjs
+   printf '{"prompt":"resume plan the day"}' | node .kaif/hooks/prompt-resume-word.mjs
    printf '{"prompt":"plan the day"}' | node .kaif/hooks/prompt-resume-word.mjs
    ```
 
@@ -20909,7 +20911,7 @@ Claude Code treats any exit code but 2 as a non-blocking error — but it prints
 
    ```powershell
    '' | node .kaif/hooks/prompt-refresh-timer.mjs
-   '{"prompt":"resume\nplan the day"}' | node .kaif/hooks/prompt-resume-word.mjs
+   '{"prompt":"resume plan the day"}' | node .kaif/hooks/prompt-resume-word.mjs
    '{"prompt":"plan the day"}' | node .kaif/hooks/prompt-resume-word.mjs
    ```
 
