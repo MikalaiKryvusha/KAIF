@@ -71,6 +71,9 @@ KAIF/
 │   ├── build-diagrams.mjs                 # → assets/*.svg (схемы README; гейт ширины текста; счётчик SKILLS вычисляется)
 │   ├── readme-pdf.mjs                     # README.md → README.pdf
 │   ├── commit.mjs                         # bump build, commit, push
+│   ├── say.mjs                            # сказать владельцу голосом: мягкий голос поставки с окружением истока (№156)
+│   ├── lib/voice-env.mjs                  # окружение голоса истока — одно место (обёртка контура и say.mjs)
+│   ├── voice/soft_say.py                  # рендер Silero с удвоенными паузами на знаках (ресурс ЭТОЙ машины; не поставка)
 │   └── kaif.mjs                           # ручки жизненного цикла (npm run kaif:*)
 │
 │  ── DOGFOODING WRAPPER (фреймворк, применённый к ЭТОМУ проекту) ──
@@ -93,7 +96,8 @@ KAIF/
 ├── researches/  (README + NN_*.md)        # конспекты исследований
 ├── interviews/  (README + interview_NNN_*.md)  # решения уровня владельца
 ├── homeworks/   (README + NN_*.md)        # задания человеку
-└── reports/     (README + NN_*.md)        # отчёты агента (KAIF_UPDATES/ · KAIF_AUDIT/)
+├── reports/     (README + NN_*.md)        # отчёты агента (KAIF_UPDATES/ · KAIF_AUDIT/)
+└── voice/       (<ГГГГ-ММ-ДД_ЧЧ-ММ-СС>_<смысл>.txt)  # что агент сказал голосом — история проекта, коммитится (№156)
 ```
 
 ---

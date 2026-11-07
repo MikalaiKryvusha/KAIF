@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "82df79e53f7bbe8c0a7587d88331e24f68a5eaa3014558165dabe448b5552971",
+    "sourceTree": "3415cd8597e3a40b899a8b36befc23992d593aa41cba99b288f76116e76b3dd6",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -113,7 +113,9 @@
       "RED IS A CLAIM TOO, AND THE POSITIVE SMOKE RUNS FIRST (2.10, epic HC; origin tickets #87 · #173 — two QA deployments: a red produced by the measuring rig was no class anywhere; a feature was moved to Done with its main action never pressed): `TESTING_FRAMEWORK.md` gains the section \"Red is a claim too — earn it like green\" (before the verdict \"broken\" print the stand — language and locale · starting state · data · what changed since the last green; many reds sharing one condition are one error of measurement until ruled out), the activities chain step 4 runs the `smoke` rows first, and marker rule 7 makes a feature marker and any \"done / tested\" illegal while a `smoke` row is not `pass`; `/fable-judge` hunts both. The section \"How this composes\" is shortened by merged bullets, nothing dropped. A localized deployment carries the new section in the owner's language.",
       "YOU WROTE CODE — RUN IT BEFORE YOU STOP (2.10, epic HC; origin tickets #175 · #176 — two field deployments of one owner carried their own testing hook; the owner, rendered from Russian: \"the agent wrote code → the hook ORDERS it tested\" · \"the agent does not ask the owner's permission\"): the refresh-hooks module ships a tenth script, `.kaif/hooks/test-after-code.mjs` — a write of a file that changes the product becomes a test debt, only a run of its own kind clears it (a build, a linter, `--check`, `--help`, a heredoc body never do), and the stop of a turn with debt is refused once with the list; a repeated stop with nothing new written passes. Without project data it judges source files and clears a file by running it; a project that has a game, a device or a deploy names its kinds, runs and deploys in `.kaif/kaif.json` → `testHook`. `wire-hooks` adds it under `PostToolUse` and `Stop`; a project that carried its own testing hook keeps only its kinds and patterns as data.",
       "THE STAND IS THE AGENT'S (2.10, epic HC; origin ticket #189 — the KAIF owner on a field project, rendered from Russian: \"the whole machine with the game is yours — set up for yourself whatever you need\"): the testing canon says it in «What the word \"test\" means», item 4 — the test's conditions are built by the agent with what its machine allows, an unobserved case is reported with the stand step done next, never as «needs a stand» handed to the owner; `/fable-judge` hunts «Closed as \"needs a stand\"». A project whose house rules already say it keeps them; nothing to migrate.",
-      "POINTERS FOLLOW THE ROWS 2.8 MOVED (2.10, epic HC; origin ticket #119, second case): the harness rule of the bug-fixing canon now writes a new harness command's row into `HOUSE_RULES.md` → \"Stands, environments and devices\" (it said \"document it in AGENT_GUIDE.md\"), and `/code-revision`, `/autoloop` and `/resume` point at the house-rules tables, not the guide; the build refuses the old forms. MIGRATION — agent work: none, unless your own texts repeat one of these pointers."
+      "POINTERS FOLLOW THE ROWS 2.8 MOVED (2.10, epic HC; origin ticket #119, second case): the harness rule of the bug-fixing canon now writes a new harness command's row into `HOUSE_RULES.md` → \"Stands, environments and devices\" (it said \"document it in AGENT_GUIDE.md\"), and `/code-revision`, `/autoloop` and `/resume` point at the house-rules tables, not the guide; the build refuses the old forms. MIGRATION — agent work: none, unless your own texts repeat one of these pointers.",
+      "THE ENTRY COST COUNTS THE WHOLE ENTRY (2.10, epic HC, step HC9; origin ticket #179, its cheap half — a field /resume read ≈ 140k tokens while the line said 112k): `check` → `ℹ entry cost` now adds every document the deployed `/resume` names as a bullet beyond the re-read core (by name; `EXPERIENCE.md` is grepped and stays out) and the skill file itself; a document over 25k tokens — more than one Read call of Claude Code returns — is named on a `⚠ entry cost:` line of its own. Reference, never a stop. MIGRATION — agent work: none; a named document is a candidate for moving its reference sections out.",
+      "WHAT THE AGENT SAYS ALOUD IS KEPT IN THE PROJECT, AND THE SOFT VOICE SHIPS (2.10; decision №156 of the origin — the KAIF owner, rendered from Russian: \"what the agent wants to say it writes into a txt file — I see it in the harness window and it stays in the project history; put these phrases into a separate folder of the project, name the files by the current time, date and the meaning of what was said\" · \"the voice tuned on a field project — take those settings\"): the contour gains `.kaif/tools/contour/voice-soft.mjs`. `review.mjs --call` writes its phrase to `voice/<YYYY-MM-DD_HH-MM-SS>_<meaning>.txt` (`contour.voiceLog` names another folder); the guide's call line tells the agent to write a phrase file there first and speak it with `voice-soft.mjs --file <it> --play`; the tool names the file by the machine's clock. The same tool is a soft voice that honours the KAIF_VOICE_TOOL contract: an engine from `KAIF_VOICE_RENDER` or `KAIF_VOICE_BASE_TOOL` renders, and ffmpeg applies tempo 0.90, bass +6 dB at 140 Hz, a 4200 Hz lowpass, 1 s of silence first, the beeps at ×2.5 and 2 s before the words. MIGRATION — agent work: if the project already speaks through its own soft-voice script, point `KAIF_VOICE_TOOL` at `.kaif/tools/contour/voice-soft.mjs` only after the owner hears it; commit `voice/` (it is the project's history, not a temp folder)."
     ],
     "2.9": [
       "NO HOOK STOPS THE AGENT ON THE OWNER'S WORD ANY MORE (2.9; origin ticket #144 — the KAIF owner on a field project, rendered from Russian: \"Remove this! Out of KAIF entirely!\" · \"I don't like that you stop on this!\" — five short remarks of the owner were five stops): the hook `.kaif/hooks/pretool-owner-word.mjs` (2.8; refused the next tool call after a mid-turn word) is RETIRED, and its pre-release `Stop` companion with the `⏩ <next step>` line never ships. The update removes an untouched copy of the script; `node .kaif/kaif-core.mjs wire-hooks` now also REMOVES the entries that run a retired hook from `.claude/settings.json` (the owner's other entries and their order stay, the values are proven before the write) — the update task names the item; `check` names an entry still left (in `.claude/settings.local.json` too, which the machinery never edits). \"The owner's word mid-turn\" now says: answer at once as text, then WORK ON in the same turn — never end the turn just to answer, and the turn's closing message repeats the answer; \"stop\" is still a stop. MIGRATION — agent work: if your own texts (STATUS, house rules, experience) tell the agent to end an answer with `⏩`, drop that rule.",
@@ -447,6 +449,7 @@
     ".kaif/tools/contour/core.mjs": "framework/tools/contour/core.mjs",
     ".kaif/tools/contour/review.mjs": "framework/tools/contour/review.mjs",
     ".kaif/tools/contour/texts.mjs": "framework/tools/contour/texts.mjs",
+    ".kaif/tools/contour/voice-soft.mjs": "framework/tools/contour/voice-soft.mjs",
     ".kaif/tools/kaif-attribution-lint.mjs": "framework/tools/kaif-attribution-lint.mjs",
     ".kaif/tools/kaif-canon-lint.mjs": "framework/tools/kaif-canon-lint.mjs",
     ".kaif/tools/kaif-experience-lint.mjs": "framework/tools/kaif-experience-lint.mjs",
@@ -1453,7 +1456,7 @@ question passes: `node .kaif/tools/contour/review.mjs --search "<question>"` (a 
 unsettled). Interviews are for vision-level forks that outlive the task. **Ending your turn with a question to the owner — first decide whose step it is:**
 (1) the next step is your own work by the plan → take it, never ask leave for it (2.10, origin issue #140); (2) **the work STOPS until the owner acts or
 answers** — a password, a cable, a device to unlock, a one-line answer — → the turn's last call is `node .kaif/tools/contour/review.mjs --call "<what is
-needed>"` (sound → banner → voice, naming the calling session), then the text; a request left only in the chat is not delivered: the owner does not watch the chat while you work (2.8, origin issues #95 · #98; 2.10, #157).
+needed>"` (sound → banner → voice, naming the calling session), then the text; a request left only in the chat is not delivered: the owner does not watch the chat while you work (2.8, origin issues #95 · #98; 2.10, #157). What you say aloud — a call or a narration — you first WRITE as `voice/<YYYY-MM-DD_HH-MM-SS>_<meaning>.txt` and speak from it: `node .kaif/tools/contour/voice-soft.mjs --file <it> --play` (`--call` keeps its phrase there itself; contract §6).
 
 **The place of questions — a hard rule.** Everything the agent wants FROM the owner — a fork, a review, an approval, an answer — lives
 ONLY in `interviews/` (or an explicitly named decision-queue document), never in the tail of a plan, research, or bug file. The one
@@ -3289,7 +3292,9 @@ by `grep -i` in Git Bash; the printed grep carries `LC_ALL=C.UTF-8`) — and `N 
 and `/owner-reviews` says "run the shipped generator, do not build a contour". The generator itself ships
 as three tool modules under `.kaif/tools/contour/` — `core.mjs` (parsing, records, pre-flight), `review.mjs`
 (the page, the server, the call, the queue, the faces interview · notice · proofreading · mockup review, `--selftest`; since 2.7, epic IW — origin issue #64 — the server comes up on the previous run's port when that process is gone so the owner's browser draft is restored, names a taken port together with the loss, and the page reports when it lives in a tab instead of the app window; since 2.7, epic LP — origin issue #66 — `<doc> --close` is the only way to end a live page from outside: it reads the lock (port · pid · title · last input · draft state carried by the pulse) and refuses with exit 4 while the owner typed less than the quiet threshold ago, while the page is younger than it, or while a draft is unsaved — and it ends the page by asking the page's own server, never by killing a pid read from a file; the app window runs on its own browser profile in the project, `.kaif/contour-window/`, so an answer saved while the server was gone (IndexedDB is the primary carrier, durable half a second after the write) is picked up headless at the next queue, check or show — once no browser holds the profile — and recorded with `recovered: true`; an unknown flag refuses before any page, exit 1)
-and `texts.mjs` (the RU/EN dictionaries and parser labels; other languages fall back to EN and the page says so) —
+and `texts.mjs` (the RU/EN dictionaries and parser labels; other languages fall back to EN and the page says so), plus,
+since 2.10, `voice-soft.mjs` — the soft voice (a machine engine's render tuned by ffmpeg to the numbers the KAIF owner set by ear)
+and the voice log: every phrase the agent says aloud lands as `voice/<YYYY-MM-DD_HH-MM-SS>_<meaning>.txt` in the project —
 and reads every parameter from `.kaif/kaif.json`, never asking the owner.
 
 Knowledge directories, each with its own README: `plans/` `ideas/` `bugs/` `researches/`
@@ -3595,7 +3600,7 @@ old source and the new one and compare both with the disk; the deployment's hand
 without `--source` refuses, and an anonymous deployment is never rendered an origin-tied skill install would not write there) · `adopt-current` (after a MANUAL migration: re-adopt
 reality so the mechanical road stays alive) · `sync` (re-mirror skills) · `modules` (print the
 machinery's module cut) · `stale-claims` (since 2.8, epic SC: re-run the scan for lines asserting an older version, READ-ONLY —
-`--from <v> --to <v>`, the default is the last update receipt; exit 1 only when the walk failed or no interval is known) · `checkpoint` · `update-verify` · `check` (the deployed tree against its manifest and the marker — a tree with neither the bundle nor the deploy manifest is refused: is KAIF deployed here? So are a bundle that cannot be read (absent, without FILE blocks or its manifest block, a language pack's triggers in bad JSON) and a deploy manifest unreadable as JSON — restore it from git. A deployed file, agent artifact or the marker MISSING or empty, a broken marker schema (§12.1), a two-headed document or an unpaired anchor block (§10.2) and a deployed artifact git-ignored by a line KAIF wrote itself (the next update anchors it to the root) are failures, summed up in one closing `INCOMPLETE: N artifacts missing` line with exit 1; warnings, never a failure: a deployed artifact git-ignored by the project's own rule, named with its `.gitignore` line and the `!<file>` cure (since 2.9, origin issue #130; the install summary prints the same scan), a delivered hook not wired, a retired hook still wired in `.claude/settings.json` or in the personal `settings.local.json`, and a settings file unreadable (since 2.9, epics SW and WH — §14), mirror drift of the skill copies other agent systems read (three named, the rest counted; `sync` cures it), a sphere with no library under `.kaif/spheres/`, a step of the closing or release skill that is still an instruction slot of the template — «`<Run the project build …>`» (since 2.9, origin issue #141: the ritual ran no build for 18 days), and the /resume list — a re-read core document the deployed `/resume` does not name as a Step 1 bullet, or a bullet naming a file missing on disk (since 2.7, epic TR); since 2.7, epic SD — origin issue #65 — also the axis "undelivered signal", an allowlist: on tracking: origin a numbered `bugs/KAIF/NN_*.md` ticket is silent only when its `Delivered upstream:` line names an issue — a `…/issues/N` URL or `#NN` — and does not say NOT YET; NOT YET is named with the ready `report` command, a missing, translated or unreadable line, or NOT YET beside an issue, as "no readable delivery state" with both legal forms, and the third form, `resolved in origin <version>`, is silent only with a version no newer than the deployment; a warning, read by the same function as `report`; since 2.8, epic CH — origin issue #78 — the same axis reads the field reports `reports/KAIF_UPDATES/*_KAIF_<X.Y>_{UPDATE,INSTALL}_REPORT.md` of 2.8 and later; older ones were local by the canon of their time) · (since 2.7, epic FR — origin issue #68 — also the axis "constitution keeps the obligations of its template": with a `TEAM_CONSTITUTION.md` in the root and the skill's template on disk, every bold anchor of § 2's numbered items and every one of the nine `## N.` headings must survive generation — headings matched by NUMBER, rules by anchor, and a document where not one anchor matches is translated, so the axis counts and says so; losses are named one by one, a warning never a failure, and `<!-- constitution-ok: <why> -->` beside the item is the declared exemption) · (since 2.7, epic CB — origin issues #43/#45/#71 — the size budgets of the re-read core are judged by the project's OWN lines: a disk module whose (signature, sha256) pair is in the deployment's `moduleShas` ARRIVED and is not counted, so a 1655-line `AGENT_GUIDE.md` with 300 arrived lines is judged at 1355; the warning carries `own lines N of budget ~M` and the ADDRESS the overflow moves to, taken per document from `DOC_BUDGETS` — the chronicle for `STATUS.md`, the chronicle · `researches/` · a house-rules file for the rest; three fallbacks name themselves in the line instead of going silent — no module cut for the file, a file translated WHOLESALE (not one template signature survives, so a by-signature cut is impossible by construction) and an OWNER-SEEDED document whose shipped skeleton the project wrote over, all three counting every line as the project's own; `--gate-budgets` turns the advice into a DOOR — exit 1 after every other axis has spoken, one `<document>: own lines N of budget M → <address>` line each, while the bare `check` keeps the warning and exit 0 so no update road fails on a long document; the closing ritual `/end-chat-soft` runs the flag. The same epic judges the SKILL LANGUAGE MIX by the share of foreign-script prose tokens instead of a single occurrence of a script — fenced blocks and inline code spans are not prose, a body with not one token in the owner's script is ENGLISH as before, and a body that keeps the owner's script while at or above the named threshold of its tokens are foreign is a MIX, named with its percentage: a fully English skill carrying three stray localized words used to be invisible to both counts) · (since 2.8, epic CK — origin issues #84 #85 #99 — the budget door is a RATCHET over `.kaif/budget-baseline.json`, rewritten on every run and committed with the closing (since 2.9, epic UT — criterion 18 — except while an update task is open: the door then writes nothing and says to run the door LAST, after `update-verify`): the first run of a version records the debt above budget and passes, afterwards a document above budget passes only while its own lines shrink, and growth, a standstill or a new overflow stop the closing — an unreadable base stops too: restore it from git; a document the owner declared his verbatim ARCHIVE (`archives`, §12.1) is judged by its digest, its own size is information; the warning of a file translated wholesale names the shipped template's length (`templateLines` of the deploy manifest) and the room it leaves; the move-out address names `HOUSE_RULES.md` with the command that creates it, and `STATUS.md` gets it as a second address for standing rules and reference tables; the count of English skills speaks only where the marker declares `i18n: translated`, the MIX line stays unconditional; and every `check` prints the ENTRY COST as reference — the re-read core, plus `HOUSE_RULES.md` where it exists, in thousands of tokens and as a share of a 1M-token model window, at two named rates of characters per token, never a stop) · `version` · `report
+`--from <v> --to <v>`, the default is the last update receipt; exit 1 only when the walk failed or no interval is known) · `checkpoint` · `update-verify` · `check` (the deployed tree against its manifest and the marker — a tree with neither the bundle nor the deploy manifest is refused: is KAIF deployed here? So are a bundle that cannot be read (absent, without FILE blocks or its manifest block, a language pack's triggers in bad JSON) and a deploy manifest unreadable as JSON — restore it from git. A deployed file, agent artifact or the marker MISSING or empty, a broken marker schema (§12.1), a two-headed document or an unpaired anchor block (§10.2) and a deployed artifact git-ignored by a line KAIF wrote itself (the next update anchors it to the root) are failures, summed up in one closing `INCOMPLETE: N artifacts missing` line with exit 1; warnings, never a failure: a deployed artifact git-ignored by the project's own rule, named with its `.gitignore` line and the `!<file>` cure (since 2.9, origin issue #130; the install summary prints the same scan), a delivered hook not wired, a retired hook still wired in `.claude/settings.json` or in the personal `settings.local.json`, and a settings file unreadable (since 2.9, epics SW and WH — §14), mirror drift of the skill copies other agent systems read (three named, the rest counted; `sync` cures it), a sphere with no library under `.kaif/spheres/`, a step of the closing or release skill that is still an instruction slot of the template — «`<Run the project build …>`» (since 2.9, origin issue #141: the ritual ran no build for 18 days), and the /resume list — a re-read core document the deployed `/resume` does not name as a Step 1 bullet, or a bullet naming a file missing on disk (since 2.7, epic TR); since 2.7, epic SD — origin issue #65 — also the axis "undelivered signal", an allowlist: on tracking: origin a numbered `bugs/KAIF/NN_*.md` ticket is silent only when its `Delivered upstream:` line names an issue — a `…/issues/N` URL or `#NN` — and does not say NOT YET; NOT YET is named with the ready `report` command, a missing, translated or unreadable line, or NOT YET beside an issue, as "no readable delivery state" with both legal forms, and the third form, `resolved in origin <version>`, is silent only with a version no newer than the deployment; a warning, read by the same function as `report`; since 2.8, epic CH — origin issue #78 — the same axis reads the field reports `reports/KAIF_UPDATES/*_KAIF_<X.Y>_{UPDATE,INSTALL}_REPORT.md` of 2.8 and later; older ones were local by the canon of their time) · (since 2.7, epic FR — origin issue #68 — also the axis "constitution keeps the obligations of its template": with a `TEAM_CONSTITUTION.md` in the root and the skill's template on disk, every bold anchor of § 2's numbered items and every one of the nine `## N.` headings must survive generation — headings matched by NUMBER, rules by anchor, and a document where not one anchor matches is translated, so the axis counts and says so; losses are named one by one, a warning never a failure, and `<!-- constitution-ok: <why> -->` beside the item is the declared exemption) · (since 2.7, epic CB — origin issues #43/#45/#71 — the size budgets of the re-read core are judged by the project's OWN lines: a disk module whose (signature, sha256) pair is in the deployment's `moduleShas` ARRIVED and is not counted, so a 1655-line `AGENT_GUIDE.md` with 300 arrived lines is judged at 1355; the warning carries `own lines N of budget ~M` and the ADDRESS the overflow moves to, taken per document from `DOC_BUDGETS` — the chronicle for `STATUS.md`, the chronicle · `researches/` · a house-rules file for the rest; three fallbacks name themselves in the line instead of going silent — no module cut for the file, a file translated WHOLESALE (not one template signature survives, so a by-signature cut is impossible by construction) and an OWNER-SEEDED document whose shipped skeleton the project wrote over, all three counting every line as the project's own; `--gate-budgets` turns the advice into a DOOR — exit 1 after every other axis has spoken, one `<document>: own lines N of budget M → <address>` line each, while the bare `check` keeps the warning and exit 0 so no update road fails on a long document; the closing ritual `/end-chat-soft` runs the flag. The same epic judges the SKILL LANGUAGE MIX by the share of foreign-script prose tokens instead of a single occurrence of a script — fenced blocks and inline code spans are not prose, a body with not one token in the owner's script is ENGLISH as before, and a body that keeps the owner's script while at or above the named threshold of its tokens are foreign is a MIX, named with its percentage: a fully English skill carrying three stray localized words used to be invisible to both counts) · (since 2.8, epic CK — origin issues #84 #85 #99 — the budget door is a RATCHET over `.kaif/budget-baseline.json`, rewritten on every run and committed with the closing (since 2.9, epic UT — criterion 18 — except while an update task is open: the door then writes nothing and says to run the door LAST, after `update-verify`): the first run of a version records the debt above budget and passes, afterwards a document above budget passes only while its own lines shrink, and growth, a standstill or a new overflow stop the closing — an unreadable base stops too: restore it from git; a document the owner declared his verbatim ARCHIVE (`archives`, §12.1) is judged by its digest, its own size is information; the warning of a file translated wholesale names the shipped template's length (`templateLines` of the deploy manifest) and the room it leaves; the move-out address names `HOUSE_RULES.md` with the command that creates it, and `STATUS.md` gets it as a second address for standing rules and reference tables; the count of English skills speaks only where the marker declares `i18n: translated`, the MIX line stays unconditional; and every `check` prints the ENTRY COST as reference — the re-read core, plus `HOUSE_RULES.md` where it exists, plus since 2.10 (epic HC, origin #179) every other document the deployed `/resume` names as a bullet (by name; `EXPERIENCE.md` is grepped and stays out) and the skill file itself, in thousands of tokens and as a share of a 1M-token model window, at two named rates of characters per token, never a stop; a document over 25k tokens — more than one Read call of Claude Code returns — gets an ENTRY COST warning line of its own) · `version` · `report
 <ticket>` (2.5, epic SG: deliver a `bugs/KAIF/` ticket — since 2.8, epic CH, also an update's field report — to the origin through `gh` under the KAIF
 owner's standing authorization — origin issue #15 — with an authorship trailer, and write the
 issue URL into its `Delivered upstream:` line; refusals named: `tracking: anonymous`, no `gh`,
@@ -11676,6 +11681,7 @@ import {
   quietNow, ownerSeenAt, // TK10 (c), #193: the owner's presence lifts the quiet hours
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
+import { logPhrase, voiceSoftSelftest } from './voice-soft.mjs';
 
 // ── Constants (canonical defaults DEF; the owner's envelope — depart only by the owner's word) ─
 const ALIVE_INTERVAL_MS = 15000;      // DEF4: page→server pulse, envelope 10–60 s
@@ -11967,7 +11973,7 @@ export function introduce(phrase, cfg) {
 }
 // OW4 (2.8, #95): the owner's hands or a quick answer outside a page — the CALL, never a line left in the chat he does not watch while the
 // agent works; `dryRun` prints the phrase and the banner and makes no sound
-export function callDoor(root, text, { dryRun = false, log = console.log } = {}) {
+export function callDoor(root, text, { dryRun = false, log = console.log, signal = signalCall } = {}) {
   const cfg = cfgOf(root);
   // 2.10 TK10 (a), origin #191: an agent that addresses the owner the natural way opens the text with his name — the door adds it once,
   // never twice («Name, Name, …» in the field): a leading callName (any case) and the punctuation after it are dropped before the door adds its own.
@@ -11984,7 +11990,11 @@ export function callDoor(root, text, { dryRun = false, log = console.log } = {})
     log('  sound: ' + callShape());
     return phrase;
   }
-  signalCall(root, phrase, { log });
+  // 2.10, decision №156: what the agent says aloud is kept in the project — voice/<stamp>_<meaning>.txt (voice-soft.mjs); the meaning is
+  // the agent's own text, the file holds the phrase as spoken
+  try { log('voice log: ' + logPhrase(root, phrase, { slug: (lead ? body.replace(lead, '') : body) || body })); }
+  catch (e) { log('voice log: not written — ' + e.message); }
+  signal(root, phrase, { log });
   return phrase;
 }
 
@@ -12056,6 +12066,7 @@ export function whenVoiceFree(root, then, { tick = VOICE_WAIT_TICK_MS } = {}) {
 }
 export function signalCall(root, rawPhrase, { quiet = null, log = console.log } = {}) {
   const cfg = cfgOf(root);
+  process.env.KAIF_VOICE_LOGGED = '1'; // decision №156: the voice tool a call spawns does not log the phrase again (callDoor already did)
   const qn = quiet === null ? quietNow(new Date(), cfg, ownerSeenAt(root)) : { quiet, lifted: false };   // TK10 (c), #193
   const isQuiet = qn.quiet;
   log('CALL' + (cfg.session ? ' · ' + cfg.session : '') + ': ' + rawPhrase); // C8: plain text to the console — an exit code does not prove a human heard it; OW4: the session
@@ -13759,6 +13770,20 @@ export async function selftest(log = console.log) {
   const words = decisionWords({ answers: { Q1: { choice: 'A' }, Q2: { choice: 'B', text: 'take B,\n  but later', comment: 'the radio does not clear' }, Q3: { text: 'free' } }, comment: 'bug on the page' });
   ok(words === 'Q1 = A, Q2 = B + text «take B, but later» + comment «the radio does not clear», Q3 = text «free», document comment «bug on the page»',
     'CP #128: the waiter\'s line names choice · text · comment · document comment (a choice alone stays "Q1 = A")');
+  { // 2.10, decision №156: --call keeps the agent's phrase in the project's voice log, named by the moment and the meaning; no sound here
+    const r = mkdtempSync(join(tmpdir(), 'kaif-voicelog-'));
+    mkdirSync(join(r, '.kaif'), { recursive: true });
+    writeFileSync(join(r, '.kaif', 'kaif.json'), JSON.stringify({ language: 'en', contour: { callName: 'Kit', ownerName: 'Kit Lee' } }));
+    CFG_CACHE.delete(resolve(r));
+    let signalled = null;
+    const said = callDoor(r, 'Kit, the stand needs its password.', { log: () => {}, signal: (_r, p) => { signalled = p; } });
+    const files = existsSync(join(r, 'voice')) ? readdirSync(join(r, 'voice')) : [];
+    ok(signalled === said && files.length === 1 && /^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}_the-stand-needs-its-password\.txt$/.test(files[0])
+      && readFileSync(join(r, 'voice', files[0]), 'utf8') === said + '\n',
+      '№156: --call writes voice/<YYYY-MM-DD_HH-MM-SS>_<meaning>.txt with the spoken phrase — the meaning is the agent\'s text without the address');
+    rmSync(r, { recursive: true, force: true });
+    ok(voiceSoftSelftest(() => {}) === 0, '№156: the soft voice\'s own selftest (voice log · tuned filter) is green — node voice-soft.mjs --selftest names a red one');
+  }
   { // 2.10, epic TK, step TK9 (origin #178): --mark-shown records only a real file of this project — a flag value is not a document
     const r = mkdtempSync(join(tmpdir(), 'kaif-tk9-'));
     mkdirSync(join(r, 'interviews'), { recursive: true });
@@ -15486,6 +15511,254 @@ export function texts(language) {
   if (DICTS[lang]) return { ...fill(EN, DICTS[lang]), fallbackFrom: null };
   return { ...fill(EN, EN), fallbackFrom: lang };
 }
+``````
+
+> **FILE: `.kaif/tools/contour/voice-soft.mjs`** — optional tool module — verbatim
+
+``````js
+#!/usr/bin/env node
+// voice-soft.mjs — the soft voice of KAIF and the project's log of what the agent said aloud (optional contour module; 2.10, decision №156).
+//
+// Two jobs, one tool:
+//   1. THE SOFT VOICE. A rich engine of the machine renders the phrase into a WAV; ffmpeg then gives it the timbre and pace the KAIF owner
+//      tuned by ear on a field deployment: a lead silence (the sound device swallows the first samples), the contour's three beeps in the
+//      SAME file, a pause after them, the speech slowed without changing its pitch, more bass, the highs cut. Every number is a named
+//      constant in SOFT below. The tool honours the contour's KAIF_VOICE_TOOL contract (`<phrase> --play|--out <wav> --voice <name>`), so
+//      a project points the contour at it: KAIF_VOICE_TOOL=<abs path to this file>, KAIF_VOICE_BEEPS=embedded (the beeps live in its file).
+//   2. THE VOICE LOG. Every phrase the agent says through it (and every `review.mjs --call`) is kept as a text file in the project —
+//      `<project>/voice/<YYYY-MM-DD_HH-MM-SS>_<meaning>.txt` — so the owner reads what was said and the project's history keeps it. The
+//      agent WRITES the phrase file first (the owner sees the Write in the harness) and speaks it with `--file`; the moment in the name is
+//      the machine's clock at the moment of speaking — the tool renames a file whose stamp is stale, never trusts the agent's sense of time.
+//
+// Engines (machine resources, reached through the environment, never a path inside the project):
+//   KAIF_VOICE_RENDER    — JSON array, a command prefix called with `<text> <out.wav> <voice>` (e.g. a renderer with longer pauses on
+//                          punctuation); tried first;
+//   KAIF_VOICE_BASE_TOOL — a node script `<text> --voice <name> --out <wav>`; the fallback;
+//   neither, or both failing → exit 2: the contour then drops to the system voice (I35).
+// Without ffmpeg the raw render is used untuned, and the line says so.
+//
+// Use:  node .kaif/tools/contour/voice-soft.mjs --file voice/<stamp>_<meaning>.txt --play
+//       node .kaif/tools/contour/voice-soft.mjs "<phrase>" --play [--slug <meaning>] [--voice <name>] [--out <wav>] [--no-beeps] [--dry-run]
+//       node .kaif/tools/contour/voice-soft.mjs --selftest
+// Exit: 0 done · 1 usage · 2 no engine rendered the phrase · 3 ffmpeg or the player failed.
+// [TESTED: 2026-11-07 · selftest 13/13; a phrase rendered through the origin's engines is byte-identical to the field deployment's soft voice; --call
+//  through the real CLI writes one log file — report testcases/reports/2026-11-07_voice-soft-kumm-settings.md]
+import { spawnSync } from 'node:child_process';
+import { mkdirSync, existsSync, readFileSync, writeFileSync, renameSync, copyFileSync, rmSync, mkdtempSync, readdirSync } from 'node:fs';
+import { join, resolve, dirname, basename, relative, sep } from 'node:path';
+import { tmpdir } from 'node:os';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+
+// ── The tuned sound — the numbers of the owner's ear (decision №156: the field deployment's settings, taken as they stand) ──────────────
+export const SOFT = Object.freeze({
+  DEVICE_WAKE_SEC: 1.0,   // the file opens with silence — the device eats the first samples while it wakes up
+  BEEPS: Object.freeze([{ hz: 880, sec: 0.16 }, { hz: 660, sec: 0.16 }, { hz: 990, sec: 0.26 }]), // the contour's own call tones
+  BEEP_VOLUME: 2.5,       // ffmpeg's sine is 1/8 of full scale; ×2.5 — the quieter beeps the owner asked for (KAIF_VOICE_BEEP_VOLUME overrides)
+  LEAD_SILENCE_MS: 2000,  // after the beeps, before the first word
+  TEMPO: 0.90,            // slower speech; atempo keeps the pitch
+  BASS_GAIN_DB: 6,        // more bass …
+  BASS_FREQ_HZ: 140,      // … around this frequency
+  LOWPASS_HZ: 4200,       // the highs cut — a softer voice
+  VOLUME: 0.9,
+  RATE: 48000,
+});
+const RENDER_TIMEOUT_MS = 60000;   // a cold neural engine loads its model first
+const DEFAULT_VOICE = 'eugene';    // the timbre the owner chose by ear; `--voice` and KAIF_VOICE override
+export const DEFAULT_VOICE_LOG_DIR = 'voice';
+const KAIF_JSON = join('.kaif', 'kaif.json');
+const SLUG_WORDS = 6;              // the meaning of a phrase — its first words
+const SLUG_MAX = 60;               // characters; a file name stays readable in a listing
+const FRESH_STAMP_SEC = 120;       // a full stamp this close to the clock is kept as written
+const STAMP_RE = /^(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})(?:-(\d{2}))?(?:_|$)/;
+
+// ── The voice log — pure helpers (the selftest judges them) ────────────────────────────────────────────────────────────────────────────
+// The project root: the nearest directory upward holding .kaif/kaif.json; none — the starting directory.
+export function projectRoot(start = process.cwd()) {
+  let d = resolve(start);
+  for (;;) {
+    if (existsSync(join(d, KAIF_JSON))) return d;
+    const up = dirname(d);
+    if (up === d) return resolve(start);
+    d = up;
+  }
+}
+const readJson = (p) => { try { return JSON.parse(readFileSync(p, 'utf8').replace(/^\uFEFF/, '')); } catch { return null; } };
+// The log directory — `.kaif/kaif.json` → `contour.voiceLog` (relative to the project), default `voice`.
+export function voiceLogDir(root) {
+  const c = (readJson(join(root, KAIF_JSON)) || {}).contour || {};
+  return String(c.voiceLog || DEFAULT_VOICE_LOG_DIR).replace(/\\/g, '/').replace(/\/+$/, '');
+}
+const pad = (n) => String(n).padStart(2, '0');
+// The moment as a file name wants it: local time, `YYYY-MM-DD_HH-MM-SS`.
+export function stampOf(d = new Date()) {
+  return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + '_' + pad(d.getHours()) + '-' + pad(d.getMinutes()) + '-' + pad(d.getSeconds());
+}
+// The meaning of a text as a file name: its first words, lower case, letters and digits of any script joined by «-» (letters kept as written).
+export function slugOf(text) {
+  const words = String(text || '').toLowerCase().match(/[\p{L}\p{N}]+/gu) || [];
+  let s = words.slice(0, SLUG_WORDS).join('-');
+  if (s.length > SLUG_MAX) s = s.slice(0, SLUG_MAX).replace(/-[^-]*$/, '') || s.slice(0, SLUG_MAX);
+  return s || 'phrase';
+}
+// The meaning the agent put into a file name — the name without its stamp and extension; nothing left → null.
+export function meaningOfName(name) {
+  const bare = basename(String(name)).replace(/\.txt$/i, '').replace(STAMP_RE, '');
+  const s = slugOf(bare);
+  return s === 'phrase' && !/[\p{L}\p{N}]/u.test(bare) ? null : s;
+}
+// The moment a stamped name claims, or null.
+export function stampMoment(name) {
+  const m = STAMP_RE.exec(basename(String(name)));
+  if (!m || m[6] === undefined) return null;
+  return new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5], +m[6]);
+}
+const inside = (dir, p) => { const r = relative(dir, resolve(p)); return !!r && !r.startsWith('..') && !r.includes(':') && !r.startsWith(sep); };
+// Keep the phrase in the project's voice log. A phrase file the agent wrote INSIDE the log keeps its place (renamed when its stamp is not
+// the clock's or misses the seconds); a file elsewhere (a scratchpad) is copied, its original left alone; a bare phrase gets a new file.
+// The same moment and meaning with a different text never overwrites — «-2», «-3» is added. Returns the path relative to the root.
+export function logPhrase(root, phrase, { file = null, slug = null, now = new Date() } = {}) {
+  const dir = resolve(root, voiceLogDir(root));
+  mkdirSync(dir, { recursive: true });
+  const text = String(phrase).trim() + '\n';
+  if (file && inside(dir, file) && dirname(resolve(file)) === dir) {
+    const at = stampMoment(file);
+    if (at && Math.abs(now - at) <= FRESH_STAMP_SEC * 1000 && meaningOfName(file)) return relative(root, resolve(file)).replace(/\\/g, '/');
+  }
+  const meaning = slug ? slugOf(slug) : (file && meaningOfName(file)) || slugOf(phrase);
+  const base = stampOf(now) + '_' + meaning;
+  let target = join(dir, base + '.txt');
+  for (let i = 2; existsSync(target) && resolve(target) !== resolve(file || '') && readFileSync(target, 'utf8') !== text; i++) target = join(dir, base + '-' + i + '.txt');
+  if (file && resolve(file) === resolve(target)) return relative(root, target).replace(/\\/g, '/');
+  if (file && inside(dir, file) && dirname(resolve(file)) === dir) renameSync(resolve(file), target);
+  else if (!existsSync(target)) writeFileSync(target, text, 'utf8');
+  return relative(root, target).replace(/\\/g, '/');
+}
+
+// ── The sound ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+// The ffmpeg filter graph: [lead silence][beeps…][the tuned voice], one mono file at SOFT.RATE. Pure — the selftest reads its numbers.
+export function softFilter({ beeps = true, beepVolume = SOFT.BEEP_VOLUME } = {}) {
+  const S = SOFT;
+  const voiceChain = `adelay=${S.LEAD_SILENCE_MS}:all=1,atempo=${S.TEMPO},bass=g=${S.BASS_GAIN_DB}:f=${S.BASS_FREQ_HZ},lowpass=f=${S.LOWPASS_HZ},volume=${S.VOLUME}`;
+  const lead = `anullsrc=r=${S.RATE}:cl=mono,atrim=duration=${S.DEVICE_WAKE_SEC}[s0]`;
+  const voice = `[0:a]aresample=${S.RATE},aformat=channel_layouts=mono,${voiceChain}[v]`;
+  if (!beeps) return `${lead};${voice};[s0][v]concat=n=2:v=0:a=1[out]`;
+  const tones = S.BEEPS.map((b, i) => `sine=f=${b.hz}:d=${b.sec}:sample_rate=${S.RATE},volume=${beepVolume},aformat=channel_layouts=mono[b${i}]`).join(';');
+  return `${lead};${tones};${voice};[s0]` + S.BEEPS.map((_, i) => `[b${i}]`).join('') + `[v]concat=n=${S.BEEPS.length + 2}:v=0:a=1[out]`;
+}
+function renderRaw(phrase, raw, voice, log) {
+  const tried = [];
+  let cmd = null;
+  try { cmd = process.env.KAIF_VOICE_RENDER ? JSON.parse(process.env.KAIF_VOICE_RENDER) : null; } catch { tried.push('KAIF_VOICE_RENDER is not a JSON array'); }
+  if (Array.isArray(cmd) && cmd.length) {
+    const r = spawnSync(cmd[0], [...cmd.slice(1), phrase, raw, voice], { encoding: 'utf8', timeout: RENDER_TIMEOUT_MS, windowsHide: true });
+    if (r.status === 0 && existsSync(raw)) return 'KAIF_VOICE_RENDER';
+    tried.push('KAIF_VOICE_RENDER exit ' + r.status + ' ' + String(r.stderr || r.error || '').slice(-200));
+  }
+  if (process.env.KAIF_VOICE_BASE_TOOL) {
+    const r = spawnSync(process.execPath, [process.env.KAIF_VOICE_BASE_TOOL, phrase, '--voice', voice, '--out', raw], { encoding: 'utf8', timeout: RENDER_TIMEOUT_MS, windowsHide: true });
+    if (r.status === 0 && existsSync(raw)) return 'KAIF_VOICE_BASE_TOOL';
+    tried.push('KAIF_VOICE_BASE_TOOL exit ' + r.status + ' ' + String(r.stderr || r.error || '').slice(-200));
+  }
+  log('voice-soft: no engine rendered the phrase (' + (tried.join(' · ') || 'neither KAIF_VOICE_RENDER nor KAIF_VOICE_BASE_TOOL is set') + ')');
+  return null;
+}
+function playWav(file) {
+  const q = String(file).replace(/'/g, "''");
+  const r = process.platform === 'win32'
+    ? spawnSync('powershell.exe', ['-NoProfile', '-Command', `(New-Object Media.SoundPlayer '${q}').PlaySync()`], { windowsHide: true, timeout: RENDER_TIMEOUT_MS })
+    : process.platform === 'darwin' ? spawnSync('afplay', [file], { timeout: RENDER_TIMEOUT_MS })
+      : spawnSync('aplay', ['-q', file], { timeout: RENDER_TIMEOUT_MS });
+  return r.status === 0;
+}
+
+// ── The selftest — the log and the filter, no sound ────────────────────────────────────────────────────────────────────────────────────
+export function voiceSoftSelftest(log = console.log) {
+  let n = 0, bad = 0;
+  const ok = (cond, name) => { n++; if (!cond) { bad++; log('  x ' + name); } else log('  v ' + name); };
+  const at = new Date(2026, 10, 7, 11, 32, 5);
+  ok(stampOf(at) === '2026-11-07_11-32-05', 'voice log: the stamp is local YYYY-MM-DD_HH-MM-SS');
+  // fixtures in Latin and Greek: the EN payload body carries no Cyrillic (invariant §9.11); Greek proves «letters of any script»
+  ok(slugOf('Kit, checking the frame in the loot window. The game comes forward') === 'kit-checking-the-frame-in-the' && slugOf('...') === 'phrase'
+    && slugOf('Καλημέρα: v2.10 «ok»') === 'καλημέρα-v2-10-ok', 'voice log: the meaning is the first six words of any script, letters as written, nothing → "phrase"');
+  ok(meaningOfName('2026-11-07_11-32_checking-the-frame.txt') === 'checking-the-frame' && meaningOfName('2026-11-07_11-32-05.txt') === null
+    && meaningOfName('v3.txt') === 'v3', 'voice log: the meaning of a name is the name without its stamp; a bare stamp has none');
+  const r = mkdtempSync(join(tmpdir(), 'kaif-voice-log-'));
+  try {
+    mkdirSync(join(r, '.kaif'), { recursive: true });
+    writeFileSync(join(r, KAIF_JSON), '{}');
+    mkdirSync(join(r, 'src', 'deep'), { recursive: true });
+    ok(projectRoot(join(r, 'src', 'deep')) === resolve(r), 'voice log: the project root is found upward by .kaif/kaif.json');
+    const p1 = logPhrase(r, 'Kit, checking the frame.', { now: at });
+    ok(p1 === 'voice/2026-11-07_11-32-05_kit-checking-the-frame.txt' && readFileSync(join(r, p1), 'utf8') === 'Kit, checking the frame.\n',
+      'voice log: a bare phrase becomes voice/<stamp>_<meaning>.txt with its text');
+    ok(logPhrase(r, 'Kit, checking the frame.', { now: at }) === p1 && readdirSync(join(r, 'voice')).length === 1,
+      'voice log: the same phrase at the same moment is not written twice');
+    const p2 = logPhrase(r, 'Another phrase.', { now: at, slug: 'Kit checking the frame' });
+    ok(p2 === 'voice/2026-11-07_11-32-05_kit-checking-the-frame-2.txt', 'voice log: the same name with another text gets «-2», nothing is overwritten');
+    const scratch = join(r, 'scratch.txt');
+    writeFileSync(scratch, 'The build runs.');
+    const p3 = logPhrase(r, 'The build runs.', { file: scratch, now: at });
+    ok(p3 === 'voice/2026-11-07_11-32-05_scratch.txt' && existsSync(scratch), 'voice log: a phrase file outside the log is copied in, the original left');
+    const stale = join(r, 'voice', '2026-11-07_09-00_πολύγωνο-green.txt');
+    writeFileSync(stale, 'The polygon is green.');
+    const p4 = logPhrase(r, 'The polygon is green.', { file: stale, now: at });
+    ok(p4 === 'voice/2026-11-07_11-32-05_πολύγωνο-green.txt' && !existsSync(stale), 'voice log: a file in the log with a stale or minute-only stamp is renamed to the clock\'s moment, its meaning kept');
+    const fresh = join(r, 'voice', '2026-11-07_11-31-30_judge-ready.txt');
+    writeFileSync(fresh, 'The judge is ready.');
+    ok(logPhrase(r, 'The judge is ready.', { file: fresh, now: at }) === 'voice/2026-11-07_11-31-30_judge-ready.txt' && existsSync(fresh),
+      'voice log: a full stamp within two minutes of the clock is kept as the agent wrote it');
+    writeFileSync(join(r, KAIF_JSON), JSON.stringify({ contour: { voiceLog: 'docs/said/' } }));
+    ok(logPhrase(r, 'Done.', { now: at }) === 'docs/said/2026-11-07_11-32-05_done.txt', 'voice log: contour.voiceLog names another folder');
+  } finally { rmSync(r, { recursive: true, force: true }); }
+  const f = softFilter();
+  ok(f.includes('atempo=0.9,') && f.includes('bass=g=6:f=140') && f.includes('lowpass=f=4200') && f.includes('adelay=2000:all=1')
+    && f.includes('atrim=duration=1[s0]') && f.includes('sine=f=880:d=0.16') && f.includes('volume=2.5,') && f.includes('concat=n=5:'),
+    'soft voice: the filter carries the tuned numbers — tempo 0.90, bass +6 dB at 140 Hz, lowpass 4200 Hz, 1 s wake, 3 beeps at ×2.5, 2 s before the words');
+  ok(softFilter({ beeps: false }).includes('concat=n=2:') && !softFilter({ beeps: false }).includes('sine='), 'soft voice: --no-beeps — silence and the voice only');
+  log((bad ? '✖' : '✔') + ' voice-soft selftest: ' + (n - bad) + ' of ' + n);
+  return bad;
+}
+
+// ── The CLI ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+function main(args) {
+  if (args.includes('--selftest')) process.exit(voiceSoftSelftest() ? 1 : 0);
+  const val = (n) => { const i = args.indexOf(n); return i >= 0 && args[i + 1] && !args[i + 1].startsWith('--') ? args[i + 1] : null; };
+  const file = val('--file');
+  const valueOf = new Set(['--file', '--out', '--voice', '--slug'].map((n) => args.indexOf(n) + 1).filter((i) => i > 0));
+  const positional = args.find((a, i) => !a.startsWith('--') && !valueOf.has(i));
+  const phrase = file ? (existsSync(file) ? readFileSync(file, 'utf8').replace(/^\uFEFF/, '').trim() : '') : (positional || '').trim();
+  if (!phrase) {
+    console.error('usage: node voice-soft.mjs --file <phrase.txt> --play | "<phrase>" --play [--slug <meaning>] [--voice <name>] [--out <wav>] [--no-beeps] [--dry-run] | --selftest'
+      + (file ? '\n✖ the phrase file is missing or empty: ' + file : ''));
+    process.exit(1);
+  }
+  // the contour logs the phrases it calls with itself (KAIF_VOICE_LOGGED=1 in the child's environment) — never twice
+  if (process.env.KAIF_VOICE_LOGGED !== '1') {
+    const root = projectRoot();
+    console.log('voice log: ' + logPhrase(root, phrase, { file, slug: val('--slug') }));
+  }
+  const voiceArg = val('--voice');
+  const voice = voiceArg && voiceArg !== 'default' ? voiceArg : (process.env.KAIF_VOICE && process.env.KAIF_VOICE !== 'default' ? process.env.KAIF_VOICE : DEFAULT_VOICE);
+  const beeps = !args.includes('--no-beeps');
+  const beepVolume = Number(process.env.KAIF_VOICE_BEEP_VOLUME) > 0 ? Number(process.env.KAIF_VOICE_BEEP_VOLUME) : SOFT.BEEP_VOLUME;
+  const filter = softFilter({ beeps, beepVolume });
+  if (args.includes('--dry-run')) { console.log('voice-soft (dry run, no sound): voice ' + voice + ' · filter ' + filter); return; }
+  const dir = mkdtempSync(join(tmpdir(), 'kaif-voice-soft-')); // a unique folder per run — two calls never share a file (bugs/59 of the origin)
+  const done = (code) => { rmSync(dir, { recursive: true, force: true }); if (code) process.exit(code); };
+  const raw = join(dir, 'raw.wav');
+  const out = val('--out') ? resolve(val('--out')) : join(dir, 'soft.wav');
+  const engine = renderRaw(phrase, raw, voice, console.error);
+  if (!engine) done(2);
+  const ff = spawnSync('ffmpeg', ['-y', '-loglevel', 'error', '-i', raw, '-filter_complex', filter, '-map', '[out]', '-c:a', 'pcm_s16le', out], { encoding: 'utf8', timeout: RENDER_TIMEOUT_MS, windowsHide: true });
+  if (ff.error && ff.error.code === 'ENOENT') { copyFileSync(raw, out); console.log('voice-soft: no ffmpeg on this machine — the voice is played untuned (' + engine + ')'); }
+  else if (ff.status !== 0) { console.error('voice-soft: ffmpeg failed: ' + String(ff.stderr || ff.error || '').slice(-300)); done(3); }
+  else console.log('voice-soft: ' + out + ' (' + engine + ', voice ' + voice + ')');
+  if (args.includes('--play') && !playWav(out)) { console.error('voice-soft: the sound could not be played'); done(3); }
+  done(0);
+}
+
+if (import.meta.url === pathToFileURL(resolve(process.argv[1] || '')).href) main(process.argv.slice(2));
+export const VOICE_SOFT_FILE = fileURLToPath(import.meta.url);
 ``````
 
 > **FILE: `.kaif/tools/kaif-attribution-lint.mjs`** — optional tool module — verbatim
@@ -22440,7 +22713,7 @@ ONE sound, played once (2.10, #165): 1 s of silence (the device wakes up on the 
 `language`) first, timbre second; when no matching engine exists the call line says so ("system voice — engine not installed") and the contour drops to beeps + banner rather than speaking noise. The
 rich engine is a MACHINE resource reached through the environment (`KAIF_VOICE_TOOL`, `KAIF_VOICE`, `KAIF_SAPI_VOICE`) — never a path inside the project. Quiet hours override every level; the window
 may cross midnight. **The call names the calling session** when the project has more than one workspace («<owner>, this is <session>. …», `CALL · <session>:`, the window title; `KAIF_SESSION_NAME`,
-else the workspace directory) — and `review.mjs --call "<what is needed>" [--dry-run]` carries a request for the owner's hands outside a page (2.8, #95 · #98).
+else the workspace directory) — and `review.mjs --call "<what is needed>" [--dry-run]` carries a request for the owner's hands outside a page (2.8, #95 · #98). **What the agent says aloud is kept in the project** (2.10, decision №156 of the origin): every `--call` phrase, and every phrase the agent speaks itself, lands as a text file `voice/<YYYY-MM-DD_HH-MM-SS>_<meaning>.txt` (`contour.voiceLog` names another folder) — the moment is the machine's clock at the moment of speaking, the meaning is the agent's text (without the address); the agent WRITES the phrase file first and speaks it with `node .kaif/tools/contour/voice-soft.mjs --file <it> --play` (a stale or minute-only stamp is renamed, a file outside the folder is copied in). `voice-soft.mjs` is also the shipped SOFT VOICE: a rich engine of the machine (`KAIF_VOICE_RENDER` — a command prefix called with `<text> <out.wav> <voice>`, else `KAIF_VOICE_BASE_TOOL`) renders, ffmpeg tunes — 1 s of silence, the three beeps ×2.5 in the same file, 2 s, the speech at tempo 0.90, bass +6 dB at 140 Hz, the highs cut at 4200 Hz — numbers the KAIF owner set by ear; point the contour at it with `KAIF_VOICE_TOOL=<its absolute path>` and `KAIF_VOICE_BEEPS=embedded`; no engine → exit 2 and the system voice (I35).
 
 ## 7. Faces and flags (the shipped generator)
 

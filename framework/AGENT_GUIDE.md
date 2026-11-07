@@ -872,7 +872,7 @@ question passes: `node .kaif/tools/contour/review.mjs --search "<question>"` (a 
 unsettled). Interviews are for vision-level forks that outlive the task. **Ending your turn with a question to the owner — first decide whose step it is:**
 (1) the next step is your own work by the plan → take it, never ask leave for it (2.10, origin issue #140); (2) **the work STOPS until the owner acts or
 answers** — a password, a cable, a device to unlock, a one-line answer — → the turn's last call is `node .kaif/tools/contour/review.mjs --call "<what is
-needed>"` (sound → banner → voice, naming the calling session), then the text; a request left only in the chat is not delivered: the owner does not watch the chat while you work (2.8, origin issues #95 · #98; 2.10, #157).
+needed>"` (sound → banner → voice, naming the calling session), then the text; a request left only in the chat is not delivered: the owner does not watch the chat while you work (2.8, origin issues #95 · #98; 2.10, #157). What you say aloud — a call or a narration — you first WRITE as `voice/<YYYY-MM-DD_HH-MM-SS>_<meaning>.txt` and speak from it: `node .kaif/tools/contour/voice-soft.mjs --file <it> --play` (`--call` keeps its phrase there itself; contract §6).
 
 **The place of questions — a hard rule.** Everything the agent wants FROM the owner — a fork, a review, an approval, an answer — lives
 ONLY in `interviews/` (or an explicitly named decision-queue document), never in the tail of a plan, research, or bug file. The one

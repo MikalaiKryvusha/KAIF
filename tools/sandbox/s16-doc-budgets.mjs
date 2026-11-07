@@ -490,22 +490,47 @@ const tokensOf = (docs) => docs.reduce((t, d) => {
   for (const ch of readFileSync(join(S, d), 'utf8')) { if (ch.charCodeAt(0) < 128) a++; else o++; }
   return t + a / 2.5 + o / 1.9;
 }, 0);
-const ENTRY = /ℹ entry cost: \/resume reads (\d+) re-read core document\(s\)( \+ HOUSE_RULES\.md)? ~ (\d+)k tokens — (\d+) % of a 1M-token model window \(reference, never a stop/;
+// 2.10 HC9 (#179, критерий 31): строка считает ВЕСЬ вход — каждый буллет `- `ИМЯ.md`` навыка /resume на диске (кроме EXPERIENCE.md —
+// он грепается) и сам файл навыка; пересчёт свода — по тому же правилу, независимо от ядра. Группы: 1 ядро · 2 домашние · 3–4 сверх ядра ·
+// 5 навык · 6 тысячи · 7 доля.
+const ENTRY = /ℹ entry cost: \/resume reads (\d+) re-read core document\(s\)( \+ HOUSE_RULES\.md)?(?: \+ (\d+) more of its step 1 \(([^)]*)\))?( \+ the skill itself)? ~ (\d+)k tokens — (\d+) % of a 1M-token model window \(reference, never a stop/;
+const SKILL_R = '.claude/skills/resume/SKILL.md';
+const stepOneExtra = () => existsSync(join(S, SKILL_R))
+  ? [...new Set([...readFileSync(join(S, SKILL_R), 'utf8').matchAll(/^\s*- `([A-Za-z0-9_./-]+\.md)`/gm)].map((m) => m[1]))]
+    .filter((d) => !CORE9.includes(d) && d !== 'HOUSE_RULES.md' && d !== 'EXPERIENCE.md' && existsSync(join(S, d))) : [];
+const entryWant = (house) => tokensOf([...CORE9, ...(house ? ['HOUSE_RULES.md'] : []), ...stepOneExtra(), ...(existsSync(join(S, SKILL_R)) ? [SKILL_R] : [])]);
 r = run('check');
 let em = r.out.match(ENTRY);
-const want9 = tokensOf(CORE9);
-ok(r.code === 0 && Boolean(em) && Number(em[1]) === CORE9.length && !em[2] && Number(em[3]) === Math.round(want9 / 1000) &&
-   Number(em[4]) === Math.round(want9 * 100 / 1e6),
-   's16 цена входа (CK5.9): `check` печатает строку стоимости входа — число тысяч токенов и доля окна 1M равны пересчёту по диску, код 0',
-   em ? `line=${em[0]} want=${Math.round(want9 / 1000)}k` : r.out.slice(-600));
+const want9 = entryWant(false);
+ok(r.code === 0 && Boolean(em) && Number(em[1]) === CORE9.length && !em[2] && Boolean(em[5]) && Number(em[6]) === Math.round(want9 / 1000) &&
+   Number(em[7]) === Math.round(want9 * 100 / 1e6) && (em[4] || '') === stepOneExtra().join(', '),
+   's16 цена входа (CK5.9 · HC9): `check` печатает строку стоимости входа — ядро, документы шага 1 сверх ядра поимённо и сам навык; тысячи токенов и доля окна 1M равны пересчёту по диску, код 0',
+   em ? `line=${em[0]} want=${Math.round(want9 / 1000)}k extra=${stepOneExtra().join(', ')}` : r.out.slice(-600));
 const HR = join(S, 'HOUSE_RULES.md');
 writeFileSync(HR, '# House rules\n\n' + 'a'.repeat(25000) + '\n', 'utf8');   // ≈ 10k токенов ASCII — вес известен
 r = run('check');
 em = r.out.match(ENTRY);
-const wantH = tokensOf([...CORE9, 'HOUSE_RULES.md']);
-ok(r.code === 0 && Boolean(em) && Boolean(em[2]) && Number(em[3]) === Math.round(wantH / 1000) && Number(em[3]) >= Math.round(want9 / 1000) + 9,
+const wantH = entryWant(true);
+ok(r.code === 0 && Boolean(em) && Boolean(em[2]) && Number(em[6]) === Math.round(wantH / 1000) && Number(em[6]) >= Math.round(want9 / 1000) + 9,
    's16 цена входа (CK5.9): с домашними правилами строка называет «+ HOUSE_RULES.md», и число выросло на их вес (≈ 10 тыс.)',
    em ? `line=${em[0]} want=${Math.round(wantH / 1000)}k` : r.out.slice(-600));
+// HC9: шаг 1 называет `notes/BIG.md` вне ядра, ≈ 28 тыс. токенов — выше потолка одного чтения (25 тыс.): строка считает его, второе
+// предупреждение называет его поимённо; код 0 (справка, не стоп)
+{
+  const skillPath = join(S, SKILL_R), skillWas = readFileSync(skillPath, 'utf8');
+  mkdirSync(join(S, 'notes'), { recursive: true });
+  writeFileSync(join(S, 'notes', 'BIG.md'), '# Big notes\n\n' + 'b'.repeat(70000) + '\n', 'utf8');
+  writeFileSync(skillPath, skillWas.replace(/^(\s*- `STATUS\.md`[^\n]*\n)/m, '$1- `notes/BIG.md` — the project\'s big notes\n'), 'utf8');
+  r = run('check');
+  em = r.out.match(ENTRY);
+  const wantB = entryWant(true);
+  ok(r.code === 0 && Boolean(em) && (em[4] || '').split(', ').includes('notes/BIG.md') && Number(em[6]) === Math.round(wantB / 1000)
+     && /⚠ entry cost: notes\/BIG\.md ~ 28k tokens — over the 25k one Read call returns/.test(r.out),
+     's16 цена входа (HC9, #179): документ шага 1 вне ядра — в счёте поимённо, выше 25 тыс. токенов — строка-предупреждение с его именем, код 0',
+     em ? `line=${em[0]} want=${Math.round(wantB / 1000)}k` + (r.out.match(/⚠ entry cost:[^\n]*/) || [' no warning line'])[0] : r.out.slice(-600));
+  writeFileSync(skillPath, skillWas, 'utf8');
+  rmSync(join(S, 'notes'), { recursive: true, force: true });
+}
 unlinkSync(HR);
 
 // ================================================================ (10) задание обновления называет ворота первого закрытия (2.8, CK5.6)

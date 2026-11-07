@@ -16,6 +16,7 @@
     { "line": "skills are English", "word": "count of English skills" },
     { "line": "skills are a MIX", "word": "LANGUAGE MIX" },
     { "line": "ℹ entry cost:", "word": "ENTRY COST" },
+    { "line": "⚠ entry cost:", "word": "ENTRY COST warning line" },
     { "line": "/resume does not name", "word": "the /resume list" },
     { "line": "document(s) missing on disk", "word": "the /resume list" },
     { "line": "⚠ undelivered KAIF signal:", "word": "undelivered signal" },

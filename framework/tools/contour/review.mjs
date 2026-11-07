@@ -59,6 +59,7 @@ import {
   quietNow, ownerSeenAt, // TK10 (c), #193: the owner's presence lifts the quiet hours
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
+import { logPhrase, voiceSoftSelftest } from './voice-soft.mjs';
 
 // ── Constants (canonical defaults DEF; the owner's envelope — depart only by the owner's word) ─
 const ALIVE_INTERVAL_MS = 15000;      // DEF4: page→server pulse, envelope 10–60 s
@@ -350,7 +351,7 @@ export function introduce(phrase, cfg) {
 }
 // OW4 (2.8, #95): the owner's hands or a quick answer outside a page — the CALL, never a line left in the chat he does not watch while the
 // agent works; `dryRun` prints the phrase and the banner and makes no sound
-export function callDoor(root, text, { dryRun = false, log = console.log } = {}) {
+export function callDoor(root, text, { dryRun = false, log = console.log, signal = signalCall } = {}) {
   const cfg = cfgOf(root);
   // 2.10 TK10 (a), origin #191: an agent that addresses the owner the natural way opens the text with his name — the door adds it once,
   // never twice («Name, Name, …» in the field): a leading callName (any case) and the punctuation after it are dropped before the door adds its own.
@@ -367,7 +368,11 @@ export function callDoor(root, text, { dryRun = false, log = console.log } = {})
     log('  sound: ' + callShape());
     return phrase;
   }
-  signalCall(root, phrase, { log });
+  // 2.10, decision №156: what the agent says aloud is kept in the project — voice/<stamp>_<meaning>.txt (voice-soft.mjs); the meaning is
+  // the agent's own text, the file holds the phrase as spoken
+  try { log('voice log: ' + logPhrase(root, phrase, { slug: (lead ? body.replace(lead, '') : body) || body })); }
+  catch (e) { log('voice log: not written — ' + e.message); }
+  signal(root, phrase, { log });
   return phrase;
 }
 
@@ -439,6 +444,7 @@ export function whenVoiceFree(root, then, { tick = VOICE_WAIT_TICK_MS } = {}) {
 }
 export function signalCall(root, rawPhrase, { quiet = null, log = console.log } = {}) {
   const cfg = cfgOf(root);
+  process.env.KAIF_VOICE_LOGGED = '1'; // decision №156: the voice tool a call spawns does not log the phrase again (callDoor already did)
   const qn = quiet === null ? quietNow(new Date(), cfg, ownerSeenAt(root)) : { quiet, lifted: false };   // TK10 (c), #193
   const isQuiet = qn.quiet;
   log('CALL' + (cfg.session ? ' · ' + cfg.session : '') + ': ' + rawPhrase); // C8: plain text to the console — an exit code does not prove a human heard it; OW4: the session
@@ -2142,6 +2148,20 @@ export async function selftest(log = console.log) {
   const words = decisionWords({ answers: { Q1: { choice: 'A' }, Q2: { choice: 'B', text: 'take B,\n  but later', comment: 'the radio does not clear' }, Q3: { text: 'free' } }, comment: 'bug on the page' });
   ok(words === 'Q1 = A, Q2 = B + text «take B, but later» + comment «the radio does not clear», Q3 = text «free», document comment «bug on the page»',
     'CP #128: the waiter\'s line names choice · text · comment · document comment (a choice alone stays "Q1 = A")');
+  { // 2.10, decision №156: --call keeps the agent's phrase in the project's voice log, named by the moment and the meaning; no sound here
+    const r = mkdtempSync(join(tmpdir(), 'kaif-voicelog-'));
+    mkdirSync(join(r, '.kaif'), { recursive: true });
+    writeFileSync(join(r, '.kaif', 'kaif.json'), JSON.stringify({ language: 'en', contour: { callName: 'Kit', ownerName: 'Kit Lee' } }));
+    CFG_CACHE.delete(resolve(r));
+    let signalled = null;
+    const said = callDoor(r, 'Kit, the stand needs its password.', { log: () => {}, signal: (_r, p) => { signalled = p; } });
+    const files = existsSync(join(r, 'voice')) ? readdirSync(join(r, 'voice')) : [];
+    ok(signalled === said && files.length === 1 && /^\d{4}-\d{2}-\d{2}_\d{2}-\d{2}-\d{2}_the-stand-needs-its-password\.txt$/.test(files[0])
+      && readFileSync(join(r, 'voice', files[0]), 'utf8') === said + '\n',
+      '№156: --call writes voice/<YYYY-MM-DD_HH-MM-SS>_<meaning>.txt with the spoken phrase — the meaning is the agent\'s text without the address');
+    rmSync(r, { recursive: true, force: true });
+    ok(voiceSoftSelftest(() => {}) === 0, '№156: the soft voice\'s own selftest (voice log · tuned filter) is green — node voice-soft.mjs --selftest names a red one');
+  }
   { // 2.10, epic TK, step TK9 (origin #178): --mark-shown records only a real file of this project — a flag value is not a document
     const r = mkdtempSync(join(tmpdir(), 'kaif-tk9-'));
     mkdirSync(join(r, 'interviews'), { recursive: true });

@@ -20,14 +20,10 @@
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-// Окружение голоса истока — дефолты ТОЛЬКО здесь (в поставку не едут). Переменная, заданная снаружи,
-// сильнее дефолта; пустая строка выключает движок и оставляет системный голос.
-const VOICE_DEFAULTS = {
-  KAIF_VOICE_TOOL: 'F:\\KLAS\\tools\\voice-say.mjs', // Silero v5 ru — общий «рот» машины владельца
-  KAIF_VOICE: 'eugene',                               // вердикт владельца: «звучит по-человечески, а не роботом»
-  KAIF_SAPI_VOICE: 'Microsoft Irina Desktop',         // предпочтение системного фолбэка (культура ru)
-};
-for (const [k, v] of Object.entries(VOICE_DEFAULTS)) if (process.env[k] === undefined) process.env[k] = v;
+// Окружение голоса истока — дефолты в ОДНОМ месте, `tools/lib/voice-env.mjs` (в поставку не едут): мягкий голос поставки с
+// настройками владельца (№156). Переменная, заданная снаружи, сильнее дефолта; пустая строка выключает движок.
+import { applyVoiceDefaults } from './lib/voice-env.mjs';
+applyVoiceDefaults();
 
 export * from '../framework/tools/contour/review.mjs';
 import { main } from '../framework/tools/contour/review.mjs';

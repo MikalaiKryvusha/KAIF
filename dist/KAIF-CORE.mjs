@@ -4046,16 +4046,33 @@ function cmdCheck() {
   //  known weight adds its tokens; red on the 2.7 core; mutants M19/M20 red on exactly those asserts; functional run on copies of a
   //  field deployment's nine documents: "~ 225k tokens — 23 % of a 1M-token model window" — testcases/reports/2026-09-25_ck59a-entry-cost.md]
   const ASCII_CHARS_PER_TOKEN = 2.5, OTHER_CHARS_PER_TOKEN = 1.9, MODEL_WINDOW_TOKENS = 1000000;
+  // 2.10, epic HC, step HC9 (origin #179, its cheap half; criterion 31, decision №153): the line counts the WHOLE entry, not the nine —
+  // every `- `NAME.md`` bullet of the deployed /resume skill that exists on disk (the internal map, the deployment record … — the field
+  // entry was ≈ 140k tokens while the line said 112k), and the skill file itself. EXPERIENCE.md is recalled by grep, never read whole,
+  // and stays out. A document over ENTRY_READ_CAP_TOKENS is named on a line of its own: Claude Code's Read returns at most 25,000 tokens
+  // per call (the ticket's field quote «36621 tokens, cap 25000»; seen again at the origin on 2026-11-07, «44283 tokens, cap 25000»), so
+  // that document is read in parts — and a part is where a resuming session stops reading. Reference, never a stop.
+  // [TESTED: 2026-11-07 · s16 section (9) 3/3, red on the previous build; on a clone of the #179 field deployment 99k → 112k with two documents
+  //  named and AGENT_GUIDE.md warned — testcases/reports/2026-11-07_hc9-entry-cost-whole-entry.md]
+  const ENTRY_READ_CAP_TOKENS = 25000, ENTRY_GREPPED = new Set(['EXPERIENCE.md']), ENTRY_SKILL = '.claude/skills/resume/SKILL.md';
   const entryCore = Object.keys(DOC_BUDGETS).filter((d) => okOnDisk(d));
   const entryHouse = okOnDisk('HOUSE_RULES.md');
+  const entryNamed = okOnDisk(ENTRY_SKILL)
+    ? [...new Set([...readFileSync(ENTRY_SKILL, 'utf8').matchAll(/^\s*- `([A-Za-z0-9_./-]+\.md)`/gm)].map((m) => m[1]))] : [];
+  const entryExtra = entryNamed.filter((d) => !entryCore.includes(d) && d !== 'HOUSE_RULES.md' && !ENTRY_GREPPED.has(d) && okOnDisk(d));
+  const entrySkill = okOnDisk(ENTRY_SKILL);
   if (entryCore.length) {
-    let entryTokens = 0;
-    for (const d of entryHouse ? [...entryCore, 'HOUSE_RULES.md'] : entryCore) {
+    const tokensOf = (d) => {
       let ascii = 0, other = 0;
       for (const ch of readFileSync(d, 'utf8')) { if (ch.charCodeAt(0) < 128) ascii++; else other++; }
-      entryTokens += ascii / ASCII_CHARS_PER_TOKEN + other / OTHER_CHARS_PER_TOKEN;
-    }
-    console.error(`ℹ entry cost: /resume reads ${entryCore.length} re-read core document(s)${entryHouse ? ' + HOUSE_RULES.md' : ''} ~ ${Math.round(entryTokens / 1000)}k tokens — ${Math.round((entryTokens * 100) / MODEL_WINDOW_TOKENS)} % of a 1M-token model window (reference, never a stop; ~ ${ASCII_CHARS_PER_TOKEN} ASCII / ${OTHER_CHARS_PER_TOKEN} other characters per token)`);
+      return ascii / ASCII_CHARS_PER_TOKEN + other / OTHER_CHARS_PER_TOKEN;
+    };
+    const entryDocs = [...entryCore, ...(entryHouse ? ['HOUSE_RULES.md'] : []), ...entryExtra, ...(entrySkill ? [ENTRY_SKILL] : [])];
+    const perDoc = entryDocs.map((d) => [d, tokensOf(d)]);
+    const entryTokens = perDoc.reduce((t, [, n]) => t + n, 0);
+    console.error(`ℹ entry cost: /resume reads ${entryCore.length} re-read core document(s)${entryHouse ? ' + HOUSE_RULES.md' : ''}${entryExtra.length ? ` + ${entryExtra.length} more of its step 1 (${entryExtra.join(', ')})` : ''}${entrySkill ? ' + the skill itself' : ''} ~ ${Math.round(entryTokens / 1000)}k tokens — ${Math.round((entryTokens * 100) / MODEL_WINDOW_TOKENS)} % of a 1M-token model window (reference, never a stop; ~ ${ASCII_CHARS_PER_TOKEN} ASCII / ${OTHER_CHARS_PER_TOKEN} other characters per token)`);
+    for (const [d, n] of perDoc) if (n > ENTRY_READ_CAP_TOKENS)
+      console.error(`⚠ entry cost: ${d} ~ ${Math.round(n / 1000)}k tokens — over the ${ENTRY_READ_CAP_TOKENS / 1000}k one Read call returns, so /resume reads it in parts (reference, never a stop) — move its reference sections out: the budget row of a core document names where, any other goes by the router`);
   }
   // The re-read core ↔ the /resume ritual (2.7, epic TR; origin issue #59 + the 2.7 scope recon: a
   // field /resume opened 5 of the 9 re-read core documents and nobody said a word — the skill's
