@@ -238,19 +238,27 @@ export function compilePattern(cell, extraFlags = 'g') {
 // ---------------------------------------------------------------------------
 // parsePortrait(text) → { status: ok | no-section | no-table | no-rules, rules, notes, tables }
 // rule = { line, source, re, cls: stop | positive, hint, exception (prose or regex text), excRe }
+// 2.10, epic HC, step HC1 (origin #116): EVERY section 8 of the file is read, not the first one. After the update item `owner-voice-core`
+// a portrait is a local genre shell above the release snapshot, each with its own numbered sections - the shell's section 8 came first, its
+// old table lacked the pattern/hint columns, and the snapshot's well-formed table was never reached (SKIPPED, exit 3). Rules gather from
+// every recognised section-8 table; a pattern already gathered is not added twice; a foreign table stays a note, it no longer hides the next.
+// [TESTED: 2026-11-07 \u00B7 selftest 66 (two HC1 cases); s26 shell-over-snapshot case, red on the previous module; a copy of the real #116 field
+//  portrait: 21 stop rules applied (the previous module: SKIPPED, exit 3); report testcases/reports/2026-11-07_hc1-voice-lint-every-s8.md]
 export function parsePortrait(text) {
   const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/);
-  let start = -1;
+  const starts = [];
   for (let i = 0; i < lines.length; i++) {
     const m = H2.exec(lines[i]);
     if (!m) continue;
-    if (Object.values(KEYWORDS).some((k) => k.section.test(m[1])) || SECTION_NUMBER.test(m[1])) { start = i; break; }
+    if (Object.values(KEYWORDS).some((k) => k.section.test(m[1])) || SECTION_NUMBER.test(m[1])) starts.push(i);
   }
-  if (start < 0) return { status: 'no-section', rules: [], notes: [], tables: 0 };
+  if (!starts.length) return { status: 'no-section', rules: [], notes: [], tables: 0, sections: 0 };
+  const rules = [], notes = [], seen = new Set();
+  let tables = 0, recognised = 0;
+  for (const start of starts) {
   let end = lines.length;
   for (let i = start + 1; i < lines.length; i++) if (ANY_H2.test(lines[i])) { end = i; break; }
-  const rules = [], notes = [];
-  let tables = 0, recognised = 0, i = start + 1;
+  let i = start + 1;
   while (i < end) {
     if (!TABLE_ROW.test(lines[i])) { i++; continue; }
     const block = [];
@@ -285,12 +293,17 @@ export function parsePortrait(text) {
         try { excRe = new RegExp(unicodeBody(em[1]), 'u' + (em[2].includes('i') ? 'i' : '')); }
         catch (e) { notes.push(`row at line ${row.n}: the exception regex does not compile — ${e.message}`); }
       }
+      const key = cls + '\u0000' + source;
+      if (seen.has(key)) continue;                                           // the same pattern in a second §8 — gathered once
+      seen.add(key);
       rules.push({ line: row.n, source, re, cls, hint, exception, excRe, labels: labelsOf(hint) });
     }
   }
-  if (!recognised) return { status: 'no-table', rules: [], notes, tables };
-  if (!rules.length) return { status: 'no-rules', rules: [], notes, tables };
-  return { status: 'ok', rules, notes, tables };
+  }
+  const sections = starts.length;
+  if (!recognised) return { status: 'no-table', rules: [], notes, tables, sections };
+  if (!rules.length) return { status: 'no-rules', rules: [], notes, tables, sections };
+  return { status: 'ok', rules, notes, tables, sections };
 }
 
 // A portrait cut into its head (the lines before the first H2) and its H2 sections, in file order: { head, sections: [{ title, lines }] }.
@@ -657,6 +670,16 @@ function selftest() {
   say(parsePortrait(NO_S8).status === 'no-section', 'a portrait without §8 → no-section');
   const fc = parsePortrait(FOREIGN_COLUMNS);
   say(fc.status === 'no-table' && fc.tables === 1 && fc.notes.length === 1 && /lacks the pattern\/hint columns/.test(fc.notes[0]), 'a §8 table without the hint column → no-table, and the header is named');
+  // HC1 (#116): a local genre shell with its own old-shape §8 ABOVE the release snapshot — the snapshot's §8 is read, the shell's table is a
+  // note; a pattern both §8 tables carry is one rule
+  const SHELL_OVER_SNAPSHOT = '# Genre shell\n\n## 8. Old machine heuristics\n\n| rule | pattern (ripgrep) | comment |\n|---|---|---|\n| x | `\\bfoo\\b` | 0 |\n\n'
+    + '# Portrait snapshot\n\n## 0. Bans\n\nban\n\n## 8. Machine heuristics\n\n| pattern | class | hint | exception |\n|---|---|---|---|\n'
+    + '| `\\bdonc\\b` | stop | drop it | — |\n| `\\bvoila\\b` | stop | name the thing | — |\n';
+  const so = parsePortrait(SHELL_OVER_SNAPSHOT);
+  say(so.status === 'ok' && so.rules.length === 2 && so.sections === 2 && so.notes.length === 1 && /lacks the pattern\/hint columns/.test(so.notes[0]),
+    `HC1 #116: a genre shell's old §8 above the snapshot — the snapshot's 2 rules are read, the shell's table is a note (got ${so.status}, ${so.rules.length} rule(s), ${so.sections} §8)`);
+  const twice = parsePortrait(NUMBERED_ONLY + '\n## 8. Machine heuristics again\n\n| pattern | class | hint | exception |\n|---|---|---|---|\n| `\\bdonc\\b` | stop | drop it | — |\n');
+  say(twice.status === 'ok' && twice.rules.length === 1, `HC1 #116: one pattern in two §8 tables is one rule (got ${twice.rules.length})`);
   say(parsePortrait(NUMBERED_ONLY).status === 'ok', 'a §8 in a third language is found by its number');
   const nb = parsePortrait(NB_PORTRAIT).rules;
   say(lintText('a.md', 'открытый\n', nb).findings.length === 1 && lintText('a.md', 'а ты б\n', nb).findings.length === 0, '\\B is Unicode-aware — «ты» inside «открытый» is a hit, a standalone «ты» is not');

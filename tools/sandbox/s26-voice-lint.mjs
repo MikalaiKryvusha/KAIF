@@ -131,6 +131,19 @@ for (const lang of ['en', 'ru']) {
   r = runLint('check fenced.md', P);
   ok(r.code === 0 && /0 findings/.test(r.out), `s26 ${lang}: код-фенс невидим`, r.out);
 }
+// --- 2.10 HC1 (#116): портрет после пункта `owner-voice-core` — локальная оболочка жанров со СВОИМ старым §8 (таблица без колонок
+// паттерна/подсказки) НАД слепком с правильным §8; до HC1 линтер читал только первый §8 и отвечал SKIPPED (код 3) — правила слепка не судили
+{
+  const SH = join(ROOT, 'shell');
+  mkdirSync(join(SH, 'sheet'), { recursive: true });
+  writeFileSync(join(SH, 'AUTHOR_STYLOMETRY.md'), '# Genre shell — lore\n\n## 8. Old machine heuristics\n\n| rule | pattern (ripgrep) | comment |\n|---|---|---|\n| x | `\\bfoo\\b` | 0 |\n\n' + PORTRAIT.en);
+  r = runLint('load', SH);
+  ok(r.code === 0, 's26 HC1 (#116): оболочка жанров над слепком — load проходит', r.out);
+  writeFileSync(join(SH, 'sheet', 'steps.md'), STEPS.en);
+  r = runLint('check sheet/steps.md', SH);
+  ok(r.code === 1 && HIT_LINE.en.test(r.out) && /against AUTHOR_STYLOMETRY\.md §8 \(2 stop rule\(s\)/.test(r.out) && !/SKIPPED/.test(r.out),
+    's26 HC1 (#116): оболочка со старым §8 над слепком — check судит по правилам слепка (2 стоп-правила, попадание названо), не SKIPPED', r.out);
+}
 // --- load --sections: только совпавшие разделы (голова портрета всегда едет); без совпадений и без значения — usage, свидетель не тронут
 const EN = join(ROOT, 'en');
 r = runLint('load --sections "^8"', EN);
