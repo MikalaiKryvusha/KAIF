@@ -374,6 +374,13 @@ const DOC = 'interviews/interview_066_probe.md';
 writeFileSync(join(D, DOC), GOOD_052.replace('#052', '#066'));
 const DLOCK = join(D, 'interviews', 'decisions', 'interview_066_probe.lock');
 const wait = (ms) => new Promise((res) => setTimeout(res, ms));
+// bugs/136: wait for a STATE, not for seconds — under a loaded machine (a game on ≈ 8 cores) the fixed waits of part (5) went red in the full
+// polygon and green alone; resolves with the milliseconds waited, or -1 when the cap passed (the assert after it judges the state anyway)
+const waitUntil = async (pred, capMs = 15000, stepMs = 100) => {
+  const t0 = Date.now();
+  while (Date.now() - t0 < capMs) { if (await pred()) return Date.now() - t0; await wait(stepMs); }
+  return -1;
+};
 // (1) LP4 / критерий 20: незнакомый флаг — отказ кодом 1 ДО страницы, звука и зова (2.6 поднимала страницу и звала)
 r = runGen(D, [DOC, '--wat']);
 ok(r.code === 1 && /unknown flag: --wat/.test(r.out) && !/Page is up|CALL:|Shown recorded/.test(r.out),
@@ -390,7 +397,8 @@ const pHold = await freePort();
 const HOLD_ID = createHash('sha256').update('kaif-contour:tok').digest('hex').slice(0, 32);
 const holder = spawn(process.execPath, ['-e', "var h=require('http');h.createServer(function(q,r){if(q.url==='/whoami'){r.setHeader('Content-Type','application/json');r.end(JSON.stringify({kaif:'contour',id:'" + HOLD_ID + "'}))}else if(q.method==='POST'&&q.url.indexOf('/close?t=tok')===0){r.end('{}');setTimeout(function(){process.exit(0)},50)}else{r.statusCode=404;r.end()}}).listen(" + pHold + ",'127.0.0.1')"], { stdio: 'ignore' });
 let holderExit = null; holder.on('exit', (c, s) => { holderExit = c ?? s ?? 'gone'; });
-await wait(600); // the holder's server is listening
+// bugs/136 twin: the holder's server is asked, not assumed to listen after 600 ms
+await waitUntil(async () => { try { return (await fetch('http://127.0.0.1:' + pHold + '/whoami')).ok; } catch { return false; } }, 15000);
 const lockObj = (extra) => JSON.stringify({ pid: holder.pid, url: 'http://127.0.0.1:' + pHold + '/', startedAt: '2026-09-18T09:00:00+03:00',
   doc: DOC, title: 'Interview #066 — проба', closeToken: 'tok', ...extra }) + '\n';
 // (2а) the DEFAULT threshold is 180 s — observed in a deployment with NO contour.closeQuietMs (section A's tree); a mutant
@@ -428,7 +436,7 @@ ok(r.code === 1 && /refusing --force: it needs --owner-word/.test(r.out) && hold
      's22 D: страница по адресу замка не отвечает → --close НЕ убивает pid из файла (код 4; свод жив — он и был этим pid)', 'exit ' + r.code + ': ' + r.out.slice(-300)); }
 writeFileSync(DLOCK, lockObj({ lastInputAt: Date.now() - 400000, draftFields: 0, saved: true }));
 r = runGen(D, [DOC, '--close']);
-await wait(800);
+await waitUntil(() => holderExit !== null && !existsSync(DLOCK), 15000); // bugs/136 twin: the holder's end, not 800 ms
 ok(r.code === 0 && /^closed interviews\/interview_066_probe\.md \(port /m.test(r.out) && /its own server ended it/.test(r.out) && holderExit === 0 && !existsSync(DLOCK),
    's22 D: ввод старше порога, ответ записан → «closed <док> … its own server ended it»: сервер завершился САМ (код 0 держателя), замок снят', 'exit ' + r.code + ' holder ' + holderExit + ': ' + r.out.slice(-300));
 try { holder.kill(); } catch { /* already gone */ }
@@ -448,7 +456,7 @@ const spawnGen = (cwd, args, extra = {}) => {
 const gen1 = spawnGen(D, [DOC, '--no-open', '--silent'], { KAIF_CONTOUR_SILENCE_MS: '20000' }); // 20 s of tolerated silence — the page has no pulse here
 const url1 = await gen1.url;
 await fetch(url1 + 'alive?i=1000&d=1&s=0');
-await wait(300);
+await waitUntil(() => { try { return 'lastInputAt' in JSON.parse(readFileSync(DLOCK, 'utf8')); } catch { return false; } }, 15000); // bugs/136 twin
 const lock1 = JSON.parse(readFileSync(DLOCK, 'utf8'));
 ok(lock1.pid === gen1.child.pid && lock1.doc === DOC && typeof lock1.lastInputAt === 'number' && lock1.draftFields === 1 && lock1.saved === false && /Interview #066/.test(lock1.title),
    's22 D: пульс /alive?i=1000&d=1&s=0 → замок несёт pid · doc · title · lastInputAt · draftFields · saved (LP1)', JSON.stringify(lock1));
@@ -457,7 +465,7 @@ ok(r.code === 4 && /the owner is typing; not closed/.test(r.out) && gen1.exit() 
    's22 D: настоящий генератор: --close из другого процесса читает замок и ОТКАЗЫВАЕТ при вводе 1 с назад', 'exit ' + r.code + ': ' + r.out.slice(-300));
 await wait(CLOSE_QUIET_MS + 500); // the page grows older than the threshold
 await fetch(url1 + 'alive?i=500000&d=0&s=1');
-await wait(300);
+await waitUntil(() => { try { return Date.now() - JSON.parse(readFileSync(DLOCK, 'utf8')).lastInputAt > 400000; } catch { return false; } }, 15000); // bugs/136 twin
 r = runGen(D, [DOC, '--close']);
 // суд RL 2.8, B-F4: мигающий красный — фиксированные 1,5 с иногда меньше, чем нужно генератору, чтобы завершиться самому, а провал не
 // печатал вывод генератора; теперь ждём его выхода и снятия замка до 10 с, и провал называет, что генератор сказал
@@ -480,9 +488,12 @@ if (!exe) {
   const TEXT = 'Ответ владельца пережил сервер ' + Date.now(); // «Ответ владельца пережил сервер N» — кириллица кодами (EXP-0135)
   const typed = await page.evaluate("(function(){var t=document.getElementsByName('text:" + DOC + ":Q1')[0];t.value=" + JSON.stringify(TEXT) + ";t.dispatchEvent(new Event('input',{bubbles:true}));return t.value})()");
   ok(typed === TEXT, 's22 D: headless-страница на профиле проекта — текст введён в поле Q1 (событие input → черновик в localStorage)', String(typed).slice(0, 80));
-  gen2.child.kill(); await wait(1000); // сервер мёртв — как в тикете #66
+  gen2.child.kill(); // сервер мёртв — как в тикете #66; bugs/136: ждём, пока процесс действительно завершился, а не секунду
+  const killedIn = await waitUntil(() => gen2.exit() !== null, 15000);
+  console.log('  · s22 D: the server process ended in ' + killedIn + ' ms (-1 = not within 15 s)');
   ok(gen2.exit() !== null && existsSync(DLOCK), 's22 D: сервер убит, замок остался (stale — порт помнит origin)', 'gen ' + gen2.exit());
-  const st = await page.evaluate("(function(){document.querySelector('#save').click();return new Promise(function(r){setTimeout(function(){r(document.querySelector('#status').textContent+'|'+document.querySelector('#banner').textContent+'|'+document.querySelector('#banner').className+'|'+(localStorage.getItem('owner-review:" + DOC + ":__submitted')?'submitted':'none'))},700)})})()");
+  // bugs/136: the status is polled until «Записываю…» gives way (the write failed over to the machine), cap 15 s — not read at a fixed 700 ms
+  const st = await page.evaluate("(function(){document.querySelector('#save').click();return new Promise(function(r){var t0=Date.now();(function poll(){var s=document.querySelector('#status').textContent;if(/^Записываю/.test(s)&&Date.now()-t0<15000){setTimeout(poll,100);return;}r(s+'|'+document.querySelector('#banner').textContent+'|'+document.querySelector('#banner').className+'|'+(localStorage.getItem('owner-review:" + DOC + ":__submitted')?'submitted':'none'))})()})})()");
   // CP (2.9, #125 — находка F1 судьи CP): полный текст «сохранён на этом компьютере» — в зелёной полосе над страницей, в пилюле —
   // короткая метка «Сохранено на этом компьютере» (пилюля в шесть строк закрывала заголовок документа); ассерт читал пилюлю
   ok(/^Сохранено на этом компьютере\|[^|]*сохранён на этом компьютере[^|]*\|ok\|submitted$/.test(st),
@@ -497,6 +508,11 @@ if (!exe) {
   page.close();
   await wait(2000);
   r = runGen(D, ['--queue', '--list']);
+  // bugs/136: a loaded machine releases the browser's profile later than 2 s — while the page says «recovery deferred» (the browser still
+  // holds the profile), the owner's path is the NEXT --queue --list; it is repeated until the profile is free, cap ≈ 20 s, the wait printed
+  { const t0 = Date.now(); let tries = 1;
+    while (/recovery deferred: a browser still holds the project profile/.test(r.out) && Date.now() - t0 < 20000) { await wait(1500); r = runGen(D, ['--queue', '--list']); tries++; }
+    console.log('  · s22 D: the profile was free for recovery after ' + tries + ' --queue --list run(s), ' + (Date.now() - t0) + ' ms'); }
   const dec = join(D, 'interviews', 'decisions', 'interview_066_probe.decision.json');
   ok(/answer recovered from the owner's machine: interviews\/interview_066_probe\.md — 1 answer\(s\)/.test(r.out) && /from indexedDB/.test(r.out) && existsSync(dec),
      's22 D: после ЖЁСТКОГО убийства браузера --queue --list забрал ответ безоконно ИЗ IndexedDB: «answer recovered … from indexedDB», decision.json есть', 'exit ' + r.code + ': ' + r.out.slice(-400));
@@ -521,7 +537,7 @@ if (!exe) {
   const tab = await headlessPage(url3, { profileDir: foreign, extraArgs: ['--disable-features=msImplicitSignin,msEdgeSyncConsent,msEdgeFirstSyncOnFirstRun'] });
   const TEXT3 = 'Ответ во вкладке ' + Date.now();
   await tab.evaluate("(function(){var t=document.getElementsByName('text:" + DOC_TAB + ":Q1')[0];t.value=" + JSON.stringify(TEXT3) + ";t.dispatchEvent(new Event('input',{bubbles:true}));return t.value})()");
-  gen3.child.kill(); await wait(1000);
+  gen3.child.kill(); await waitUntil(() => gen3.exit() !== null, 15000); // bugs/136 twin: the process ended, not one second
   const st3 = await tab.evaluate("(function(){document.querySelector('#save').click();return new Promise(function(res){var t0=Date.now();(function poll(){var ring=document.querySelector('#rescue');" +
     "if((ring.style.display==='block'&&document.querySelector('#rescuetext').value)||/сохранен/i.test(document.querySelector('#status').textContent)||Date.now()-t0>7000){res(JSON.stringify({status:document.querySelector('#status').textContent,banner:document.querySelector('#banner').textContent," +
     "ring:ring.style.display,ringText:document.querySelector('#rescuetext').value,submitted:!!localStorage.getItem('owner-review:" + DOC_TAB + ":__submitted'),saveEnabled:!document.querySelector('#save').disabled," +
@@ -546,8 +562,14 @@ if (!exe) {
   const decP = () => (existsSync(DEC_P) ? JSON.parse(readFileSync(DEC_P, 'utf8')) : {});
   const spawnWait = () => {
     const c = spawn(process.execPath, [join(D, '.kaif', 'tools', 'contour', 'review.mjs'), '--wait', DOC_P], { cwd: D, env: quietEnv(), stdio: ['ignore', 'pipe', 'pipe'] });
-    let o = ''; c.stdout.on('data', (d) => { o += d; }); c.stderr.on('data', (d) => { o += d; });
-    return new Promise((res) => { c.on('exit', (code) => res({ code, out: o })); setTimeout(() => { try { c.kill(); } catch { /* gone */ } res({ code: 'timeout', out: o }); }, 20000); });
+    let o = '';
+    // bugs/136: `.ready` resolves when the waiter SAYS it watches («Waiting for the next recorded answer») — a fixed 500 ms let a slow start
+    // under a loaded machine miss the record and die on its timeout; cap 15 s
+    let markReady; const ready = new Promise((r) => { markReady = r; setTimeout(r, 15000); });
+    const seen = (d) => { o += d; if (/Waiting for the next recorded answer/.test(o)) markReady(); };
+    c.stdout.on('data', seen); c.stderr.on('data', seen);
+    const done = new Promise((res) => { c.on('exit', (code) => res({ code, out: o })); setTimeout(() => { try { c.kill(); } catch { /* gone */ } res({ code: 'timeout', out: o }); }, 20000); });
+    return Object.assign(done, { ready });
   };
   const gen4 = spawnGen(D, [DOC_P, '--no-open', '--silent'], { KAIF_CONTOUR_SILENCE_MS: '120000' });
   const url4 = await gen4.url;
@@ -576,7 +598,7 @@ if (!exe) {
   ok(Math.abs(zm.h - 1.7) < 0.01 && (Math.abs(zm.h * zm.s - 1.5) < 0.03 || Math.abs(zm.s - 1.5) < 0.03),
      's22 D: страница в окне владельца — масштаб 1,7 от базового размера браузера, кнопка «Записать» — 1,5 (#106)', 'zoom ' + zoomed);
   // Q1
-  const w1 = spawnWait(); await wait(500);
+  const w1 = spawnWait(); await w1.ready;
   await pick('Q1', 'A'); await clickSave();
   const st1 = await statusOf('/Осталось вопросов: 2/');
   const r1 = await w1;
@@ -586,7 +608,7 @@ if (!exe) {
      'status «' + st1 + '» gen ' + gen4.exit() + ' wait ' + r1.code + ': ' + r1.out.slice(-200));
   ok(fold1 === 'folded', 's22 D: отвеченный Q1 свёрнут в «архив решённого», живые вопросы — первыми (OW6)', String(fold1));
   // Q2
-  const w2 = spawnWait(); await wait(500);
+  const w2 = spawnWait(); await w2.ready;
   await pick('Q2', 'B'); await clickSave();
   const st2 = await statusOf('/Осталось вопросов: 1/');
   const r2 = await w2;
