@@ -132,6 +132,7 @@ import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { auditFixedTempNames, selfProof } from './lib/temp-root.mjs';
 import { scanSuite } from './sandbox-mute-guard.mjs';
+import { takePolygonLock } from './lib/polygon-lock.mjs'; // EXP-0206: a build refuses while this run lives
 import { distFreshness } from './lib/source-tree-sha.mjs'; // LP (2.7): refuse a STALE dist before the first suite
 
 // s09 doctrine for this runner too (court RL 2.6, findings A-F1 / C-F7: `--help` used to start the FULL polygon):
@@ -293,6 +294,7 @@ if (!process.env.KAIF_DIST) {
     process.exit(1);
   }
 }
+takePolygonLock(REPO); // EXP-0206: `node tools/build-framework.mjs` refuses while this run holds .kaif/polygon.lock
 console.log(`✅ preflight: run roots are unique by construction · no assertion that can never fail · no mute command · every machinery file carries a test-status marker · the contour generator never reaches the owner from a sandbox run · dist is fresh against framework/ (${SUITES.length} suites)`);
 
 // Упавший свод называется ПОИМЁННО с кодом/сигналом (bugs/61, наблюдение 2026-08-21): прежний

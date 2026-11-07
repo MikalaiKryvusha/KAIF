@@ -62,3 +62,5 @@ tools/.review-tmp/
 # профиль окна контура владельца в папке проекта (2.7, эпик LP, #66): черновик и локально записанный ответ —
 # состояние на диске владельца, не история; строка стоит ДО первого окна (правило «сначала ignore, потом инструмент»)
 .kaif/contour-window/
+# polygon lock (EXP-0206): the running npm run test:core holds it; a build refuses while its owner lives
+.kaif/polygon.lock

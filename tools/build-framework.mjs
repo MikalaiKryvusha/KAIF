@@ -23,10 +23,22 @@ import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { mapFile, validateOverrides } from './module-map-lib.mjs';
+import { polygonRunning } from './lib/polygon-lock.mjs'; // EXP-0206
 import { sourceTreeSha } from './lib/source-tree-sha.mjs'; // LP (2.7): the dist fingerprint the polygon checks for staleness
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const FW = join(ROOT, 'framework');
+
+// EXP-0206 (session 99): a build in the middle of a polygon run changes dist under it, and the run stops being evidence («17 of 28 suites
+// FAILED» on one shared cause). The running `npm run test:core` holds .kaif/polygon.lock; the build refuses while its owner lives.
+// [TESTED: 2026-11-07 · a live polygon → exit 1 naming its pid; after the run → builds — testcases/reports/2026-11-07_polygon-lock.md]
+{
+  const held = process.env.KAIF_BUILD_UNDER_POLYGON === '1' ? null : polygonRunning(ROOT);
+  if (held) {
+    console.error(`❌ build refused: the polygon is running (pid ${held.pid}, since ${held.at}) — a build now changes dist under it and the run stops being evidence; wait for it to end (EXP-0206), or KAIF_BUILD_UNDER_POLYGON=1 on purpose`);
+    process.exit(1);
+  }
+}
 
 // A 6-backtick fence safely wraps template content that itself uses up to
 // 3-backtick code fences (and nested examples), so nothing leaks out.
