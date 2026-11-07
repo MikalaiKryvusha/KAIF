@@ -731,11 +731,19 @@ const stableValues = () => {
     if (v['<SHORT_NAME>'] === v['<PROJECT_NAME>']) v['<SHORT_NAME>'] = canon;   // a distinct short form stays the owner's
     v['<PROJECT_NAME>'] = canon;
   }
+  // 2.10, epic HC, step HC4 (bugs/130, origin #135 R1; the KAIF owner's answer — origin interview №048, Q1 = A, decision №157): an
+  // ANONYMOUS deployment writes no git name — `<AUTHOR>` is the neutral words, over a value an older version froze into the manifest too
+  if (ANON) v['<AUTHOR>'] = ANON_OWNER_WORDS;
   return v;
 };
+// The neutral words of an anonymous deployment; the creed reads them in its own capitals (THE PROJECT OWNER'S VISION) and the agent renders
+// them in the owner's language with the rest of the creed — a substituted name could not be declined (Russian «в замысел <name>»)
+// [TESTED: 2026-11-07 · s04 S13 green, red on the previous build; the real git identity of the owner's machine — 0 deployed files — testcases/reports/2026-11-07_hc4-anon-owner-name.md]
+const ANON_OWNER_WORDS = 'the project owner';
 
 function fillPlaceholders(content, values, unresolved) {
   let out = content;
+  if (values['<AUTHOR>'] === ANON_OWNER_WORDS) out = out.split("<AUTHOR>'S").join("THE PROJECT OWNER'S");
   for (const [ph, v] of Object.entries(values)) {
     if (!out.includes(ph)) continue;
     if (v) out = out.split(ph).join(v);
@@ -2857,8 +2865,8 @@ function warnSphereLibrary() {
 // anonymous deployments: grep for author identity BEFORE cleanup. Two bug-13 lessons baked in:
 // (1) scan ONLY the paths the machinery deployed (manifest paths+agents) — a whole-tree walk
 //     once flagged the owner's name in his own JIRA dumps 44 times and froze the update;
-// (2) exclude token clusters matching the PROJECT OWNER's identity (git user.name — the same
-//     value the machinery itself substitutes for <AUTHOR>): the owner's name is not a leak,
+// (2) exclude token clusters matching the PROJECT OWNER's identity (git user.name — the value a STANDARD deployment
+//     substitutes for <AUTHOR>; an anonymous one writes the neutral words since 2.10, decision №157): the owner's name is not a leak,
 //     and the author deploying his own framework is the guaranteed collision case.
 function anonLeakScan() {
   const ownerId = sh('git config user.name').toLowerCase();

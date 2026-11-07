@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "3415cd8597e3a40b899a8b36befc23992d593aa41cba99b288f76116e76b3dd6",
+    "sourceTree": "b48df078334cffd8fce72b143ada43e827c3343ae61c9a5927d2254f10de5914",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -114,6 +114,7 @@
       "YOU WROTE CODE — RUN IT BEFORE YOU STOP (2.10, epic HC; origin tickets #175 · #176 — two field deployments of one owner carried their own testing hook; the owner, rendered from Russian: \"the agent wrote code → the hook ORDERS it tested\" · \"the agent does not ask the owner's permission\"): the refresh-hooks module ships a tenth script, `.kaif/hooks/test-after-code.mjs` — a write of a file that changes the product becomes a test debt, only a run of its own kind clears it (a build, a linter, `--check`, `--help`, a heredoc body never do), and the stop of a turn with debt is refused once with the list; a repeated stop with nothing new written passes. Without project data it judges source files and clears a file by running it; a project that has a game, a device or a deploy names its kinds, runs and deploys in `.kaif/kaif.json` → `testHook`. `wire-hooks` adds it under `PostToolUse` and `Stop`; a project that carried its own testing hook keeps only its kinds and patterns as data.",
       "THE STAND IS THE AGENT'S (2.10, epic HC; origin ticket #189 — the KAIF owner on a field project, rendered from Russian: \"the whole machine with the game is yours — set up for yourself whatever you need\"): the testing canon says it in «What the word \"test\" means», item 4 — the test's conditions are built by the agent with what its machine allows, an unobserved case is reported with the stand step done next, never as «needs a stand» handed to the owner; `/fable-judge` hunts «Closed as \"needs a stand\"». A project whose house rules already say it keeps them; nothing to migrate.",
       "POINTERS FOLLOW THE ROWS 2.8 MOVED (2.10, epic HC; origin ticket #119, second case): the harness rule of the bug-fixing canon now writes a new harness command's row into `HOUSE_RULES.md` → \"Stands, environments and devices\" (it said \"document it in AGENT_GUIDE.md\"), and `/code-revision`, `/autoloop` and `/resume` point at the house-rules tables, not the guide; the build refuses the old forms. MIGRATION — agent work: none, unless your own texts repeat one of these pointers.",
+      "AN ANONYMOUS DEPLOYMENT WRITES NO GIT NAME (2.10, epic HC, step HC4; origin ticket #135 R1 — a field anonymous install wrote the owner's git name into the creed and the deploy manifest; the KAIF owner's decision, rendered from Russian: \"neutral words instead of the name\"): with `--mode anonymous`, `<AUTHOR>` is \"the project owner\" — the creed reads «BELIEVE IN THE PRODUCT AND IN THE PROJECT OWNER'S VISION», the identity table «the project owner» — also over a name an older version froze into the deploy manifest; the contour does not take those words for a name to call. MIGRATION — agent work: an anonymous deployment whose creed or identity row already carries the git name — it is the owner's text: offer the neutral words, change it only with the owner's word; standard deployments: none.",
       "THE ENTRY COST COUNTS THE WHOLE ENTRY (2.10, epic HC, step HC9; origin ticket #179, its cheap half — a field /resume read ≈ 140k tokens while the line said 112k): `check` → `ℹ entry cost` now adds every document the deployed `/resume` names as a bullet beyond the re-read core (by name; `EXPERIENCE.md` is grepped and stays out) and the skill file itself; a document over 25k tokens — more than one Read call of Claude Code returns — is named on a `⚠ entry cost:` line of its own. Reference, never a stop. MIGRATION — agent work: none; a named document is a candidate for moving its reference sections out.",
       "WHAT THE AGENT SAYS ALOUD IS KEPT IN THE PROJECT, AND THE SOFT VOICE SHIPS (2.10; decision №156 of the origin — the KAIF owner, rendered from Russian: \"what the agent wants to say it writes into a txt file — I see it in the harness window and it stays in the project history; put these phrases into a separate folder of the project, name the files by the current time, date and the meaning of what was said\" · \"the voice tuned on a field project — take those settings\"): the contour gains `.kaif/tools/contour/voice-soft.mjs`. `review.mjs --call` writes its phrase to `voice/<YYYY-MM-DD_HH-MM-SS>_<meaning>.txt` (`contour.voiceLog` names another folder); the guide's call line tells the agent to write a phrase file there first and speak it with `voice-soft.mjs --file <it> --play`; the tool names the file by the machine's clock. The same tool is a soft voice that honours the KAIF_VOICE_TOOL contract: an engine from `KAIF_VOICE_RENDER` or `KAIF_VOICE_BASE_TOOL` renders, and ffmpeg applies tempo 0.90, bass +6 dB at 140 Hz, a 4200 Hz lowpass, 1 s of silence first, the beeps at ×2.5 and 2 s before the words. MIGRATION — agent work: if the project already speaks through its own soft-voice script, point `KAIF_VOICE_TOOL` at `.kaif/tools/contour/voice-soft.mjs` only after the owner hears it; commit `voice/` (it is the project's history, not a temp folder)."
     ],
@@ -3663,7 +3664,10 @@ is behaviour.
 de-expanded; no origin field, no core kept after self-clean. The deploy manifest carries no origin
 and SURVIVES — the next bootstrap classifies mechanically. The leak scan covers only
 machinery-deployed paths and excludes token clusters matching the project owner's own identity:
-the owner's name is not a leak.
+the owner's name is not a leak. And since 2.10 (epic HC; origin #135 R1, the KAIF owner's decision of interview 048 of the
+origin) an anonymous deployment does not WRITE the owner's git name either: `<AUTHOR>` is the neutral words "the project owner" —
+the creed reads THE PROJECT OWNER'S VISION and the agent renders it in the owner's language — over a value an older version froze
+into the deploy manifest too; the login inside the remote URL is stripped in every mode.
 
 ## 12. Schemas
 
@@ -10720,7 +10724,9 @@ export function ownerFromIdentityTable(root) {
   const m = stripBom(readFileSync(p, 'utf8')).match(re);
   if (!m) return null;
   const cell = m[1].replace(/\*\*/g, '').replace(/`/g, '').split(' · ')[0].trim();
-  return cell && !/^<[A-Z_]+>$/.test(cell) ? cell : null; // an unfilled `<AUTHOR>` placeholder is not a name
+  // an unfilled `<AUTHOR>` placeholder is not a name; nor are the neutral words of an anonymous deployment (2.10, decision №157) — the
+  // call would address the owner as «the»
+  return cell && !/^<[A-Z_]+>$/.test(cell) && !/^the project owner$/i.test(cell) ? cell : null;
 }
 
 /**

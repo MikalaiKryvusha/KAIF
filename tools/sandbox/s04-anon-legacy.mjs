@@ -83,13 +83,26 @@ writeFileSync(join(S13, 'package.json'), JSON.stringify({ name: 's13', scripts: 
 // bugs/130 (origin #135 R1): a remote URL with a login inside — the login must reach no file of the tree (an access credential, not content)
 const g13 = (...a) => spawnSync('git', a, { cwd: S13, encoding: 'utf8', env: { ...process.env, GIT_OPTIONAL_LOCKS: '0' } });
 g13('init', '-q'); g13('remote', 'add', 'origin', 'https://jdoe-s13@forge.example/acme/shop.git');
+// bugs/130, второй половиной (интервью №048, Q1 = A, №157): git-имя автора — ОКРУЖЕНИЕМ на время установки (никогда `git config` в
+// репозитории, bugs/124); обезличенная установка не пишет его никуда, символ веры говорит нейтральными словами
+const GIT_NAME13 = 'Jane Doe-S13';
+const envWas13 = { c: process.env.GIT_CONFIG_COUNT, k: process.env.GIT_CONFIG_KEY_0, v: process.env.GIT_CONFIG_VALUE_0 };
+Object.assign(process.env, { GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: 'user.name', GIT_CONFIG_VALUE_0: GIT_NAME13 });
 let r = run(S13, 'install --mode anonymous');
+for (const [k, v] of [['GIT_CONFIG_COUNT', envWas13.c], ['GIT_CONFIG_KEY_0', envWas13.k], ['GIT_CONFIG_VALUE_0', envWas13.v]]) {
+  if (v === undefined) delete process.env[k]; else process.env[k] = v;
+}
 ok(r.code === 0, 'S13 install --mode anonymous exit 0', r.out);
 {
-  const hits = [];
+  const hits = [], nameHits = [];
   const walk13 = (d) => { for (const n of readdirSync(d)) { if (n === '.git') continue; const p = join(d, n);
-    if (statSync(p).isDirectory()) walk13(p); else if (readFileSync(p, 'latin1').includes('jdoe-s13@')) hits.push(p.slice(S13.length + 1)); } };
+    if (statSync(p).isDirectory()) walk13(p); else { const t = readFileSync(p, 'utf8');
+      if (t.includes('jdoe-s13@')) hits.push(p.slice(S13.length + 1)); if (t.includes(GIT_NAME13)) nameHits.push(p.slice(S13.length + 1)); } } };
   walk13(S13);
+  const guide13 = existsSync(join(S13, 'AGENT_GUIDE.md')) ? readFileSync(join(S13, 'AGENT_GUIDE.md'), 'utf8') : '';
+  ok(nameHits.length === 0 && guide13.includes("THE PROJECT OWNER'S VISION") && /\|\s*\*\*Author \/ owner\*\*\s*\|\s*`?the project owner`?\s*\|/.test(guide13),
+    'S13 bugs/130 (№157): git-имя автора (окружением) не попало ни в один файл дерева; символ веры — «THE PROJECT OWNER\'S VISION», в таблице — «the project owner»',
+    nameHits.join(' · ') + ' | creed: ' + (guide13.match(/BELIEVE IN[^.]*\./) || ['—'])[0]);
   ok(hits.length === 0, 'S13 bugs/130: логин из адреса удалённого репозитория (jdoe-s13@) не попал ни в один файл дерева, манифест включён', hits.join(' · '));
 }
 fillAll(S13);
@@ -171,6 +184,15 @@ ok(existsSync(join(S13, '.kaif', 'deploy-manifest.json')), '🔴 S13 обезл�
 ok(existsSync(join(S13, '.kaif', 'kaif-core.mjs')), 'S13 ядро СОХРАНЕНО анонимизированным (bug 29)');
 const core13 = readFileSync(join(S13, '.kaif', 'kaif-core.mjs'), 'utf8');
 ok(!core13.includes('MikalaiKryvusha'), 'S13 в оставленном ядре нет origin-аккаунта');
+{ // bugs/130 (№157), полный маршрут: после самоочистки ни один файл дерева не несёт токенов имени автора KAIF — у полевого владельца KAIF они и
+  // есть его имя (функциональный прогон tools/sandbox/probes/hc4-anon-real-identity.mjs нашёл их в оставленном ядре)
+  const AUTHOR13 = ['Kryvusha', 'Кривуша', 'Mikalai', 'KRINIK', 'Krinik', 'Криник'];
+  const left = [];
+  const walkA = (d) => { for (const n of readdirSync(d)) { if (n === '.git') continue; const p = join(d, n);
+    if (statSync(p).isDirectory()) walkA(p); else { const t = readFileSync(p, 'utf8'); const w = AUTHOR13.filter((x) => t.includes(x)); if (w.length) left.push(p.slice(S13.length + 1) + ' [' + w.join(',') + ']'); } } };
+  walkA(S13);
+  ok(left.length === 0, 'S13 bugs/130 (№157): после самоочистки обезличенного развёртывания ни один файл не несёт токенов имени автора KAIF', left.join(' · '));
+}
 r = run(S13, 'sync');
 ok(r.code === 0, 'S13 sync РАБОТАЕТ после анонимной самоочистки (поле аудитило 96 зеркал своим скриптом)', r.out);
 const dm13 = JSON.parse(readFileSync(join(S13, '.kaif', 'deploy-manifest.json'), 'utf8'));

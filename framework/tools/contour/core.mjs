@@ -59,7 +59,9 @@ export function ownerFromIdentityTable(root) {
   const m = stripBom(readFileSync(p, 'utf8')).match(re);
   if (!m) return null;
   const cell = m[1].replace(/\*\*/g, '').replace(/`/g, '').split(' · ')[0].trim();
-  return cell && !/^<[A-Z_]+>$/.test(cell) ? cell : null; // an unfilled `<AUTHOR>` placeholder is not a name
+  // an unfilled `<AUTHOR>` placeholder is not a name; nor are the neutral words of an anonymous deployment (2.10, decision №157) — the
+  // call would address the owner as «the»
+  return cell && !/^<[A-Z_]+>$/.test(cell) && !/^the project owner$/i.test(cell) ? cell : null;
 }
 
 /**
