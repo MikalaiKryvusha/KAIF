@@ -152,5 +152,11 @@
       "at": "2026-11-06T11:10:15+03:00",
       "where": "issue #192 comment 6680308939, closed"
     }
+  },
+  "interviews/interview_048_kaif_2.10_owner_name_in_anonymous_install.md": {
+    "Q1": {
+      "at": "2026-11-07T12:46:23+03:00",
+      "where": "e9ee8f7"
+    }
   }
 }
