@@ -242,6 +242,12 @@ writeFileSync(join(TC, 'PRODUCT.md'), '# Product\n\nAcme Space 2.0 — KAIF-proj
 const C14 = ['KAIF-Version', 'Versión de KAIF', 'Version de KAIF', 'Versão do KAIF', 'KAIF 版本', 'KAIF バージョン', 'KAIF संस्करण', 'إصدار KAIF']
   .map((label) => `| **${label}** | 2.7 | 2026-09-18 |`);
 writeFileSync(join(TC, 'RECORD_FACES.md'), `# Record\n\n| Field | Value | Date |\n|---|---|---|\n${C14.join('\n')}\n`);
+// HC2 (2.10, origin #117): the field line «… фреймворком **KAIF** (версия 2.7). …» (AGENTS.md:3 of the field) and its English twin — a version
+// in a parenthesis that OPENS with the version word is the claim, not an attribution; «rule X (KAIF 2.6)» stays an attribution
+const C15 = 'Этот проект обёрнут фреймворком **KAIF** (версия 2.7). Рабочий язык — русский.';
+const C16 = 'This project is wrapped in KAIF (version 2.7).';
+const C17 = 'Runs on KAIF (v2.7) here.';
+writeFileSync(join(TC, 'AGENTS_NOTE.md'), `# Agents\n\n${C15}\n\n${C16}\n\nThe rule X stays (KAIF 2.6).\n\n${C17}\n`);
 r = run(TC, `update --source ${SRC99}`);
 ok(r.code === 0, 'C update →9.9 exit 0', r.out.slice(-300));
 item = staleItem(TC);
@@ -253,6 +259,9 @@ ok(!item.includes('RULES.md'), 'C4 (N4): атрибуция в скобке, п�
 ok(item.includes('DEPLOYED.md:3'), 'C5: «2.1 «Strong KAIF»» — кодовое имя перед словом KAIF не чужое имя: заявление названо', item.split('\n').filter((l) => /DEPLOYED/.test(l)).join(' | ') || item.slice(0, 200));
 ok(item.includes('SEE.md:3'), 'C6: второе слово KAIF в строке судится само (первое, «docs/kaif-notes», его не глотает)', item.split('\n').filter((l) => /SEE\.md/.test(l)).join(' | ') || item.slice(0, 200));
 ok(!item.includes('kaif-sheet.mjs'), 'C7: `version="1.0"` в XML — не пин версии KAIF', item.split('\n').filter((l) => /kaif-sheet/.test(l)).join(' | '));
+ok(item.includes('AGENTS_NOTE.md:3 — ' + C15.slice(0, 100)) && item.includes('AGENTS_NOTE.md:5 — ' + C16) && !item.includes('AGENTS_NOTE.md:7') && item.includes('AGENTS_NOTE.md:9 — ' + C17),
+  'C15 (HC2, #117): «**KAIF** (версия 2.7)», «KAIF (version 2.7)» и «KAIF (v2.7)» названы — скобка со словом версии и есть заявление; «(KAIF 2.6)» — атрибуция, молчит',
+  item.split('\n').filter((l) => /AGENTS_NOTE/.test(l)).join(' | ') || item.slice(0, 300));
 
 const cLines = (re) => item.split('\n').filter((l) => re.test(l)).join(' | ') || item.slice(0, 300);
 ok(item.includes('RECORD.md:5 — ' + C8), 'C8 (F3): строка записи о развёртывании «| **KAIF version** | 2.7 | deployed <дата> |» названа — дата в другой ячейке не делает её журналом', cLines(/RECORD/));

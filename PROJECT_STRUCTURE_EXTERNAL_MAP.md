@@ -73,6 +73,7 @@ KAIF/
 │   ├── commit.mjs                         # bump build, commit, push
 │   ├── say.mjs                            # сказать владельцу голосом: мягкий голос поставки с окружением истока (№156)
 │   ├── lib/voice-env.mjs                  # окружение голоса истока — одно место (обёртка контура и say.mjs)
+│   ├── lib/polygon-lock.mjs               # замок живого полигона .kaif/polygon.lock: сборка отказывает, пока идёт npm run test:core (EXP-0206)
 │   ├── voice/soft_say.py                  # рендер Silero с удвоенными паузами на знаках (ресурс ЭТОЙ машины; не поставка)
 │   └── kaif.mjs                           # ручки жизненного цикла (npm run kaif:*)
 │

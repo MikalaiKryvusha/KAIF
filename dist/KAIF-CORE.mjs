@@ -1459,7 +1459,7 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
       if (line.includes(toVersion)) continue;
       // `%20` is a URL-encoded space: a shields.io badge writes `KAIF%202.2` and must read as
       // "KAIF 2.2", never as version "202.2" (origin #44's own README line, polygon-caught).
-      const scan = line.replace(/%20/g, ' ');
+      let scan = line.replace(/%20/g, ' ');
       const older = [...new Set(scan.match(VERSION_TOKEN) || [])].filter((v) => gt(toVersion, v));
       if (!older.length) continue;
       if (/^\s*>/.test(line)) continue;          // blockquote = the owner's quoted word (bugs/35, field report Г5)
@@ -1487,6 +1487,12 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
       // A parenthesis right after `]` is a markdown link/image TARGET, not an attribution — the
       // shields.io badge keeps its version inside exactly such a target (`![…](…KAIF%202.2…)`),
       // and stripping it hid origin #44's own README line from the scan (2.6, polygon-caught).
+      // 2.10, epic HC, step HC2 (origin #117): a parenthesis that OPENS with a version word and a number — «**KAIF** (версия 2.7)»,
+      // "KAIF (version 2.7)" — is the claim itself, never an attribution (an attribution opens with the name: «(KAIF 2.6; …)»); it is
+      // unwrapped before the strip, and the pair is judged as everywhere else (the framework's word within reach of the version)
+      // [TESTED: 2026-11-07 · s29 C15 (three forms named, the attribution silent), red on the previous core; the #117 field tree at the
+      //  commit before its hand fix — AGENTS.md:3 named, the 13 other places unchanged; eight live deployments — 0 added — testcases/reports/2026-11-07_hc2-stale-claims-version-paren.md]
+      if (isProse) scan = scan.replace(/(?<!\])\(\s*((?:v|ver|version|версия|версии|release|релиз)\.?\s*\d+(?:\.\d+)+)[^)]*\)/giu, ' $1 ');
       let judged = isProse ? scan.replace(/(?<!\])\([^)]*\)/g, '') : scan;
       // a parenthesis WRAPPED onto the next line (N4 · K-R4: «(KAIF 2.6; origin issue #52; the» ⏎ «field owner …) and»): the head of a line
       // up to an unmatched `)` continues a parenthesis from above, and an unclosed `(` runs to the end of its line
