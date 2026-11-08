@@ -3,7 +3,7 @@
 # settings the owner asked KAIF to take (2026-11-07, decision №156) — the ORIGIN machine's tool, not part of the delivery.
 # The owner, 2026-10-18 (chat): «научите голос делать больше паузы на запятых, на тире - на знаках препинания, на точках, между
 # предложениями. в раза два больше, чем он сейчас делает».
-# How: the machine's Silero model (F:\KLAS\voice\models\v5_ru.pt, run by the KLAS venv Python — a machine resource, never edited from here)
+# How: the machine's Silero model (F:\krinik_tts\models\v5_ru.pt, run by the KLAS venv Python — a machine resource, never edited from here)
 # is loaded ONCE; the phrase is cut after each punctuation mark, every piece is spoken with its mark (the intonation stays natural), and an
 # EXTRA silence is put after it — about as long as Silero's own pause, so the pause doubles. Text normalisation is KLAS's `text_norm`.
 # Use: <KLAS python> -I tools/voice/soft_say.py "<text>" <out.wav> [voice]
@@ -16,8 +16,8 @@ from pathlib import Path
 for _s in (sys.stdout, sys.stderr):
     _s.reconfigure(encoding="utf-8", errors="strict")
 
-KLAS_VOICE_TOOLS = Path(r"F:\KLAS\tools\voice")
-MODEL = Path(r"F:\KLAS\voice\models\v5_ru.pt")
+KLAS_VOICE_TOOLS = Path(r"F:\krinik_tts\voice")
+MODEL = Path(r"F:\krinik_tts\models\v5_ru.pt")
 SAMPLE_RATE = 48000
 PAUSE_SOFT_SEC = 0.30   # extra after , ; : — –  («паузы на запятых, на тире»)
 PAUSE_HARD_SEC = 0.55   # extra after . ! ? …  («на точках, между предложениями»)

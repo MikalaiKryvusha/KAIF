@@ -11,8 +11,8 @@ const HERE = import.meta.dirname;
 export const VOICE_DEFAULTS = {
   KAIF_VOICE_TOOL: resolve(HERE, '..', '..', 'framework', 'tools', 'contour', 'voice-soft.mjs'), // мягкий голос поставки — исток ест свою поставку
   KAIF_VOICE_BEEPS: 'embedded',                                   // писки — внутри файла мягкого голоса, контур своих не играет
-  KAIF_VOICE_RENDER: JSON.stringify(['F:\\KLAS\\voice\\venv\\Scripts\\python.exe', '-I', resolve(HERE, '..', 'voice', 'soft_say.py')]),
-  KAIF_VOICE_BASE_TOOL: 'F:\\KLAS\\tools\\voice-say.mjs',         // Silero v5 ru — общий «рот» машины владельца, запасной рендер
+  KAIF_VOICE_RENDER: JSON.stringify(['F:\\krinik_tts\\venv\\Scripts\\python.exe', '-I', resolve(HERE, '..', 'voice', 'soft_say.py')]),
+  KAIF_VOICE_BASE_TOOL: 'F:\\krinik_tts\\voice-say.mjs',         // Silero v5 ru — общий «рот» машины владельца, запасной рендер
   KAIF_VOICE: 'eugene',                                           // вердикт владельца: «звучит по-человечески, а не роботом»
   KAIF_SAPI_VOICE: 'Microsoft Irina Desktop',                     // предпочтение системного фолбэка (культура ru)
 };
