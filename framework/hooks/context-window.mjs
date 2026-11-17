@@ -23,7 +23,7 @@
 // wins; else `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` → 200 000; else the model of the record: a `[1m]` suffix, or a family the vendor runs
 // with 1M by default (Fable 5 and later, Sonnet 5 and later, Haiku 5.5, Opus 4.7 and later — code.claude.com/docs/en/model-config) →
 // 1 000 000; else 200 000 — and never less than the usage seen (used > 200 000 ⇒ the window is 1 000 000).
-// Thresholds: `contextWindow.warnPct` · `contextWindow.closePct` — the owner states them; state per session in .kaif/context-window.json.
+// Thresholds: `contextWindow.warnPct` · `cutPct` · `closePct` · `forcePct` — the project states them (levelsOf); state per session in .kaif/context-window.json.
 // It blocks ONE thing (the closing gate, PreToolUse · matcher Skill): a closing skill — /end-chat-soft or /end-chat-force — called while the
 // window is below closePct and without the owner's word in the skill's args (`owner: «<his words asking to close>»`) is denied with the
 // measured share; the agent keeps working. Origin: the source's session 100 closed «by the window» at 53 % by feeling, and a field deployment

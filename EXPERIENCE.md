@@ -108,7 +108,8 @@
 **Repro:** рабочее дерево `76801dd` + `node tools/sandbox/probes/mutants-of.mjs framework/hooks/context-window.mjs` → «BAD pt6-context-window-mutant.mjs».
 **Trigger:** правишь модуль, по имени которого в `tools/sandbox/probes/` есть `*mutant*.mjs`.
 **Not for:** модули без проб мутантов (раннер скажет «nothing to run»).
-**Механизация:** механизировано: `tools/sandbox/probes/mutants-of.mjs` · строка `HOUSE_RULES.md` §1.
+**Механизация:** механизировано: `tools/sandbox/probes/mutants-of.mjs` · строка `HOUSE_RULES.md` §1 — частично: раннер не стоит ни в одном
+гейте и снова держится на памяти (судья сессии 103, находка 9); гейт в `tools/commit.mjs` стоил бы минуты на коммит — решение отложено.
 
 ### EXP-0213 · 2026-11-18 · ❌→✅ · #hooks #alive #witness #first-call #timing #bugs-142
 класс: tool-lied-silently

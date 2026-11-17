@@ -23,6 +23,8 @@ const OVER = 'bugs/141 #199: a write over another document\'s record';
 const CLOSE = 'bugs/141 #199: --close of b/compare.webp';
 const KEPT = 'bugs/141 #199: b keeps its qualified record';
 const MUTANTS = [
+  // judge of session 103 (finding 6): the control — the copy as it is: no red case at all
+  ['control', 'review.mjs', '', '', []],
   ['N1', 'core.mjs', "  return holder !== null && holder !== me ? qualified : stem;", '  return stem;', [OWN, KEPT, CLOSE]],
   ['N2', 'core.mjs', "  if (holder !== null && holder !== docKeyOf(root, docPath)) {\n    throw", "  if (false) {\n    throw", [OVER]],
   ['N3', 'core.mjs', "  return holder !== null && holder !== docKeyOf(root, docPath) ? null : readJson(p);", '  return readJson(p);', [OVER]],
@@ -36,8 +38,8 @@ for (const [name, file, from, to, addressee] of MUTANTS) {
     cpSync(SRC, dir, { recursive: true });
     const f = join(dir, file);
     const src = readFileSync(f, 'utf8').replace(/\r\n/g, '\n');
-    if (src.split(from).length !== 2) { bad++; console.log('BAD ' + name + ': the mutation did not apply'); continue; }
-    writeFileSync(f, src.replace(from, () => to));
+    if (from && src.split(from).length !== 2) { bad++; console.log('BAD ' + name + ': the mutation did not apply'); continue; }
+    if (from) writeFileSync(f, src.replace(from, () => to));
     const r = spawnSync(process.execPath, [join(dir, 'review.mjs'), '--selftest'], { cwd: REPO, env: quietEnv({ KAIF_VOICE_TOOL: '' }), encoding: 'utf8', timeout: 600000 });
     const red = ((r.stdout || '') + (r.stderr || '')).split('\n').filter((l) => /^\s+x /.test(l)).map((l) => l.trim());
     const only = red.length === addressee.length && addressee.every((a) => red.some((l) => l.includes(a)));

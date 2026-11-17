@@ -110,10 +110,17 @@ const CLOSING = /end-chat-(soft|force)/;
 // with a filled placeholder). A line NEW in the template since then — bugs/140's farewell lines (66a6b5c) — is a real merge for a deployment
 // whose closing skills went to «Module diffs», and the old criterion «no not-found at all» read it as BAD on deployment #8 from 66a6b5c on.
 // The core prints the first 78 characters of the promised line; whitespace is flattened on both sides.
+// Judge of session 103 (finding 1, REFUTED «the criterion still judges them»): the first edition counted a line as «held at PRE» by its
+// printed text — but the printed co-author line carries the deployment's FILLED value, so it never matched the PRE template's placeholder
+// and 4 of 7 false lines were waved through as «a merge». Now the merge is identified POSITIVELY: a printed line is new only when it is the
+// head of a template line of this build's closing skills that the PRE_REV skills did not hold; anything else stays BAD.
 const flatWs = (s) => String(s).replace(/\s+/g, ' ').trim();
-const PRE_CLOSING = flatWs(['end-chat-soft', 'end-chat-force'].map((n) =>
-  execFileSync('git', ['show', PRE_REV + ':framework/skills/' + n + '/SKILL.md'], { cwd: REPO, encoding: 'utf8', maxBuffer: 1 << 26 })).join('\n'));
-const heldAtPre = (l) => { const m = l.match(/ :: (.+)$/); return Boolean(m) && PRE_CLOSING.includes(flatWs(m[1])); };
+const skillLines = (rev) => ['end-chat-soft', 'end-chat-force'].flatMap((n) => (rev
+  ? execFileSync('git', ['show', rev + ':framework/skills/' + n + '/SKILL.md'], { cwd: REPO, encoding: 'utf8', maxBuffer: 1 << 26 })
+  : readFileSync(join(REPO, 'framework', 'skills', n, 'SKILL.md'), 'utf8')).split(/\r?\n/).map(flatWs).filter(Boolean));
+const PRE_LINES = new Set(skillLines(PRE_REV));
+const NEW_ONLY = skillLines(null).filter((l) => !PRE_LINES.has(l));
+const heldAtPre = (l) => { const m = l.match(/ :: (.+)$/); const head = m ? flatWs(m[1]) : ''; return !(head && NEW_ONLY.some((t) => t.startsWith(head))); };
 function walk(label, base, srcName, baseline) {
   const P = join(ROOT, `${label.replace(/[^a-z0-9]+/gi, '-')}-${srcName}`); cpSync(base, P, { recursive: true });
   const u = core(P, ['update', '--source', SRC[srcName], '--baseline', baseline]);

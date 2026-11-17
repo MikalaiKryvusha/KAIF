@@ -1554,7 +1554,9 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
     : (existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.decision.json')).map((f) => join(dir, f)) : []));
   const stamp = (f) => { try { const s = lstatSync(f); return s.size + ':' + s.mtimeMs; } catch { return null; } };
   const start = new Map(files().map((f) => [f, stamp(f)]));
-  const lock = lockPath(root, docPath ? pageKey(root, docPath) : '_queue');
+  // judge of session 103 (finding 5): the key is asked on EVERY poll — a page of another document with the same name may close between the
+  // waiter's start and this page's start, and the page then takes the bare name the waiter did not watch (bugs/141)
+  const lockNow = () => lockPath(root, docPath ? pageKey(root, docPath) : '_queue');
   // (light re-judge RL 2.8, J-F1) the QUEUE page shows this document too: a document waiter next to a live queue page waits — the
   // queue server holds the `_queue` lock, never the document's own, and the B-F1 window used to end such a waiter with a false line
   const queueLock = docPath ? lockPath(root, '_queue') : null;
@@ -1570,7 +1572,7 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
     if (!Number.isInteger(held && held.pid) || held.pid <= 0) return 'live';
     try { process.kill(held.pid, 0); return 'live'; } catch (e) { return e.code === 'EPERM' ? 'live' : 'dead'; }
   };
-  const states = () => [lockState(lock), queueLock !== null ? lockState(queueLock) : 'none'];
+  const states = () => [lockState(lockNow()), queueLock !== null ? lockState(queueLock) : 'none'];
   const live = () => states().includes('live');
   const gone = () => { const s = states(); return !s.includes('live') && s.includes('dead'); };
   const goneLine = () => 'The page\'s server is gone (its process is not running; the lock stays for the next run, I29) — nothing was recorded '

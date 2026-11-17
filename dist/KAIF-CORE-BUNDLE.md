@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "dcad771458eb601465cd1499a37d047efb86479160ee61ec9c58a883de8d09ca",
+    "sourceTree": "ee0078ffc45cc5873192d96a6fd45f67277c682eaae34e68fe6707bf8814c3e0",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -13275,7 +13275,9 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
     : (existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.decision.json')).map((f) => join(dir, f)) : []));
   const stamp = (f) => { try { const s = lstatSync(f); return s.size + ':' + s.mtimeMs; } catch { return null; } };
   const start = new Map(files().map((f) => [f, stamp(f)]));
-  const lock = lockPath(root, docPath ? pageKey(root, docPath) : '_queue');
+  // judge of session 103 (finding 5): the key is asked on EVERY poll — a page of another document with the same name may close between the
+  // waiter's start and this page's start, and the page then takes the bare name the waiter did not watch (bugs/141)
+  const lockNow = () => lockPath(root, docPath ? pageKey(root, docPath) : '_queue');
   // (light re-judge RL 2.8, J-F1) the QUEUE page shows this document too: a document waiter next to a live queue page waits — the
   // queue server holds the `_queue` lock, never the document's own, and the B-F1 window used to end such a waiter with a false line
   const queueLock = docPath ? lockPath(root, '_queue') : null;
@@ -13291,7 +13293,7 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
     if (!Number.isInteger(held && held.pid) || held.pid <= 0) return 'live';
     try { process.kill(held.pid, 0); return 'live'; } catch (e) { return e.code === 'EPERM' ? 'live' : 'dead'; }
   };
-  const states = () => [lockState(lock), queueLock !== null ? lockState(queueLock) : 'none'];
+  const states = () => [lockState(lockNow()), queueLock !== null ? lockState(queueLock) : 'none'];
   const live = () => states().includes('live');
   const gone = () => { const s = states(); return !s.includes('live') && s.includes('dead'); };
   const goneLine = () => 'The page\'s server is gone (its process is not running; the lock stays for the next run, I29) — nothing was recorded '
@@ -20227,20 +20229,40 @@ export function carriedWords(carried) {
 const ASCII_FORM = /\[(NOW-ISO|NOW)\]/g;
 export const isMarkdown = (p) => /\.(md|markdown)$/i.test(String(p || ''));
 // The text as [isCode, piece] pieces, joined back byte for byte: fenced blocks (``` or ~~~ lines) and inline code spans are code.
+// Judge of session 103 (finding 2): the rules are CommonMark's — a fence closes only on a line of the SAME character at least as long as
+// the opening one (a four-backtick fence holds a three-backtick line), and a code span is a run of N backticks up to the next run of exactly
+// N, inside one paragraph — across a line end too (a span broken by the wrap of a long line). An unmatched run is literal backticks.
 export function codeSplit(text) {
   const out = [];
-  let fence = null;
-  for (const line of String(text).split(/(?<=\n)/)) {   // the line ends stay with their lines
-    const f = /^\s*(```|~~~)/.exec(line);
-    if (fence) { out.push([true, line]); if (f && f[1] === fence) fence = null; continue; }
-    if (f) { fence = f[1]; out.push([true, line]); continue; }
-    let last = 0;
-    for (const m of line.matchAll(/(`+)[^`]*?\1/g)) {
-      if (m.index > last) out.push([false, line.slice(last, m.index)]);
-      out.push([true, m[0]]); last = m.index + m[0].length;
+  let fence = null, para = [];
+  const flushPara = () => {
+    if (!para.length) return;
+    const t = para.join(''); para = [];
+    const runs = /`+/g;
+    let last = 0, m;
+    while ((m = runs.exec(t))) {
+      const close = new RegExp('(?<!`)' + m[0] + '(?!`)', 'g');
+      close.lastIndex = m.index + m[0].length;
+      const c = close.exec(t);
+      if (!c) continue;                                    // no closing run of the same length: literal backticks
+      if (m.index > last) out.push([false, t.slice(last, m.index)]);
+      out.push([true, t.slice(m.index, c.index + m[0].length)]);
+      last = c.index + m[0].length; runs.lastIndex = last;
     }
-    if (last < line.length) out.push([false, line.slice(last)]);
+    if (last < t.length) out.push([false, t.slice(last)]);
+  };
+  for (const line of String(text).split(/(?<=\n)/)) {     // the line ends stay with their lines
+    const f = /^ {0,3}(`{3,}|~{3,})/.exec(line);
+    if (fence) {
+      out.push([true, line]);
+      if (f && f[1][0] === fence[0] && f[1].length >= fence.length && /^ {0,3}[`~]+\s*$/.test(line)) fence = null;
+      continue;
+    }
+    if (f) { flushPara(); fence = f[1]; out.push([true, line]); continue; }
+    if (!line.trim()) { flushPara(); out.push([false, line]); continue; }
+    para.push(line);
   }
+  flushPara();
   return out;
 }
 const outsideCode = (text, md, fn) => (md ? codeSplit(text).map(([code, piece]) => (code ? piece : fn(piece))).join('') : fn(text));
@@ -20320,6 +20342,13 @@ if (process.argv[2] === '--selftest') {
     const md = rewrite('Write', { file_path: 'r.md', content: 'quoted `' + P('NOW') + '` · real ' + P('TIME') + '\n```\n' + P('DATE') + '\n```\nafter ' + P('DATE') }, v);
     ok(md && md.content === 'quoted `' + P('NOW') + '` · real 07:05\n```\n' + P('DATE') + '\n```\nafter 2026-10-23',
       'bugs/143 #197: a markdown code span and a fenced block keep the placeholder; outside them it is filled');
+    // judge of session 103 (finding 2): a span broken by a line end, and a four-backtick fence holding a three-backtick line
+    const wrap = rewrite('Write', { file_path: 'w.md', content: 'see `the form\n' + P('NOW') + '` · real ' + P('TIME') }, v);
+    const F4 = '````', F3 = '```';
+    const f4 = rewrite('Write', { file_path: 'f.md', content: F4 + '\n' + F3 + '\n' + P('NOW') + '\n' + F4 + '\nafter ' + P('DATE') }, v);
+    ok(wrap && wrap.content === 'see `the form\n' + P('NOW') + '` · real 07:05'
+      && f4 && f4.content === F4 + '\n' + F3 + '\n' + P('NOW') + '\n' + F4 + '\nafter 2026-10-23',
+      'bugs/143 (judge s103): a code span across a line end keeps it; a four-backtick fence holds a three-backtick line; after the fence — filled');
     const js = rewrite('Write', { file_path: 'r.mjs', content: 'const at = `' + P('NOW') + '`;' }, v);
     ok(js && js.content === 'const at = `2026-10-23 07:05 +03:00`;', 'bugs/143: outside markdown a backtick is the language\'s own — filled as before');
     const a1 = asciiForms('Write', { file_path: 'n.md', content: 'Created: [NOW] · `[NOW-ISO]` in code' }, () => '');
@@ -20401,7 +20430,7 @@ process.exit(0);
 // wins; else `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` → 200 000; else the model of the record: a `[1m]` suffix, or a family the vendor runs
 // with 1M by default (Fable 5 and later, Sonnet 5 and later, Haiku 5.5, Opus 4.7 and later — code.claude.com/docs/en/model-config) →
 // 1 000 000; else 200 000 — and never less than the usage seen (used > 200 000 ⇒ the window is 1 000 000).
-// Thresholds: `contextWindow.warnPct` · `contextWindow.closePct` — the owner states them; state per session in .kaif/context-window.json.
+// Thresholds: `contextWindow.warnPct` · `cutPct` · `closePct` · `forcePct` — the project states them (levelsOf); state per session in .kaif/context-window.json.
 // It blocks ONE thing (the closing gate, PreToolUse · matcher Skill): a closing skill — /end-chat-soft or /end-chat-force — called while the
 // window is below closePct and without the owner's word in the skill's args (`owner: «<his words asking to close>»`) is denied with the
 // measured share; the agent keeps working. Origin: the source's session 100 closed «by the window» at 53 % by feeling, and a field deployment
@@ -21284,7 +21313,7 @@ lacking them.
 | `clock-now.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PreToolUse`, matcher `Write\|Edit\|MultiEdit` | prompt: none — one short line is the point; write: the tool input holds a time placeholder (below) | on every prompt; on every write that holds a placeholder | prompt: one context line with the machine's local moment, and — on the owner's OWN prompt (not a task notification, a harness text or a subagent's hand-back) — the presence mark `.kaif/owner-presence.json`, by which the contour lifts its quiet hours for `contour.ownerActiveMinutes` (2.10, #193); write: `updatedInput` with the placeholders filled by the clock — no permission decision, never a stop; silent on a write without a placeholder |
 | `stop-farewell-capture.mjs` (2.10, epic PT) | `Stop` | the turn ran `/end-chat-soft` or `/end-chat-force` (a Skill call or the owner's slash command), and this closure has not written yet | once per closure — a later stop of the same closure (another Stop hook blocked) writes nothing | writes the turn's last message WHOLE into `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (temporary file + rename); never blocks, never speaks |
 | `subagent-preamble.mjs` (2.10, epic PT) | `PreToolUse`, matcher `Agent\|Task` | the launch carries a task without the preamble's marker | once per launch — a second pass over a marked task changes nothing | `updatedInput` with a marked preamble in front of the subagent's task: read step 1 of `/resume` (read from the skill, existing files only), quote one canon line first in the report, no nested subagents, no commit, no push; one journal line in `.kaif/subagent-preamble.jsonl` — no permission decision, never a stop |
-| `context-window.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PostToolUse`, matcher `*`; `PreToolUse`, matcher `Skill` — the closing gate: `/end-chat-soft` · `/end-chat-force` below `closePct` without `owner: «…»` in the skill's args is denied with the measured share; by hand — `node .kaif/hooks/context-window.mjs --measure` (exit 0 may close · 1 too early · 2 nothing to measure), the closing skills' step 0 where the agent system withholds the project's hooks | the session's used share of the window — the last main-thread usage of the transcript (input + cache_creation + cache_read tokens) against the window size (the project's `contextWindow.tokens`, else the vendor's rule for the model) — reaches `contextWindow.warnPct` (80) or `closePct` (85, then every 5 %) | once per level, re-armed after a compaction | one `additionalContext` line: at 80 % a WARNING without a closing word (keep the pace, tell the owner once by voice), at 85 % «finish the current work to a logical cut, then `/end-chat-soft`» — never a forced closure, never a block; state in `.kaif/context-window.json` |
+| `context-window.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PostToolUse`, matcher `*`; `PreToolUse`, matcher `Skill` — the closing gate: `/end-chat-soft` · `/end-chat-force` below `closePct` without `owner: «…»` in the skill's args is denied with the measured share; by hand — `node .kaif/hooks/context-window.mjs --measure` (exit 0 may close · 1 too early · 2 nothing to measure), the closing skills' step 0 where the agent system withholds the project's hooks | the session's used share of the window — the last main-thread usage of the transcript (input + cache_creation + cache_read tokens) against the window size (the project's `contextWindow.tokens`, else the vendor's rule for the model) — reaches a step — `contextWindow.warnPct` (75) · `cutPct` (80) · `closePct` (85) · `forcePct` (92); decision №161 of the origin | once per step (a jump says one line, the highest), re-armed after a compaction | one `additionalContext` line: at 75 % a WARNING without a closing word (keep the pace, tell the owner once by voice), at 80 % «bring the work in hand to a logical cut», at 85 % «start `/end-chat-soft`», at 92 % «finish the soft closure quickly, or start `/end-chat-force`» — never a block; state in `.kaif/context-window.json` |
 | `knowledge-moment.mjs` (2.10, epic MM) | `UserPromptSubmit`; `PostToolUse` and `PostToolUseFailure`, matcher `*` | STRONG moments speak at once — the owner's own prompt (a background task's notification is not), a failed tool call, a Read of a knowledge document (maps, `STATUS.md`, `EXPERIENCE.md`, `HOUSE_RULES.md`, `plans/`, `researches/`), the first touch in a session of a file whose component has `NOTES.md`, the first Read in a session of a project source file — a config file (`package.json`, `*.yaml`, `*.toml`) is not one, a generic name (`index`, `utils`, `main` …) is looked up by its full path only (the docs that name it are quoted — «does the code say the same?»; named nowhere — «before you answer, add one line to the map»); every other tool result adds weight 1, and the hook speaks at 12 | per moment; the weight resets after each line; component notes — once per session | one `additionalContext` line: write what you understood into the project document where it lives, in this turn — never a block, never a stop, never a document body; state per session in `.kaif/knowledge-moment.json` |
 | `test-after-code.mjs` (2.10, epic HC) | `PostToolUse`, matcher `*`; `Stop` | a write of a product file (the project's kinds in `.kaif/kaif.json` → `testHook`, else a source file, configs excluded); a shell command that is a RUN of its kind clears it — a build, a linter, `--check`, `--help`, a heredoc body never do | per write; the stop is refused once per debt signature, a repeated stop with nothing new written passes | the order «run it before you stop», the list of what was not run; state in `.kaif/test-debt.json`; `--waive "<why>"` · `--status` · `--selftest` |
 

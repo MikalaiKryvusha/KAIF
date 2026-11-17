@@ -17,6 +17,8 @@ import { join, dirname } from 'node:path';
 const REV = '6fa213d';
 const MUTATED = ['framework/skills/end-chat-soft/SKILL.md', 'framework/skills/release/SKILL.md', 'framework/AGENT_GUIDE.md',
   'framework/KAIF_REFERENCE.md', 'framework/skills/team-deployment/references/team-constitution-template.md'];
+const NAMED = ['framework/skills/end-chat-soft/SKILL.md:117', 'framework/skills/release/SKILL.md:105', 'framework/AGENT_GUIDE.md:529',
+  'framework/KAIF_REFERENCE.md:127', 'framework/skills/team-deployment/references/team-constitution-template.md:116'];
 const RUN_TIMEOUT_MS = 300000;
 let bad = 0;
 const say = (good, line) => { if (!good) bad++; console.log((good ? 'OK  ' : 'BAD ') + line); };
@@ -42,7 +44,10 @@ for (const [name, prep, want] of [
   try {
     prep(dir);
     const got = lines5za(dir);
-    say(got.length === want, name + ': ' + got.length + ' line(s) «5za:» (named ' + want + ')' + (got.length ? ' — ' + got.map((l) => l.slice(5, 90)).join(' | ') : ''));
+    // judge of session 103 (finding 7): the five lines are named, not only counted — each of the five files at its line
+    const named = want ? NAMED.every((n) => got.some((l) => l.includes(n))) : true;
+    say(got.length === want && named, name + ': ' + got.length + ' line(s) «5za:» (named ' + want + (want ? ', at the five places' : '') + ')'
+      + (got.length ? ' — ' + got.map((l) => l.slice(5, 90)).join(' | ') : ''));
   } finally { rmSync(dir, { recursive: true, force: true }); }
 }
 console.log(bad ? `✖ ${bad} BAD` : '✅ guard 5za is red on exactly the five slots before the fix and silent on this tree and on a mention');

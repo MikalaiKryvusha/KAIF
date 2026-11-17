@@ -34,7 +34,9 @@ try {
   // runs its event block, which reads stdin and exits the process
   const a = { code: st['first-a'] ? 0 : 1 }, b = { code: st['first-b'] ? 0 : 1 };
   console.log('hook: ' + (rev ? 'revision ' + rev : 'this build'));
-  console.log('first prompt, transcript without a model answer: --alive exit ' + a.code + ' · first prompt, no transcript yet: --alive exit ' + b.code);
+  // judge of session 103 (finding 4): `--alive` itself is not run here (it needs the vendor's transcript store) — the line says the rule
+  console.log('first prompt, transcript without a model answer: recorded by the --alive rule ' + (a.code ? 'NO' : 'yes') + ' (exit ' + a.code
+    + ') · first prompt, no transcript yet: recorded ' + (b.code ? 'NO' : 'yes') + ' (exit ' + b.code + ')');
   code = a.code === 0 && b.code === 0 ? 0 : 1;
   console.log(code === 0 ? '✅ the session is seen from its first prompt' : '✖ RED — a session whose hooks ran reads «NOT running» (bugs/142)');
 } finally { rmSync(work, { recursive: true, force: true }); }

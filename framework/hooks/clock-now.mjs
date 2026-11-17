@@ -92,20 +92,40 @@ export function carriedWords(carried) {
 const ASCII_FORM = /\[(NOW-ISO|NOW)\]/g;
 export const isMarkdown = (p) => /\.(md|markdown)$/i.test(String(p || ''));
 // The text as [isCode, piece] pieces, joined back byte for byte: fenced blocks (``` or ~~~ lines) and inline code spans are code.
+// Judge of session 103 (finding 2): the rules are CommonMark's — a fence closes only on a line of the SAME character at least as long as
+// the opening one (a four-backtick fence holds a three-backtick line), and a code span is a run of N backticks up to the next run of exactly
+// N, inside one paragraph — across a line end too (a span broken by the wrap of a long line). An unmatched run is literal backticks.
 export function codeSplit(text) {
   const out = [];
-  let fence = null;
-  for (const line of String(text).split(/(?<=\n)/)) {   // the line ends stay with their lines
-    const f = /^\s*(```|~~~)/.exec(line);
-    if (fence) { out.push([true, line]); if (f && f[1] === fence) fence = null; continue; }
-    if (f) { fence = f[1]; out.push([true, line]); continue; }
-    let last = 0;
-    for (const m of line.matchAll(/(`+)[^`]*?\1/g)) {
-      if (m.index > last) out.push([false, line.slice(last, m.index)]);
-      out.push([true, m[0]]); last = m.index + m[0].length;
+  let fence = null, para = [];
+  const flushPara = () => {
+    if (!para.length) return;
+    const t = para.join(''); para = [];
+    const runs = /`+/g;
+    let last = 0, m;
+    while ((m = runs.exec(t))) {
+      const close = new RegExp('(?<!`)' + m[0] + '(?!`)', 'g');
+      close.lastIndex = m.index + m[0].length;
+      const c = close.exec(t);
+      if (!c) continue;                                    // no closing run of the same length: literal backticks
+      if (m.index > last) out.push([false, t.slice(last, m.index)]);
+      out.push([true, t.slice(m.index, c.index + m[0].length)]);
+      last = c.index + m[0].length; runs.lastIndex = last;
     }
-    if (last < line.length) out.push([false, line.slice(last)]);
+    if (last < t.length) out.push([false, t.slice(last)]);
+  };
+  for (const line of String(text).split(/(?<=\n)/)) {     // the line ends stay with their lines
+    const f = /^ {0,3}(`{3,}|~{3,})/.exec(line);
+    if (fence) {
+      out.push([true, line]);
+      if (f && f[1][0] === fence[0] && f[1].length >= fence.length && /^ {0,3}[`~]+\s*$/.test(line)) fence = null;
+      continue;
+    }
+    if (f) { flushPara(); fence = f[1]; out.push([true, line]); continue; }
+    if (!line.trim()) { flushPara(); out.push([false, line]); continue; }
+    para.push(line);
   }
+  flushPara();
   return out;
 }
 const outsideCode = (text, md, fn) => (md ? codeSplit(text).map(([code, piece]) => (code ? piece : fn(piece))).join('') : fn(text));
@@ -185,6 +205,13 @@ if (process.argv[2] === '--selftest') {
     const md = rewrite('Write', { file_path: 'r.md', content: 'quoted `' + P('NOW') + '` · real ' + P('TIME') + '\n```\n' + P('DATE') + '\n```\nafter ' + P('DATE') }, v);
     ok(md && md.content === 'quoted `' + P('NOW') + '` · real 07:05\n```\n' + P('DATE') + '\n```\nafter 2026-10-23',
       'bugs/143 #197: a markdown code span and a fenced block keep the placeholder; outside them it is filled');
+    // judge of session 103 (finding 2): a span broken by a line end, and a four-backtick fence holding a three-backtick line
+    const wrap = rewrite('Write', { file_path: 'w.md', content: 'see `the form\n' + P('NOW') + '` · real ' + P('TIME') }, v);
+    const F4 = '````', F3 = '```';
+    const f4 = rewrite('Write', { file_path: 'f.md', content: F4 + '\n' + F3 + '\n' + P('NOW') + '\n' + F4 + '\nafter ' + P('DATE') }, v);
+    ok(wrap && wrap.content === 'see `the form\n' + P('NOW') + '` · real 07:05'
+      && f4 && f4.content === F4 + '\n' + F3 + '\n' + P('NOW') + '\n' + F4 + '\nafter 2026-10-23',
+      'bugs/143 (judge s103): a code span across a line end keeps it; a four-backtick fence holds a three-backtick line; after the fence — filled');
     const js = rewrite('Write', { file_path: 'r.mjs', content: 'const at = `' + P('NOW') + '`;' }, v);
     ok(js && js.content === 'const at = `2026-10-23 07:05 +03:00`;', 'bugs/143: outside markdown a backtick is the language\'s own — filled as before');
     const a1 = asciiForms('Write', { file_path: 'n.md', content: 'Created: [NOW] · `[NOW-ISO]` in code' }, () => '');
