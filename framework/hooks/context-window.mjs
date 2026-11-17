@@ -37,9 +37,11 @@
 //  ≈ 2026-11-06 15:35 (session 98, judge of epics PT6 · HC10): the re-arm after a compaction and the voice at 80 % — hygiene only
 //  (--selftest 12/12, four mutants each red on its case; report testcases/reports/2026-11-06_s98-judge-debt-mm-tk10.md); a live
 //  compaction re-arm — NOT observed]
-import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync, readdirSync, statSync, mkdtempSync, rmSync } from 'node:fs';
 import { join, dirname, resolve, basename } from 'node:path';
-import { homedir } from 'node:os';
+import { homedir, tmpdir } from 'node:os';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 const STATE = join('.kaif', 'context-window.json');
 const DEPLOYMENT = join('.kaif', 'kaif.json');
@@ -149,8 +151,9 @@ export function transcriptOf(root, home = homedir(), sid = process.env.CLAUDE_CO
   } catch { return null; }
 }
 // Do this project's hooks run in this session? (session 101, bugs/138: Claude Code gives a folder without trust none of its hooks, skills or
-// CLAUDE.md; wired is not running.) This hook records every session it runs in on PostToolUse — no record of this session after its first
-// tool calls = the hooks do not run here. Pure: (state, id) → { code, line }.
+// CLAUDE.md; wired is not running.) This hook records every session it runs in from its first prompt (UserPromptSubmit · PostToolUse; since
+// bugs/142 — before it, only with a measurement, and the first tool call read «NOT running») — no record of this session = the hooks do not
+// run here. Pure: (state, id) → { code, line }.
 export function aliveLine(state, id) {
   if (state && state[id]) return { code: 0, line: `KAIF hooks: running in this session (${id}) — the context-window hook recorded it at ${state[id].at}.` };
   return { code: 1, line: `KAIF hooks: NOT running in this session (${id}) — wired, yet the agent system ran none of them. Tell the owner first: ` +
@@ -248,6 +251,23 @@ if (process.argv[2] === '--selftest') {
     ok(a0.code === 0 && /running in this session/.test(a0.line) && a1.code === 1 && /NOT running/.test(a1.line) && /Trust folder/.test(a1.line),
       'alive: this session recorded — exit 0; not recorded — exit 1 naming the owner\'s action «Trust folder»');
   }
+  { // bugs/142: the hook itself, run as Claude Code runs it, records a session from its FIRST prompt — a transcript with no model answer
+    // yet, or no transcript file yet; a subagent's event records nothing
+    const dir = mkdtempSync(join(tmpdir(), 'kaif-cw-first-'));
+    try {
+      mkdirSync(join(dir, '.kaif'), { recursive: true }); writeFileSync(join(dir, DEPLOYMENT), '{}');
+      const tp = join(dir, 'first.jsonl');
+      writeFileSync(tp, JSON.stringify({ type: 'user', message: { role: 'user', content: 'resume' } }) + '\n');
+      const run = (ev) => spawnSync(process.execPath, [fileURLToPath(import.meta.url)], { input: JSON.stringify(ev),
+        env: { ...process.env, CLAUDE_PROJECT_DIR: dir }, encoding: 'utf8', timeout: 20000 });
+      run({ hook_event_name: 'UserPromptSubmit', session_id: 'first-a', transcript_path: tp, cwd: dir });
+      run({ hook_event_name: 'UserPromptSubmit', session_id: 'first-b', transcript_path: join(dir, 'not-yet.jsonl'), cwd: dir });
+      run({ hook_event_name: 'PostToolUse', session_id: 'sub-c', agent_id: 'x1', transcript_path: tp, cwd: dir });
+      const st = readJson(join(dir, STATE)) || {};
+      ok(aliveLine(st, 'first-a').code === 0 && aliveLine(st, 'first-b').code === 0 && !st['sub-c'],
+        'alive from the first prompt (bugs/142): no model answer yet, no transcript yet — recorded; a subagent\'s event — not');
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
@@ -284,29 +304,37 @@ if (process.argv[2] === '--measure') {
 
 try {
   const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
-  if (ev.transcript_path && existsSync(ev.transcript_path)) {
+  // bugs/142 (2.10): the session's PRESENCE is recorded on every event of the main thread from its first prompt — even before the transcript
+  // holds a model answer with usage, or exists at all. The record used to come only with a measurement, so the first tool call of a session
+  // ran `--alive` before any record could exist and said «NOT running» while the hooks ran. The levels are still judged only by a measurement.
+  // [TESTED: 2026-11-18 · functional — tools/sandbox/probes/bugs142-first-prompt-alive.mjs: this hook run as Claude Code runs it on a first
+  //  prompt (a transcript without a model answer · no transcript yet) — both sessions «--alive exit 0»; the HEAD hook — both «exit 1»; the
+  //  source's live session — `--alive` exit 0; hygiene — the selftest case «alive from the first prompt», mutants G7 · G8 red on exactly it;
+  //  the first call of a NEW chat — not observed (the DONE condition of bugs/142); report testcases/reports/2026-11-18_bugs141-142-decision-name-and-alive.md]
+  if (typeof ev.session_id === 'string' && ev.session_id && !fromSubagent(ev)) {
     const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(ev.cwd);
     const marker = readJson(join(root, DEPLOYMENT)) || {};
     const cw = (marker.contextWindow && typeof marker.contextWindow === 'object') ? marker.contextWindow : {};
-    const tail = tailOf(ev.transcript_path), lu = lastUsage(tail);
-    if (lu && !fromSubagent(ev)) {
-      const id = String(ev.session_id || 'no-session'), all = readJson(join(root, STATE)) || {};
-      const st = all[id] || { said: [], seen: 0 };
+    const lu = ev.transcript_path && existsSync(ev.transcript_path) ? lastUsage(tailOf(ev.transcript_path)) : null;
+    const id = ev.session_id, all = readJson(join(root, STATE)) || {};
+    const st = all[id] || { said: [], seen: 0 };
+    let d = null;
+    if (lu) {
       st.seen = Math.max(st.seen || 0, lu.used);
       const win = windowOf({ model: lu.model, env: process.env, tokens: cw.tokens, seen: st.seen });
       const gate = closeGate(ev, lu.used, win, cw);
       if (gate) { process.stdout.write(JSON.stringify(gate)); process.exit(0); }
       if (ev.hook_event_name === 'PreToolUse') process.exit(0);   // the gate's event says nothing else — the levels speak on the others
       st.said = keptLevels(lu.used, win, st.said || []);
-      const d = decide(lu.used, win, cw, st.said);
+      d = decide(lu.used, win, cw, st.said);
       if (d) st.said = [...st.said, d.level];
-      all[id] = { ...st, at: new Date().toISOString() };
-      const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
-      const kept = {}; for (const k of ids) kept[k] = all[k];
-      const p = join(root, STATE); mkdirSync(dirname(p), { recursive: true });
-      writeFileSync(p + '.tmp', JSON.stringify(kept)); renameSync(p + '.tmp', p);
-      if (d) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: ev.hook_event_name, additionalContext: d.line } }));
-    }
+    } else if (ev.hook_event_name === 'PreToolUse') process.exit(0);   // nothing to measure: the gate does not block; presence comes on the others
+    all[id] = { ...st, at: new Date().toISOString() };
+    const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
+    const kept = {}; for (const k of ids) kept[k] = all[k];
+    const p = join(root, STATE); mkdirSync(dirname(p), { recursive: true });
+    writeFileSync(p + '.tmp', JSON.stringify(kept)); renameSync(p + '.tmp', p);
+    if (d) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: ev.hook_event_name, additionalContext: d.line } }));
   }
 } catch { /* a hook never breaks the session */ }
 process.exit(0);

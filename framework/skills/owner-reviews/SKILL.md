@@ -514,8 +514,10 @@ hand over a path is born (I15).
   and the guard silently misses its own language.
 - **C5. The page** — the elements are named above (P1–P9); the contract adds nothing on top.
 - **C6. Decision writes — the three places of I2, with derived names:** back into the source md
-  with a provenance comment · `<doc-base>.decision.json` beside it · an archive copy
-  `<doc-base>--<time>.json` that is never overwritten. The owner's already-written answer is
+  with a provenance comment · `<doc-base>.decision.json` beside it (a base another document
+  already holds gets the document's path tag — two `compare.webp` in two folders keep two
+  decisions, origin #199) · an archive copy `<doc-base>--<time>.json` that is never
+  overwritten. The owner's already-written answer is
   untouchable — new text arrives as a dated follow-up field; the document-wide comment appends
   as a dated block at the END of the file. Three write rules paid for by the field pilot
   (2026-08-07): questions are applied BOTTOM-UP — an inserted comment shifts every line below

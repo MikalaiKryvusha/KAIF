@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "7ad5a36cb6a69a02ed8054dab731edc02d5b2a2201cb498682c549483e597c4e",
+    "sourceTree": "3065f653c65028c7247246719dae3d7c827317b1992bc06eefec8b42634ac40d",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -120,7 +120,9 @@
       "THE VOICE LINT READS EVERY §8 OF THE PORTRAIT (2.10, epic HC, step HC1; origin ticket #116 — after the `owner-voice-core` replacement a portrait «genre shell + snapshot» answered SKIPPED: the shell's own §8 came first and its old table lacked the pattern/hint columns): `kaif-voice-lint check` gathers rules from every §8 section of `AUTHOR_STYLOMETRY.md`; a table without the pattern/hint columns is a note, never the end of the search; a pattern both tables carry is one rule. MIGRATION — agent work: none; a check that answered SKIPPED on such a portrait now judges by the snapshot's rules — expect findings where there were none.",
       "AN ANONYMOUS DEPLOYMENT WRITES NO GIT NAME (2.10, epic HC, step HC4; origin ticket #135 R1 — a field anonymous install wrote the owner's git name into the creed and the deploy manifest; the KAIF owner's decision, rendered from Russian: \"neutral words instead of the name\"): with `--mode anonymous`, `<AUTHOR>` is \"the project owner\" — the creed reads «BELIEVE IN THE PRODUCT AND IN THE PROJECT OWNER'S VISION», the identity table «the project owner» — also over a name an older version froze into the deploy manifest; the contour does not take those words for a name to call. MIGRATION — agent work: an anonymous deployment whose creed or identity row already carries the git name — it is the owner's text: offer the neutral words, change it only with the owner's word; standard deployments: none.",
       "THE ENTRY COST COUNTS THE WHOLE ENTRY (2.10, epic HC, step HC9; origin ticket #179, its cheap half — a field /resume read ≈ 140k tokens while the line said 112k): `check` → `ℹ entry cost` now adds every document the deployed `/resume` names as a bullet beyond the re-read core (by name; `EXPERIENCE.md` is grepped and stays out) and the skill file itself; a document over 25k tokens — more than one Read call of Claude Code returns — is named on a `⚠ entry cost:` line of its own. Reference, never a stop. MIGRATION — agent work: none; a named document is a candidate for moving its reference sections out.",
-      "WHAT THE AGENT SAYS ALOUD IS KEPT IN THE PROJECT, AND THE SOFT VOICE SHIPS (2.10; decision №156 of the origin — the KAIF owner, rendered from Russian: \"what the agent wants to say it writes into a txt file — I see it in the harness window and it stays in the project history; put these phrases into a separate folder of the project, name the files by the current time, date and the meaning of what was said\" · \"the voice tuned on a field project — take those settings\"): the contour gains `.kaif/tools/contour/voice-soft.mjs`. `review.mjs --call` writes its phrase to `voice/<YYYY-MM-DD_HH-MM-SS>_<meaning>.txt` (`contour.voiceLog` names another folder); the guide's call line tells the agent to write a phrase file there first and speak it with `voice-soft.mjs --file <it> --play`; the tool names the file by the machine's clock. The same tool is a soft voice that honours the KAIF_VOICE_TOOL contract: an engine from `KAIF_VOICE_RENDER` or `KAIF_VOICE_BASE_TOOL` renders, and ffmpeg applies tempo 0.90, bass +6 dB at 140 Hz, a 4200 Hz lowpass, 1 s of silence first, the beeps at ×2.5 and 2 s before the words. MIGRATION — agent work: if the project already speaks through its own soft-voice script, point `KAIF_VOICE_TOOL` at `.kaif/tools/contour/voice-soft.mjs` only after the owner hears it; commit `voice/` (it is the project's history, not a temp folder)."
+      "WHAT THE AGENT SAYS ALOUD IS KEPT IN THE PROJECT, AND THE SOFT VOICE SHIPS (2.10; decision №156 of the origin — the KAIF owner, rendered from Russian: \"what the agent wants to say it writes into a txt file — I see it in the harness window and it stays in the project history; put these phrases into a separate folder of the project, name the files by the current time, date and the meaning of what was said\" · \"the voice tuned on a field project — take those settings\"): the contour gains `.kaif/tools/contour/voice-soft.mjs`. `review.mjs --call` writes its phrase to `voice/<YYYY-MM-DD_HH-MM-SS>_<meaning>.txt` (`contour.voiceLog` names another folder); the guide's call line tells the agent to write a phrase file there first and speak it with `voice-soft.mjs --file <it> --play`; the tool names the file by the machine's clock. The same tool is a soft voice that honours the KAIF_VOICE_TOOL contract: an engine from `KAIF_VOICE_RENDER` or `KAIF_VOICE_BASE_TOOL` renders, and ffmpeg applies tempo 0.90, bass +6 dB at 140 Hz, a 4200 Hz lowpass, 1 s of silence first, the beeps at ×2.5 and 2 s before the words. MIGRATION — agent work: if the project already speaks through its own soft-voice script, point `KAIF_VOICE_TOOL` at `.kaif/tools/contour/voice-soft.mjs` only after the owner hears it; commit `voice/` (it is the project's history, not a temp folder).",
+      "«ARE THIS SESSION'S HOOKS RUNNING?» IS TRUE FROM THE FIRST TOOL CALL (2.10; the source's own entry: `/resume` step 0 ran `.kaif/hooks/context-window.mjs --alive` in the session's first tool call and got «NOT running … Trust folder» while its prompt hooks had already run): the hook recorded a session only together with a measurement — a model answer with usage in the transcript — so nothing could be recorded before the first tool call ended. It now records the session's presence on every event of the main thread from the first prompt; the window levels are still judged by the measurement only. MIGRATION — agent work: none.",
+      "TWO DOCUMENTS WITH ONE FILE NAME KEEP TWO VERDICTS (2.10; origin ticket #199 — a field project had two mock-up pictures `compare.webp` in two folders, and the second verdict would have replaced the owner's first in the decision record the queue, the debt list and the page read): the contour named the decision record (`<decisionsDir>/<name>.decision.json`) and the page lock by the document's BARE file name. Now a document keeps the bare name while it is free or already its own; a document whose bare name ANOTHER document holds (the record's `document`, the lock's `doc`) gets `<name>--<8 hex of its path>.decision.json` and keeps it; a write over another document's record is refused before the source is touched, and such a record is never read as this one's. No record moves: every existing record still resolves to its own file. MIGRATION — agent work: none; a project that carried the local guard of the ticket (`recordDecision` refuses a foreign record, `readDecision` returns null for one) gets it as part of the shipped contour — the next update replaces the edited `core.mjs` with this one."
     ],
     "2.9": [
       "NO HOOK STOPS THE AGENT ON THE OWNER'S WORD ANY MORE (2.9; origin ticket #144 — the KAIF owner on a field project, rendered from Russian: \"Remove this! Out of KAIF entirely!\" · \"I don't like that you stop on this!\" — five short remarks of the owner were five stops): the hook `.kaif/hooks/pretool-owner-word.mjs` (2.8; refused the next tool call after a mid-turn word) is RETIRED, and its pre-release `Stop` companion with the `⏩ <next step>` line never ships. The update removes an untouched copy of the script; `node .kaif/kaif-core.mjs wire-hooks` now also REMOVES the entries that run a retired hook from `.claude/settings.json` (the owner's other entries and their order stay, the values are proven before the write) — the update task names the item; `check` names an entry still left (in `.claude/settings.local.json` too, which the machinery never edits). \"The owner's word mid-turn\" now says: answer at once as text, then WORK ON in the same turn — never end the turn just to answer, and the turn's closing message repeats the answer; \"stop\" is still a stop. MIGRATION — agent work: if your own texts (STATUS, house rules, experience) tell the agent to end an answer with `⏩`, drop that rule.",
@@ -7705,8 +7707,10 @@ hand over a path is born (I15).
   and the guard silently misses its own language.
 - **C5. The page** — the elements are named above (P1–P9); the contract adds nothing on top.
 - **C6. Decision writes — the three places of I2, with derived names:** back into the source md
-  with a provenance comment · `<doc-base>.decision.json` beside it · an archive copy
-  `<doc-base>--<time>.json` that is never overwritten. The owner's already-written answer is
+  with a provenance comment · `<doc-base>.decision.json` beside it (a base another document
+  already holds gets the document's path tag — two `compare.webp` in two folders keep two
+  decisions, origin #199) · an archive copy `<doc-base>--<time>.json` that is never
+  overwritten. The owner's already-written answer is
   untouchable — new text arrives as a dated follow-up field; the document-wide comment appends
   as a dated block at the END of the file. Three write rules paid for by the field pilot
   (2026-08-07): questions are applied BOTTOM-UP — an inserted comment shifts every line below
@@ -10738,7 +10742,7 @@ or cut it. Prebuilt spheres in this repo are maintained with the framework itsel
 //         (`<!-- archaeology: … → N hits · read: … · prior: … -->`); the refusal prints the READY grep.
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
-import { join, resolve, basename, extname } from 'node:path';
+import { join, resolve, basename, extname, relative } from 'node:path';
 import { createHash } from 'node:crypto';
 import { PARSER, texts } from './texts.mjs';
 
@@ -11519,11 +11523,43 @@ export function splitParagraphs(md) {
 }
 
 // ── C6/I2: the decision is written to THREE places with derived names ─────────────────────────
+// bugs/141 (2.10, origin issue #199): the derived name dropped the document's folder and extension — `a/compare.webp`, `b/compare.webp`
+// and `a/compare.md` shared ONE place-2 record, and the second verdict replaced the owner's first in every reader (queue, debt, page).
+// The namespace stays flat and keeps the bare name for the document that already holds it (no field record moves, no migration); a
+// document whose bare name ANOTHER document holds (the record's `document`, the page lock's `doc`) is named `<stem>--<8 hex of the sha256
+// of its path>` and keeps that name once it has it. A record of another document is never overwritten (refused) and never read as this
+// one's (null) — the field's own remediation, kept as the backstop.
+// [TESTED: 2026-11-18 · functional — tools/sandbox/probes/bugs141-two-mockups-live.mjs: the real contour server and its mock-up page in a
+//  headless Edge, a remark typed and Done pressed for a/compare.png then b/compare.png — «a reads: A answer · b reads: B answer», two
+//  decision files; the HEAD contour — «a reads: B answer»; the real world — 250 accumulated records of 14 projects read the same by both cores
+//  (bugs141-real-records.mjs); hygiene — five selftest cases «bugs/141 #199», mutants N1–N5 red on exactly their cases;
+//  report testcases/reports/2026-11-18_bugs141-142-decision-name-and-alive.md]
 const docBase = (docPath) => basename(docPath).replace(/\.[^.]+$/u, '');
+// the document's identity: its path relative to the project root, forward slashes; Windows paths do not tell case apart
+export const docKeyOf = (root, docPath) => {
+  const rel = relative(resolve(root), resolve(root, String(docPath))).replace(/\\/g, '/');
+  return process.platform === 'win32' ? rel.toLowerCase() : rel;
+};
+export const pathTag = (key) => createHash('sha256').update(String(key)).digest('hex').slice(0, 8);
+// The document a record or a lock in `file` belongs to (normalised by docKeyOf), or null — no file, unreadable, no such field (a record
+// written before the field existed belongs to whoever reads it, as before), or the queue page's own key.
+export function holderOf(root, file, field) {
+  if (!existsSync(file)) return null;
+  const j = readJson(file), v = j && j[field];
+  return typeof v === 'string' && v && v !== '_queue' ? docKeyOf(root, v) : null;
+}
+// The file stem of `docPath` inside `dir` for files `<stem><ext>` that name their document in `field`.
+export function ownedStem(root, dir, docPath, stem, ext, field) {
+  const me = docKeyOf(root, docPath), qualified = stem + '--' + pathTag(me);
+  if (existsSync(join(dir, qualified + ext))) return qualified;          // this document already lives under its qualified name
+  const holder = holderOf(root, join(dir, stem + ext), field);
+  return holder !== null && holder !== me ? qualified : stem;           // the bare name is another document's
+}
 export function decisionPaths(root, docPath, cfg = loadContourConfig(root)) {
-  const base = docBase(docPath);
+  const dir = resolve(root, cfg.decisionsDir);
+  const base = ownedStem(root, dir, docPath, docBase(docPath), '.decision.json', 'document');
   return {
-    decision: resolve(root, cfg.decisionsDir, base + '.decision.json'),
+    decision: resolve(dir, base + '.decision.json'),
     archive: (at) => resolve(root, cfg.archiveDir, base + '--' + at.replace(/[:.]/g, '-') + '.json'),
   };
 }
@@ -11551,6 +11587,14 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
     ...(payload.recovered ? { recovered: true } : {}), // LP (2.7, #66): the answer was saved on the owner's computer while the server was gone and picked up by the agent
     ...(payload.staleRevision ? { staleRevision: true } : {}), // OW6 (2.8): made against an older revision — kept as data, not written into the document
   };
+  const p = decisionPaths(root, docPath, cfg);
+  // bugs/141: place 2 is never written over another document's record — a name that cannot be told apart (a tag collision, a hand-made
+  // file); the owner's recorded answer is untouchable (I2), so the write stops loudly BEFORE the source md is touched
+  const holder = holderOf(root, p.decision, 'document');
+  if (holder !== null && holder !== docKeyOf(root, docPath)) {
+    throw new Error('decision file ' + relative(resolve(root), p.decision).replace(/\\/g, '/') + ' belongs to ' + holder
+      + ', not to ' + docKeyOf(root, docPath) + ' — not overwritten (bugs/141): rename one of the two documents');
+  }
   const isMd = extname(abs).toLowerCase() === '.md' && !payload.staleRevision; // OW6: an older revision's answer never lands by question numbers
   if (isMd) {
     const src = readFileSync(abs, 'utf8');
@@ -11613,7 +11657,6 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
     }
     if (touched) writeFileSync(abs, lines.join(eol), 'utf8');
   }
-  const p = decisionPaths(root, docPath, cfg);
   // OW6 (2.8, the KAIF owner's word — answers are saved ONE AT A TIME in every project): a record from the SAME page — its `rev` is
   // the document revision the previous record left (`revAfter`) — MERGES into the decision; a new revision of the document starts a
   // new decision (old answers never land on renumbered questions). The archive (place 3) keeps every record as it came.
@@ -11638,7 +11681,8 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
 export function readDecision(root, docPath, cfg = loadContourConfig(root)) {
   const p = decisionPaths(root, docPath, cfg).decision;
   if (!existsSync(p)) return null;
-  return readJson(p);
+  const holder = holderOf(root, p, 'document');   // bugs/141: another document's record is never read as this one's
+  return holder !== null && holder !== docKeyOf(root, docPath) ? null : readJson(p);
 }
 
 // ── C7/I4: the sending gate — one function for both sides, never throws ───────────────────────
@@ -11708,7 +11752,7 @@ export const tmpDirOf = (root) => join(resolve(root), ...TMP_DIR.split('/'));
 // port · I32 the call never blocks · I33/I34 beeps first · I35/I36 voice by language, honest
 // fallback · I37/I38 notice class · I39 stale queue · I40–I42 the fact of SHOWING · M8 render ≠ show.
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync, utimesSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync, utimesSync, renameSync } from 'node:fs';
 import { tmpdir, platform } from 'node:os';
 import { createServer, request as httpRequest } from 'node:http';
 import { connect as netConnect, createServer as netCreateServer } from 'node:net';
@@ -11730,6 +11774,7 @@ import {
   withImages, imageRefs, // TK10 (b), #187: pictures of a document shown as pictures
   quietNow, ownerSeenAt, // TK10 (c), #193: the owner's presence lifts the quiet hours
   DEFAULT_OWNER, // HC judge finding 7: the neutral owner words fall back to it
+  ownedStem, // bugs/141 (origin #199): a page lock is named by the same rule as its decision record
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 import { logPhrase, voiceSoftSelftest } from './voice-soft.mjs';
@@ -13085,6 +13130,18 @@ function decisionWords(d) {
   return parts.join(', ');
 }
 const lockPath = (root, key) => join(decisionsAbs(root), key.replace(/\.[^.]+$/u, '') + '.lock');
+// bugs/141 (2.10, origin issue #199): a document's page lock was named by its BARE file name — with `a/compare.webp` live, the door of
+// `b/compare.webp` read a's lock as its own and printed «Already open by this contour: <a's page>». The key follows the record's rule
+// (core.mjs → ownedStem): the bare name unless ANOTHER document's page holds that lock (its `doc`), then `<stem>--<path tag>`; the key
+// keeps the document's extension, so lockPath strips that and nothing else.
+// [TESTED: 2026-11-18 · selftest «bugs/141 #199: --close of b/compare.webp finds no page of its own while a/compare.webp holds the bare lock»,
+//  mutant N4 (the bare key again) red on exactly it; the recovery key from the lock's file name — read only, not run (a named gap);
+//  report testcases/reports/2026-11-18_bugs141-142-decision-name-and-alive.md]
+const pageKey = (root, docPath) => {
+  const base = basename(docPath), ext = extname(base), stem = ext ? base.slice(0, -ext.length) : base;
+  const owned = ownedStem(root, decisionsAbs(root), docPath, stem, '.lock', 'doc');
+  return owned === stem ? base : owned + ext;
+};
 // TK7d (judge TK7c, hunt 4): an unreadable lock is REMOVED only by the door raising that same document's page (`removeBroken`) — the close
 // and the window recovery read every lock, and deleting a half-written one there removed a live page's lock (the TK7b rule, bypassed)
 function checkLock(root, key, { removeBroken = false } = {}) {
@@ -13213,7 +13270,7 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
     : (existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.decision.json')).map((f) => join(dir, f)) : []));
   const stamp = (f) => { try { const s = lstatSync(f); return s.size + ':' + s.mtimeMs; } catch { return null; } };
   const start = new Map(files().map((f) => [f, stamp(f)]));
-  const lock = lockPath(root, docPath ? basename(docPath) : '_queue');
+  const lock = lockPath(root, docPath ? pageKey(root, docPath) : '_queue');
   // (light re-judge RL 2.8, J-F1) the QUEUE page shows this document too: a document waiter next to a live queue page waits — the
   // queue server holds the `_queue` lock, never the document's own, and the B-F1 window used to end such a waiter with a false line
   const queueLock = docPath ? lockPath(root, '_queue') : null;
@@ -13288,8 +13345,9 @@ export async function serveContour(root, { docPath = null, batch = false, notice
     } catch { /* an unreadable document fails below with its own voice */ }
   }
   // I48: asked BEFORE the page is built (the answer is asynchronous — the other page must answer at its address); used after the own-lock check
-  const other = await otherLivePage(root, batch ? '_queue' : basename(docPath));
-  const heldNow = await liveOwnLock(root, batch ? '_queue' : basename(docPath)); // TK7c: the own lock is judged by its address too
+  const lockKey = batch ? '_queue' : pageKey(root, docPath); // bugs/141: one key for the door, the own lock and the page's lock
+  const other = await otherLivePage(root, lockKey);
+  const heldNow = await liveOwnLock(root, lockKey); // TK7c: the own lock is judged by its address too
   return new Promise((resolveP) => {
     const forOwner = () => ownerDocs(root, { includeStale });
     const build = () => batch ? buildIndexPage(root, forOwner(), pendingNotices(root))
@@ -13298,7 +13356,6 @@ export async function serveContour(root, { docPath = null, batch = false, notice
           : face === 'mockup' ? buildMockupPage(root, docPath) : buildPage(root, docPath);
     const buildDoc = (rel) => (readQueue(root).some((i) => i.doc === rel && isNoticeItem(i)) ? buildNoticePage(root, rel) : buildPage(root, rel));
     const first = build();
-    const lockKey = batch ? '_queue' : basename(docPath);
     const held = heldNow;
     if (held && !held.stale) {
       log('Already open by this contour: ' + held.url + ' (pid ' + held.pid + ') — not raising a second window (I29).');
@@ -13581,7 +13638,7 @@ function postLocal(url, ms = 3000) {
 export async function closeContour(root, docPath, { force = false, ownerWord = null, log = console.log, now = Date.now() } = {}) {
   const cfg = cfgOf(root);
   const isQueue = docPath === '--queue';
-  const key = isQueue ? '_queue' : basename(docPath);
+  const key = isQueue ? '_queue' : pageKey(root, docPath);
   const rel = isQueue ? '(queue)' : relDoc(root, docPath);
   const lock = checkLock(root, key);
   if (!lock) { log('no live page for ' + rel + ' — nothing to close (no lock)'); return EXIT_DECIDED; }
@@ -13756,7 +13813,7 @@ export function recoverFromWindow(root, { log = console.log } = {}) {
   if (!existsSync(profileDir(root))) return Promise.resolve(result); // no window ever ran on the project profile — nothing to pick up, no browser launched
   const dir = decisionsAbs(root);
   const locks = existsSync(dir)
-    ? readdirSync(dir).filter((f) => f.endsWith('.lock')).map((f) => ({ key: f.replace(/\.lock$/u, ''), lock: checkLock(root, f.replace(/\.lock$/u, '')) })).filter((x) => x.lock && x.lock.stale)
+    ? readdirSync(dir).filter((f) => f.endsWith('.lock')).map((f) => ({ key: f, lock: checkLock(root, f) })) /* bugs/141: lockPath strips «.lock» once */.filter((x) => x.lock && x.lock.stale)
     : [];
   if (!locks.length) return Promise.resolve(result);
   const heldBy = profileHeld(root);
@@ -14325,6 +14382,54 @@ export async function selftest(log = console.log) {
     'mockup face: Done with empty fields records noRemarks: true (bugs/113)');
   ok(mp.html.includes(texts('en').ph.noRemarks) && mp.html.includes("p.noRemarks=true") && !mp.html.includes("CFG.face==='mockup'&&!(p.comment"),
     'mockup page carries the no-remarks hint and the client gate no longer refuses an empty mockup/proofreading record (bugs/113)');
+
+  // bugs/141 (2.10, origin issue #199): two documents with ONE file name in two folders — the decision record and the page lock were named
+  // by the bare file name, and the second verdict replaced the first in place 2. Each keeps its own; the bare name stays with its holder.
+  {
+    const DD = join(root, 'interviews', 'decisions');
+    const tagOf = (k) => createHash('sha256').update(k).digest('hex').slice(0, 8);
+    for (const d of ['a', 'b', 'q', 'z']) mkdirSync(join(root, d), { recursive: true });
+    writeFileSync(join(root, 'a', 'compare.webp'), pngBytes); writeFileSync(join(root, 'b', 'compare.webp'), pngBytes);
+    let thrown = '';
+    try {
+      recordDecision(root, 'a/compare.webp', { kind: 'mockup', comment: 'A answer' }, cfg);
+      recordDecision(root, 'b/compare.webp', { kind: 'mockup', comment: 'B answer' }, cfg);
+    } catch (e) { thrown = e.message; }
+    const da = readDecision(root, 'a/compare.webp', cfg), db = readDecision(root, 'b/compare.webp', cfg);
+    const bare = JSON.parse(stripBom(readFileSync(join(DD, 'compare.decision.json'), 'utf8')));
+    ok(!thrown && da && da.comment === 'A answer' && db && db.comment === 'B answer' && bare.document === 'a/compare.webp'
+      && existsSync(join(DD, 'compare--' + tagOf('b/compare.webp') + '.decision.json')),
+      'bugs/141 #199: a/compare.webp and b/compare.webp keep their own answers — the bare record stays with a, b is compare--<tag>'
+      + (thrown ? ' [threw: ' + thrown + ']' : ''));
+    // the qualified name is kept once taken: the bare record moved away (renamed, deleted by hand) does not send b back to the bare name
+    renameSync(join(DD, 'compare.decision.json'), join(DD, 'compare.away'));
+    const dbAway = readDecision(root, 'b/compare.webp', cfg);
+    renameSync(join(DD, 'compare.away'), join(DD, 'compare.decision.json'));
+    ok(dbAway && dbAway.comment === 'B answer', 'bugs/141 #199: b keeps its qualified record when the bare record is gone');
+    // a record written before the `document` field — or by hand without it — is read by whoever asks, as before (no migration)
+    writeFileSync(join(DD, 'legacy.decision.json'), JSON.stringify({ kind: 'mockup', comment: 'old answer' }) + '\n');
+    const dl = readDecision(root, 'z/legacy.png', cfg);
+    ok(dl && dl.comment === 'old answer', 'bugs/141 #199: a record without the document field is still read under its bare name');
+    // place 2 that cannot be told apart (a hand-made file under the qualified name) — refused BEFORE the source md is touched; never read
+    writeFileSync(join(root, 'q', 'note.md'), '# Note\n\nBody.\n');
+    writeFileSync(join(DD, 'note.decision.json'), JSON.stringify({ kind: 'interview', document: 'p/note.md', comment: 'P answer' }) + '\n');
+    writeFileSync(join(DD, 'note--' + tagOf('q/note.md') + '.decision.json'), JSON.stringify({ kind: 'interview', document: 'zzz/other.md' }) + '\n');
+    let refusal = ''; try { recordDecision(root, 'q/note.md', { kind: 'interview', comment: 'Q answer' }, cfg); } catch (e) { refusal = e.message; }
+    ok(/belongs to zzz\/other\.md, not to q\/note\.md — not overwritten \(bugs\/141\)/.test(refusal)
+      && readFileSync(join(root, 'q', 'note.md'), 'utf8') === '# Note\n\nBody.\n' && readDecision(root, 'q/note.md', cfg) === null
+      && JSON.parse(stripBom(readFileSync(join(DD, 'note.decision.json'), 'utf8'))).comment === 'P answer',
+      'bugs/141 #199: a write over another document\'s record is refused before the md is touched; that record is never read as this one\'s'
+      + ' [' + (refusal || 'no refusal') + ']');
+    // the page lock: with a's page live, the door of b/compare.webp does not take a's lock for its own
+    writeFileSync(lockPath(root, 'compare.webp'), JSON.stringify({ pid: process.pid, url: 'http://127.0.0.1:9/', doc: 'a/compare.webp',
+      title: 'compare.webp', closeToken: 'bugs141', startedAt: new Date().toISOString() }) + '\n');
+    const said = []; const closed = await closeContour(root, 'b/compare.webp', { log: (l) => said.push(l) });
+    ok(closed === EXIT_DECIDED && /no live page for b\/compare\.webp — nothing to close \(no lock\)/.test(said.join('\n'))
+      && existsSync(lockPath(root, 'compare.webp')),
+      'bugs/141 #199: --close of b/compare.webp finds no page of its own while a/compare.webp holds the bare lock — a\'s lock untouched'
+      + ' [' + said.join(' | ') + ']');
+    rmSync(lockPath(root, 'compare.webp'), { force: true });
+  }
 
   // I40–I42: the fact of showing, never-shown first, the gate by exit code
   const now = new Date('2026-09-05T12:00:00Z');
@@ -20236,9 +20341,11 @@ process.exit(0);
 //  ≈ 2026-11-06 15:35 (session 98, judge of epics PT6 · HC10): the re-arm after a compaction and the voice at 80 % — hygiene only
 //  (--selftest 12/12, four mutants each red on its case; report testcases/reports/2026-11-06_s98-judge-debt-mm-tk10.md); a live
 //  compaction re-arm — NOT observed]
-import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync, readdirSync, statSync, mkdtempSync, rmSync } from 'node:fs';
 import { join, dirname, resolve, basename } from 'node:path';
-import { homedir } from 'node:os';
+import { homedir, tmpdir } from 'node:os';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 
 const STATE = join('.kaif', 'context-window.json');
 const DEPLOYMENT = join('.kaif', 'kaif.json');
@@ -20348,8 +20455,9 @@ export function transcriptOf(root, home = homedir(), sid = process.env.CLAUDE_CO
   } catch { return null; }
 }
 // Do this project's hooks run in this session? (session 101, bugs/138: Claude Code gives a folder without trust none of its hooks, skills or
-// CLAUDE.md; wired is not running.) This hook records every session it runs in on PostToolUse — no record of this session after its first
-// tool calls = the hooks do not run here. Pure: (state, id) → { code, line }.
+// CLAUDE.md; wired is not running.) This hook records every session it runs in from its first prompt (UserPromptSubmit · PostToolUse; since
+// bugs/142 — before it, only with a measurement, and the first tool call read «NOT running») — no record of this session = the hooks do not
+// run here. Pure: (state, id) → { code, line }.
 export function aliveLine(state, id) {
   if (state && state[id]) return { code: 0, line: `KAIF hooks: running in this session (${id}) — the context-window hook recorded it at ${state[id].at}.` };
   return { code: 1, line: `KAIF hooks: NOT running in this session (${id}) — wired, yet the agent system ran none of them. Tell the owner first: ` +
@@ -20447,6 +20555,23 @@ if (process.argv[2] === '--selftest') {
     ok(a0.code === 0 && /running in this session/.test(a0.line) && a1.code === 1 && /NOT running/.test(a1.line) && /Trust folder/.test(a1.line),
       'alive: this session recorded — exit 0; not recorded — exit 1 naming the owner\'s action «Trust folder»');
   }
+  { // bugs/142: the hook itself, run as Claude Code runs it, records a session from its FIRST prompt — a transcript with no model answer
+    // yet, or no transcript file yet; a subagent's event records nothing
+    const dir = mkdtempSync(join(tmpdir(), 'kaif-cw-first-'));
+    try {
+      mkdirSync(join(dir, '.kaif'), { recursive: true }); writeFileSync(join(dir, DEPLOYMENT), '{}');
+      const tp = join(dir, 'first.jsonl');
+      writeFileSync(tp, JSON.stringify({ type: 'user', message: { role: 'user', content: 'resume' } }) + '\n');
+      const run = (ev) => spawnSync(process.execPath, [fileURLToPath(import.meta.url)], { input: JSON.stringify(ev),
+        env: { ...process.env, CLAUDE_PROJECT_DIR: dir }, encoding: 'utf8', timeout: 20000 });
+      run({ hook_event_name: 'UserPromptSubmit', session_id: 'first-a', transcript_path: tp, cwd: dir });
+      run({ hook_event_name: 'UserPromptSubmit', session_id: 'first-b', transcript_path: join(dir, 'not-yet.jsonl'), cwd: dir });
+      run({ hook_event_name: 'PostToolUse', session_id: 'sub-c', agent_id: 'x1', transcript_path: tp, cwd: dir });
+      const st = readJson(join(dir, STATE)) || {};
+      ok(aliveLine(st, 'first-a').code === 0 && aliveLine(st, 'first-b').code === 0 && !st['sub-c'],
+        'alive from the first prompt (bugs/142): no model answer yet, no transcript yet — recorded; a subagent\'s event — not');
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
@@ -20483,29 +20608,37 @@ if (process.argv[2] === '--measure') {
 
 try {
   const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
-  if (ev.transcript_path && existsSync(ev.transcript_path)) {
+  // bugs/142 (2.10): the session's PRESENCE is recorded on every event of the main thread from its first prompt — even before the transcript
+  // holds a model answer with usage, or exists at all. The record used to come only with a measurement, so the first tool call of a session
+  // ran `--alive` before any record could exist and said «NOT running» while the hooks ran. The levels are still judged only by a measurement.
+  // [TESTED: 2026-11-18 · functional — tools/sandbox/probes/bugs142-first-prompt-alive.mjs: this hook run as Claude Code runs it on a first
+  //  prompt (a transcript without a model answer · no transcript yet) — both sessions «--alive exit 0»; the HEAD hook — both «exit 1»; the
+  //  source's live session — `--alive` exit 0; hygiene — the selftest case «alive from the first prompt», mutants G7 · G8 red on exactly it;
+  //  the first call of a NEW chat — not observed (the DONE condition of bugs/142); report testcases/reports/2026-11-18_bugs141-142-decision-name-and-alive.md]
+  if (typeof ev.session_id === 'string' && ev.session_id && !fromSubagent(ev)) {
     const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(ev.cwd);
     const marker = readJson(join(root, DEPLOYMENT)) || {};
     const cw = (marker.contextWindow && typeof marker.contextWindow === 'object') ? marker.contextWindow : {};
-    const tail = tailOf(ev.transcript_path), lu = lastUsage(tail);
-    if (lu && !fromSubagent(ev)) {
-      const id = String(ev.session_id || 'no-session'), all = readJson(join(root, STATE)) || {};
-      const st = all[id] || { said: [], seen: 0 };
+    const lu = ev.transcript_path && existsSync(ev.transcript_path) ? lastUsage(tailOf(ev.transcript_path)) : null;
+    const id = ev.session_id, all = readJson(join(root, STATE)) || {};
+    const st = all[id] || { said: [], seen: 0 };
+    let d = null;
+    if (lu) {
       st.seen = Math.max(st.seen || 0, lu.used);
       const win = windowOf({ model: lu.model, env: process.env, tokens: cw.tokens, seen: st.seen });
       const gate = closeGate(ev, lu.used, win, cw);
       if (gate) { process.stdout.write(JSON.stringify(gate)); process.exit(0); }
       if (ev.hook_event_name === 'PreToolUse') process.exit(0);   // the gate's event says nothing else — the levels speak on the others
       st.said = keptLevels(lu.used, win, st.said || []);
-      const d = decide(lu.used, win, cw, st.said);
+      d = decide(lu.used, win, cw, st.said);
       if (d) st.said = [...st.said, d.level];
-      all[id] = { ...st, at: new Date().toISOString() };
-      const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
-      const kept = {}; for (const k of ids) kept[k] = all[k];
-      const p = join(root, STATE); mkdirSync(dirname(p), { recursive: true });
-      writeFileSync(p + '.tmp', JSON.stringify(kept)); renameSync(p + '.tmp', p);
-      if (d) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: ev.hook_event_name, additionalContext: d.line } }));
-    }
+    } else if (ev.hook_event_name === 'PreToolUse') process.exit(0);   // nothing to measure: the gate does not block; presence comes on the others
+    all[id] = { ...st, at: new Date().toISOString() };
+    const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
+    const kept = {}; for (const k of ids) kept[k] = all[k];
+    const p = join(root, STATE); mkdirSync(dirname(p), { recursive: true });
+    writeFileSync(p + '.tmp', JSON.stringify(kept)); renameSync(p + '.tmp', p);
+    if (d) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: ev.hook_event_name, additionalContext: d.line } }));
   }
 } catch { /* a hook never breaks the session */ }
 process.exit(0);
@@ -22906,8 +23039,8 @@ Exempt: answered questions, the declared `<!-- archaeology: n/a — <reason> -->
 | Fact | Where | Shape |
 |---|---|---|
 | the answer | back into the source md, at `**Answer:**` | `X) <text> <!-- owner-review: by <owner> · <local time> -->` |
-| the decision | `<decisionsDir>/<doc-basename>.decision.json` | `{ kind, document, by, at (ISO), atHuman (local words), comment, answers: { Q1: { choice, text, comment } } }` — plus `recovered: true` when the answer was saved on the owner's computer while the server was gone and picked up by the agent (2.7, LP); the provenance comment in the md says it too; the saves of ONE page MERGE into it (2.8, `rev` → `revAfter`), a new revision of the document starts a new decision |
-| the archive | `<decisionsDir>/archive/<doc-basename>--<ISO>.json` | a copy per save; never rewritten |
+| the decision | `<decisionsDir>/<doc-basename>.decision.json` — or `<doc-basename>--<8 hex of the document's path>.decision.json` when another document already holds the bare name (2.10, origin #199: two `compare.webp` in two folders) | `{ kind, document, by, at (ISO), atHuman (local words), comment, answers: { Q1: { choice, text, comment } } }` — plus `recovered: true` when the answer was saved on the owner's computer while the server was gone and picked up by the agent (2.7, LP); the provenance comment in the md says it too; the saves of ONE page MERGE into it (2.8, `rev` → `revAfter`), a new revision of the document starts a new decision; a record of ANOTHER document (its `document`) is never overwritten — the write is refused — and never read as this one's |
+| the archive | `<decisionsDir>/archive/<decision name>--<ISO>.json` | a copy per save; never rewritten |
 | the fact of SHOWING | `<decisionsDir>/shown.json` | `{ "<doc>": { "at": "<ISO>", "transport": "page \| batch \| chat" } }` — written when the window opens, or by hand for a pointed chat question (`--mark-shown <doc> --transport chat`) |
 | the queue | `<decisionsDir>/queue.json` | a STATE file — live documents are never moved into a pending folder |
 | the fact of IMPLEMENTING | `<decisionsDir>/implemented.json` | `{ "<doc>": { "<Q>": { "at": "<ISO>", "where": "<commit or file>" } } }` — the FOURTH fact (2.7, origin issue #54): written by the agent's hand the moment the decision lands in rules or code (`--mark-implemented <doc> <Q> --where <ref>`); a document whose every open question is implemented is never raised again — the queue and the show print `implemented, but open: <doc> Q1 → close the status` and exit 2 (`--queue --list` and a direct show: always; the batch `--queue`: the line is printed, exit 2 when nothing else waits); an OPEN question a withdrawal made moot takes the same fact with `"withdrawn": true, "why"` — `--mark-withdrawn <doc> <Q> --why <reason>` (2.8), never an answer on the owner's behalf; an answered one is refused |

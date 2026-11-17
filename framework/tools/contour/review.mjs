@@ -36,7 +36,7 @@
 // port · I32 the call never blocks · I33/I34 beeps first · I35/I36 voice by language, honest
 // fallback · I37/I38 notice class · I39 stale queue · I40–I42 the fact of SHOWING · M8 render ≠ show.
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync, utimesSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, rmSync, mkdtempSync, readdirSync, openSync, closeSync, lstatSync, utimesSync, renameSync } from 'node:fs';
 import { tmpdir, platform } from 'node:os';
 import { createServer, request as httpRequest } from 'node:http';
 import { connect as netConnect, createServer as netCreateServer } from 'node:net';
@@ -58,6 +58,7 @@ import {
   withImages, imageRefs, // TK10 (b), #187: pictures of a document shown as pictures
   quietNow, ownerSeenAt, // TK10 (c), #193: the owner's presence lifts the quiet hours
   DEFAULT_OWNER, // HC judge finding 7: the neutral owner words fall back to it
+  ownedStem, // bugs/141 (origin #199): a page lock is named by the same rule as its decision record
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 import { logPhrase, voiceSoftSelftest } from './voice-soft.mjs';
@@ -1413,6 +1414,18 @@ function decisionWords(d) {
   return parts.join(', ');
 }
 const lockPath = (root, key) => join(decisionsAbs(root), key.replace(/\.[^.]+$/u, '') + '.lock');
+// bugs/141 (2.10, origin issue #199): a document's page lock was named by its BARE file name — with `a/compare.webp` live, the door of
+// `b/compare.webp` read a's lock as its own and printed «Already open by this contour: <a's page>». The key follows the record's rule
+// (core.mjs → ownedStem): the bare name unless ANOTHER document's page holds that lock (its `doc`), then `<stem>--<path tag>`; the key
+// keeps the document's extension, so lockPath strips that and nothing else.
+// [TESTED: 2026-11-18 · selftest «bugs/141 #199: --close of b/compare.webp finds no page of its own while a/compare.webp holds the bare lock»,
+//  mutant N4 (the bare key again) red on exactly it; the recovery key from the lock's file name — read only, not run (a named gap);
+//  report testcases/reports/2026-11-18_bugs141-142-decision-name-and-alive.md]
+const pageKey = (root, docPath) => {
+  const base = basename(docPath), ext = extname(base), stem = ext ? base.slice(0, -ext.length) : base;
+  const owned = ownedStem(root, decisionsAbs(root), docPath, stem, '.lock', 'doc');
+  return owned === stem ? base : owned + ext;
+};
 // TK7d (judge TK7c, hunt 4): an unreadable lock is REMOVED only by the door raising that same document's page (`removeBroken`) — the close
 // and the window recovery read every lock, and deleting a half-written one there removed a live page's lock (the TK7b rule, bypassed)
 function checkLock(root, key, { removeBroken = false } = {}) {
@@ -1541,7 +1554,7 @@ export function waitForRecord(root, docPath = null, { log = console.log, pollMs 
     : (existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.decision.json')).map((f) => join(dir, f)) : []));
   const stamp = (f) => { try { const s = lstatSync(f); return s.size + ':' + s.mtimeMs; } catch { return null; } };
   const start = new Map(files().map((f) => [f, stamp(f)]));
-  const lock = lockPath(root, docPath ? basename(docPath) : '_queue');
+  const lock = lockPath(root, docPath ? pageKey(root, docPath) : '_queue');
   // (light re-judge RL 2.8, J-F1) the QUEUE page shows this document too: a document waiter next to a live queue page waits — the
   // queue server holds the `_queue` lock, never the document's own, and the B-F1 window used to end such a waiter with a false line
   const queueLock = docPath ? lockPath(root, '_queue') : null;
@@ -1616,8 +1629,9 @@ export async function serveContour(root, { docPath = null, batch = false, notice
     } catch { /* an unreadable document fails below with its own voice */ }
   }
   // I48: asked BEFORE the page is built (the answer is asynchronous — the other page must answer at its address); used after the own-lock check
-  const other = await otherLivePage(root, batch ? '_queue' : basename(docPath));
-  const heldNow = await liveOwnLock(root, batch ? '_queue' : basename(docPath)); // TK7c: the own lock is judged by its address too
+  const lockKey = batch ? '_queue' : pageKey(root, docPath); // bugs/141: one key for the door, the own lock and the page's lock
+  const other = await otherLivePage(root, lockKey);
+  const heldNow = await liveOwnLock(root, lockKey); // TK7c: the own lock is judged by its address too
   return new Promise((resolveP) => {
     const forOwner = () => ownerDocs(root, { includeStale });
     const build = () => batch ? buildIndexPage(root, forOwner(), pendingNotices(root))
@@ -1626,7 +1640,6 @@ export async function serveContour(root, { docPath = null, batch = false, notice
           : face === 'mockup' ? buildMockupPage(root, docPath) : buildPage(root, docPath);
     const buildDoc = (rel) => (readQueue(root).some((i) => i.doc === rel && isNoticeItem(i)) ? buildNoticePage(root, rel) : buildPage(root, rel));
     const first = build();
-    const lockKey = batch ? '_queue' : basename(docPath);
     const held = heldNow;
     if (held && !held.stale) {
       log('Already open by this contour: ' + held.url + ' (pid ' + held.pid + ') — not raising a second window (I29).');
@@ -1909,7 +1922,7 @@ function postLocal(url, ms = 3000) {
 export async function closeContour(root, docPath, { force = false, ownerWord = null, log = console.log, now = Date.now() } = {}) {
   const cfg = cfgOf(root);
   const isQueue = docPath === '--queue';
-  const key = isQueue ? '_queue' : basename(docPath);
+  const key = isQueue ? '_queue' : pageKey(root, docPath);
   const rel = isQueue ? '(queue)' : relDoc(root, docPath);
   const lock = checkLock(root, key);
   if (!lock) { log('no live page for ' + rel + ' — nothing to close (no lock)'); return EXIT_DECIDED; }
@@ -2084,7 +2097,7 @@ export function recoverFromWindow(root, { log = console.log } = {}) {
   if (!existsSync(profileDir(root))) return Promise.resolve(result); // no window ever ran on the project profile — nothing to pick up, no browser launched
   const dir = decisionsAbs(root);
   const locks = existsSync(dir)
-    ? readdirSync(dir).filter((f) => f.endsWith('.lock')).map((f) => ({ key: f.replace(/\.lock$/u, ''), lock: checkLock(root, f.replace(/\.lock$/u, '')) })).filter((x) => x.lock && x.lock.stale)
+    ? readdirSync(dir).filter((f) => f.endsWith('.lock')).map((f) => ({ key: f, lock: checkLock(root, f) })) /* bugs/141: lockPath strips «.lock» once */.filter((x) => x.lock && x.lock.stale)
     : [];
   if (!locks.length) return Promise.resolve(result);
   const heldBy = profileHeld(root);
@@ -2653,6 +2666,54 @@ export async function selftest(log = console.log) {
     'mockup face: Done with empty fields records noRemarks: true (bugs/113)');
   ok(mp.html.includes(texts('en').ph.noRemarks) && mp.html.includes("p.noRemarks=true") && !mp.html.includes("CFG.face==='mockup'&&!(p.comment"),
     'mockup page carries the no-remarks hint and the client gate no longer refuses an empty mockup/proofreading record (bugs/113)');
+
+  // bugs/141 (2.10, origin issue #199): two documents with ONE file name in two folders — the decision record and the page lock were named
+  // by the bare file name, and the second verdict replaced the first in place 2. Each keeps its own; the bare name stays with its holder.
+  {
+    const DD = join(root, 'interviews', 'decisions');
+    const tagOf = (k) => createHash('sha256').update(k).digest('hex').slice(0, 8);
+    for (const d of ['a', 'b', 'q', 'z']) mkdirSync(join(root, d), { recursive: true });
+    writeFileSync(join(root, 'a', 'compare.webp'), pngBytes); writeFileSync(join(root, 'b', 'compare.webp'), pngBytes);
+    let thrown = '';
+    try {
+      recordDecision(root, 'a/compare.webp', { kind: 'mockup', comment: 'A answer' }, cfg);
+      recordDecision(root, 'b/compare.webp', { kind: 'mockup', comment: 'B answer' }, cfg);
+    } catch (e) { thrown = e.message; }
+    const da = readDecision(root, 'a/compare.webp', cfg), db = readDecision(root, 'b/compare.webp', cfg);
+    const bare = JSON.parse(stripBom(readFileSync(join(DD, 'compare.decision.json'), 'utf8')));
+    ok(!thrown && da && da.comment === 'A answer' && db && db.comment === 'B answer' && bare.document === 'a/compare.webp'
+      && existsSync(join(DD, 'compare--' + tagOf('b/compare.webp') + '.decision.json')),
+      'bugs/141 #199: a/compare.webp and b/compare.webp keep their own answers — the bare record stays with a, b is compare--<tag>'
+      + (thrown ? ' [threw: ' + thrown + ']' : ''));
+    // the qualified name is kept once taken: the bare record moved away (renamed, deleted by hand) does not send b back to the bare name
+    renameSync(join(DD, 'compare.decision.json'), join(DD, 'compare.away'));
+    const dbAway = readDecision(root, 'b/compare.webp', cfg);
+    renameSync(join(DD, 'compare.away'), join(DD, 'compare.decision.json'));
+    ok(dbAway && dbAway.comment === 'B answer', 'bugs/141 #199: b keeps its qualified record when the bare record is gone');
+    // a record written before the `document` field — or by hand without it — is read by whoever asks, as before (no migration)
+    writeFileSync(join(DD, 'legacy.decision.json'), JSON.stringify({ kind: 'mockup', comment: 'old answer' }) + '\n');
+    const dl = readDecision(root, 'z/legacy.png', cfg);
+    ok(dl && dl.comment === 'old answer', 'bugs/141 #199: a record without the document field is still read under its bare name');
+    // place 2 that cannot be told apart (a hand-made file under the qualified name) — refused BEFORE the source md is touched; never read
+    writeFileSync(join(root, 'q', 'note.md'), '# Note\n\nBody.\n');
+    writeFileSync(join(DD, 'note.decision.json'), JSON.stringify({ kind: 'interview', document: 'p/note.md', comment: 'P answer' }) + '\n');
+    writeFileSync(join(DD, 'note--' + tagOf('q/note.md') + '.decision.json'), JSON.stringify({ kind: 'interview', document: 'zzz/other.md' }) + '\n');
+    let refusal = ''; try { recordDecision(root, 'q/note.md', { kind: 'interview', comment: 'Q answer' }, cfg); } catch (e) { refusal = e.message; }
+    ok(/belongs to zzz\/other\.md, not to q\/note\.md — not overwritten \(bugs\/141\)/.test(refusal)
+      && readFileSync(join(root, 'q', 'note.md'), 'utf8') === '# Note\n\nBody.\n' && readDecision(root, 'q/note.md', cfg) === null
+      && JSON.parse(stripBom(readFileSync(join(DD, 'note.decision.json'), 'utf8'))).comment === 'P answer',
+      'bugs/141 #199: a write over another document\'s record is refused before the md is touched; that record is never read as this one\'s'
+      + ' [' + (refusal || 'no refusal') + ']');
+    // the page lock: with a's page live, the door of b/compare.webp does not take a's lock for its own
+    writeFileSync(lockPath(root, 'compare.webp'), JSON.stringify({ pid: process.pid, url: 'http://127.0.0.1:9/', doc: 'a/compare.webp',
+      title: 'compare.webp', closeToken: 'bugs141', startedAt: new Date().toISOString() }) + '\n');
+    const said = []; const closed = await closeContour(root, 'b/compare.webp', { log: (l) => said.push(l) });
+    ok(closed === EXIT_DECIDED && /no live page for b\/compare\.webp — nothing to close \(no lock\)/.test(said.join('\n'))
+      && existsSync(lockPath(root, 'compare.webp')),
+      'bugs/141 #199: --close of b/compare.webp finds no page of its own while a/compare.webp holds the bare lock — a\'s lock untouched'
+      + ' [' + said.join(' | ') + ']');
+    rmSync(lockPath(root, 'compare.webp'), { force: true });
+  }
 
   // I40–I42: the fact of showing, never-shown first, the gate by exit code
   const now = new Date('2026-09-05T12:00:00Z');

@@ -30,7 +30,7 @@
 //         (`<!-- archaeology: … → N hits · read: … · prior: … -->`); the refusal prints the READY grep.
 
 import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
-import { join, resolve, basename, extname } from 'node:path';
+import { join, resolve, basename, extname, relative } from 'node:path';
 import { createHash } from 'node:crypto';
 import { PARSER, texts } from './texts.mjs';
 
@@ -811,11 +811,43 @@ export function splitParagraphs(md) {
 }
 
 // ── C6/I2: the decision is written to THREE places with derived names ─────────────────────────
+// bugs/141 (2.10, origin issue #199): the derived name dropped the document's folder and extension — `a/compare.webp`, `b/compare.webp`
+// and `a/compare.md` shared ONE place-2 record, and the second verdict replaced the owner's first in every reader (queue, debt, page).
+// The namespace stays flat and keeps the bare name for the document that already holds it (no field record moves, no migration); a
+// document whose bare name ANOTHER document holds (the record's `document`, the page lock's `doc`) is named `<stem>--<8 hex of the sha256
+// of its path>` and keeps that name once it has it. A record of another document is never overwritten (refused) and never read as this
+// one's (null) — the field's own remediation, kept as the backstop.
+// [TESTED: 2026-11-18 · functional — tools/sandbox/probes/bugs141-two-mockups-live.mjs: the real contour server and its mock-up page in a
+//  headless Edge, a remark typed and Done pressed for a/compare.png then b/compare.png — «a reads: A answer · b reads: B answer», two
+//  decision files; the HEAD contour — «a reads: B answer»; the real world — 250 accumulated records of 14 projects read the same by both cores
+//  (bugs141-real-records.mjs); hygiene — five selftest cases «bugs/141 #199», mutants N1–N5 red on exactly their cases;
+//  report testcases/reports/2026-11-18_bugs141-142-decision-name-and-alive.md]
 const docBase = (docPath) => basename(docPath).replace(/\.[^.]+$/u, '');
+// the document's identity: its path relative to the project root, forward slashes; Windows paths do not tell case apart
+export const docKeyOf = (root, docPath) => {
+  const rel = relative(resolve(root), resolve(root, String(docPath))).replace(/\\/g, '/');
+  return process.platform === 'win32' ? rel.toLowerCase() : rel;
+};
+export const pathTag = (key) => createHash('sha256').update(String(key)).digest('hex').slice(0, 8);
+// The document a record or a lock in `file` belongs to (normalised by docKeyOf), or null — no file, unreadable, no such field (a record
+// written before the field existed belongs to whoever reads it, as before), or the queue page's own key.
+export function holderOf(root, file, field) {
+  if (!existsSync(file)) return null;
+  const j = readJson(file), v = j && j[field];
+  return typeof v === 'string' && v && v !== '_queue' ? docKeyOf(root, v) : null;
+}
+// The file stem of `docPath` inside `dir` for files `<stem><ext>` that name their document in `field`.
+export function ownedStem(root, dir, docPath, stem, ext, field) {
+  const me = docKeyOf(root, docPath), qualified = stem + '--' + pathTag(me);
+  if (existsSync(join(dir, qualified + ext))) return qualified;          // this document already lives under its qualified name
+  const holder = holderOf(root, join(dir, stem + ext), field);
+  return holder !== null && holder !== me ? qualified : stem;           // the bare name is another document's
+}
 export function decisionPaths(root, docPath, cfg = loadContourConfig(root)) {
-  const base = docBase(docPath);
+  const dir = resolve(root, cfg.decisionsDir);
+  const base = ownedStem(root, dir, docPath, docBase(docPath), '.decision.json', 'document');
   return {
-    decision: resolve(root, cfg.decisionsDir, base + '.decision.json'),
+    decision: resolve(dir, base + '.decision.json'),
     archive: (at) => resolve(root, cfg.archiveDir, base + '--' + at.replace(/[:.]/g, '-') + '.json'),
   };
 }
@@ -843,6 +875,14 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
     ...(payload.recovered ? { recovered: true } : {}), // LP (2.7, #66): the answer was saved on the owner's computer while the server was gone and picked up by the agent
     ...(payload.staleRevision ? { staleRevision: true } : {}), // OW6 (2.8): made against an older revision — kept as data, not written into the document
   };
+  const p = decisionPaths(root, docPath, cfg);
+  // bugs/141: place 2 is never written over another document's record — a name that cannot be told apart (a tag collision, a hand-made
+  // file); the owner's recorded answer is untouchable (I2), so the write stops loudly BEFORE the source md is touched
+  const holder = holderOf(root, p.decision, 'document');
+  if (holder !== null && holder !== docKeyOf(root, docPath)) {
+    throw new Error('decision file ' + relative(resolve(root), p.decision).replace(/\\/g, '/') + ' belongs to ' + holder
+      + ', not to ' + docKeyOf(root, docPath) + ' — not overwritten (bugs/141): rename one of the two documents');
+  }
   const isMd = extname(abs).toLowerCase() === '.md' && !payload.staleRevision; // OW6: an older revision's answer never lands by question numbers
   if (isMd) {
     const src = readFileSync(abs, 'utf8');
@@ -905,7 +945,6 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
     }
     if (touched) writeFileSync(abs, lines.join(eol), 'utf8');
   }
-  const p = decisionPaths(root, docPath, cfg);
   // OW6 (2.8, the KAIF owner's word — answers are saved ONE AT A TIME in every project): a record from the SAME page — its `rev` is
   // the document revision the previous record left (`revAfter`) — MERGES into the decision; a new revision of the document starts a
   // new decision (old answers never land on renumbered questions). The archive (place 3) keeps every record as it came.
@@ -930,7 +969,8 @@ export function recordDecision(root, docPath, payload, cfg = loadContourConfig(r
 export function readDecision(root, docPath, cfg = loadContourConfig(root)) {
   const p = decisionPaths(root, docPath, cfg).decision;
   if (!existsSync(p)) return null;
-  return readJson(p);
+  const holder = holderOf(root, p, 'document');   // bugs/141: another document's record is never read as this one's
+  return holder !== null && holder !== docKeyOf(root, docPath) ? null : readJson(p);
 }
 
 // ── C7/I4: the sending gate — one function for both sides, never throws ───────────────────────

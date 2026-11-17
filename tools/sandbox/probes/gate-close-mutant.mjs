@@ -31,6 +31,11 @@ const RUNS = [
   { name: 'G6 the hooks always «run»', from: 'if (state && state[id]) return { code: 0',
     to: "return { code: 0, line: 'KAIF hooks: running in this session' }; if (state && state[id]) return { code: 0",
     want: ['alive: this session recorded'] },
+  // session 103 (bugs/142): presence came only with a measurement — the first tool call of a session read «NOT running»
+  { name: 'G7 presence only with a measurement', from: "} else if (ev.hook_event_name === 'PreToolUse') process.exit(0);   // nothing to measure",
+    to: '} else process.exit(0);   // nothing to measure', want: ['alive from the first prompt (bugs/142)'] },
+  { name: 'G8 a subagent\'s event records the session', from: "&& ev.session_id && !fromSubagent(ev)) {", to: '&& ev.session_id) {',
+    want: ['alive from the first prompt (bugs/142)'] },
 ];
 let bad = 0;
 for (const run of RUNS) {

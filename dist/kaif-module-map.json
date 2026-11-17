@@ -3805,10 +3805,10 @@
       {
         "signature": "## The executable build contract (C1–C13) — assemble by steps, don't re-invent",
         "class": "static",
-        "sha256": "99be6d723cf52bafb9aead06d53919d79656cc54f77d02bc2172cddc56f88c0b",
+        "sha256": "c480f72e2316547ed24eae8aefda3b39312b14e3b5cdfe362e5993e1e91c1cf5",
         "lines": [
           467,
-          579
+          581
         ]
       },
       {
@@ -3816,8 +3816,8 @@
         "class": "static",
         "sha256": "0b9388849b72578dc3226d0d363c54ffed63e371a68e0bab3521c135ac4b7643",
         "lines": [
-          580,
-          613
+          582,
+          615
         ]
       },
       {
@@ -3825,8 +3825,8 @@
         "class": "static",
         "sha256": "a08fe3cdfe221f99dec5f9a3e2abd4dc25605c19368c38fc7d2a09b81f4329bf",
         "lines": [
-          614,
-          629
+          616,
+          631
         ]
       },
       {
@@ -3834,8 +3834,8 @@
         "class": "static",
         "sha256": "7d0c6bca67d53cecfeb0be735c18fd7acee8b75c2a211279529d11811ebd22aa",
         "lines": [
-          630,
-          700
+          632,
+          702
         ]
       },
       {
@@ -3843,8 +3843,8 @@
         "class": "static",
         "sha256": "5e2985ee5e5c92b97244766f1cbec12c8858705acfb102ea9ad54a5153358f3c",
         "lines": [
-          701,
-          725
+          703,
+          727
         ]
       },
       {
@@ -3852,8 +3852,8 @@
         "class": "static",
         "sha256": "d3259396275bf6d9b575b5a97962adca2cf30eb2fbeb6fab635ea95352dcdf65",
         "lines": [
-          726,
-          745
+          728,
+          747
         ]
       },
       {
@@ -3861,8 +3861,8 @@
         "class": "static",
         "sha256": "be35db4b7bc8b4ecbc12cc27278688532723515886e448beeab38c714b716219",
         "lines": [
-          746,
-          757
+          748,
+          759
         ]
       }
     ],
@@ -6187,7 +6187,7 @@
       {
         "signature": "## 3. Records — three files, derived names; a record is replaced only by a NEW revision of the document (the table below)",
         "class": "static",
-        "sha256": "a2c75806179d88331910c2575e64f88c94556dcb9ff80ffe92be22d93fecb098",
+        "sha256": "fb38fae6fff5991297cf19e685e0b4ac9d0ad5c9cdbf8861d42f5e2733e73f77",
         "lines": [
           37,
           49
