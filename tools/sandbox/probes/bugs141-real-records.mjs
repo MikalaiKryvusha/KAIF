@@ -38,6 +38,10 @@ try {
       if (!doc) { noDoc++; continue; }
       const oldP = OLD.decisionPaths(root, doc, cfg).decision, newP = NEW.decisionPaths(root, doc, cfg).decision;
       const o = JSON.stringify(OLD.readDecision(root, doc, cfg)), n = JSON.stringify(NEW.readDecision(root, doc, cfg));
+      // judge of session 103 (finding 8): the same record through the path forms a CLI gets — absolute, backslashes, another case (Windows)
+      const forms = [resolve(root, doc), resolve(root, doc).replace(/\//g, '\\'), ...(process.platform === 'win32' ? [doc.toUpperCase()] : [])];
+      const formsSame = forms.every((p) => JSON.stringify(NEW.readDecision(root, p, cfg)) === JSON.stringify(rec));
+      if (!formsSame) { differ++; console.log('  ✖ ' + label + ' record #' + (files.indexOf(f) + 1) + ': another path form reads another record'); continue; }
       const mine = resolve(newP) === resolve(join(dir, f));
       if (resolve(oldP) !== resolve(join(dir, f))) collision++;           // the old name pointed elsewhere: a live collision, counted
       else if (mine && o === n && n === JSON.stringify(rec)) same++;
