@@ -1,0 +1,17 @@
+{
+  "kind": "interview",
+  "document": "interviews/interview_049_kaif_2.10_window_thresholds_and_auto_relay.md",
+  "by": "Mikalai Kryvusha (KOT KRINIK)",
+  "at": "2026-11-17T17:41:59.853Z",
+  "atHuman": "17 ноября 2026, 20:41 (+03:00)",
+  "comment": "",
+  "answers": {
+    "Q5": {
+      "choice": "",
+      "text": "никуда толкать не нужно. Для этого УЖЕ ЕСТЬ циклы автономной работы - защищённый цикл, дневной цикл, ночной цикл. Там прописаны алгоритмы толкания.",
+      "comment": ""
+    }
+  },
+  "rev": "362c3f38a9e14e23e91565ed66c43892f153f2c4d1de57a7d17d0567cfc3c21b",
+  "revAfter": "0f99331153e751661ab97e7159e2778339c1d28366dac4bba0e99a41b44ea19b"
+}
