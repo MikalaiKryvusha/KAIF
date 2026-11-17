@@ -59,3 +59,16 @@ TWINS: searched «закрытие чата по окну без замера» 
 ## Links
 
 `EXPERIENCE.md` EXP-0209 · `researches/44_kumm_local_kaif_recon.md` §1 п. 35 · `plans/136` критерий 35 · отчёт `testcases/reports/2026-11-17_close-gate.md`
+
+## ✅ STATUS: DONE (2026-11-17 22:03 +03:00, сессия 102)
+
+Гигиена: самопроверка хука окна, мутанты `tools/sandbox/probes/gate-close-mutant.mjs` G1–G6, полигон — зелёные (сессии 100–102).
+Функциональный прогон: на пути владельца — папка KAIF с доверием (дано владельцем ≈ 22:02), сессия 102, окно 64 % (`--measure`): вызов навыка
+`end-chat-soft` без слова владельца отклонён хуком — «PreToolUse:Skill hook error: KAIF context: the window is 64 % full (645212 of 1000000
+tokens) — below the closing level 85 %: it is too early to close the chat by the window; keep working. Closing at the owner's word — pass his
+words verbatim in the skill's args: owner: «<his words>».»; следом тот же навык со словом владельца в аргументах (`owner: «да, и закрывай этот
+чат мягко»`) — пропущен.
+
+## Decisions made without the owner (при закрытии)
+
+- `[ИИ]` живую пробу ворот (вызов без слова) сделал сам до слова владельца о закрытии — по эстафете сессии 101, п. 0 (а).
