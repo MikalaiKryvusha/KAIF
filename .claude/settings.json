@@ -109,6 +109,17 @@
             "timeout": 15
           }
         ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/framework/hooks/context-window.mjs"],
+            "timeout": 15
+          }
+        ]
       }
     ],
     "Stop": [

@@ -2,7 +2,7 @@
   "framework": "KAIF",
   "version": "2.9",
   "released": "2026-10-16",
-  "moduleCount": 845,
+  "moduleCount": 846,
   "files": {
     "AGENT_GUIDE.md": [
       {
@@ -2413,10 +2413,10 @@
       {
         "signature": "# /end-chat-force — the urgent closure: save what must not be lost, and go",
         "class": "static",
-        "sha256": "68f6c908dd4eedcd4af7f8f125a563c6c33976663dacd20cd8dc5a877fca8e1a",
+        "sha256": "11f8b89fba9f9c9e74f749a784a4bad247a15c3798b70ca84914481bb39e42d9",
         "lines": [
           6,
-          10
+          14
         ]
       },
       {
@@ -2424,8 +2424,8 @@
         "class": "static",
         "sha256": "aa7e3ab2a1bfa697df581e80afc69c990333ba90934428d47d7024fe6402f5b2",
         "lines": [
-          11,
-          32
+          15,
+          36
         ]
       },
       {
@@ -2433,8 +2433,8 @@
         "class": "static",
         "sha256": "7594a4a59edb861292332a5ac9a2c9d1f94673762047ad28371816f3415303ae",
         "lines": [
-          33,
-          44
+          37,
+          48
         ]
       },
       {
@@ -2442,8 +2442,8 @@
         "class": "static",
         "sha256": "8e6b9c8752aff9d7d8747839657e4efea4a2153f0dfd6d5bacf90f699dc08225",
         "lines": [
-          45,
-          49
+          49,
+          53
         ]
       },
       {
@@ -2451,8 +2451,8 @@
         "class": "static",
         "sha256": "89d0106b2f868f1034ced6324e7220eda1df9837e067fc79601b16ce83fe7b29",
         "lines": [
-          50,
-          57
+          54,
+          61
         ]
       },
       {
@@ -2460,8 +2460,8 @@
         "class": "static",
         "sha256": "d460cddf3c9477ef17f7b8ecd535bc20de3df7a8c51a226ead43be898506ca8f",
         "lines": [
-          58,
-          64
+          62,
+          68
         ]
       }
     ],
@@ -2485,12 +2485,21 @@
         ]
       },
       {
+        "signature": "## Step 0. Who closes — the owner's word or a MEASURED window",
+        "class": "static",
+        "sha256": "8f34eae649891bfe47e0e1726e63bf718f20208a381e93805c5453daed6202a8",
+        "lines": [
+          12,
+          20
+        ]
+      },
+      {
         "signature": "## Phase A. The advance order — keep working to a natural cut",
         "class": "static",
         "sha256": "0fe333cdeaa51b45fcbe1cb53241b951e18dd1cd2df67397b67010dc0986797d",
         "lines": [
-          12,
-          25
+          21,
+          34
         ]
       },
       {
@@ -2498,8 +2507,8 @@
         "class": "static",
         "sha256": "fb48d6f4f748e6d0e7eb25248b9f4f479053fd8d56ea38d54f675501ae92b745",
         "lines": [
-          26,
-          30
+          35,
+          39
         ]
       },
       {
@@ -2507,8 +2516,8 @@
         "class": "static",
         "sha256": "8ee32e238267274f87684991c15380ff5ac53afe66f32033173194bad8761234",
         "lines": [
-          31,
-          98
+          40,
+          107
         ]
       },
       {
@@ -2516,8 +2525,8 @@
         "class": "static",
         "sha256": "4e8599aeac84993369d303fdb7c012d1f1891acca2d35e1681076ae1c298d666",
         "lines": [
-          99,
-          103
+          108,
+          112
         ]
       },
       {
@@ -2525,8 +2534,8 @@
         "class": "static",
         "sha256": "c249136cd205896996db62b65d8aebc72f20c4c30b820c864d7cd2d721986329",
         "lines": [
-          104,
-          109
+          113,
+          118
         ]
       },
       {
@@ -2534,8 +2543,8 @@
         "class": "adaptive",
         "sha256": "6ea677b93aa18f56528e9b4778063f053a61e2b407611d33f5d5909350da5de7",
         "lines": [
-          110,
-          124
+          119,
+          133
         ]
       },
       {
@@ -2543,8 +2552,8 @@
         "class": "static",
         "sha256": "943f7ab63a9afcef7c3e5e15fe619275a1051a24e4619e5fb8a80e89b155b309",
         "lines": [
-          125,
-          142
+          134,
+          151
         ]
       },
       {
@@ -2552,8 +2561,8 @@
         "class": "static",
         "sha256": "18b2f1a2f80788a20798895b9080090c3d01bdce0905a7c888de1488e543b437",
         "lines": [
-          143,
-          155
+          152,
+          164
         ]
       }
     ],
@@ -4453,10 +4462,10 @@
       {
         "signature": "## Step 0. The chat's FIRST `/resume` — read the previous chat's farewell",
         "class": "static",
-        "sha256": "519c2e5c19faf7d66f049a64724b424eaf0158e5c754dace933f44b054a38986",
+        "sha256": "8a13ba73b50ce207e730781cf995bffa830172689749273ca841fe1aa9f35190",
         "lines": [
           15,
-          22
+          28
         ]
       },
       {
@@ -4464,8 +4473,8 @@
         "class": "static",
         "sha256": "a1ea7b977985b5cf41c1542401c6a7c8da978c63b1ebe291faf8104a74d13634",
         "lines": [
-          23,
-          60
+          29,
+          66
         ]
       },
       {
@@ -4473,8 +4482,8 @@
         "class": "static",
         "sha256": "9baa7a9d0b04519277773629b05a4fbde35162ccdd1916523c3d970e45db761e",
         "lines": [
-          61,
-          73
+          67,
+          79
         ]
       },
       {
@@ -4482,8 +4491,8 @@
         "class": "static",
         "sha256": "fba62c309334afeab3613fc37d87f4253186dda092ce817a67255bd72c165fae",
         "lines": [
-          74,
-          99
+          80,
+          105
         ]
       },
       {
@@ -4491,8 +4500,8 @@
         "class": "static",
         "sha256": "d5d3b385c0f180bd4702555c36f9770443d080ef8c11af6697ea24aef8bf8a02",
         "lines": [
-          100,
-          106
+          106,
+          112
         ]
       },
       {
@@ -4500,8 +4509,8 @@
         "class": "static",
         "sha256": "2db7bd1884b434e14137fa017f0bea1c8668cf2298868336e5e256fd398c243e",
         "lines": [
-          107,
-          111
+          113,
+          117
         ]
       }
     ],
@@ -5725,7 +5734,7 @@
       {
         "signature": "## What ships here",
         "class": "static",
-        "sha256": "7f30243a63bf4f0908b462a1e590f2804cef333a30461316f96c25549cda887f",
+        "sha256": "fc764ac66e6d8dfb2382199cd87a62b137d24506ae796b0f9360819546a47cc5",
         "lines": [
           10,
           45
@@ -5734,10 +5743,10 @@
       {
         "signature": "## Wiring — the task wires it, the owner can opt out",
         "class": "static",
-        "sha256": "169d7d8e71ff294bc346e7c439a0b51a8b2a58f1e79f1e46e25a11807bd34c86",
+        "sha256": "3db77844f8df79ae149316d5b69b99c97544f858a53c0672c3cc381a4df6b87e",
         "lines": [
           46,
-          103
+          110
         ]
       },
       {
@@ -5745,8 +5754,8 @@
         "class": "static",
         "sha256": "5a4cdd1661357b3087af68d8040299c07019ce12e3956b7db9d7e2e0ee7f2cde",
         "lines": [
-          104,
-          225
+          111,
+          232
         ]
       }
     ],

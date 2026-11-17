@@ -46,7 +46,10 @@ const MUTANTS = [
     dest: '.kaif/hooks/settings-fragment.json',
     fn: (b) => swap(b, 'prompt-resume-word.mjs', 'stop-status-guard.mjs'),
     // 2.9 WH: the retirement fixture is BUILT from the shipped sample, so a broken sample breaks it too — the same predicate (EXP-0169)
-    expect: ['s14 ось пар settings-fragment.json:', 's14 ось пар: мутация фрагмента', 's14 WH фикстура', 's14 WH: `check` называет', 's14 WH: wire-hooks — чистое снятие'] },
+    // session 101: the 2.10 PT1 composition check («each deployed script under each event of its header») reads the same fragment — red on
+    // HEAD ce03fd5 too, run alone in a clean worktree (EXP-0169: a new check of the predicate grows the list)
+    expect: ['s14 ось пар settings-fragment.json:', 's14 ось пар: фрагмент подключает', 's14 ось пар: мутация фрагмента', 's14 WH фикстура',
+      's14 WH: `check` называет', 's14 WH: wire-hooks — чистое снятие'] },
   { name: 'M2 timer: a malformed marker falls back to NOW instead of the file mtime (bug 121 #3)',
     dest: '.kaif/hooks/prompt-refresh-timer.mjs',
     fn: (b) => b.replace('if (Number.isNaN(at)) at = statSync(markerPath).mtimeMs;', 'if (Number.isNaN(at)) { statSync(markerPath); at = Date.now(); }'),
@@ -196,6 +199,14 @@ const MUTANTS = [
 
 const root = mkdtempSync(join(tmpdir(), 'kaif-hooks-mutants-'));
 let bad = 0, skipped = 0;
+// KAIF_MUTANTS_ONLY=M1,W9 — run only the named mutants (their names' first word), e.g. one mutant against an older tree (session 101)
+const ONLY = (process.env.KAIF_MUTANTS_ONLY || '').split(',').map((s) => s.trim()).filter(Boolean);
+if (ONLY.length) {
+  const unknown = ONLY.filter((o) => !MUTANTS.some((m) => m.name.split(' ')[0] === o));
+  // a name that matches nothing proves nothing — never «✅ 0 mutants» (judge of session 101: `M99`, a lowercase `m1`)
+  if (unknown.length) { rmSync(root, { recursive: true, force: true }); console.log(`BAD KAIF_MUTANTS_ONLY names no mutant: ${unknown.join(', ')} — names are case-sensitive (M1, W9, …)`); process.exit(2); }
+  MUTANTS.splice(0, MUTANTS.length, ...MUTANTS.filter((m) => ONLY.includes(m.name.split(' ')[0])));
+}
 for (const m of MUTANTS) {
   // a mutant whose addressee the suite runs on one platform only is NOT proven elsewhere — named, never counted as red (2.9, epic OA)
   if (m.platform && m.platform !== process.platform) { skipped++; console.log(`SKIP ${m.name}\n    its addressee runs on ${m.platform} only — not provable on ${process.platform}`); continue; }

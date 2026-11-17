@@ -10,8 +10,12 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 const HOOK = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'framework', 'hooks', 'context-window.mjs');
 const MUTANTS = [
-  ['cache_read not counted', " + (Number(u.cache_read_input_tokens) || 0)", '', /usage = input \+ cache_creation \+ cache_read/],
-  ['a subagent\'s call judged', "export const fromSubagent = (ev) => Boolean(ev && ev.agent_id);", "export const fromSubagent = (ev) => false;", /a subagent's tool call/],
+  // session 101: the `<synthetic>` case sums the same three fields (586 042 = 42 + 586 000 of cache_read) — a second addressee (EXP-0169)
+  ['cache_read not counted', " + (Number(u.cache_read_input_tokens) || 0)", '',
+    [/usage = input \+ cache_creation \+ cache_read/, /a `<synthetic>` zero-usage record at the tail is skipped/]],
+  // session 100: the closing gate skips a subagent's call through the SAME predicate — this mutant names two cases (EXP-0169)
+  ['a subagent\'s call judged', "export const fromSubagent = (ev) => Boolean(ev && ev.agent_id);", "export const fromSubagent = (ev) => false;",
+    [/a subagent's tool call/, /gate: another skill, another tool, another event, a subagent/]],
   // (3) judge of epics PT6 · HC10 (session 98, finding 3): a level said once stays said for the session — no warning after a compaction
   ['levels never re-arm', 'return said.filter((l) => l <= pct); };', 'return said; };', /after a compaction .* re-arm/],
   // (4) the same judge, finding 2: the owner's word (interview 047, Q6 = B) — at 80 % the owner is told BY VOICE
@@ -30,9 +34,10 @@ let ok = true;
 const c = run(null); console.log('control: exit ' + c.status + ', red ' + c.xs.length); if (c.status !== 0 || c.xs.length) ok = false;
 for (const m of MUTANTS) {
   const r = run(m);
-  const good = !r.err && r.status !== 0 && r.xs.length === 1 && m[3].test(r.xs[0]);
+  const want = [].concat(m[3]);   // addressees named before the run: one regex per red case, and only they
+  const good = !r.err && r.status !== 0 && r.xs.length === want.length && want.every((re) => r.xs.some((x) => re.test(x)));
   console.log((good ? 'OK  ' : 'BAD ') + m[0] + ': exit ' + r.status + ', red ' + (r.xs || []).length + (r.err ? ' · ' + r.err : '') + (r.xs && r.xs[0] ? ' · ' + r.xs[0].slice(4, 90) : ''));
   if (!good) ok = false;
 }
-console.log(ok ? '✅ each mutant red on exactly its case' : '❌ mutant proof failed');
+console.log(ok ? '✅ each mutant red on exactly its named cases' : '❌ mutant proof failed');
 process.exit(ok ? 0 : 1);

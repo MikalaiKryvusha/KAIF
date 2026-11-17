@@ -15,6 +15,7 @@
 import { readFileSync, writeFileSync, appendFileSync, mkdirSync, rmSync, existsSync, cpSync, utimesSync, readdirSync } from 'node:fs';
 import { execSync, execFileSync, spawnSync, spawn } from 'node:child_process';
 import { join, resolve, dirname } from 'node:path';
+import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
 import { failed } from '../lib/sandbox-run.mjs';
@@ -97,10 +98,12 @@ ok(!/pretool-owner-word|stop-owner-answer/.test(fragTxt)
    && !existsSync(join(S, '.kaif', 'hooks', 'pretool-owner-word.mjs')) && !existsSync(join(S, '.kaif', 'hooks', 'stop-owner-answer.mjs')),
    's14 WH: снятые хуки (pretool-owner-word · stop-owner-answer) не поставляются и не подключаются образцом', fragTxt.slice(0, 200));
 // 2.10 PT1: PreToolUse во фрагменте — только хук часов и только на запись (matcher), ничего иного он не перехватывает;
-// PT2: вторая группа — преамбула субагента, только на запуск субагента (matcher Agent|Task); состав и порядок групп судятся целиком
+// PT2: вторая группа — преамбула субагента, только на запуск субагента (matcher Agent|Task); состав и порядок групп судятся целиком.
+// Сессия 100 (слово владельца «Ты закрыл чат неправильно… чини и у себя и в поставке»): третья группа — ворота закрытия хука окна, только
+// на вызов навыка (matcher Skill) — единственное, что этот хук отклоняет; ассерт дополнен, а не ослаблен: состав по-прежнему целиком
 ok(JSON.stringify((frag.hooks?.PreToolUse || []).map((g) => [g.matcher, (g.hooks || []).map((h) => (h.args || []).join(' ').match(/hooks\/([\w.-]+)/)?.[1])]))
-   === JSON.stringify([['Write|Edit|MultiEdit', ['clock-now.mjs']], ['Agent|Task', ['subagent-preamble.mjs']]]),
-   's14 PT1 · PT2: PreToolUse фрагмента — группа Write|Edit|MultiEdit с clock-now и группа Agent|Task с subagent-preamble, иного нет', JSON.stringify(frag.hooks?.PreToolUse || null).slice(0, 300));
+   === JSON.stringify([['Write|Edit|MultiEdit', ['clock-now.mjs']], ['Agent|Task', ['subagent-preamble.mjs']], ['Skill', ['context-window.mjs']]]),
+   's14 PT1 · PT2 · ворота: PreToolUse фрагмента — Write|Edit|MultiEdit с clock-now, Agent|Task с subagent-preamble, Skill с context-window, иного нет', JSON.stringify(frag.hooks?.PreToolUse || null).slice(0, 300));
 
 // ---------------------------------------------------------------- поведение: context-window (2.10, эпик PT, #188, критерий 35)
 {
@@ -110,6 +113,46 @@ ok(JSON.stringify((frag.hooks?.PreToolUse || []).map((g) => [g.matcher, (g.hooks
      's14 PT: самопроверка развёрнутого хука окна контекста зелёная (80 % без слов закрытия · 85 % — до среза и /end-chat-soft · окно по правилу вендора)', `${st.status} ${(st.stdout || '').slice(-600)}`);
   ok(JSON.stringify(frag.hooks?.UserPromptSubmit || []).includes('context-window.mjs') && JSON.stringify(frag.hooks?.PostToolUse || []).includes('context-window.mjs')
      && !JSON.stringify(frag.hooks?.Stop || []).includes('context-window.mjs'), 's14 PT: context-window подключён на UserPromptSubmit · PostToolUse, на Stop — нет');
+  // Ворота закрытия (сессия 100): навык закрытия на 53 % без слова владельца отклоняется — развёрнутый хук, событие как у Claude Code, журнал
+  // сессии с usage 53 % окна 1M; со словом владельца в args — тишина
+  const tp = join(dirname(S), 's14-gate-transcript.jsonl');   // inside the suite's own unique temp root (tools/lib/temp-root.mjs)
+  try {
+    writeFileSync(tp, JSON.stringify({ type: 'assistant', message: { model: 'claude-opus-5-5', usage: { input_tokens: 3, cache_read_input_tokens: 530000, cache_creation_input_tokens: 1380 } } }) + '\n');
+    const gev = (args) => JSON.stringify({ hook_event_name: 'PreToolUse', tool_name: 'Skill', tool_input: { skill: 'end-chat-soft', args }, transcript_path: tp, session_id: 's14-gate', cwd: S });
+    const g1 = spawnSync(process.execPath, [hook], { input: gev(''), encoding: 'utf8', timeout: 20000, cwd: S, env: { ...process.env, CLAUDE_PROJECT_DIR: S } });
+    const g2 = spawnSync(process.execPath, [hook], { input: gev('owner: «close the chat now»'), encoding: 'utf8', timeout: 20000, cwd: S, env: { ...process.env, CLAUDE_PROJECT_DIR: S } });
+    ok(/"permissionDecision":"deny"/.test(g1.stdout || '') && /53 % full/.test(g1.stdout || '') && (g2.stdout || '') === '',
+       's14 ворота закрытия: /end-chat-soft на 53 % без слова владельца — deny с замером; со словом владельца в args — тишина', `${g1.stdout} | ${g2.stdout}`.slice(0, 400));
+    // сессия 101 (bugs/138): папке без доверия агентская система не отдаёт хуков — шаг 0 навыков закрытия меряет руками развёрнутым хуком
+    const gm = spawnSync(process.execPath, [hook, '--measure', tp], { encoding: 'utf8', timeout: 20000, cwd: S, env: { ...process.env, CLAUDE_PROJECT_DIR: S } });
+    ok(gm.status === 1 && /53 % full/.test(gm.stdout || '') && /too early/.test(gm.stdout || ''),
+       's14 замер руками: `--measure` развёрнутого хука по журналу на 53 % — код 1 и «too early» (шаг 0 навыков закрытия без хуков)', `${gm.status} ${gm.stdout}`.slice(0, 300));
+    ok(JSON.stringify(frag.hooks?.PreToolUse || []).includes('context-window.mjs'), 's14 ворота закрытия: context-window подключён и на PreToolUse (matcher Skill)');
+    // Хуки этой сессии работают? (bugs/138): хранилище журналов вендора — во временном «домашнем» каталоге, сессия названа CLAUDE_CODE_SESSION_ID;
+    // запись сессии в состоянии хука — код 0, записи нет — код 1 и действие владельца «Trust folder»; проводка — временная, прежнее состояние песочницы
+    // возвращается (свод судит и деплой без подключения)
+    const home = join(dirname(S), 's14-alive-home'), store = join(home, '.claude', 'projects', S.replace(/[^A-Za-z0-9]/g, '-'));
+    const stp = join(S, '.kaif', 'context-window.json'), sjp = join(S, '.claude', 'settings.json');
+    const stBefore = existsSync(stp) ? readFileSync(stp) : null, sjBefore = existsSync(sjp) ? readFileSync(sjp) : null;
+    try {
+      mkdirSync(store, { recursive: true }); writeFileSync(join(store, 's14-alive.jsonl'), readFileSync(tp));
+      if (!sjBefore) { mkdirSync(dirname(sjp), { recursive: true }); writeFileSync(sjp, JSON.stringify({ hooks: frag.hooks })); }
+      const alive = () => spawnSync(process.execPath, [hook, '--alive'], { encoding: 'utf8', timeout: 20000, cwd: S,
+        env: { ...process.env, CLAUDE_PROJECT_DIR: S, HOME: home, USERPROFILE: home, CLAUDE_CODE_SESSION_ID: 's14-alive' } });
+      writeFileSync(stp, JSON.stringify({ 's14-alive': { said: [], seen: 531383, at: '2026-11-17T12:00:00.000Z' } }));
+      const a0 = alive();
+      writeFileSync(stp, JSON.stringify({ 'another-session': { said: [], seen: 1, at: '2026-11-17T12:00:00.000Z' } }));
+      const a1 = alive();
+      ok(a0.status === 0 && /running in this session \(s14-alive\)/.test(a0.stdout || '') && a1.status === 1 && /NOT running/.test(a1.stdout || '')
+         && /Trust folder/.test(a1.stdout || ''),
+         's14 хуки живы?: `--alive` развёрнутого хука — запись своей сессии в состоянии — код 0; записи нет — код 1 и действие владельца «Trust folder» (bugs/138)',
+         `${a0.status} ${a0.stdout} | ${a1.status} ${a1.stdout}`.slice(0, 400));
+    } finally {
+      if (stBefore) writeFileSync(stp, stBefore); else rmSync(stp, { force: true });
+      if (!sjBefore) rmSync(sjp, { force: true });
+      rmSync(home, { recursive: true, force: true });
+    }
+  } finally { rmSync(tp, { force: true }); }
 }
 
 // ---------------------------------------------------------------- поведение: knowledge-moment (2.10, эпик MM, MM2; #160 · #159 · #186, критерии 9 · 30)
@@ -708,8 +751,9 @@ for (const f of PAIR_AXIS) {
   // 2.10 PT1: каждый развёрнутый скрипт подключён ровно под каждым событием своей шапки, по одному разу (хук часов — дважды, двумя событиями)
   const fragPairs = pairsOf(readJson(join(S, '.kaif', 'hooks', 'settings-fragment.json')) || {}).map(([s, e]) => `${s}@${e}`).sort();
   const wantPairs = HOOK_FILES.slice(0, 10).flatMap((s) => headerEventsOf(s).map((e) => `${s}@${e}`)).sort();
-  ok(fragPairs.length === 15 && JSON.stringify(fragPairs) === JSON.stringify(wantPairs),
-     's14 ось пар: фрагмент подключает десять развёрнутых скриптов, каждый под каждым событием шапки один раз — пятнадцать пар (PT: окно контекста — два события; 2.9 WH: два хука слова владельца сняты; 2.10 PT1: хук часов; PT2: преамбула субагенту; PT5: прощание; MM2: хук знаний — три события)', fragPairs.join(', '));
+  // сессия 100: шестнадцатая пара — ворота закрытия хука окна под PreToolUse (шапка хука называет событие; состав сверяется целиком, как прежде)
+  ok(fragPairs.length === 16 && JSON.stringify(fragPairs) === JSON.stringify(wantPairs),
+     's14 ось пар: фрагмент подключает десять развёрнутых скриптов, каждый под каждым событием шапки один раз — шестнадцать пар (PT: окно контекста — три события, третье — ворота закрытия, сессия 100; 2.9 WH: два хука слова владельца сняты; 2.10 PT1: хук часов; PT2: преамбула субагенту; PT5: прощание; MM2: хук знаний — три события)', fragPairs.join(', '));
   // Мутационное доказательство живёт В СВОДЕ (EXP-0016): обмен двух скриптов в разобранной КОПИИ (EXP-0077).
   const p = join(S, '.kaif', 'hooks', 'settings-fragment.json');
   const bytesBefore = (() => { try { return readFileSync(p); } catch { return Buffer.alloc(0); } })();
@@ -769,7 +813,7 @@ const scriptsOf = (hooksObj) => Object.entries(hooksObj || {}).flatMap(([ev, gro
   (Array.isArray(groups) ? groups : []).flatMap((g) => (g.hooks || []).map((h) => `${ev}:${scriptOfCmd(h)}`)).filter((s) => !s.endsWith(':undefined')));
 const FRAG = readJson(join(S, '.kaif', 'hooks', 'settings-fragment.json')) || {};
 const WANT = scriptsOf(FRAG.hooks).sort();
-ok(WANT.length === 15, 's14 SW2: фрагмент несёт пятнадцать записей (2.10 HC8: хук тестирования — под PostToolUse и Stop) «событие:хук» — эталон для случаев ниже (2.9 WH: два сняты; 2.10 PT1: хук часов под UserPromptSubmit и PreToolUse; PT2: преамбула субагенту под PreToolUse; PT5: прощание под Stop)', WANT.join(' · '));
+ok(WANT.length === 16, 's14 SW2: фрагмент несёт шестнадцать записей (2.10 HC8: хук тестирования — под PostToolUse и Stop; сессия 100: ворота хука окна — под PreToolUse) «событие:хук» — эталон для случаев ниже (2.9 WH: два сняты; 2.10 PT1: хук часов под UserPromptSubmit и PreToolUse; PT2: преамбула субагенту под PreToolUse; PT5: прощание под Stop)', WANT.join(' · '));
 let wcase = 0;
 const wcopy = (settings, local) => {
   const d = join(ROOT, `wire-${++wcase}`);
@@ -793,13 +837,13 @@ let W = wcopy(null, null), wr = runAll(W, ['check']);
 ok(wr.code === 0 && new RegExp(`${WANT.length} delivered hook\\(s\\) not wired`).test(wr.out) && /wire-hooks/.test(wr.out),
    's14 SW2: поставленные хуки не подключены → `check` называет их числом и командой, выход 0 (предупреждение, не отказ)', wr.out.slice(-300));
 
-// (2) файл владельца с чужим хуком → свои записи живы и первыми, наши пятнадцать записей добавлены, отступ файла сохранён
+// (2) файл владельца с чужим хуком → свои записи живы и первыми, все наши записи фрагмента добавлены (число — из эталона WANT), отступ сохранён
 W = wcopy(OWNER_SETTINGS, null); wr = runAll(W, ['wire-hooks']);
 let wj = null; try { wj = JSON.parse(settingsOf(W)); } catch { /* ассерт ниже честно красный */ }
 ok(wr.code === 0 && wj && JSON.stringify(wj.permissions) === JSON.stringify(OWNER_OBJ.permissions)
    && JSON.stringify(wj.hooks.PreToolUse[0]) === JSON.stringify(OWNER_OBJ.hooks.PreToolUse[0])
    && WANT.every((s) => scriptsOf(wj.hooks).includes(s)) && /\n {4}"permissions"/.test(settingsOf(W) || ''),
-   's14 SW2: wire-hooks — чужой PreToolUse владельца и его права сохранены и стоят первыми, пятнадцать записей хуков KAIF добавлены (группы часов и преамбулы — после группы владельца в его PreToolUse), отступ 4 сохранён', `${wr.out.slice(-300)} | ${String(settingsOf(W)).slice(0, 200)}`);
+   `s14 SW2: wire-hooks — чужой PreToolUse владельца и его права сохранены и стоят первыми, ${WANT.length} записей хуков KAIF добавлены (группы часов и преамбулы — после группы владельца в его PreToolUse), отступ 4 сохранён`, `${wr.out.slice(-300)} | ${String(settingsOf(W)).slice(0, 200)}`);
 const wiredOnce = settingsOf(W);
 wr = runAll(W, ['wire-hooks']);
 ok(wr.code === 0 && settingsOf(W) === wiredOnce && /already wired/.test(wr.out),
@@ -824,7 +868,7 @@ const RETIRED_STOP = ',\n          {\n            "type": "command",\n          
   const guardTail = 'stop-status-guard.mjs"],\n            "timeout": 15\n          }';
   const owner28 = withPerms.replace('    "PreToolUse": [\n', '    "PreToolUse": [\n' + RETIRED_PRE).replace(guardTail, guardTail + RETIRED_STOP);
   ok(/pretool-owner-word/.test(owner28) && /stop-owner-answer/.test(owner28) && JSON.parse(owner28).hooks.Stop[0].hooks.length === 4
-     && JSON.parse(owner28).hooks.PreToolUse.length === 3,
+     && JSON.parse(owner28).hooks.PreToolUse.length === 4,   // снятая + часы + преамбула + ворота хука окна (сессия 100)
      's14 WH фикстура: образец поставки + снятые записи 2.8/2.9-pre в его однострочной форме + список прав владельца', owner28.slice(0, 200));
   W = wcopy(owner28, null); wr = runAll(W, ['check']);
   ok(wr.code === 0 && /still runs 2 hook\(s\) KAIF retired in 2\.9: PreToolUse → pretool-owner-word\.mjs · Stop → stop-owner-answer\.mjs/.test(wr.out) && /wire-hooks/.test(wr.out),
@@ -849,8 +893,10 @@ const RETIRED_STOP = ',\n          {\n            "type": "command",\n          
   W = wcopy(JSON.stringify(ownerPre, null, 2) + '\n', null); wr = runAll(W, ['wire-hooks']);
   let pj = null; try { pj = JSON.parse(settingsOf(W)); } catch { /* ассерт ниже честно красный */ }
   // 2.10 PT1 · PT2: в PreToolUse остаются ТРИ группы — владельца первой, группа часов и группа преамбулы субагента KAIF; снятая ушла
-  ok(wr.code === 0 && pj && pj.hooks.PreToolUse?.length === 3 && JSON.stringify(pj.hooks.PreToolUse[0]) === JSON.stringify(OWNER_OBJ.hooks.PreToolUse[0])
+  // сессия 100: четвёртая группа — ворота закрытия хука окна (matcher Skill)
+  ok(wr.code === 0 && pj && pj.hooks.PreToolUse?.length === 4 && JSON.stringify(pj.hooks.PreToolUse[0]) === JSON.stringify(OWNER_OBJ.hooks.PreToolUse[0])
      && /clock-now\.mjs/.test(JSON.stringify(pj.hooks.PreToolUse[1])) && /subagent-preamble\.mjs/.test(JSON.stringify(pj.hooks.PreToolUse[2]))
+     && /context-window\.mjs/.test(JSON.stringify(pj.hooks.PreToolUse[3]))
      && !/pretool-owner-word|stop-owner-answer/.test(settingsOf(W) || ''),
      's14 WH: свой PreToolUse владельца рядом со снятым — его группа на месте и первой, рядом группы часов и преамбулы, ушла только снятая запись KAIF', `${wr.out.slice(-200)} | ${String(settingsOf(W)).slice(0, 300)}`);
   // личный settings.local.json KAIF не правит никогда: снятый хук там назван, файл побайтно нетронут
@@ -891,8 +937,9 @@ W = wcopy(null, null); wr = runAll(W, ['checkpoint', 'wire-hooks']);
 ok(wr.code !== 0 && /NOT wired/.test(wr.out) && /--verdict/.test(wr.out),
    's14 SW2: `checkpoint wire-hooks` без подключения — отказ, названы команда и запись отказа харнесса', wr.out.slice(-300));
 wr = runAll(W, ['wire-hooks']);   // результат судится до следующей команды (страж немых команд, bugs/61)
-// 2.10 PT1 · PT2 · PT5 · HC8: пятнадцать записей «событие:хук» (хук часов — под UserPromptSubmit и PreToolUse, преамбула — под PreToolUse); число — из эталона WANT
-ok(wr.code === 0 && new RegExp(`${WANT.length} of ${WANT.length} KAIF hooks added`).test(wr.out), 's14 SW2: wire-hooks на свежей копии — все записи фрагмента добавлены (15 из 15)', wr.out.slice(-200));
+// 2.10 PT1 · PT2 · PT5 · HC8 · сессия 100 (ворота окна): записи «событие:хук» (хук часов — под UserPromptSubmit и PreToolUse, преамбула и ворота окна —
+// под PreToolUse); число — из эталона WANT, в тексте тоже (сессия 101: «15 из 15» пережило шестнадцатую запись)
+ok(wr.code === 0 && new RegExp(`${WANT.length} of ${WANT.length} KAIF hooks added`).test(wr.out), `s14 SW2: wire-hooks на свежей копии — все записи фрагмента добавлены (${WANT.length} из ${WANT.length})`, wr.out.slice(-200));
 const wck = runAll(W, ['checkpoint', 'wire-hooks']);
 ok(wck.code === 0 && /wire-hooks done/.test(readFileSync(join(W, 'KAIF_ADAPTATION_TASK.md'), 'utf8')),
    's14 SW2: после wire-hooks чекпоинт записан в задании установки', wck.out.slice(-200));
@@ -942,5 +989,8 @@ r = run(S, 'check');
 ok(r.code !== 0 && /MISSING or empty: \.kaif\/hooks\//.test(r.out),
    's14 контраст: УДАЛЕНИЕ файлов модуля — честный MISSING (целостность поставки, как у tool-модулей)', r.out.slice(-300));
 
+// сессия 101: страж STATUS кладёт в системный temp маркер «раз в сессию» на КАЖДЫЙ id — у свода их пять на прогон (sid и четыре производных),
+// зелёный прогон их не убирал (≈ 5 каталогов на прогон, свод мутантов — ×34); свод убирает ровно свои — по префиксу своего уникального sid
+for (const n of (() => { try { return readdirSync(tmpdir()); } catch { return []; } })()) if (n.startsWith(`kaif-status-guard-${sid}`)) rmSync(join(tmpdir(), n), { recursive: true, force: true });
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : `✅ песочница refresh-hooks зелёная (деплой с модулем и без · хуков по живому контракту — ${HOOK_FILES.filter((f) => f.endsWith('.mjs')).length} · снятые хуки сняты с проводки)`}`);
 process.exit(failures ? 1 : 0);

@@ -9,6 +9,15 @@ The human wants this chat closed — but closed WELL, not fast. The work continu
 with OTHER agent sessions that start from an empty context. Two phases: first honor the work,
 then run the full closure ritual. Never rush either phase.
 
+## Step 0. Who closes — the owner's word or a MEASURED window
+
+Close only (a) at the owner's word — pass his words verbatim in the skill's args, `owner: «…»` — or (b) when the window is measured at
+or above the project's closing level: `node .kaif/hooks/context-window.mjs --measure` (exit 0 — may close · 1 — too early, keep working ·
+2 — nothing to measure, and then only the owner's word closes; without the refresh-hooks module the window does not close the chat).
+Run the closing as the skill where the agent system knows it — with hooks running, the context-window gate measures at the call and
+denies an early one; an agent system can withhold the project's hooks and skills from a session (a folder it does not trust), and then
+this step IS the gate. «The window feels full» is not a measurement: a session closed «by the window» at 53 % (KAIF 2.10).
+
 ## Phase A. The advance order — keep working to a natural cut
 
 The order usually arrives WHILE you are working ("wrap up when you're done"). Then:

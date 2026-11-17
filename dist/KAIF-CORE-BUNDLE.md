@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "f468147226db6a4e0984256b6b110c144a1a3e37a635e813ea1be8ff4603ca80",
+    "sourceTree": "bcd151d622b0a0d4b47d782106009c3bac2b0acbde331a2775b1413051f1c5d1",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -109,7 +109,7 @@
       "A SUBAGENT ENTERS THE PROJECT FIRST (2.10, epic PT; origin tickets #166 · #168 — a field deployment carried its own preamble hook): the refresh-hooks module ships a sixth script, `.kaif/hooks/subagent-preamble.mjs`, and `wire-hooks` wires it for Claude Code on `PreToolUse` with the matcher `Agent|Task`: every subagent task gets a marked preamble in front of it — read in full the documents of step 1 of `/resume` (read from `.claude/skills/resume/SKILL.md` by the step's number, existing files only), quote one canon line bearing on the task first in the report, no subagents of its own, no commit, no push — through `updatedInput`, with no permission decision; a task already marked is left as it is; each firing appends one line to `.kaif/subagent-preamble.jsonl` (now in the ignore-first set). The guide's fable-loop section gains the rule \"A brief to a subagent has five parts\" (context · bounds · role · report · the main agent's duty after) with the skeleton `.kaif/_subagent-brief-template.md`, and the judge hunts \"subagent result relayed unverified\". MIGRATION — agent work: none; `wire-hooks` adds the group, `\"hooks\": \"off\"` keeps it out.",
       "A FINDING IS WRITTEN WHERE IT LIVES, IN THE SAME TURN (2.10, epic MM; origin tickets #160 · #159 — the KAIF owner on a field project, rendered from Russian: \"something changed? the knowledge documents say otherwise? you MUST edit them\"): the closing rituals (`/end-chat-soft`, `/end-chat-force` step 1) and the loops (`/autoloop` step 9, `/dayloop` and `/nightloop` step 5) say a `KNOWLEDGE:` line — what was understood anew or found stale and the document it is written in now, or «nothing new»; the checklist line «Check the map & blast radius» and the footnotes of both maps ask for the line in the same turn, not on a commit; `/fable-judge` hunts «Learned, not recorded». Nothing to migrate: the rule acts from the next session.",
       "THE KNOWLEDGE HOOK SPEAKS AT THE MOMENTS A MEMORY IS WRITTEN (2.10, epic MM; origin tickets #160 · #159 · #186 — a field deployment carried its own knowledge hook, whose one ten-minute window swallowed every novelty moment): the refresh-hooks module ships an eighth script, `.kaif/hooks/knowledge-moment.mjs` — on the owner's prompt, a failed tool call, a Read of a knowledge document and the first touch of a component with `NOTES.md`, and on the first Read of a project source file (quoting what the docs say of it, or ordering one line into the map when no doc names it), it puts one line into the context: write what you understood into the project document where it lives, in this turn; plain tool results add weight and it speaks once per twelve. It never blocks and never stops a turn; its state is `.kaif/knowledge-moment.json` (ignored). `wire-hooks` wires it under UserPromptSubmit, PostToolUse and PostToolUseFailure; Claude Code only.",
-      "THE WINDOW WARNS AT 80 %, THE SOFT CLOSURE STARTS AT 85 % (2.10, epic PT; origin ticket #188 and its comment — two field deployments carried their own budget hook; one agent read a warning that spoke of closing as the closure and stopped working with 30 % of the window left): the refresh-hooks module ships a ninth script, `.kaif/hooks/context-window.mjs` — on the owner's prompt and after each tool result it reads the session's used share of the window; at `contextWindow.warnPct` (80) one warning with no closing word, at `closePct` (85) «finish to a logical cut, then /end-chat-soft», never a forced closure. The window size follows the vendor's model rule unless `contextWindow.tokens` is set. A project that wired its own budget hook keeps it — compare the thresholds and keep one.",
+      "THE WINDOW WARNS AT 80 %, THE SOFT CLOSURE STARTS AT 85 % (2.10, epic PT; origin ticket #188 and its comment — two field deployments carried their own budget hook; one agent read a warning that spoke of closing as the closure and stopped working with 30 % of the window left): the refresh-hooks module ships a ninth script, `.kaif/hooks/context-window.mjs` — on the owner's prompt and after each tool result it reads the session's used share of the window; at `contextWindow.warnPct` (80) one warning with no closing word, at `closePct` (85) «finish to a logical cut, then /end-chat-soft», never a forced closure. The window size follows the vendor's model rule unless `contextWindow.tokens` is set. A project that wired its own budget hook keeps it — compare the thresholds and keep one. The same hook also GATES the closing (a source session closed «by the window» at 53 % by feeling): `/end-chat-soft` or `/end-chat-force` called below `closePct` without `owner: «<his words>»` in the skill's args is denied with the measured share — wire its third entry, `PreToolUse` · matcher `Skill`; the closing skills' step 0 measures by hand — `node .kaif/hooks/context-window.mjs --measure` (exit 0 may close · 1 too early · 2 nothing to measure). Wired is not running: Claude Code runs a folder's hooks, skills and CLAUDE.md only after the owner trusts the folder («Trust this folder in Claude Code?» → «Trust folder»); `--alive` tells a session whether its hooks run.",
       "RED IS A CLAIM TOO, AND THE POSITIVE SMOKE RUNS FIRST (2.10, epic HC; origin tickets #87 · #173 — two QA deployments: a red produced by the measuring rig was no class anywhere; a feature was moved to Done with its main action never pressed): `TESTING_FRAMEWORK.md` gains the section \"Red is a claim too — earn it like green\" (before the verdict \"broken\" print the stand — language and locale · starting state · data · what changed since the last green; many reds sharing one condition are one error of measurement until ruled out), the activities chain step 4 runs the `smoke` rows first, and marker rule 7 makes a feature marker and any \"done / tested\" illegal while a `smoke` row is not `pass`; `/fable-judge` hunts both. The section \"How this composes\" is shortened by merged bullets, nothing dropped. A localized deployment carries the new section in the owner's language.",
       "YOU WROTE CODE — RUN IT BEFORE YOU STOP (2.10, epic HC; origin tickets #175 · #176 — two field deployments of one owner carried their own testing hook; the owner, rendered from Russian: \"the agent wrote code → the hook ORDERS it tested\" · \"the agent does not ask the owner's permission\"): the refresh-hooks module ships a tenth script, `.kaif/hooks/test-after-code.mjs` — a write of a file that changes the product becomes a test debt, only a run of its own kind clears it (a build, a linter, `--check`, `--help`, a heredoc body never do), and the stop of a turn with debt is refused once with the list; a repeated stop with nothing new written passes. Without project data it judges source files and clears a file by running it; a project that has a game, a device or a deploy names its kinds, runs and deploys in `.kaif/kaif.json` → `testHook`. `wire-hooks` adds it under `PostToolUse` and `Stop`; a project that carried its own testing hook keeps only its kinds and patterns as data.",
       "THE STAND IS THE AGENT'S (2.10, epic HC; origin ticket #189 — the KAIF owner on a field project, rendered from Russian: \"the whole machine with the game is yours — set up for yourself whatever you need\"): the testing canon says it in «What the word \"test\" means», item 4 — the test's conditions are built by the agent with what its machine allows, an unobserved case is reported with the stand step done next, never as «needs a stand» handed to the owner; `/fable-judge` hunts «Closed as \"needs a stand\"». A project whose house rules already say it keeps them; nothing to migrate.",
@@ -568,6 +568,9 @@
   "sectionsNew": {
     "prev": "v2.9",
     "files": {
+      ".claude/skills/end-chat-soft/SKILL.md": [
+        "## Step 0. Who closes — the owner's word or a MEASURED window"
+      ],
       ".claude/skills/resume/SKILL.md": [
         "## Step 0. The chat's FIRST `/resume` — read the previous chat's farewell"
       ],
@@ -5131,6 +5134,10 @@ description: URGENTLY CLOSE this chat RIGHT NOW, without the long ceremonies —
 The human needs this chat closed NOW. Speed wins over ceremony — but never over the handover: a
 closure that loses the essentials is not fast, it is destructive. Three steps, minutes total.
 
+**Who closes:** the owner's word (his words verbatim in the skill's args, `owner: «…»`) or a window MEASURED at or above the closing level
+— `node .kaif/hooks/context-window.mjs --measure` exits 0 (1 — too early, keep working · 2 — nothing to measure: then only the owner's word
+closes) — never «the window feels full»; with hooks running, the context-window gate measures at the skill's call too.
+
 ## Step 1. The handover — only what must not be lost
 
 Update `STATUS.md`, tersely:
@@ -5199,6 +5206,15 @@ description: SOFTLY CLOSE this chat with full ceremonies — usually ordered IN 
 The human wants this chat closed — but closed WELL, not fast. The work continues in OTHER chats
 with OTHER agent sessions that start from an empty context. Two phases: first honor the work,
 then run the full closure ritual. Never rush either phase.
+
+## Step 0. Who closes — the owner's word or a MEASURED window
+
+Close only (a) at the owner's word — pass his words verbatim in the skill's args, `owner: «…»` — or (b) when the window is measured at
+or above the project's closing level: `node .kaif/hooks/context-window.mjs --measure` (exit 0 — may close · 1 — too early, keep working ·
+2 — nothing to measure, and then only the owner's word closes; without the refresh-hooks module the window does not close the chat).
+Run the closing as the skill where the agent system knows it — with hooks running, the context-window gate measures at the call and
+denies an early one; an agent system can withhold the project's hooks and skills from a session (a folder it does not trust), and then
+this step IS the gate. «The window feels full» is not a measurement: a session closed «by the window» at 53 % (KAIF 2.10).
 
 ## Phase A. The advance order — keep working to a natural cut
 
@@ -9003,6 +9019,12 @@ Only on the first `/resume` of this chat (never on an hourly refresh, never on a
 message, written by the `stop-farewell-capture.mjs` hook. Compare its date with the newest commit (`git log -1 --format=%ci`): older →
 say «the farewell predates the last commit — STATUS.md leads» and trust `STATUS.md`. Carry its «show first / do first» items into
 Step 2. No file → go on; the owner may paste the farewell under `resume` as before (origin ticket #181).
+
+**Do this session's hooks run?** After your first read: `node .kaif/hooks/context-window.mjs --alive` (where the refresh-hooks module is
+deployed). Exit 1 — the agent system ran none of the project's hooks in this session: say so to the owner as the FIRST line of your
+announcement — the project's hooks, skills and `CLAUDE.md` were not given to it — and name his action from the output (Claude Code: the
+window «Trust this folder in Claude Code?» → «Trust folder»); exit 2 — nothing to judge, go on. Wired is not running: a source session ran a
+whole day with wired hooks that never ran (KAIF 2.10).
 
 ## Step 1. Read ALL the canon documents of the KAIF framework (in parallel)
 
@@ -20160,7 +20182,7 @@ process.exit(0);
 #!/usr/bin/env node
 // context-window.mjs — the "the window warns at 80 %, the soft closure starts at 85 %" hook (KAIF 2.10, epic PT; origin ticket #188 and
 // its comment — two field deployments carried their own budget hook; optional refresh-hooks module, deployed to .kaif/hooks/).
-// Claude Code events: UserPromptSubmit · PostToolUse.
+// Claude Code events: UserPromptSubmit · PostToolUse · PreToolUse (matcher Skill — the closing gate, below).
 //
 // What it does: reads the session's last main-thread usage from the transcript (input + cache_creation + cache_read tokens — the vendor's
 // own formula for «used», code.claude.com/docs/en/statusline) and, once per level (re-armed after a compaction), puts ONE line into the agent's context:
@@ -20177,7 +20199,16 @@ process.exit(0);
 // with 1M by default (Fable 5 and later, Sonnet 5 and later, Haiku 5.5, Opus 4.7 and later — code.claude.com/docs/en/model-config) →
 // 1 000 000; else 200 000 — and never less than the usage seen (used > 200 000 ⇒ the window is 1 000 000).
 // Thresholds: `contextWindow.warnPct` · `contextWindow.closePct` — the owner states them; state per session in .kaif/context-window.json.
-// It never blocks and never stops a turn. Any internal error → exit 0 silently. Lines are English: the agent reads them.
+// It blocks ONE thing (the closing gate, PreToolUse · matcher Skill): a closing skill — /end-chat-soft or /end-chat-force — called while the
+// window is below closePct and without the owner's word in the skill's args (`owner: «<his words asking to close>»`) is denied with the
+// measured share; the agent keeps working. Origin: the source's session 100 closed «by the window» at 53 % by feeling, and a field deployment
+// carried the same gate after closing at 68 % «by the feeling of the limit» (its owner: you closed the chat too early again — fix the hook);
+// nothing to measure (no transcript, no usage) — the gate does not block. It never stops a turn otherwise. Any internal error → exit 0
+// silently. Lines are English: the agent reads them.
+// [TESTED: 2026-11-17 · the gate, `--measure` and `--alive` — hygiene: --selftest all ok, mutants G1–G6 of tools/sandbox/probes/gate-close-mutant.mjs
+//  red on exactly their cases, s14 on the deployed hook; functional: `--measure` and `--alive` LIVE in a session whose hooks the agent system
+//  withheld (54 %, exit 1 · «NOT running … by session id», exit 1); the gate at a live skill call — NOT observed: the origin's folder had no
+//  trust (bugs/138); the judge of session 101 refuted the first gate (a «/end-chat-soft» name passed) — report testcases/reports/2026-11-17_close-gate.md]
 // [TESTED: 2026-11-06 13:15 +03:00 · functional — `tools/sandbox/probes/pt6-context-window.mjs` on the origin's own live transcript (session 97,
 //  claude-opus-5-5, 680 700 tokens → the 1M window by the vendor's rule, 68 %): the defaults 80 / 85 — silence; the project's 60 / 65 —
 //  the «finish to a logical cut, then /end-chat-soft» line; hygiene — --selftest 9/9, mutant «cache_read not counted» red on exactly the
@@ -20187,8 +20218,9 @@ process.exit(0);
 //  ≈ 2026-11-06 15:35 (session 98, judge of epics PT6 · HC10): the re-arm after a compaction and the voice at 80 % — hygiene only
 //  (--selftest 12/12, four mutants each red on its case; report testcases/reports/2026-11-06_s98-judge-debt-mm-tk10.md); a live
 //  compaction re-arm — NOT observed]
-import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync } from 'node:fs';
-import { join, dirname, resolve } from 'node:path';
+import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync, readdirSync, statSync } from 'node:fs';
+import { join, dirname, resolve, basename } from 'node:path';
+import { homedir } from 'node:os';
 
 const STATE = join('.kaif', 'context-window.json');
 const DEPLOYMENT = join('.kaif', 'kaif.json');
@@ -20222,7 +20254,9 @@ export function lastUsage(text) {
     if (!lines[i].includes('"usage"')) continue;
     try {
       const r = JSON.parse(lines[i]);
-      if (r.type === 'assistant' && !r.isSidechain && r.message && r.message.usage) return { used: usedOf(r.message.usage), model: String(r.message.model || '') };
+      // a `<synthetic>` record (the client's own line, zero usage) is no answer of the model — it read «0 %» on session 100 (judge of session 101)
+      if (r.type === 'assistant' && !r.isSidechain && r.message && r.message.usage && r.message.model !== '<synthetic>' && usedOf(r.message.usage) > 0)
+        return { used: usedOf(r.message.usage), model: String(r.message.model || '') };
     } catch { /* a torn line at the cut of the tail */ }
   }
   return null;
@@ -20251,6 +20285,64 @@ export function decide(used, win, cfg, said = []) {
   else if (pct >= warnPct) level = warnPct;
   if (level === null || said.includes(level)) return null;
   return { level, line: level >= closePct ? LINES.close(pct, used, win) : LINES.warn(pct, used, win) };
+}
+
+// The closing gate — pure: (event, used, window, thresholds) → the hook's deny answer or null. A closing skill below closePct passes only
+// with the owner's own words in its args; a subagent never closes the chat, so its calls are not judged.
+export const OWNER_WORD = /owner:\s*[«"“][^»"”]+[»"”]/;
+export function closeGate(ev, used, win, cfg = {}) {
+  if (!ev || ev.hook_event_name !== 'PreToolUse' || ev.tool_name !== 'Skill' || fromSubagent(ev)) return null;
+  const ti = ev.tool_input || {};
+  // the name as Claude Code runs it (judge of session 101): it trims the name and drops a leading «/», a plugin or folder prefix ends at «:» —
+  // so «/end-chat-soft», « end-chat-soft» and «a/b:end-chat-soft» are the same call. Words after the name: Claude Code looks the whole string
+  // up and would not run such a skill (re-judge, N1); the gate still reads them as args — the safe direction, nothing passes by them
+  const [name, ...rest] = String(ti.skill || ti.name || '').trim().replace(/^\/+/, '').split(/\s+/);
+  const m = /^(?:[^\s:]+:)?end-chat-(soft|force)$/.exec(name || '');
+  if (!m || OWNER_WORD.test(`${ti.args || ''} ${rest.join(' ')}`) || !(used > 0) || !(win > 0)) return null;
+  const closePct = Number(cfg.closePct) > 0 ? Number(cfg.closePct) : DEFAULTS.closePct;
+  const pct = Math.floor((used / win) * 100);
+  if (pct >= closePct) return null;
+  return { hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: 'deny', permissionDecisionReason:
+    `KAIF context: the window is ${pct} % full (${used} of ${win} tokens) — below the closing level ${closePct} %: it is too early to close ` +
+    `the chat by the window; keep working. Closing at the owner's word — pass his words verbatim in the skill's args: owner: «<his words>».` } };
+}
+
+// The agent's own measurement (session 101, bugs/138): an agent system may withhold the project's hooks and skills from a session (Claude Code
+// 2.1.326 in a folder without trust) — then the closing skills' step 0 measures the window by hand: `--measure [<transcript.jsonl>]`. Without a
+// path — the newest transcript of this project in the vendor's store, ~/.claude/projects/<the project path, every non-alphanumeric → '-'>/.
+// Exit 0 — at or above the closing level · 1 — below it, too early to close by the window · 2 — nothing to measure.
+export const slugOf = (p) => String(p).replace(/[^A-Za-z0-9]/g, '-');
+const SLUG_MAX = 200;   // the vendor cuts a longer folder name to 200 characters and appends «-<hash>» (judge of session 101, read in claude.exe)
+// This session's transcript: the agent's own session id (CLAUDE_CODE_SESSION_ID — present in the agent's commands on Windows and macOS) names
+// it; without one — the newest transcript of the project (two live chats of one folder: the other one may be measured — said in the output).
+export function transcriptOf(root, home = homedir(), sid = process.env.CLAUDE_CODE_SESSION_ID || '') {
+  const base = join(home, '.claude', 'projects'), slug = slugOf(resolve(root));
+  let dir = join(base, slug);
+  if (!existsSync(dir) && slug.length > SLUG_MAX) {
+    // case-blind: a drive letter comes upper- or lower-case by the shell (re-judge, N3); Windows paths do not tell case apart
+    const pre = (slug.slice(0, SLUG_MAX) + '-').toLowerCase();
+    try { const hit = readdirSync(base).find((d) => d.toLowerCase().startsWith(pre)); if (hit) dir = join(base, hit); } catch { /* no store */ }
+  }
+  if (sid && existsSync(join(dir, sid + '.jsonl'))) return { path: join(dir, sid + '.jsonl'), id: sid, by: 'session id' };
+  try {
+    const p = readdirSync(dir).filter((f) => f.endsWith('.jsonl')).map((f) => join(dir, f)).sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs)[0];
+    return p ? { path: p, id: basename(p, '.jsonl'), by: 'the newest transcript of the project' } : null;
+  } catch { return null; }
+}
+// Do this project's hooks run in this session? (session 101, bugs/138: Claude Code gives a folder without trust none of its hooks, skills or
+// CLAUDE.md; wired is not running.) This hook records every session it runs in on PostToolUse — no record of this session after its first
+// tool calls = the hooks do not run here. Pure: (state, id) → { code, line }.
+export function aliveLine(state, id) {
+  if (state && state[id]) return { code: 0, line: `KAIF hooks: running in this session (${id}) — the context-window hook recorded it at ${state[id].at}.` };
+  return { code: 1, line: `KAIF hooks: NOT running in this session (${id}) — wired, yet the agent system ran none of them. Tell the owner first: ` +
+    'Claude Code gives a folder without trust none of its hooks, skills or CLAUDE.md — reload the VS Code window and answer its window ' +
+    '«Trust this folder in Claude Code?» with «Trust folder», then a new chat.' };
+}
+export function measureLine(used, win, cfg = {}) {
+  const closePct = Number(cfg.closePct) > 0 ? Number(cfg.closePct) : DEFAULTS.closePct;
+  const pct = Math.floor((used / win) * 100), may = pct >= closePct;
+  return { pct, closePct, may, line: `KAIF context: the window is ${pct} % full (${used} of ${win} tokens); the closing level is ${closePct} % — ` +
+    (may ? 'the window may close the chat.' : 'too early to close the chat by the window: keep working.') };
 }
 
 function projectRoot(cwd) {
@@ -20299,8 +20391,76 @@ if (process.argv[2] === '--selftest') {
     'window: the project\'s tokens win over the floor; a date suffix is not a minor version (judge of session 97)');
   ok(fromSubagent({ hook_event_name: 'PostToolUse', agent_id: 'a1', agent_type: 'general-purpose' }) && !fromSubagent({ hook_event_name: 'PostToolUse' }),
     'a subagent\'s tool call (the event carries agent_id) — silence; the main agent\'s call — judged');
+  { // the closing gate (session 100: closed «by the window» at 53 % by feeling)
+    const sk = (skill, args = '', extra = {}) => ({ hook_event_name: 'PreToolUse', tool_name: 'Skill', tool_input: { skill, args }, ...extra });
+    const d53 = closeGate(sk('end-chat-soft'), 531383, LARGE, cfg);
+    ok(d53 && d53.hookSpecificOutput.permissionDecision === 'deny' && /53 % full/.test(d53.hookSpecificOutput.permissionDecisionReason)
+      && /too early/.test(d53.hookSpecificOutput.permissionDecisionReason) && /owner: «/.test(d53.hookSpecificOutput.permissionDecisionReason),
+      'gate: /end-chat-soft at 53 % without the owner\'s word — denied with the measured share and the way out');
+    ok(closeGate(sk('end-chat-force'), 600000, LARGE, cfg) && closeGate(sk('kaif:end-chat-soft'), 600000, LARGE, cfg),
+      'gate: /end-chat-force below the level and a plugin-prefixed name — denied too');
+    ok(closeGate(sk('end-chat-soft', 'owner: «close the chat now»'), 531383, LARGE, cfg) === null && closeGate(sk('end-chat-soft'), 851000, LARGE, cfg) === null
+      && closeGate(sk('end-chat-soft'), 150000, SMALL, { closePct: 75 }) === null,
+      'gate: the owner\'s word in the args, 85 % and the project\'s own lower level — pass');
+    ok(closeGate(sk('resume'), 100, LARGE, cfg) === null && closeGate({ ...sk('end-chat-soft'), tool_name: 'Read' }, 100, LARGE, cfg) === null
+      && closeGate({ ...sk('end-chat-soft'), hook_event_name: 'PostToolUse' }, 100, LARGE, cfg) === null
+      && closeGate(sk('end-chat-soft', '', { agent_id: 'a1' }), 100, LARGE, cfg) === null && closeGate(sk('end-chat-soft'), 0, LARGE, cfg) === null,
+      'gate: another skill, another tool, another event, a subagent, nothing measured — no gate');
+  }
+  { // the agent's own measurement (session 101: hooks withheld from an untrusted folder — the closing step 0 measures by hand)
+    const m53 = measureLine(531383, LARGE, cfg), m86 = measureLine(860000, LARGE, cfg), m75 = measureLine(150000, SMALL, { closePct: 75 });
+    ok(!m53.may && /53 % full/.test(m53.line) && /too early/.test(m53.line) && m86.may && /may close/.test(m86.line) && m75.may,
+      'measure: 53 % — too early; 86 % and the project\'s own lower level — may close');
+    ok(slugOf('d:\\work\\ai_sandbox\\KAIF') === 'd--work-ai-sandbox-KAIF' && slugOf('/home/u/my.proj') === '-home-u-my-proj',
+      'measure: the vendor\'s transcript folder name — every non-alphanumeric of the project path becomes «-»');
+  }
+  { // judge of session 101: the skill name as Claude Code runs it, and a `<synthetic>` record is no answer
+    const sk = (skill, args = '') => ({ hook_event_name: 'PreToolUse', tool_name: 'Skill', tool_input: { skill, args } });
+    ok(['/end-chat-soft', ' end-chat-soft', '/end-chat-force', 'a/b:end-chat-soft', '/end-chat-soft  '].every((n) => closeGate(sk(n), 531383, LARGE, cfg))
+      && closeGate(sk('/end-chat-soft owner: «close the chat now»'), 531383, LARGE, cfg) === null,
+      'gate: «/end-chat-soft», a padded name, «/end-chat-force», a folder prefix — denied; the owner\'s word after the name — pass');
+    const rec = (model, input, read) => JSON.stringify({ type: 'assistant', message: { model, usage: { input_tokens: input, cache_read_input_tokens: read, cache_creation_input_tokens: 0 } } });
+    const lu = lastUsage([rec('claude-opus-5-5', 42, 586000), rec('<synthetic>', 0, 0)].join('\n'));
+    ok(lu && lu.used === 586042 && lu.model === 'claude-opus-5-5', 'measure: a `<synthetic>` zero-usage record at the tail is skipped — the last MODEL answer counts');
+  }
+  { // session 101 (bugs/138): wired is not running — this session's record in the hook's state
+    const st = { 'sess-a': { said: [], seen: 1, at: '2026-11-17T12:00:00.000Z' } };
+    const a0 = aliveLine(st, 'sess-a'), a1 = aliveLine(st, 'sess-b');
+    ok(a0.code === 0 && /running in this session/.test(a0.line) && a1.code === 1 && /NOT running/.test(a1.line) && /Trust folder/.test(a1.line),
+      'alive: this session recorded — exit 0; not recorded — exit 1 naming the owner\'s action «Trust folder»');
+  }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
+}
+
+if (process.argv[2] === '--alive') {   // never reads stdin: a hand command, not an event
+  const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(process.cwd());
+  const marker = readJson(join(root, DEPLOYMENT)) || {};
+  if (marker.hooks === 'off') { console.log('KAIF hooks: off by the owner\'s word (.kaif/kaif.json "hooks": "off") — nothing to judge.'); process.exit(2); }
+  const wired = ['settings.json', 'settings.local.json'].some((f) => {
+    const s = readJson(join(root, '.claude', f));
+    return JSON.stringify((s && s.hooks && s.hooks.PostToolUse) || []).includes('context-window.mjs');
+  });
+  if (!wired) { console.log('KAIF hooks: the context-window hook is not wired on PostToolUse in .claude/settings.json — nothing to judge.'); process.exit(2); }
+  const t = transcriptOf(root);
+  if (!t) { console.log(`KAIF hooks: no transcript of this project in the vendor's store (${root}) — nothing to judge.`); process.exit(2); }
+  const a = aliveLine(readJson(join(root, STATE)) || {}, t.id);
+  console.log(`${a.line} (session by ${t.by})`);
+  process.exit(a.code);
+}
+
+if (process.argv[2] === '--measure') {
+  const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(process.cwd());
+  let tp = process.argv[3] || '';
+  let by = 'the path given';   // said in the output: two live chats of one folder must not be mixed up silently (re-judge, N2)
+  if (!tp) { const t = transcriptOf(root); tp = t ? t.path : ''; by = t ? t.by : by; }   // this session's transcript, else the project's newest
+  const lu = tp && existsSync(tp) ? lastUsage(tailOf(tp)) : null;
+  if (!lu) { console.log(`KAIF context: nothing to measure (${tp || 'no transcript found for ' + root}) \u2014 the window cannot close the chat; only the owner's word can.`); process.exit(2); }
+  const marker = readJson(join(root, DEPLOYMENT)) || {};
+  const cw = (marker.contextWindow && typeof marker.contextWindow === 'object') ? marker.contextWindow : {};
+  const m = measureLine(lu.used, windowOf({ model: lu.model, env: process.env, tokens: cw.tokens, seen: lu.used }), cw);
+  console.log(`${m.line} (transcript by ${by}: ${tp})`);
+  process.exit(m.may ? 0 : 1);
 }
 
 try {
@@ -20315,6 +20475,9 @@ try {
       const st = all[id] || { said: [], seen: 0 };
       st.seen = Math.max(st.seen || 0, lu.used);
       const win = windowOf({ model: lu.model, env: process.env, tokens: cw.tokens, seen: st.seen });
+      const gate = closeGate(ev, lu.used, win, cw);
+      if (gate) { process.stdout.write(JSON.stringify(gate)); process.exit(0); }
+      if (ev.hook_event_name === 'PreToolUse') process.exit(0);   // the gate's event says nothing else — the levels speak on the others
       st.said = keptLevels(lu.used, win, st.said || []);
       const d = decide(lu.used, win, cw, st.said);
       if (d) st.said = [...st.said, d.level];
@@ -20855,7 +21018,7 @@ lacking them.
 | `clock-now.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PreToolUse`, matcher `Write\|Edit\|MultiEdit` | prompt: none — one short line is the point; write: the tool input holds a time placeholder (below) | on every prompt; on every write that holds a placeholder | prompt: one context line with the machine's local moment, and — on the owner's OWN prompt (not a task notification, a harness text or a subagent's hand-back) — the presence mark `.kaif/owner-presence.json`, by which the contour lifts its quiet hours for `contour.ownerActiveMinutes` (2.10, #193); write: `updatedInput` with the placeholders filled by the clock — no permission decision, never a stop; silent on a write without a placeholder |
 | `stop-farewell-capture.mjs` (2.10, epic PT) | `Stop` | the turn ran `/end-chat-soft` or `/end-chat-force` (a Skill call or the owner's slash command), and this closure has not written yet | once per closure — a later stop of the same closure (another Stop hook blocked) writes nothing | writes the turn's last message WHOLE into `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (temporary file + rename); never blocks, never speaks |
 | `subagent-preamble.mjs` (2.10, epic PT) | `PreToolUse`, matcher `Agent\|Task` | the launch carries a task without the preamble's marker | once per launch — a second pass over a marked task changes nothing | `updatedInput` with a marked preamble in front of the subagent's task: read step 1 of `/resume` (read from the skill, existing files only), quote one canon line first in the report, no nested subagents, no commit, no push; one journal line in `.kaif/subagent-preamble.jsonl` — no permission decision, never a stop |
-| `context-window.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PostToolUse`, matcher `*` | the session's used share of the window — the last main-thread usage of the transcript (input + cache_creation + cache_read tokens) against the window size (the project's `contextWindow.tokens`, else the vendor's rule for the model) — reaches `contextWindow.warnPct` (80) or `closePct` (85, then every 5 %) | once per level, re-armed after a compaction | one `additionalContext` line: at 80 % a WARNING without a closing word (keep the pace, tell the owner once by voice), at 85 % «finish the current work to a logical cut, then `/end-chat-soft`» — never a forced closure, never a block; state in `.kaif/context-window.json` |
+| `context-window.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PostToolUse`, matcher `*`; `PreToolUse`, matcher `Skill` — the closing gate: `/end-chat-soft` · `/end-chat-force` below `closePct` without `owner: «…»` in the skill's args is denied with the measured share; by hand — `node .kaif/hooks/context-window.mjs --measure` (exit 0 may close · 1 too early · 2 nothing to measure), the closing skills' step 0 where the agent system withholds the project's hooks | the session's used share of the window — the last main-thread usage of the transcript (input + cache_creation + cache_read tokens) against the window size (the project's `contextWindow.tokens`, else the vendor's rule for the model) — reaches `contextWindow.warnPct` (80) or `closePct` (85, then every 5 %) | once per level, re-armed after a compaction | one `additionalContext` line: at 80 % a WARNING without a closing word (keep the pace, tell the owner once by voice), at 85 % «finish the current work to a logical cut, then `/end-chat-soft`» — never a forced closure, never a block; state in `.kaif/context-window.json` |
 | `knowledge-moment.mjs` (2.10, epic MM) | `UserPromptSubmit`; `PostToolUse` and `PostToolUseFailure`, matcher `*` | STRONG moments speak at once — the owner's own prompt (a background task's notification is not), a failed tool call, a Read of a knowledge document (maps, `STATUS.md`, `EXPERIENCE.md`, `HOUSE_RULES.md`, `plans/`, `researches/`), the first touch in a session of a file whose component has `NOTES.md`, the first Read in a session of a project source file — a config file (`package.json`, `*.yaml`, `*.toml`) is not one, a generic name (`index`, `utils`, `main` …) is looked up by its full path only (the docs that name it are quoted — «does the code say the same?»; named nowhere — «before you answer, add one line to the map»); every other tool result adds weight 1, and the hook speaks at 12 | per moment; the weight resets after each line; component notes — once per session | one `additionalContext` line: write what you understood into the project document where it lives, in this turn — never a block, never a stop, never a document body; state per session in `.kaif/knowledge-moment.json` |
 | `test-after-code.mjs` (2.10, epic HC) | `PostToolUse`, matcher `*`; `Stop` | a write of a product file (the project's kinds in `.kaif/kaif.json` → `testHook`, else a source file, configs excluded); a shell command that is a RUN of its kind clears it — a build, a linter, `--check`, `--help`, a heredoc body never do | per write; the stop is refused once per debt signature, a repeated stop with nothing new written passes | the order «run it before you stop», the list of what was not run; state in `.kaif/test-debt.json`; `--waive "<why>"` · `--status` · `--selftest` |
 
@@ -20891,6 +21054,13 @@ The write is the agent's and OPEN to its harness, never hidden inside `update`: 
 or refuse; a refusal is recorded in the task, and the owner gets the same one command. `node .kaif/kaif-core.mjs check` names a
 delivered hook that is not wired. To opt out: `"hooks": "off"` in `.kaif/kaif.json` — nothing is written then (entries wired
 earlier are removed by hand). The other systems below — and Claude Code by hand — are wired this way:
+
+**Wired is not running — the agent system decides** (KAIF 2.10, origin session 101): Claude Code runs a folder's hooks — and loads its
+skills and `CLAUDE.md` — only after the owner trusts the folder: the window «Trust this folder in Claude Code?» → «Trust folder» (vendor:
+«Claude Code checks workspace trust before it runs any hook from a settings file», code.claude.com/docs/en/hooks). A session started in an
+untrusted folder gets none of them, and nothing in it says so; `node .kaif/hooks/context-window.mjs --alive` does — exit 1 names the
+owner's action. Headless runs (`claude -p`, the SDK) «treat the folder as trusted», so a probe through them stays green while the owner's
+panel is dark.
 
 **Retired in 2.9 — the two hooks that stopped the agent on the owner's word** (origin ticket #144; the KAIF owner's verdict on the
 field, rendered from Russian: remove this from KAIF entirely — "I don't like that you stop on this"): `pretool-owner-word.mjs`
@@ -21357,6 +21527,17 @@ process.exit(0);
             "type": "command",
             "command": "node",
             "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/subagent-preamble.mjs"],
+            "timeout": 15
+          }
+        ]
+      },
+      {
+        "matcher": "Skill",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.kaif/hooks/context-window.mjs"],
             "timeout": 15
           }
         ]

@@ -42,10 +42,17 @@ const ok = (cond, name, extra = '') => {
 // stderr сливается в out и на зелёном коде тоже (bugs/61: результат каждой команды судится в ok(...)).
 const SHIM = join(ROOT, 'gh-shim.mjs');
 const CALLS = join(ROOT, 'gh-calls.log');
+// `report --dry-run` keeps the ticket body in an OS-temp folder «for inspection» (by design) and prints its path — the suite reads it
+// and removes what it caused at the end (session 101: ≈ 3 kaif-report-* folders left per polygon, green runs too)
+const DRY_BODIES = new Set();
 const run = (args, env = {}) => {
   const e = { ...process.env, KAIF_GH: SHIM, GH_SHIM_LOG: CALLS, ...env };
-  try { return { code: 0, out: execSync(`node ${join(S, '.kaif', 'kaif-core.mjs')} ${args} 2>&1`, { cwd: S, stdio: 'pipe', env: e }).toString() }; }
-  catch (err) { return failed(err, { root: ROOT, cwd: ROOT, args: args }); }
+  let res;
+  try { res = { code: 0, out: execSync(`node ${join(S, '.kaif', 'kaif-core.mjs')} ${args} 2>&1`, { cwd: S, stdio: 'pipe', env: e }).toString() }; }
+  catch (err) { res = failed(err, { root: ROOT, cwd: ROOT, args: args }); }
+  // two printed forms: the dry run's `--body-file <path>` and the gh-timeout branch's «Body kept at <path>»
+  for (const m of String(res.out || '').matchAll(/(?:--body-file|Body kept at) (\S+body\.md)/g)) if (/kaif-report-/.test(m[1])) DRY_BODIES.add(dirname(m[1]));
+  return res;
 };
 const calls = () => (existsSync(CALLS) ? readFileSync(CALLS, 'utf8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l)) : []);
 const setTracking = (tracking) => {
@@ -297,5 +304,6 @@ ok(r.code === 0 && !SILENT.test(r.out), 's17/SD: tracking: anonymous — NOT YET
 setTracking('origin');
 rmSync(join(S, FR)); rmSync(join(S, FR_OLD));
 
+for (const d of DRY_BODIES) rmSync(d, { recursive: true, force: true });   // the suite's own dry-run bodies — never another folder
 if (failures) { console.error(`\n❌ s17: ${failures} failure(s)`); process.exit(1); }
 console.log('\n✅ s17 report: all green');

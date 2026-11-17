@@ -20,6 +20,12 @@ message, written by the `stop-farewell-capture.mjs` hook. Compare its date with 
 say «the farewell predates the last commit — STATUS.md leads» and trust `STATUS.md`. Carry its «show first / do first» items into
 Step 2. No file → go on; the owner may paste the farewell under `resume` as before (origin ticket #181).
 
+**Do this session's hooks run?** After your first read: `node .kaif/hooks/context-window.mjs --alive` (where the refresh-hooks module is
+deployed). Exit 1 — the agent system ran none of the project's hooks in this session: say so to the owner as the FIRST line of your
+announcement — the project's hooks, skills and `CLAUDE.md` were not given to it — and name his action from the output (Claude Code: the
+window «Trust this folder in Claude Code?» → «Trust folder»); exit 2 — nothing to judge, go on. Wired is not running: a source session ran a
+whole day with wired hooks that never ran (KAIF 2.10).
+
 ## Step 1. Read ALL the canon documents of the KAIF framework (in parallel)
 
 **Read every canon document — the full set, not a slice.** A session that skips one resumes with a

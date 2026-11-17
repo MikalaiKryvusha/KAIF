@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // context-window.mjs — the "the window warns at 80 %, the soft closure starts at 85 %" hook (KAIF 2.10, epic PT; origin ticket #188 and
 // its comment — two field deployments carried their own budget hook; optional refresh-hooks module, deployed to .kaif/hooks/).
-// Claude Code events: UserPromptSubmit · PostToolUse.
+// Claude Code events: UserPromptSubmit · PostToolUse · PreToolUse (matcher Skill — the closing gate, below).
 //
 // What it does: reads the session's last main-thread usage from the transcript (input + cache_creation + cache_read tokens — the vendor's
 // own formula for «used», code.claude.com/docs/en/statusline) and, once per level (re-armed after a compaction), puts ONE line into the agent's context:
@@ -18,7 +18,16 @@
 // with 1M by default (Fable 5 and later, Sonnet 5 and later, Haiku 5.5, Opus 4.7 and later — code.claude.com/docs/en/model-config) →
 // 1 000 000; else 200 000 — and never less than the usage seen (used > 200 000 ⇒ the window is 1 000 000).
 // Thresholds: `contextWindow.warnPct` · `contextWindow.closePct` — the owner states them; state per session in .kaif/context-window.json.
-// It never blocks and never stops a turn. Any internal error → exit 0 silently. Lines are English: the agent reads them.
+// It blocks ONE thing (the closing gate, PreToolUse · matcher Skill): a closing skill — /end-chat-soft or /end-chat-force — called while the
+// window is below closePct and without the owner's word in the skill's args (`owner: «<his words asking to close>»`) is denied with the
+// measured share; the agent keeps working. Origin: the source's session 100 closed «by the window» at 53 % by feeling, and a field deployment
+// carried the same gate after closing at 68 % «by the feeling of the limit» (its owner: you closed the chat too early again — fix the hook);
+// nothing to measure (no transcript, no usage) — the gate does not block. It never stops a turn otherwise. Any internal error → exit 0
+// silently. Lines are English: the agent reads them.
+// [TESTED: 2026-11-17 · the gate, `--measure` and `--alive` — hygiene: --selftest all ok, mutants G1–G6 of tools/sandbox/probes/gate-close-mutant.mjs
+//  red on exactly their cases, s14 on the deployed hook; functional: `--measure` and `--alive` LIVE in a session whose hooks the agent system
+//  withheld (54 %, exit 1 · «NOT running … by session id», exit 1); the gate at a live skill call — NOT observed: the origin's folder had no
+//  trust (bugs/138); the judge of session 101 refuted the first gate (a «/end-chat-soft» name passed) — report testcases/reports/2026-11-17_close-gate.md]
 // [TESTED: 2026-11-06 13:15 +03:00 · functional — `tools/sandbox/probes/pt6-context-window.mjs` on the origin's own live transcript (session 97,
 //  claude-opus-5-5, 680 700 tokens → the 1M window by the vendor's rule, 68 %): the defaults 80 / 85 — silence; the project's 60 / 65 —
 //  the «finish to a logical cut, then /end-chat-soft» line; hygiene — --selftest 9/9, mutant «cache_read not counted» red on exactly the
@@ -28,8 +37,9 @@
 //  ≈ 2026-11-06 15:35 (session 98, judge of epics PT6 · HC10): the re-arm after a compaction and the voice at 80 % — hygiene only
 //  (--selftest 12/12, four mutants each red on its case; report testcases/reports/2026-11-06_s98-judge-debt-mm-tk10.md); a live
 //  compaction re-arm — NOT observed]
-import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync } from 'node:fs';
-import { join, dirname, resolve } from 'node:path';
+import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, openSync, readSync, fstatSync, closeSync, readdirSync, statSync } from 'node:fs';
+import { join, dirname, resolve, basename } from 'node:path';
+import { homedir } from 'node:os';
 
 const STATE = join('.kaif', 'context-window.json');
 const DEPLOYMENT = join('.kaif', 'kaif.json');
@@ -63,7 +73,9 @@ export function lastUsage(text) {
     if (!lines[i].includes('"usage"')) continue;
     try {
       const r = JSON.parse(lines[i]);
-      if (r.type === 'assistant' && !r.isSidechain && r.message && r.message.usage) return { used: usedOf(r.message.usage), model: String(r.message.model || '') };
+      // a `<synthetic>` record (the client's own line, zero usage) is no answer of the model — it read «0 %» on session 100 (judge of session 101)
+      if (r.type === 'assistant' && !r.isSidechain && r.message && r.message.usage && r.message.model !== '<synthetic>' && usedOf(r.message.usage) > 0)
+        return { used: usedOf(r.message.usage), model: String(r.message.model || '') };
     } catch { /* a torn line at the cut of the tail */ }
   }
   return null;
@@ -92,6 +104,64 @@ export function decide(used, win, cfg, said = []) {
   else if (pct >= warnPct) level = warnPct;
   if (level === null || said.includes(level)) return null;
   return { level, line: level >= closePct ? LINES.close(pct, used, win) : LINES.warn(pct, used, win) };
+}
+
+// The closing gate — pure: (event, used, window, thresholds) → the hook's deny answer or null. A closing skill below closePct passes only
+// with the owner's own words in its args; a subagent never closes the chat, so its calls are not judged.
+export const OWNER_WORD = /owner:\s*[«"“][^»"”]+[»"”]/;
+export function closeGate(ev, used, win, cfg = {}) {
+  if (!ev || ev.hook_event_name !== 'PreToolUse' || ev.tool_name !== 'Skill' || fromSubagent(ev)) return null;
+  const ti = ev.tool_input || {};
+  // the name as Claude Code runs it (judge of session 101): it trims the name and drops a leading «/», a plugin or folder prefix ends at «:» —
+  // so «/end-chat-soft», « end-chat-soft» and «a/b:end-chat-soft» are the same call. Words after the name: Claude Code looks the whole string
+  // up and would not run such a skill (re-judge, N1); the gate still reads them as args — the safe direction, nothing passes by them
+  const [name, ...rest] = String(ti.skill || ti.name || '').trim().replace(/^\/+/, '').split(/\s+/);
+  const m = /^(?:[^\s:]+:)?end-chat-(soft|force)$/.exec(name || '');
+  if (!m || OWNER_WORD.test(`${ti.args || ''} ${rest.join(' ')}`) || !(used > 0) || !(win > 0)) return null;
+  const closePct = Number(cfg.closePct) > 0 ? Number(cfg.closePct) : DEFAULTS.closePct;
+  const pct = Math.floor((used / win) * 100);
+  if (pct >= closePct) return null;
+  return { hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: 'deny', permissionDecisionReason:
+    `KAIF context: the window is ${pct} % full (${used} of ${win} tokens) — below the closing level ${closePct} %: it is too early to close ` +
+    `the chat by the window; keep working. Closing at the owner's word — pass his words verbatim in the skill's args: owner: «<his words>».` } };
+}
+
+// The agent's own measurement (session 101, bugs/138): an agent system may withhold the project's hooks and skills from a session (Claude Code
+// 2.1.326 in a folder without trust) — then the closing skills' step 0 measures the window by hand: `--measure [<transcript.jsonl>]`. Without a
+// path — the newest transcript of this project in the vendor's store, ~/.claude/projects/<the project path, every non-alphanumeric → '-'>/.
+// Exit 0 — at or above the closing level · 1 — below it, too early to close by the window · 2 — nothing to measure.
+export const slugOf = (p) => String(p).replace(/[^A-Za-z0-9]/g, '-');
+const SLUG_MAX = 200;   // the vendor cuts a longer folder name to 200 characters and appends «-<hash>» (judge of session 101, read in claude.exe)
+// This session's transcript: the agent's own session id (CLAUDE_CODE_SESSION_ID — present in the agent's commands on Windows and macOS) names
+// it; without one — the newest transcript of the project (two live chats of one folder: the other one may be measured — said in the output).
+export function transcriptOf(root, home = homedir(), sid = process.env.CLAUDE_CODE_SESSION_ID || '') {
+  const base = join(home, '.claude', 'projects'), slug = slugOf(resolve(root));
+  let dir = join(base, slug);
+  if (!existsSync(dir) && slug.length > SLUG_MAX) {
+    // case-blind: a drive letter comes upper- or lower-case by the shell (re-judge, N3); Windows paths do not tell case apart
+    const pre = (slug.slice(0, SLUG_MAX) + '-').toLowerCase();
+    try { const hit = readdirSync(base).find((d) => d.toLowerCase().startsWith(pre)); if (hit) dir = join(base, hit); } catch { /* no store */ }
+  }
+  if (sid && existsSync(join(dir, sid + '.jsonl'))) return { path: join(dir, sid + '.jsonl'), id: sid, by: 'session id' };
+  try {
+    const p = readdirSync(dir).filter((f) => f.endsWith('.jsonl')).map((f) => join(dir, f)).sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs)[0];
+    return p ? { path: p, id: basename(p, '.jsonl'), by: 'the newest transcript of the project' } : null;
+  } catch { return null; }
+}
+// Do this project's hooks run in this session? (session 101, bugs/138: Claude Code gives a folder without trust none of its hooks, skills or
+// CLAUDE.md; wired is not running.) This hook records every session it runs in on PostToolUse — no record of this session after its first
+// tool calls = the hooks do not run here. Pure: (state, id) → { code, line }.
+export function aliveLine(state, id) {
+  if (state && state[id]) return { code: 0, line: `KAIF hooks: running in this session (${id}) — the context-window hook recorded it at ${state[id].at}.` };
+  return { code: 1, line: `KAIF hooks: NOT running in this session (${id}) — wired, yet the agent system ran none of them. Tell the owner first: ` +
+    'Claude Code gives a folder without trust none of its hooks, skills or CLAUDE.md — reload the VS Code window and answer its window ' +
+    '«Trust this folder in Claude Code?» with «Trust folder», then a new chat.' };
+}
+export function measureLine(used, win, cfg = {}) {
+  const closePct = Number(cfg.closePct) > 0 ? Number(cfg.closePct) : DEFAULTS.closePct;
+  const pct = Math.floor((used / win) * 100), may = pct >= closePct;
+  return { pct, closePct, may, line: `KAIF context: the window is ${pct} % full (${used} of ${win} tokens); the closing level is ${closePct} % — ` +
+    (may ? 'the window may close the chat.' : 'too early to close the chat by the window: keep working.') };
 }
 
 function projectRoot(cwd) {
@@ -140,8 +210,76 @@ if (process.argv[2] === '--selftest') {
     'window: the project\'s tokens win over the floor; a date suffix is not a minor version (judge of session 97)');
   ok(fromSubagent({ hook_event_name: 'PostToolUse', agent_id: 'a1', agent_type: 'general-purpose' }) && !fromSubagent({ hook_event_name: 'PostToolUse' }),
     'a subagent\'s tool call (the event carries agent_id) — silence; the main agent\'s call — judged');
+  { // the closing gate (session 100: closed «by the window» at 53 % by feeling)
+    const sk = (skill, args = '', extra = {}) => ({ hook_event_name: 'PreToolUse', tool_name: 'Skill', tool_input: { skill, args }, ...extra });
+    const d53 = closeGate(sk('end-chat-soft'), 531383, LARGE, cfg);
+    ok(d53 && d53.hookSpecificOutput.permissionDecision === 'deny' && /53 % full/.test(d53.hookSpecificOutput.permissionDecisionReason)
+      && /too early/.test(d53.hookSpecificOutput.permissionDecisionReason) && /owner: «/.test(d53.hookSpecificOutput.permissionDecisionReason),
+      'gate: /end-chat-soft at 53 % without the owner\'s word — denied with the measured share and the way out');
+    ok(closeGate(sk('end-chat-force'), 600000, LARGE, cfg) && closeGate(sk('kaif:end-chat-soft'), 600000, LARGE, cfg),
+      'gate: /end-chat-force below the level and a plugin-prefixed name — denied too');
+    ok(closeGate(sk('end-chat-soft', 'owner: «close the chat now»'), 531383, LARGE, cfg) === null && closeGate(sk('end-chat-soft'), 851000, LARGE, cfg) === null
+      && closeGate(sk('end-chat-soft'), 150000, SMALL, { closePct: 75 }) === null,
+      'gate: the owner\'s word in the args, 85 % and the project\'s own lower level — pass');
+    ok(closeGate(sk('resume'), 100, LARGE, cfg) === null && closeGate({ ...sk('end-chat-soft'), tool_name: 'Read' }, 100, LARGE, cfg) === null
+      && closeGate({ ...sk('end-chat-soft'), hook_event_name: 'PostToolUse' }, 100, LARGE, cfg) === null
+      && closeGate(sk('end-chat-soft', '', { agent_id: 'a1' }), 100, LARGE, cfg) === null && closeGate(sk('end-chat-soft'), 0, LARGE, cfg) === null,
+      'gate: another skill, another tool, another event, a subagent, nothing measured — no gate');
+  }
+  { // the agent's own measurement (session 101: hooks withheld from an untrusted folder — the closing step 0 measures by hand)
+    const m53 = measureLine(531383, LARGE, cfg), m86 = measureLine(860000, LARGE, cfg), m75 = measureLine(150000, SMALL, { closePct: 75 });
+    ok(!m53.may && /53 % full/.test(m53.line) && /too early/.test(m53.line) && m86.may && /may close/.test(m86.line) && m75.may,
+      'measure: 53 % — too early; 86 % and the project\'s own lower level — may close');
+    ok(slugOf('d:\\work\\ai_sandbox\\KAIF') === 'd--work-ai-sandbox-KAIF' && slugOf('/home/u/my.proj') === '-home-u-my-proj',
+      'measure: the vendor\'s transcript folder name — every non-alphanumeric of the project path becomes «-»');
+  }
+  { // judge of session 101: the skill name as Claude Code runs it, and a `<synthetic>` record is no answer
+    const sk = (skill, args = '') => ({ hook_event_name: 'PreToolUse', tool_name: 'Skill', tool_input: { skill, args } });
+    ok(['/end-chat-soft', ' end-chat-soft', '/end-chat-force', 'a/b:end-chat-soft', '/end-chat-soft  '].every((n) => closeGate(sk(n), 531383, LARGE, cfg))
+      && closeGate(sk('/end-chat-soft owner: «close the chat now»'), 531383, LARGE, cfg) === null,
+      'gate: «/end-chat-soft», a padded name, «/end-chat-force», a folder prefix — denied; the owner\'s word after the name — pass');
+    const rec = (model, input, read) => JSON.stringify({ type: 'assistant', message: { model, usage: { input_tokens: input, cache_read_input_tokens: read, cache_creation_input_tokens: 0 } } });
+    const lu = lastUsage([rec('claude-opus-5-5', 42, 586000), rec('<synthetic>', 0, 0)].join('\n'));
+    ok(lu && lu.used === 586042 && lu.model === 'claude-opus-5-5', 'measure: a `<synthetic>` zero-usage record at the tail is skipped — the last MODEL answer counts');
+  }
+  { // session 101 (bugs/138): wired is not running — this session's record in the hook's state
+    const st = { 'sess-a': { said: [], seen: 1, at: '2026-11-17T12:00:00.000Z' } };
+    const a0 = aliveLine(st, 'sess-a'), a1 = aliveLine(st, 'sess-b');
+    ok(a0.code === 0 && /running in this session/.test(a0.line) && a1.code === 1 && /NOT running/.test(a1.line) && /Trust folder/.test(a1.line),
+      'alive: this session recorded — exit 0; not recorded — exit 1 naming the owner\'s action «Trust folder»');
+  }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
+}
+
+if (process.argv[2] === '--alive') {   // never reads stdin: a hand command, not an event
+  const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(process.cwd());
+  const marker = readJson(join(root, DEPLOYMENT)) || {};
+  if (marker.hooks === 'off') { console.log('KAIF hooks: off by the owner\'s word (.kaif/kaif.json "hooks": "off") — nothing to judge.'); process.exit(2); }
+  const wired = ['settings.json', 'settings.local.json'].some((f) => {
+    const s = readJson(join(root, '.claude', f));
+    return JSON.stringify((s && s.hooks && s.hooks.PostToolUse) || []).includes('context-window.mjs');
+  });
+  if (!wired) { console.log('KAIF hooks: the context-window hook is not wired on PostToolUse in .claude/settings.json — nothing to judge.'); process.exit(2); }
+  const t = transcriptOf(root);
+  if (!t) { console.log(`KAIF hooks: no transcript of this project in the vendor's store (${root}) — nothing to judge.`); process.exit(2); }
+  const a = aliveLine(readJson(join(root, STATE)) || {}, t.id);
+  console.log(`${a.line} (session by ${t.by})`);
+  process.exit(a.code);
+}
+
+if (process.argv[2] === '--measure') {
+  const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(process.cwd());
+  let tp = process.argv[3] || '';
+  let by = 'the path given';   // said in the output: two live chats of one folder must not be mixed up silently (re-judge, N2)
+  if (!tp) { const t = transcriptOf(root); tp = t ? t.path : ''; by = t ? t.by : by; }   // this session's transcript, else the project's newest
+  const lu = tp && existsSync(tp) ? lastUsage(tailOf(tp)) : null;
+  if (!lu) { console.log(`KAIF context: nothing to measure (${tp || 'no transcript found for ' + root}) \u2014 the window cannot close the chat; only the owner's word can.`); process.exit(2); }
+  const marker = readJson(join(root, DEPLOYMENT)) || {};
+  const cw = (marker.contextWindow && typeof marker.contextWindow === 'object') ? marker.contextWindow : {};
+  const m = measureLine(lu.used, windowOf({ model: lu.model, env: process.env, tokens: cw.tokens, seen: lu.used }), cw);
+  console.log(`${m.line} (transcript by ${by}: ${tp})`);
+  process.exit(m.may ? 0 : 1);
 }
 
 try {
@@ -156,6 +294,9 @@ try {
       const st = all[id] || { said: [], seen: 0 };
       st.seen = Math.max(st.seen || 0, lu.used);
       const win = windowOf({ model: lu.model, env: process.env, tokens: cw.tokens, seen: st.seen });
+      const gate = closeGate(ev, lu.used, win, cw);
+      if (gate) { process.stdout.write(JSON.stringify(gate)); process.exit(0); }
+      if (ev.hook_event_name === 'PreToolUse') process.exit(0);   // the gate's event says nothing else — the levels speak on the others
       st.said = keptLevels(lu.used, win, st.said || []);
       const d = decide(lu.used, win, cw, st.said);
       if (d) st.said = [...st.said, d.level];

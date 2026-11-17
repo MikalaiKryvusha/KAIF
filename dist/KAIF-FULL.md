@@ -3965,6 +3965,12 @@ message, written by the `stop-farewell-capture.mjs` hook. Compare its date with 
 say «the farewell predates the last commit — STATUS.md leads» and trust `STATUS.md`. Carry its «show first / do first» items into
 Step 2. No file → go on; the owner may paste the farewell under `resume` as before (origin ticket #181).
 
+**Do this session's hooks run?** After your first read: `node .kaif/hooks/context-window.mjs --alive` (where the refresh-hooks module is
+deployed). Exit 1 — the agent system ran none of the project's hooks in this session: say so to the owner as the FIRST line of your
+announcement — the project's hooks, skills and `CLAUDE.md` were not given to it — and name his action from the output (Claude Code: the
+window «Trust this folder in Claude Code?» → «Trust folder»); exit 2 — nothing to judge, go on. Wired is not running: a source session ran a
+whole day with wired hooks that never ran (KAIF 2.10).
+
 ## Step 1. Read ALL the canon documents of the KAIF framework (in parallel)
 
 **Read every canon document — the full set, not a slice.** A session that skips one resumes with a
@@ -6127,6 +6133,10 @@ description: URGENTLY CLOSE this chat RIGHT NOW, without the long ceremonies —
 The human needs this chat closed NOW. Speed wins over ceremony — but never over the handover: a
 closure that loses the essentials is not fast, it is destructive. Three steps, minutes total.
 
+**Who closes:** the owner's word (his words verbatim in the skill's args, `owner: «…»`) or a window MEASURED at or above the closing level
+— `node .kaif/hooks/context-window.mjs --measure` exits 0 (1 — too early, keep working · 2 — nothing to measure: then only the owner's word
+closes) — never «the window feels full»; with hooks running, the context-window gate measures at the skill's call too.
+
 ## Step 1. The handover — only what must not be lost
 
 Update `STATUS.md`, tersely:
@@ -6197,6 +6207,15 @@ description: SOFTLY CLOSE this chat with full ceremonies — usually ordered IN 
 The human wants this chat closed — but closed WELL, not fast. The work continues in OTHER chats
 with OTHER agent sessions that start from an empty context. Two phases: first honor the work,
 then run the full closure ritual. Never rush either phase.
+
+## Step 0. Who closes — the owner's word or a MEASURED window
+
+Close only (a) at the owner's word — pass his words verbatim in the skill's args, `owner: «…»` — or (b) when the window is measured at
+or above the project's closing level: `node .kaif/hooks/context-window.mjs --measure` (exit 0 — may close · 1 — too early, keep working ·
+2 — nothing to measure, and then only the owner's word closes; without the refresh-hooks module the window does not close the chat).
+Run the closing as the skill where the agent system knows it — with hooks running, the context-window gate measures at the call and
+denies an early one; an agent system can withhold the project's hooks and skills from a session (a folder it does not trust), and then
+this step IS the gate. «The window feels full» is not a measurement: a session closed «by the window» at 53 % (KAIF 2.10).
 
 ## Phase A. The advance order — keep working to a natural cut
 
