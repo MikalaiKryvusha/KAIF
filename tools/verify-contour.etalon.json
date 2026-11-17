@@ -243,5 +243,10 @@
     "questions": 5,
     "parsedOptions": 10,
     "candidateLines": 10
+  },
+  "interviews/interview_050_kaif_2.10_three_small_field_fixes.md": {
+    "questions": 1,
+    "parsedOptions": 3,
+    "candidateLines": 3
   }
 }
