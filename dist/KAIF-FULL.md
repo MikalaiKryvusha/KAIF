@@ -5802,7 +5802,9 @@ builds, renames the artifact, commits "release: X.Y", tags vX.Y, pushes, and run
 run it. Otherwise, do it explicitly:>`
 ```bash
 # bump version (in version.json or your manifest), then — ONE tool call per line, never chained (AGENT_GUIDE.md → Git workflow):
-git commit -am "release: X.Y"
+git add <each path of the release by name: the version file and what the bump changed, both names of a move — never -A, never commit -a>
+git diff --cached --stat    # the staged set IS the set that ships — anything you did not mean: stop and explain
+git commit -m "release: X.Y"
 git tag vX.Y
 git push
 git push --tags
@@ -6164,7 +6166,9 @@ move) instead of finishing it — naming survives, rushing corrupts.
 Commit through the project's staging gate and push:
 
 `<Use your commit tool/flow. If you have one (e.g. tools/commit.mjs that bumps build, adds, commits,
-pushes), run it. Otherwise: git add -A, then git commit -m "...", then git push — each its own tool call, never chained
+pushes), run it. Otherwise: git add each path you mean to ship by name — new, changed, deleted, and both names of a move
+(git status --short lists them; never -A) — check the staged set with git diff --cached --stat, then git commit -m "...", then git push —
+each its own tool call, never chained
 (AGENT_GUIDE.md → Git workflow).>`
 
 If the build is known-broken, say so IN the commit message (`wip:` prefix) — an honest broken
@@ -6321,7 +6325,9 @@ Run a `/fable-judge` pass over this chat's finished claims before pushing (the c
 precedes every push). Then:
 
 `<Use your commit tool/flow. If you have one (e.g. tools/commit.mjs that bumps build, adds, commits,
-pushes), run it. Otherwise: git add -A, then git commit -m "...", then git push — each its own tool call, never chained
+pushes), run it. Otherwise: git add each path you mean to ship by name — new, changed, deleted, and both names of a move
+(git status --short lists them; never -A) — check the staged set with git diff --cached --stat, then git commit -m "...", then git push —
+each its own tool call, never chained
 (AGENT_GUIDE.md → Git workflow).>`
 
 Message style (from `AGENT_GUIDE.md`): `feat:` / `fix:` / `docs:` / `refactor:` / `ci:` + one line.
@@ -9018,7 +9024,7 @@ Replace these throughout the guidance docs and skills during unpacking:
 | `<LICENSE>` | The project's license. |
 | `<BUILD_COMMAND>` | The exact command to build the project. |
 | `<TEST_HARNESS>` | How the agent runs/observes/drives the software without a human. |
-| `<COMMIT_COMMAND>` | The commit/push flow. **Contract:** the filled value MUST keep a literal `<msg>` slot marking where the message goes (e.g. `git add -A, then git commit -m "<msg>", then git push — each its own tool call` — never one chained command: an auto-mode permission classifier refuses the chain); skills never append the message as an extra argument — they tell you what `<msg>` to use. **If the project has a commit tool with a staging gate, name THAT tool here, never raw `git`.** A sweeping `git add -A` written into a skill is a second commit route that bypasses whatever gate the project built — and the gate then guards one route while work travels the other. This is not hypothetical: a swept commit carried two of the owner's files into origin under the agent's message a minute after he put them in the tree, and the same raw line survived inside a skill long after the gate that was supposed to prevent it existed. |
+| `<COMMIT_COMMAND>` | The commit/push flow. **Contract:** the filled value MUST keep a literal `<msg>` slot marking where the message goes (e.g. `git add each path you mean to ship by name — new, changed, deleted, and both names of a move (git status --short lists them; never -A) — check the staged set with git diff --cached --stat, then git commit -m "<msg>", then git push — each its own tool call` — never one chained command: an auto-mode permission classifier refuses the chain); skills never append the message as an extra argument — they tell you what `<msg>` to use. **If the project has a commit tool with a staging gate, name THAT tool here, never raw `git`.** A sweeping `git add -A` written into a skill is a second commit route that bypasses whatever gate the project built — and the gate then guards one route while work travels the other. This is not hypothetical: a swept commit carried two of the owner's files into origin under the agent's message a minute after he put them in the tree, and the same raw line survived inside a skill long after the gate that was supposed to prevent it existed. |
 | `<YOUR AGENT/MODEL>` | The Co-Authored-By identity for commits. |
 | `<OWNER_LANGUAGE>` | The owner's working language (the AGENT_GUIDE language-policy note). |
 

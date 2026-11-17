@@ -136,7 +136,9 @@ builds, renames the artifact, commits "release: X.Y", tags vX.Y, pushes, and run
 run it. Otherwise, do it explicitly:>`
 ```bash
 # bump version (in version.json or your manifest), then — ONE tool call per line, never chained (AGENT_GUIDE.md → Git workflow):
-git commit -am "release: X.Y"
+git add <each path of the release by name: the version file and what the bump changed, both names of a move — never -A, never commit -a>
+git diff --cached --stat    # the staged set IS the set that ships — anything you did not mean: stop and explain
+git commit -m "release: X.Y"
 git tag vX.Y
 git push
 git push --tags

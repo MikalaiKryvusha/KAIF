@@ -9,6 +9,7 @@ import { join, resolve, dirname, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { tempRoot } from '../lib/temp-root.mjs';
 import { must, failed, hermeticArgs } from '../lib/sandbox-run.mjs';
+import { sweepInSkill } from '../lib/sweep-stage.mjs';
 
 const REPO = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..');
 // KAIF_DIST — шов для доказательства красного (соглашение s14/s22): свод против ЧУЖОЙ сборки (2.9, SW5 — красный на 2.8)
@@ -473,9 +474,17 @@ ok(!/this folder is not a git repository/.test(inst9.out), 'S9 #143: в git-пр
   const deployed = existsSync(skills9t) ? readdirSync(skills9t).filter((n) => existsSync(join(skills9t, n, 'SKILL.md'))) : [];
   for (const n of deployed) hits.push(...scan(`S9t ${n}`, readFileSync(join(skills9t, n, 'SKILL.md'), 'utf8')));
   const autoloop = deployed.includes('autoloop') ? readFileSync(join(skills9t, 'autoloop', 'SKILL.md'), 'utf8') : '';
-  ok(deployed.length > 30 && hits.length === 0 && /git add -A, then git commit -m "<msg>", then git push — each its own tool call/.test(autoloop),
+  // 2.10 UB5: значение по умолчанию ставит в индекс ПО ИМЕНАМ каждый отгружаемый файл (и новые — их называет git status --short) и
+  // проверяет набор В ИНДЕКСЕ — судья UB5, находка 6; git-шаги по-прежнему каждый своим вызовом
+  ok(deployed.length > 30 && hits.length === 0
+     && autoloop.includes('git add each path you mean to ship by name — new, changed, deleted, and both names of a move (git status --short lists them; never -A) — check the staged set with git diff --cached --stat, then git commit -m "<msg>", then git push — each its own tool call'),
      `S9 #146: поставка не склеивает git-шаги — бандл, ядро и ${deployed.length} развёрнутых навыков; /autoloop несёт три шага по умолчанию`,
      `hits ${hits.slice(0, 8).join(', ')} | skills ${deployed.length}`);
+  // 2.10 UB5 (bugs/79 в поле): ни один навык свежей установки не велит подметающий стейдж — та же примета, что гард сборки 5y (одно
+  // место — tools/lib/sweep-stage.mjs: `git add -A` · `--all` · `.` · `git commit -a`/`-am`)
+  const sweeps = deployed.flatMap((n) => readFileSync(join(skills9t, n, 'SKILL.md'), 'utf8').split('\n').flatMap((l, i) => (sweepInSkill(l) ? [`${n}:${i + 1}`] : [])));
+  ok(deployed.length > 30 && sweeps.length === 0,
+     `S9 UB5: ни один из ${deployed.length} навыков свежей установки не велит подметающий «git add -A» — набор ставится по именам`, sweeps.slice(0, 8).join(', '));
 }
 // Старое развёртывание: .gitignore, записанный прежним ядром (голые строки), с правками владельца вокруг, концы строк CRLF.
 const OLD_GI9 = ['node_modules/', 'KAIF.md', '!.clinerules/kaif.md', 'KAIF-LOADER.mjs', 'dist/', ''].join('\r\n');

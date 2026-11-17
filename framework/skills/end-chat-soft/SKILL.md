@@ -122,7 +122,9 @@ Run a `/fable-judge` pass over this chat's finished claims before pushing (the c
 precedes every push). Then:
 
 `<Use your commit tool/flow. If you have one (e.g. tools/commit.mjs that bumps build, adds, commits,
-pushes), run it. Otherwise: git add -A, then git commit -m "...", then git push — each its own tool call, never chained
+pushes), run it. Otherwise: git add each path you mean to ship by name — new, changed, deleted, and both names of a move
+(git status --short lists them; never -A) — check the staged set with git diff --cached --stat, then git commit -m "...", then git push —
+each its own tool call, never chained
 (AGENT_GUIDE.md → Git workflow).>`
 
 Message style (from `AGENT_GUIDE.md`): `feat:` / `fix:` / `docs:` / `refactor:` / `ci:` + one line.

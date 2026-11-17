@@ -232,6 +232,52 @@ ok(manB.fills && manB.fills['<BUILD_COMMAND>'] === 'npm run build' && manB.fills
 r = run(TB, 'update-verify');
 ok(!/promised upstream line not found[^\n]*(<BUILD_COMMAND>|<TEST_HARNESS>)/.test(r.out), 'B4: update-verify не зовёт вернуть литерал слота — нет «promised upstream line … <BUILD_COMMAND>»', r.out.split('\n').filter((l) => /promised/.test(l)).join(' | ').slice(0, 400));
 
+// B9 (2.10, эпик UB — судья шага UB5, сессия 102, на git-клонах восьми полевых развёртываний v2.9; класс EXP-0184): обещанная строка,
+// в которой осталась каноническая заглушка без записи в `fills` (строка соавтора навыка закрытия — её заполняет агент), стоит на диске
+// ЗАПОЛНЕННОЙ. Апстрим меняет модуль, слот которого развёртывание заполнило своим текстом, — модуль уходит в «Module diffs», и
+// update-verify звал вернуть «<YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>» (7 из 8 полей). Контроль: настоящая невлитая строка
+// апстрима в том же модуле по-прежнему «not found» — проверка не ослепла. Повторный суд UB5 (сессия 102) опроверг первую форму образца
+// (без якоря, отрезок `\S.*?`): B9h1 — строка соавтора УДАЛЕНА, а строка слота поля её поминает — должна остаться «not found»; B9h4 — новая
+// строка апстрима с заглушкой, на диске её вариант с перевёрнутым смыслом внутри отрезка — не молчание. Красный — на ядре 3057175 (KAIF_DIST).
+{
+  const ECS = '.claude/skills/end-chat-soft/SKILL.md';
+  const SIGN = 'Sign every tag as <YOUR AGENT/MODEL> after the judge passes.';
+  const b9 = editBundleModule(bundle0.replace(/"version": "[^"]+"/, '"version": "9.9"'), ECS, /^### Step 4\. Commit and push/,
+    (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (end-chat-soft)', '', SIGN));
+  const SRC99B9 = join(ROOT, 'src-9.9-b9'); writeSource(SRC99B9, b9, '9.9');
+  const CO = "Co-Authored-By: <YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>";
+  const walk9 = (name, edit) => {
+    const T = join(ROOT, name); mkdirSync(T); seed(T);
+    must(run, T, 'install');
+    const P = join(T, ECS); const t = readFileSync(P, 'utf8');
+    ok(t.includes(CO), `${name} фикстура: строка соавтора навыка закрытия после установки — с заглушками`);
+    writeFileSync(P, edit(t));
+    const u = run(T, `update --source ${SRC99B9} --baseline ${OLD}`);
+    ok(u.code === 0 && readTask(T).includes('UPSTREAM ADDITION 9.9 (end-chat-soft)'),
+      `${name} фикстура: модуль коммита навыка закрытия — в «Module diffs» задания`, u.out.slice(-300));
+    return run(T, 'update-verify').out.split('\n').filter((l) => /promised upstream line/.test(l) && l.includes(ECS));
+  };
+  // B9: соавтор и слот заполнены; вариант новой строки — с «, never» внутри места заглушки
+  const v9 = walk9('b9', (t) => t.split(CO).join('Co-Authored-By: Test Model 1.0 <noreply@example.com>')
+    .replace(/`<Use your commit tool\/flow[\s\S]*?>`/, 'This project commits with its own tool: `node tools/commit.mjs "<msg>"`.\n\n'
+      + 'Sign every tag as Test Model 1.0 only when the owner says so, never after the judge passes.'));
+  const nf9 = v9.filter((l) => /not found/.test(l));
+  ok(!nf9.some((l) => /Co-Authored-By/.test(l)),
+    'B9 (судья UB5): update-verify не зовёт вернуть заглушки строки соавтора — на диске она заполнена', nf9.join(' | ').slice(0, 400));
+  ok(nf9.some((l) => /UPSTREAM ADDITION 9\.9 \(end-chat-soft\)/.test(l)),
+    'B9 контроль: невлитая строка апстрима в том же модуле по-прежнему «not found»', nf9.join(' | ').slice(0, 400));
+  ok(v9.some((l) => /Sign every tag as/.test(l)),
+    'B9h4 (повторный суд UB5): вариант новой строки с перевёрнутым смыслом на месте заглушки — названа («local edits» или «not found»), не молчание', v9.join(' | ').slice(0, 400));
+  // B9h1: соавтор УДАЛЁН, строка слота поля поминает «Co-Authored-By: …»; новой строки с заглушкой на диске нет вовсе
+  const v9b = walk9('b9h1', (t) => t.split(CO).join('')
+    .replace(/`<Use your commit tool\/flow[\s\S]*?>`/, 'This project commits with `node tools/commit.mjs "<msg>"` — it appends the trailer Co-Authored-By: Test Model 1.0 <noreply@example.com> by itself.'));
+  const nf9b = v9b.filter((l) => /not found/.test(l));
+  ok(nf9b.some((l) => /Co-Authored-By/.test(l)),
+    'B9h1 (повторный суд UB5): удалённая строка соавтора — «not found», хотя строка слота её поминает', v9b.join(' | ').slice(0, 400));
+  ok(nf9b.some((l) => /Sign every tag as/.test(l)),
+    'B9h0: новая строка с заглушкой, которой на диске нет, — «not found»', v9b.join(' | ').slice(0, 400));
+}
+
 // B7 (2.8, эпик UP, тикет origin #73): заполнение со СКОБКАМИ — команда с собственным плейсхолдером аргумента («-PackDir <pack>»).
 // До 2.8 захват исключал `<` и `>`: заполнение не выводилось, навык шёл ручным слиянием каждый интервал.
 const TB7 = join(ROOT, 'b7'); mkdirSync(TB7); seed(TB7);

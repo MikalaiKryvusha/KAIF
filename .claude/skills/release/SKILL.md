@@ -181,7 +181,9 @@ node tools/commit.mjs "docs: README for release X.Y"
 авто-нотами), запусти его. Иначе сделай это явно:>`
 ```bash
 # подними версию (в version.json или твоём манифесте), затем — ОДИН вызов инструмента на строку, без склейки (AGENT_GUIDE.md → Git-процесс):
-git commit -am "release: X.Y"
+git add <каждый путь релиза по имени: файл версии и то, что поменял бамп, оба имени переноса — никогда -A, никогда commit -a>
+git diff --cached --stat    # набор в индексе И ЕСТЬ отгружаемый — что не собирался менять: стоп и объясни
+git commit -m "release: X.Y"
 git tag vX.Y
 git push
 git push --tags

@@ -16,6 +16,7 @@ import { scanText as scanInvisible, label as invisibleLabel } from './lib/invisi
 import { readBudgets } from './budget-gate.mjs';
 import { walkerDrift, WALKER_COPIES, CORE_PATH as WALKER_CORE } from './sync-walker.mjs';
 import { templatesOwnScan } from './lib/templates-own-scan.mjs';
+import { SWEEP, sweepInSkill, sweepInDoc } from './lib/sweep-stage.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const errors = [];
@@ -989,6 +990,25 @@ for (const f of readdirSync(join(ROOT, 'framework', 'tools', 'contour')).filter(
     };
     scan(join(ROOT, 'framework', 'tools')); scan(join(ROOT, 'framework', 'hooks'));
   }
+}
+// 5y. No sweeping stage as an INSTRUCTION in the payload (version KAIF 2.10, epic UB, step UB5; origin bugs/79 — two owner files rode into
+//     origin under the agent's message through a sweeping `git add -A`; the origin's own skills are guarded by s09 G20, the payload by
+//     nobody: the closing skills and the default `<COMMIT_COMMAND>` still told a field agent «git add -A, then …»). The form lives in ONE
+//     place, tools/lib/sweep-stage.mjs (s01 «S9 UB5» reads it too): in a skill ANY sweeping stage (`git add -A` · `--all` · `.` ·
+//     `git commit -a`/`-am`) not negated on its line is an order; in the documentation of the slot only the instruction forms count, a
+//     sentence ABOUT the defect stays legal; in the core's `'<COMMIT_COMMAND>':` default any sweep. A refusal names the file and the line.
+//     [TESTED: 2026-11-17 · probe tools/sandbox/probes/ub5-sweep-red.mjs on copies of the tree: control 0 lines «5y:»; the five files of
+//      3057175 (/release step 6 «git commit -am» among them — the UB5 judge, finding 5) exactly 5; nine injected orders exactly 9, four
+//      legal lines 0; the documentation forms 1 of 2; report testcases/reports/2026-11-17_ub5-no-sweeping-stage.md]
+{
+  const flag = (rel, text, judge) => text.split(/\r?\n/).forEach((line, i) => {
+    if (judge(line)) errors.push(`5y: ${rel}:${i + 1} tells the agent to stage everything (git add -A / --all / . / commit -a) — stage each file by name, check the staged set`);
+  });
+  const skills = join(ROOT, 'framework', 'skills');
+  for (const n of readdirSync(skills)) { const f = join(skills, n, 'SKILL.md'); if (existsSync(f)) flag(`framework/skills/${n}/SKILL.md`, readFileSync(f, 'utf8'), sweepInSkill); }
+  flag('framework/_intro.md', readFileSync(join(ROOT, 'framework', '_intro.md'), 'utf8'), sweepInDoc);
+  const core = readFileSync(join(ROOT, 'framework', 'installer', 'KAIF-CORE.mjs'), 'utf8').split(/\r?\n/);
+  core.forEach((line, i) => { if (line.includes("'<COMMIT_COMMAND>':") && SWEEP.test(line)) errors.push(`5y: framework/installer/KAIF-CORE.mjs:${i + 1} — the default <COMMIT_COMMAND> stages everything; stage by name`); });
 }
 // 5r. The owner's message under the word sets the scope (2.9, decision #143 — the KAIF owner: "the entry skill tells you wrong"; a
 //     session answered "how much is left?" and then started the plan's next item by itself): the shipped /resume carries the scope

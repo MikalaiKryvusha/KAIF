@@ -705,7 +705,11 @@ function detectValues() {
     '<BUILD_COMMAND>': pkg && pkg.scripts && pkg.scripts.build ? 'npm run build' : null,
     '<TEST_HARNESS>': pkg && pkg.scripts && pkg.scripts.test ? 'npm test' : null,
     // three steps, each its own tool call — an auto-mode permission classifier refuses a chain it passes step by step (2.9; origin #146)
-    '<COMMIT_COMMAND>': 'git add -A, then git commit -m "<msg>", then git push — each its own tool call',
+    // and staged BY NAME, the staged set checked before the commit — the set checked is the set that ships (2.10, epic UB, step UB5; a
+    // sweeping stage after the check is a second route past the project's gate — origin bugs/79; `git diff --stat` alone never lists a
+    // NEW file — `git status --short` does — and checks the tree, not the staged set: the UB5 judge, finding 6; a plain move staged by
+    // its new name alone ships a duplicate — both names: the re-judgment, finding 6)
+    '<COMMIT_COMMAND>': 'git add each path you mean to ship by name — new, changed, deleted, and both names of a move (git status --short lists them; never -A) — check the staged set with git diff --cached --stat, then git commit -m "<msg>", then git push — each its own tool call',
     '<YOUR AGENT/MODEL>': null, // depends on the running agent — always the agent's to fill
     "<YOUR AGENT'S noreply EMAIL>": null, // same — the agent signs its own commits (bug 28)
     '<OWNER_LANGUAGE>': LANG,   // the language-policy note in AGENT_GUIDE (idea 12: two audiences, two languages)
@@ -3149,7 +3153,28 @@ function runFinalGates(taskFile, tag, verb) {
     // its lines — a paragraph the merge re-wrapped is the same text (white space collapsed on both sides); a line of an anchored block
     // whose anchor stands on disk is the owner's rendition of that block (anchoredBlocks above), never an unmerged line
     const flat = (s) => String(s).replace(/\s+/g, ' ').trim();
-    const flatOf = new Map(), blocksOf = new Map(), slotsOf = new Map();
+    const flatOf = new Map(), blocksOf = new Map(), slotsOf = new Map(), linesOf = new Map();
+    // 2.10 (epic UB, the UB5 judge on eight field clones — the class of EXP-0184): a promised line that still carries a deploy-time
+    // placeholder after the recorded fills (the co-author line: `<YOUR AGENT/MODEL>` is always the agent's to fill and never lands in
+    // `fills`) stands on disk in its FILLED form — it is judged as a pattern of the WHOLE disk line, each remaining placeholder a VALUE:
+    // one to PLACEHOLDER_MAX_WORDS words with no comma, semicolon or negation (a name, an address, a command). Anything wider is not a
+    // fill and goes the old road («stands on disk with local edits» / «not found»): the re-judgment of UB5 hid a deleted co-author line
+    // behind the project's own slot line that mentioned «Co-Authored-By: …» (unanchored), and a meaning flipped inside the stretch
+    // («…, never after the judge passes.»). A line whose own text is shorter than PLACEHOLDER_MIN_LITERAL is judged as before.
+    // [TESTED: 2026-11-17 · s21 case B9 (filled co-author silent · a deleted one still «not found» beside a slot line that mentions it ·
+    //  a flipped variant not silent · an absent placeholder line «not found») — green on this core, red on the core of 3057175; the field
+    //  differential tools/sandbox/probes/ub5-field-filled-slot.mjs on git clones of eight v2.9 field deployments]
+    const PLACEHOLDER_MIN_LITERAL = 8, PLACEHOLDER_MAX_WORDS = 6;
+    const VALUE_WORD = "(?!(?:not|never|no|don't|without)\\b)[^\\s,;]+";
+    const VALUE = `${VALUE_WORD}(?: ${VALUE_WORD}){0,${PLACEHOLDER_MAX_WORDS - 1}}`;
+    const placeholderPattern = (s) => {
+      const t = flat(s), hit = PLACEHOLDERS.filter((p) => t.includes(p));
+      if (!hit.length) return null;
+      let literal = t; for (const p of hit) literal = literal.split(p).join('');
+      if (literal.replace(/\s/g, '').length < PLACEHOLDER_MIN_LITERAL) return null;
+      const parts = t.split(new RegExp('(' + hit.map(reEscape).join('|') + ')'));
+      return new RegExp('^' + parts.map((x) => (hit.includes(x) ? VALUE : reEscape(x))).join('') + '$', 'i');
+    };
     // UT3 (the real route 2.1 → 2.9 on a field clone): a promised line carries the deployment's VALUES and fills (the creed's <AUTHOR>),
     // the template blocks and instruction slots do not — the lookups below fold them back into their slots first
     const slotVals = { ...persistValues(stableValues()), ...fills };
@@ -3168,6 +3193,9 @@ function runFinalGates(taskFile, tag, verb) {
         const inBlock = blocksOf.get(curFile).find((b) => b.lines.has(promised.trim()) || b.lines.has(bare));
         if (inBlock && perFile.get(curFile).includes(inBlock.begin)) continue;
         if (slotsOf.get(curFile).has(promised.trim()) || slotsOf.get(curFile).has(bare)) continue;   // an instruction slot: the project's own text replaces it
+        const pattern = placeholderPattern(filled);
+        if (pattern && !linesOf.has(curFile)) linesOf.set(curFile, normEol(perFile.get(curFile)).split('\n').map(flat));
+        if (pattern && linesOf.get(curFile).some((l) => pattern.test(l))) continue;   // the placeholder stands on disk filled
         if (!flatOf.get(curFile).includes(flat(promised)) && !flatOf.get(curFile).includes(flat(filled))) {
           // UT3 (the field clone of the jump 2.1 → 2.8: of 102 residual lines 94 stood on disk with the project's own edits — «ladder
           // FIRST», an inserted clause): a line whose words stand on ONE disk line (or two joined) is labelled as edited, never hidden
