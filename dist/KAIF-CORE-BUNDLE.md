@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "ee0078ffc45cc5873192d96a6fd45f67277c682eaae34e68fe6707bf8814c3e0",
+    "sourceTree": "e8d58059071382e496fea4186c3b2803c5db33a183bb94071ddad2d39f1424ae",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -122,6 +122,7 @@
       "THE ENTRY COST COUNTS THE WHOLE ENTRY (2.10, epic HC, step HC9; origin ticket #179, its cheap half — a field /resume read ≈ 140k tokens while the line said 112k): `check` → `ℹ entry cost` now adds every document the deployed `/resume` names as a bullet beyond the re-read core (by name; `EXPERIENCE.md` is grepped and stays out) and the skill file itself; a document over 25k tokens — more than one Read call of Claude Code returns — is named on a `⚠ entry cost:` line of its own. Reference, never a stop. MIGRATION — agent work: none; a named document is a candidate for moving its reference sections out.",
       "WHAT THE AGENT SAYS ALOUD IS KEPT IN THE PROJECT, AND THE SOFT VOICE SHIPS (2.10; decision №156 of the origin — the KAIF owner, rendered from Russian: \"what the agent wants to say it writes into a txt file — I see it in the harness window and it stays in the project history; put these phrases into a separate folder of the project, name the files by the current time, date and the meaning of what was said\" · \"the voice tuned on a field project — take those settings\"): the contour gains `.kaif/tools/contour/voice-soft.mjs`. `review.mjs --call` writes its phrase to `voice/<YYYY-MM-DD_HH-MM-SS>_<meaning>.txt` (`contour.voiceLog` names another folder); the guide's call line tells the agent to write a phrase file there first and speak it with `voice-soft.mjs --file <it> --play`; the tool names the file by the machine's clock. The same tool is a soft voice that honours the KAIF_VOICE_TOOL contract: an engine from `KAIF_VOICE_RENDER` or `KAIF_VOICE_BASE_TOOL` renders, and ffmpeg applies tempo 0.90, bass +6 dB at 140 Hz, a 4200 Hz lowpass, 1 s of silence first, the beeps at ×2.5 and 2 s before the words. MIGRATION — agent work: if the project already speaks through its own soft-voice script, point `KAIF_VOICE_TOOL` at `.kaif/tools/contour/voice-soft.mjs` only after the owner hears it; commit `voice/` (it is the project's history, not a temp folder).",
       "«ARE THIS SESSION'S HOOKS RUNNING?» IS TRUE FROM THE FIRST TOOL CALL (2.10; the source's own entry: `/resume` step 0 ran `.kaif/hooks/context-window.mjs --alive` in the session's first tool call and got «NOT running … Trust folder» while its prompt hooks had already run): the hook recorded a session only together with a measurement — a model answer with usage in the transcript — so nothing could be recorded before the first tool call ended. It now records the session's presence on every event of the main thread from the first prompt; the window levels are still judged by the measurement only. MIGRATION — agent work: none.",
+      "A SIBLING WORKING FOLDER IS NOT THE PROJECT (2.10; origin ticket #194 — a field session with additional working directories ran a command in a sibling folder, and the refresh timer ordered a marker re-stamped in THAT folder on every prompt while the project's own marker was fresh): `prompt-refresh-timer.mjs` · `prompt-resume-word.mjs` · `session-start-refresh.mjs` · `stop-status-guard.mjs` walk up from the event's cwd to the folder holding `.kaif/kaif.json` and, when none holds it, take the agent system's project directory (`CLAUDE_PROJECT_DIR`) before the cwd; `subagent-preamble.mjs` takes the project directory first — from a sibling cwd it read no /resume list and gave the subagent no preamble at all. MIGRATION — agent work: none; a stray `.kaif/refresh-marker.json` an agent stamped in a sibling folder can be deleted.",
       "EVERY INSTRUCTION SLOT STANDS ON LINES OF ITS OWN (2.10, epic UB; a source judge found that the slot of /end-chat-soft step 3 closed in the middle of a line — «…README.pdf.>` If a build fails, stop …» — so `update-verify` read the heading and the judge rule of step 4 as the field's own slot text and never asked for them, since 2.9): `update-verify` reads a slot that opens on a line starting with «`<» and closes on a line ending in «>`». Five slots of the payload were in another form and are rewrapped — /end-chat-soft step 3, /release step 2, the test-harness slot of `AGENT_GUIDE.md`, the archaeology form in `KAIF_REFERENCE.md`, the board opt-out in the team constitution template; the words did not change, only where the lines break. MIGRATION — agent work: in a module that comes with a diff for one of these places, keep the project's own slot text and put the template's next sentence on the next line («If a build fails, stop and show the errors — don't commit broken state.» · «Grow this tooling over time; …»); a line that already stands in the file, joined to the slot text, is found as it is.",
       "THE CLOCK NAMES A WRONG PLACEHOLDER AND LEAVES A QUOTED ONE ALONE (2.10; origin ticket #197 pp. 1 and 3 — a field agent wrote the moment placeholder with ASCII brackets and it stayed letters with no word from the hook, and a placeholder quoted in a code span of a report got the time instead of itself; the source's own session did both): `.kaif/hooks/clock-now.mjs` prints the exact characters in its prompt line («the word NOW between the white square brackets U+27E6 and U+27E7, never ASCII [NOW]»); in a markdown file a placeholder inside an inline code span or a fenced block stays literal; a write of a markdown file that brings the ASCII form outside code gets one line to the agent with the tool result (the text is not changed, no permission is taken). MIGRATION — agent work: none; a moment already left as ASCII letters in a document is fixed by hand where it is found.",
       "TWO DOCUMENTS WITH ONE FILE NAME KEEP TWO VERDICTS (2.10; origin ticket #199 — a field project had two mock-up pictures `compare.webp` in two folders, and the second verdict would have replaced the owner's first in the decision record the queue, the debt list and the page read): the contour named the decision record (`<decisionsDir>/<name>.decision.json`) and the page lock by the document's BARE file name. Now a document keeps the bare name while it is free or already its own; a document whose bare name ANOTHER document holds (the record's `document`, the lock's `doc`) gets `<name>--<8 hex of its path>.decision.json` and keeps it; a write over another document's record is refused before the source is touched, and such a record is never read as this one's. No record moves: every existing record still resolves to its own file. MIGRATION — agent work: none; a project that carried the local guard of the ticket (`recordDecision` refuses a foreign record, `readDecision` returns null for one) gets it as part of the shipped contour — the next update replaces the edited `core.mjs` with this one."
@@ -21078,7 +21079,9 @@ function projectRoot(cwd) {
   for (let d = resolve(cwd); ;) {
     if (existsSync(join(d, DEPLOYMENT))) return d;
     const up = dirname(d);
-    if (up === d) return cwd;
+    // origin #194 (2.10): no ancestor holds the deployment marker — a SIBLING working folder of the session (Claude Code: additional
+    // working directories) is not the project; the agent system names the project itself (CLAUDE_PROJECT_DIR), then the event's cwd
+    if (up === d) return process.env.CLAUDE_PROJECT_DIR || cwd;
     d = up;
   }
 }
@@ -21208,7 +21211,9 @@ function projectRoot(cwd) {
   for (let d = resolve(cwd); ;) {
     if (existsSync(join(d, DEPLOYMENT))) return d;
     const up = dirname(d);
-    if (up === d) return cwd;
+    // origin #194 (2.10): no ancestor holds the deployment marker — a SIBLING working folder of the session (Claude Code: additional
+    // working directories) is not the project; the agent system names the project itself (CLAUDE_PROJECT_DIR), then the event's cwd
+    if (up === d) return process.env.CLAUDE_PROJECT_DIR || cwd;
     d = up;
   }
 }
@@ -21704,7 +21709,9 @@ function projectRoot(cwd) {
   for (let d = resolve(cwd); ;) {
     if (existsSync(join(d, DEPLOYMENT))) return d;
     const up = dirname(d);
-    if (up === d) return cwd;
+    // origin #194 (2.10): no ancestor holds the deployment marker — a SIBLING working folder of the session (Claude Code: additional
+    // working directories) is not the project; the agent system names the project itself (CLAUDE_PROJECT_DIR), then the event's cwd
+    if (up === d) return process.env.CLAUDE_PROJECT_DIR || cwd;
     d = up;
   }
 }
@@ -22121,7 +22128,9 @@ function projectRoot(cwd) {
   for (let d = resolve(cwd); ;) {
     if (existsSync(join(d, DEPLOYMENT))) return d;
     const up = dirname(d);
-    if (up === d) return cwd;
+    // origin #194 (2.10): no ancestor holds the deployment marker — a SIBLING working folder of the session (Claude Code: additional
+    // working directories) is not the project; the agent system names the project itself (CLAUDE_PROJECT_DIR), then the event's cwd
+    if (up === d) return process.env.CLAUDE_PROJECT_DIR || cwd;
     d = up;
   }
 }
@@ -22263,7 +22272,9 @@ try {
     input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
   } catch { /* unreadable stdin — nothing to answer */ }
   if (input && input.hook_event_name === 'PreToolUse') {
-    const root = typeof input.cwd === 'string' && input.cwd ? input.cwd : process.cwd();
+    // origin #194 (2.10): the project the agent system names first — the event's cwd may be a subfolder or a sibling working folder,
+    // and the witness below was written into a `.kaif/` of that folder
+    const root = process.env.CLAUDE_PROJECT_DIR || (typeof input.cwd === 'string' && input.cwd ? input.cwd : process.cwd());
     const updated = rewrite(String(input.tool_name || ''), input.tool_input, root);
     if (updated) {
       try {

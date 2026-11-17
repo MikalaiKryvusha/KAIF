@@ -85,7 +85,9 @@ try {
     input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
   } catch { /* unreadable stdin — nothing to answer */ }
   if (input && input.hook_event_name === 'PreToolUse') {
-    const root = typeof input.cwd === 'string' && input.cwd ? input.cwd : process.cwd();
+    // origin #194 (2.10): the project the agent system names first — the event's cwd may be a subfolder or a sibling working folder,
+    // and the witness below was written into a `.kaif/` of that folder
+    const root = process.env.CLAUDE_PROJECT_DIR || (typeof input.cwd === 'string' && input.cwd ? input.cwd : process.cwd());
     const updated = rewrite(String(input.tool_name || ''), input.tool_input, root);
     if (updated) {
       try {

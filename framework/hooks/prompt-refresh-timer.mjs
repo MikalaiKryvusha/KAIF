@@ -63,7 +63,9 @@ function projectRoot(cwd) {
   for (let d = resolve(cwd); ;) {
     if (existsSync(join(d, DEPLOYMENT))) return d;
     const up = dirname(d);
-    if (up === d) return cwd;
+    // origin #194 (2.10): no ancestor holds the deployment marker — a SIBLING working folder of the session (Claude Code: additional
+    // working directories) is not the project; the agent system names the project itself (CLAUDE_PROJECT_DIR), then the event's cwd
+    if (up === d) return process.env.CLAUDE_PROJECT_DIR || cwd;
     d = up;
   }
 }
