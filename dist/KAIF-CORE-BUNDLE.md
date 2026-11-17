@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "3065f653c65028c7247246719dae3d7c827317b1992bc06eefec8b42634ac40d",
+    "sourceTree": "263cf110726590fecf3dbcf631ff88844dd891de4da4783d66ce5abea5770bd9",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -109,7 +109,7 @@
       "A SUBAGENT ENTERS THE PROJECT FIRST (2.10, epic PT; origin tickets #166 · #168 — a field deployment carried its own preamble hook): the refresh-hooks module ships a sixth script, `.kaif/hooks/subagent-preamble.mjs`, and `wire-hooks` wires it for Claude Code on `PreToolUse` with the matcher `Agent|Task`: every subagent task gets a marked preamble in front of it — read in full the documents of step 1 of `/resume` (read from `.claude/skills/resume/SKILL.md` by the step's number, existing files only), quote one canon line bearing on the task first in the report, no subagents of its own, no commit, no push — through `updatedInput`, with no permission decision; a task already marked is left as it is; each firing appends one line to `.kaif/subagent-preamble.jsonl` (now in the ignore-first set). The guide's fable-loop section gains the rule \"A brief to a subagent has five parts\" (context · bounds · role · report · the main agent's duty after) with the skeleton `.kaif/_subagent-brief-template.md`, and the judge hunts \"subagent result relayed unverified\". MIGRATION — agent work: none; `wire-hooks` adds the group, `\"hooks\": \"off\"` keeps it out.",
       "A FINDING IS WRITTEN WHERE IT LIVES, IN THE SAME TURN (2.10, epic MM; origin tickets #160 · #159 — the KAIF owner on a field project, rendered from Russian: \"something changed? the knowledge documents say otherwise? you MUST edit them\"): the closing rituals (`/end-chat-soft`, `/end-chat-force` step 1) and the loops (`/autoloop` step 9, `/dayloop` and `/nightloop` step 5) say a `KNOWLEDGE:` line — what was understood anew or found stale and the document it is written in now, or «nothing new»; the checklist line «Check the map & blast radius» and the footnotes of both maps ask for the line in the same turn, not on a commit; `/fable-judge` hunts «Learned, not recorded». Nothing to migrate: the rule acts from the next session.",
       "THE KNOWLEDGE HOOK SPEAKS AT THE MOMENTS A MEMORY IS WRITTEN (2.10, epic MM; origin tickets #160 · #159 · #186 — a field deployment carried its own knowledge hook, whose one ten-minute window swallowed every novelty moment): the refresh-hooks module ships an eighth script, `.kaif/hooks/knowledge-moment.mjs` — on the owner's prompt, a failed tool call, a Read of a knowledge document and the first touch of a component with `NOTES.md`, and on the first Read of a project source file (quoting what the docs say of it, or ordering one line into the map when no doc names it), it puts one line into the context: write what you understood into the project document where it lives, in this turn; plain tool results add weight and it speaks once per twelve. It never blocks and never stops a turn; its state is `.kaif/knowledge-moment.json` (ignored). `wire-hooks` wires it under UserPromptSubmit, PostToolUse and PostToolUseFailure; Claude Code only.",
-      "THE WINDOW WARNS AT 80 %, THE SOFT CLOSURE STARTS AT 85 % (2.10, epic PT; origin ticket #188 and its comment — two field deployments carried their own budget hook; one agent read a warning that spoke of closing as the closure and stopped working with 30 % of the window left): the refresh-hooks module ships a ninth script, `.kaif/hooks/context-window.mjs` — on the owner's prompt and after each tool result it reads the session's used share of the window; at `contextWindow.warnPct` (80) one warning with no closing word, at `closePct` (85) «finish to a logical cut, then /end-chat-soft», never a forced closure. The window size follows the vendor's model rule unless `contextWindow.tokens` is set. A project that wired its own budget hook keeps it — compare the thresholds and keep one. The same hook also GATES the closing (a source session closed «by the window» at 53 % by feeling): `/end-chat-soft` or `/end-chat-force` called below `closePct` without `owner: «<his words>»` in the skill's args is denied with the measured share — wire its third entry, `PreToolUse` · matcher `Skill`; the closing skills' step 0 measures by hand — `node .kaif/hooks/context-window.mjs --measure` (exit 0 may close · 1 too early · 2 nothing to measure). Wired is not running: Claude Code runs a folder's hooks, skills and CLAUDE.md only after the owner trusts the folder («Trust this folder in Claude Code?» → «Trust folder»); `--alive` tells a session whether its hooks run.",
+      "THE WINDOW SPEAKS IN FOUR STEPS — 75 · 80 · 85 · 92 (2.10, epic PT; origin ticket #188 and its comment — two field deployments carried their own budget hook; one agent read a warning that spoke of closing as the closure and stopped working with 30 % of the window left; the steps — the KAIF owner's decision, rendered from Russian: \"at 75 % a warning that the end of the window is near; at 80 % bring the work to a logical cut; at 85 % start the soft closure; at 92 % finish the soft closure quickly if it is running, or start the forced one\"): the refresh-hooks module ships a ninth script, `.kaif/hooks/context-window.mjs` — on the owner's prompt and after each tool result it reads the session's used share of the window and says each step once: `contextWindow.warnPct` (75) a warning with no closing word · `cutPct` (80) bring the work in hand to a logical cut · `closePct` (85) start /end-chat-soft · `forcePct` (92) finish the soft closure quickly, or start /end-chat-force; a step jumped over is not said (one line, the highest). A project that sets only `closePct` gets the others at −10 · −5 · +7 around it; a project that set `warnPct` / `closePct` for the 80 / 85 edition keeps them and gains the forced step at closePct + 7. A field 1M window auto-compacted at ≈ 89 % — the 92 % step may never come there. The window size follows the vendor's model rule unless `contextWindow.tokens` is set. A project that wired its own budget hook keeps it — compare the thresholds and keep one. The same hook also GATES the closing (a source session closed «by the window» at 53 % by feeling): `/end-chat-soft` or `/end-chat-force` called below `closePct` without `owner: «<his words>»` in the skill's args is denied with the measured share — wire its third entry, `PreToolUse` · matcher `Skill`; the closing skills' step 0 measures by hand — `node .kaif/hooks/context-window.mjs --measure` (exit 0 may close · 1 too early · 2 nothing to measure). Wired is not running: Claude Code runs a folder's hooks, skills and CLAUDE.md only after the owner trusts the folder («Trust this folder in Claude Code?» → «Trust folder»); `--alive` tells a session whether its hooks run.",
       "THE AGENT WRITES THE FAREWELL ITSELF, THE HOOK ONLY REPEATS IT (2.10; a source chat in a folder without trust ended and its last words never reached the next chat — the Stop hook was the only writer): `/end-chat-soft` step 5 and `/end-chat-force` step 3 write the farewell into `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` before printing it, and `/resume` step 0 tells a session whose hooks do not run (`--alive` exit 1) to do the same for the message that ends the chat — a closing farewell or a report that sends the owner to a new chat. Nothing to migrate: the rule acts from the next closing.",
       "THE COMMIT FLOW STAGES BY NAME AND CHECKS THE STAGED SET (2.10, epic UB, step UB5; a sweeping `git add -A` after the `git diff --stat` check carried two owner files into origin): `/end-chat-soft`, `/end-chat-force`, the default `<COMMIT_COMMAND>` of a fresh install and `/release` step 6 say «git add each path you mean to ship by name — new, changed, deleted, and both names of a move (git status --short lists them; never -A) — check the staged set with git diff --cached --stat» before the commit; `/release` no longer says `git commit -am`. What an earlier install froze stays yours until you change it: the value of `<COMMIT_COMMAND>` in the loop skills (`/autoloop` · `/dayloop` · `/nightloop` · `/release` · `/report-bug` · `/propose-idea`) reads `git add -A`, `git commit` and `git push` chained into one command, or «git add -A, then …», and the commit line your agent wrote into the closing skills when it filled their slot may stage everything too — put your commit tool there, or the by-name form. Closing skills that carry your own commit line get their module «Commit and push» handed over with a diff: keep your line, take the rest. A `/release` whose step 6 you rewrote gets that module too, and `update-verify` lists the template lines your own flow does not carry («promised upstream line not found») — keep your flow, take the by-name staging, and say so in the judge verdict. `update-verify` no longer names a promised line «not found» only because it still carries a placeholder your agent filled (the co-author line `<YOUR AGENT/MODEL>`).",
       "RED IS A CLAIM TOO, AND THE POSITIVE SMOKE RUNS FIRST (2.10, epic HC; origin tickets #87 · #173 — two QA deployments: a red produced by the measuring rig was no class anywhere; a feature was moved to Done with its main action never pressed): `TESTING_FRAMEWORK.md` gains the section \"Red is a claim too — earn it like green\" (before the verdict \"broken\" print the stand — language and locale · starting state · data · what changed since the last green; many reds sharing one condition are one error of measurement until ruled out), the activities chain step 4 runs the `smoke` rows first, and marker rule 7 makes a feature marker and any \"done / tested\" illegal while a `smoke` row is not `pass`; `/fable-judge` hunts both. The section \"How this composes\" is shortened by merged bullets, nothing dropped. A localized deployment carries the new section in the owner's language.",
@@ -3797,9 +3797,11 @@ the project document where it lives, in this turn» on the strong moments — th
 source file (what the docs say of it is quoted; named nowhere — an order to add one line to the map) — and once per
 twelve plain tool results; state per session in `.kaif/knowledge-moment.json`; never a block — Claude Code only), `context-window.mjs`
 (2.10, epic PT; origin ticket #188: the session's used share of the context window — the last main-thread usage of the transcript
-against the window size by the vendor's model rule or the project's `contextWindow.tokens` — at `contextWindow.warnPct` (80) one warning
-line with no closing word, at `closePct` (85, then every 5 %) «finish to a logical cut, then `/end-chat-soft`»; once per level, the
-levels re-armed when a compaction lowers the share; state in `.kaif/context-window.json`; never a block, never a forced closure — Claude Code only),
+against the window size by the vendor's model rule or the project's `contextWindow.tokens` — four steps (decision №161 of the origin): at
+`contextWindow.warnPct` (75) one warning line with no closing word, at `cutPct` (80) «bring the work in hand to a logical cut», at
+`closePct` (85) «start `/end-chat-soft`», at `forcePct` (92) «finish the soft closure quickly, or start `/end-chat-force`»; a project that
+sets only `closePct` gets the others at −10 · −5 · +7; once per step (a jump says one line, the highest step), the steps re-armed when a
+compaction lowers the share; state in `.kaif/context-window.json`; never a block, a forced closure only at the forced step — Claude Code only),
 `test-after-code.mjs` (2.10, epic HC; origin tickets #175 · #176: a write of a file that changes the product — the project's kinds in
 `.kaif/kaif.json` → `testHook`, else a source file, configs excluded — is a test debt; only a run of its own kind clears it (for a source
 file — an interpreter with the file as its script; its name elsewhere in a command is not a run), a build, a linter, `--check`, `--help`
@@ -20303,20 +20305,26 @@ process.exit(0);
 
 ``````js
 #!/usr/bin/env node
-// context-window.mjs — the "the window warns at 80 %, the soft closure starts at 85 %" hook (KAIF 2.10, epic PT; origin ticket #188 and
+// context-window.mjs — the "the window speaks in four steps: 75 · 80 · 85 · 92" hook (KAIF 2.10, epic PT; origin ticket #188 and
 // its comment — two field deployments carried their own budget hook; optional refresh-hooks module, deployed to .kaif/hooks/).
 // Claude Code events: UserPromptSubmit · PostToolUse · PreToolUse (matcher Skill — the closing gate, below).
 //
 // What it does: reads the session's last main-thread usage from the transcript (input + cache_creation + cache_read tokens — the vendor's
-// own formula for «used», code.claude.com/docs/en/statusline) and, once per level (re-armed after a compaction), puts ONE line into the agent's context:
-//   warnPct (default 80)  — a WARNING only: keep the normal pace, keep STATUS.md fresh, tell the owner once by voice. The line carries no
+// own formula for «used», code.claude.com/docs/en/statusline) and, once per step (re-armed after a compaction), puts ONE line into the
+// agent's context — the four steps of the KAIF owner (decision №161 of the origin, interview 049 Q1, rendered from Russian: «at 75 % the
+// agent gets a warning that the end of the context window is near; at 80 % the hook orders bringing the work to a logical cut; at 85 % it
+// requires starting the soft closure of the chat; at 92 % it requires finishing the soft closure quickly if it is running, or starts the
+// forced closure»):
+//   warnPct (default 75)  — a WARNING only: keep the normal pace, keep STATUS.md fresh, tell the owner once by voice. The line carries no
 //                           closing word — a field agent read «finish to a cut — at 75 % it is time to close» at 70 % as the closure itself
 //                           and stopped taking work with 30 % of the window left (the owner: «you close too early»);
-//   closePct (default 85) — finish the current work to a logical cut, THEN start /end-chat-soft; never a forced closure (the owner's word
-//                           of the second deployment: at 85 % — finish to a cut, then the soft closure; no forced closure at any level);
-//   every 5 % above closePct — the same order once more (90 · 95). A field session saw a 1M window auto-compact at ≈ 89 % (887 621
-//                           tokens, origin #188), so 85 % comes before it there; the point of a 200K window is not measured — a project
-//                           whose sessions compact earlier sets a lower closePct. After a compaction the levels re-arm (keptLevels).
+//   cutPct (default 80)   — bring the work in hand to a logical cut; no new heavy task;
+//   closePct (default 85) — start /end-chat-soft, the current work finished to its cut first; never a forced closure at this step;
+//   forcePct (default 92) — finish the running soft closure quickly, or start /end-chat-force.
+// A step jumped over is not said: one line, the highest step reached. A project that sets only closePct gets the others at the owner's
+// spacing around it (−10 · −5 · +7); a derived step that does not climb above the step before it is dropped. A field session saw a 1M
+// window auto-compact at ≈ 89 % (887 621 tokens, origin #188) — the 92 % step may never come there; a project whose sessions compact
+// earlier sets its own steps. After a compaction the steps re-arm (keptLevels).
 // The window size: no hook event carries it (vendor hooks reference); the rule — the project's `.kaif/kaif.json` → `contextWindow.tokens`
 // wins; else `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` → 200 000; else the model of the record: a `[1m]` suffix, or a family the vendor runs
 // with 1M by default (Fable 5 and later, Sonnet 5 and later, Haiku 5.5, Opus 4.7 and later — code.claude.com/docs/en/model-config) →
@@ -20351,7 +20359,22 @@ const STATE = join('.kaif', 'context-window.json');
 const DEPLOYMENT = join('.kaif', 'kaif.json');
 const TAIL_BYTES = 4 * 1024 * 1024;    // the last records of the transcript — the usage of the newest main-thread answer lives there
 const SESSIONS_KEPT = 20;
-export const DEFAULTS = { warnPct: 80, closePct: 85, step: 5 };
+export const DEFAULTS = { warnPct: 75, cutPct: 80, closePct: 85, forcePct: 92 };   // decision №161 of the origin
+const KINDS = ['warn', 'cut', 'close', 'force'];
+// The steps of a project — pure: (thresholds) → [{ kind, at }] climbing. A number the project set is kept as set; a missing one is derived
+// from closePct at the owner's spacing; a derived step at or below the step before it is dropped (a project 70 / 75 — warning 70, closing
+// 75, forced 82, no separate cut step: the closing line already says «finish to the cut first»).
+export function levelsOf(cfg = {}) {
+  const own = (k) => (Number(cfg[k]) > 0 ? Number(cfg[k]) : null);
+  const close = own('closePct') ?? DEFAULTS.closePct;
+  const want = [['warn', own('warnPct'), close - 10], ['cut', own('cutPct'), close - 5], ['close', close, close], ['force', own('forcePct'), close + 7]];
+  const out = [];
+  for (const [kind, set, derived] of want) {
+    if (set === null && out.length && derived <= out[out.length - 1].at) continue;
+    out.push({ kind, at: set ?? derived });
+  }
+  return out.sort((a, b) => a.at - b.at || KINDS.indexOf(a.kind) - KINDS.indexOf(b.kind));
+}
 export const SMALL = 200000, LARGE = 1000000;
 
 // The window size by the vendor's rule (see the header); `seen` — the largest usage observed in this session.
@@ -20386,11 +20409,18 @@ export function lastUsage(text) {
   }
   return null;
 }
+const atOf = (L, kind) => (L.find((l) => l.kind === kind) || {}).at;
 export const LINES = {
-  warn: (pct, used, win) => `KAIF context: the window is ${pct} % full (${used} of ${win} tokens). A WARNING only — keep working at your ` +
-    'normal pace and keep STATUS.md fresh; tell the owner once by voice that the window is at ' + pct + ' %.',
-  close: (pct, used, win) => `KAIF context: the window is ${pct} % full (${used} of ${win} tokens). Finish the current work to a logical cut, ` +
-    'then start /end-chat-soft — the soft closure, never a forced one.',
+  warn: (pct, used, win) => `KAIF context: the window is ${pct} % full (${used} of ${win} tokens). A WARNING only — the end of the window ` +
+    'is near: keep working at your normal pace and keep STATUS.md fresh; tell the owner once by voice that the window is at ' + pct + ' %.',
+  cut: (pct, used, win, L) => `KAIF context: the window is ${pct} % full (${used} of ${win} tokens). The step of ${atOf(L, 'cut')} %: bring the ` +
+    'work in hand to a logical cut — finish the current step, run it, commit it green; take no new heavy task.' +
+    (atOf(L, 'close') ? ` The soft closure comes at ${atOf(L, 'close')} %.` : ''),
+  close: (pct, used, win, L) => `KAIF context: the window is ${pct} % full (${used} of ${win} tokens). The step of ${atOf(L, 'close')} %: start ` +
+    'the soft closure now — /end-chat-soft; first finish the current work to its logical cut if it is not there. Never a forced closure at this step.',
+  force: (pct, used, win, L) => `KAIF context: the window is ${pct} % full (${used} of ${win} tokens). The step of ${atOf(L, 'force')} %: if ` +
+    'the soft closure is running — finish it quickly, the essentials first (STATUS.md, the farewell, commit and push); if it is not — ' +
+    'start /end-chat-force now.',
 };
 // Judge of session 97 (finding 4): Claude Code fires this hook on a SUBAGENT's tool calls too, under the parent's session and transcript.
 // Observed live (origin session 97, a temporary logging hook): a subagent's event carries `agent_id` and `agent_type`, the main thread's
@@ -20401,15 +20431,15 @@ export const fromSubagent = (ev) => Boolean(ev && ev.agent_id);
 // after a compaction (auto or /compact) the usage falls, and the 80 / 85 lines must come again when the window refills; pure.
 export const keptLevels = (used, win, said = []) => { const pct = win > 0 ? Math.floor((used / win) * 100) : 0; return said.filter((l) => l <= pct); };
 // The decision — pure: (used, window, thresholds, levels already said) → { line, level } or null
+// A step is said once: only steps ABOVE the highest one already said this fill of the window count (a state written by the 80 / 85
+// edition — [80, 85] — says nothing lower after the update); of those reached, ONE line — the highest; every reached step is marked said.
 export function decide(used, win, cfg, said = []) {
-  const warnPct = Number(cfg.warnPct) > 0 ? Number(cfg.warnPct) : DEFAULTS.warnPct;
-  const closePct = Number(cfg.closePct) > 0 ? Number(cfg.closePct) : DEFAULTS.closePct;
   const pct = win > 0 ? Math.floor((used / win) * 100) : 0;
-  let level = null;
-  if (pct >= closePct) level = closePct + Math.floor((pct - closePct) / DEFAULTS.step) * DEFAULTS.step;
-  else if (pct >= warnPct) level = warnPct;
-  if (level === null || said.includes(level)) return null;
-  return { level, line: level >= closePct ? LINES.close(pct, used, win) : LINES.warn(pct, used, win) };
+  const L = levelsOf(cfg || {}), top = Math.max(-1, ...said.filter((l) => l <= pct));
+  const due = L.filter((l) => l.at <= pct && l.at > top);
+  if (!due.length) return null;
+  const hi = due[due.length - 1];   // levelsOf climbs: the last reached step is the highest
+  return { level: hi.at, levels: [...new Set(due.map((l) => l.at))], kind: hi.kind, line: LINES[hi.kind](pct, used, win, L) };
 }
 
 // The closing gate — pure: (event, used, window, thresholds) → the hook's deny answer or null. A closing skill below closePct passes only
@@ -20492,18 +20522,31 @@ function tailOf(p) {
 if (process.argv[2] === '--selftest') {
   let bad = 0; const ok = (c, n) => { if (!c) { bad++; console.log('  x ' + n); } else console.log('  v ' + n); };
   const cfg = {};
-  ok(decide(790000, LARGE, cfg) === null, '79 % — silence');
-  const w = decide(800000, LARGE, cfg);
-  ok(w && w.level === 80 && !/clos|wrap|finish|end-chat|stop/i.test(w.line) && /tell the owner once by voice/.test(w.line),
-    '80 % — a warning without a closing word, told to the owner by voice (interview 047, Q6 = B)');
-  ok(decide(820000, LARGE, cfg, [80]) === null, '82 % after the 80 % line — silence (once per level)');
-  const c = decide(851000, LARGE, cfg, [80]);
-  ok(c && c.level === 85 && /logical cut/.test(c.line) && /\/end-chat-soft/.test(c.line) && /never a forced/.test(c.line), '85 % — finish to a cut, then /end-chat-soft');
-  ok(decide(905000, LARGE, cfg, [80, 85]).level === 90 && decide(905000, LARGE, cfg, [80, 85, 90]) === null, '90 % — the order once more, then silence');
-  ok(decide(150000, SMALL, { warnPct: 70, closePct: 75 }).level === 75, 'the project\'s own thresholds (70 / 75) are honoured');
-  { const kept = keptLevels(200000, LARGE, [80, 85]), again = decide(800000, LARGE, cfg, keptLevels(800000, LARGE, kept));
-    ok(kept.length === 0 && keptLevels(870000, LARGE, [80, 85]).length === 2 && again && again.level === 80,
-      'after a compaction (87 % → 20 %) the levels re-arm: the 80 % warning comes again when the window refills'); }
+  // the four steps of decision №161 (interview 049, Q1): 75 · 80 · 85 · 92
+  ok(decide(749000, LARGE, cfg) === null, '74 % — silence');
+  const w = decide(750000, LARGE, cfg);
+  ok(w && w.level === 75 && w.kind === 'warn' && !/clos|wrap|finish|end-chat|stop|cut/i.test(w.line) && /tell the owner once by voice/.test(w.line),
+    '75 % — a warning without a closing word, told to the owner by voice (№161; interview 047, Q6 = B)');
+  ok(decide(790000, LARGE, cfg, [75]) === null, '79 % after the 75 % line — silence (once per step)');
+  const u = decide(800000, LARGE, cfg, [75]);
+  ok(u && u.level === 80 && u.kind === 'cut' && /logical cut/.test(u.line) && /no new heavy task/.test(u.line) && !/end-chat/.test(u.line)
+    && /soft closure comes at 85 %/.test(u.line), '80 % — bring the work to a logical cut, no closing skill yet (№161)');
+  const c = decide(851000, LARGE, cfg, [75, 80]);
+  ok(c && c.level === 85 && c.kind === 'close' && /logical cut/.test(c.line) && /\/end-chat-soft/.test(c.line) && /Never a forced/.test(c.line),
+    '85 % — start /end-chat-soft, the work finished to its cut first (№161)');
+  const f = decide(921000, LARGE, cfg, [75, 80, 85]);
+  ok(f && f.level === 92 && f.kind === 'force' && /finish it quickly/.test(f.line) && /\/end-chat-force/.test(f.line)
+    && decide(950000, LARGE, cfg, [75, 80, 85, 92]) === null, '92 % — finish the soft closure quickly or start /end-chat-force; then silence (№161)');
+  { const j = decide(860000, LARGE, cfg, []), old = decide(860000, LARGE, cfg, [80, 85]);
+    ok(j && j.level === 85 && j.kind === 'close' && j.levels.join() === '75,80,85' && old === null,
+      'a jump 50 % → 86 % says ONE line, the highest step, and marks the lower said; a state of the 80 / 85 edition says nothing lower'); }
+  { const p = { warnPct: 70, closePct: 75 }, L = levelsOf(p).map((l) => l.kind + l.at).join(' ');
+    ok(L === 'warn70 close75 force82' && decide(140000, SMALL, p).kind === 'warn' && decide(150000, SMALL, p, [70]).kind === 'close'
+      && levelsOf({}).map((l) => l.at).join() === '75,80,85,92' && levelsOf({ closePct: 90 }).map((l) => l.at).join() === '80,85,90,97',
+      'the project\'s own steps (70 / 75 → warning 70 · closing 75 · forced 82, no cut step) and the owner\'s spacing around its closePct'); }
+  { const kept = keptLevels(200000, LARGE, [75, 80, 85]), again = decide(750000, LARGE, cfg, keptLevels(750000, LARGE, kept));
+    ok(kept.length === 0 && keptLevels(870000, LARGE, [75, 80, 85]).length === 3 && again && again.level === 75,
+      'after a compaction (87 % → 20 %) the levels re-arm: the 75 % warning comes again when the window refills'); }
   const rec = (u, side = false) => JSON.stringify({ type: 'assistant', isSidechain: side, message: { model: 'claude-opus-5-5', usage: u } });
   const t = [rec({ input_tokens: 2, cache_read_input_tokens: 780000, cache_creation_input_tokens: 2600 }), rec({ input_tokens: 9, cache_read_input_tokens: 10 }, true)].join('\n');
   const lu = lastUsage(t);
@@ -20631,7 +20674,7 @@ try {
       if (ev.hook_event_name === 'PreToolUse') process.exit(0);   // the gate's event says nothing else — the levels speak on the others
       st.said = keptLevels(lu.used, win, st.said || []);
       d = decide(lu.used, win, cw, st.said);
-      if (d) st.said = [...st.said, d.level];
+      if (d) st.said = [...new Set([...st.said, ...d.levels])];
     } else if (ev.hook_event_name === 'PreToolUse') process.exit(0);   // nothing to measure: the gate does not block; presence comes on the others
     all[id] = { ...st, at: new Date().toISOString() };
     const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
@@ -21326,12 +21369,15 @@ blocked earlier in the turn. `.kaif/farewell-capture.json` records which closure
 
 **The context-window hook — `context-window.mjs` (2.10, epic PT, origin #188) — is wired for Claude Code only.** A field agent read a
 warning at 70 % that already spoke of closing as the closure itself and stopped taking work with 30 % of the window left; another field
-owner set his own line: at 80 % a warning, at 85 % finish to a cut and close softly, no forced closure anywhere. The hook says exactly
-that, once per level; the warning carries no closing word. No hook event carries the window size, so the hook applies the vendor's rule
+owner set his own line. The KAIF owner set the steps (2.10, decision №161): at 75 % a warning that the end of the window is near, at
+80 % bring the work in hand to a logical cut, at 85 % start the soft closure, at 92 % finish the soft closure quickly — or start the forced
+one. The hook says each step once (a step jumped over is not said: one line, the highest step reached); the warning carries no closing word.
+The steps are `contextWindow.warnPct` · `cutPct` · `closePct` · `forcePct`; a project that sets only `closePct` gets the others at the
+owner's spacing around it (−10 · −5 · +7), and a derived step that does not climb above the one before it is dropped. No hook event carries the window size, so the hook applies the vendor's rule
 (1M for the models that run with it by default and for a `[1m]` model, 200K otherwise, `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` holds 200K)
 unless the project states `contextWindow.tokens` — the project's number wins over everything; without it a usage above 200K means the 1M
-window. A field session saw a 1M window auto-compact at ≈ 89 % (887 621 tokens), so 85 % comes first there; the point of a 200K window is
-not measured — a project whose sessions compact earlier sets a lower `contextWindow.closePct`. After a compaction the levels re-arm. Claude Code fires both this hook and the knowledge hook on a subagent's tool calls too, under the parent's session: a
+window. A field session saw a 1M window auto-compact at ≈ 89 % (887 621 tokens), so 85 % comes first there and the 92 % step may never
+come; the point of a 200K window is not measured — a project whose sessions compact earlier sets lower steps. After a compaction the steps re-arm. Claude Code fires both this hook and the knowledge hook on a subagent's tool calls too, under the parent's session: a
 subagent's event carries `agent_id` (observed), and both hooks stay silent on it.
 
 **The knowledge hook — `knowledge-moment.mjs` (2.10, epic MM, origin #160 · #159 · #186) — is wired for Claude Code only.** A session

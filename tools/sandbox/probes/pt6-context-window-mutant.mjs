@@ -15,11 +15,19 @@ const MUTANTS = [
     [/usage = input \+ cache_creation \+ cache_read/, /a `<synthetic>` zero-usage record at the tail is skipped/]],
   // session 100: the closing gate skips a subagent's call through the SAME predicate — this mutant names two cases (EXP-0169)
   ['a subagent\'s call judged', "export const fromSubagent = (ev) => Boolean(ev && ev.agent_id);", "export const fromSubagent = (ev) => false;",
-    [/a subagent's tool call/, /gate: another skill, another tool, another event, a subagent/]],
+    // session 103 (bugs/142): the presence record skips a subagent's event through the same predicate — a third addressee (EXP-0169)
+    [/a subagent's tool call/, /gate: another skill, another tool, another event, a subagent/, /alive from the first prompt \(bugs\/142\)/]],
   // (3) judge of epics PT6 · HC10 (session 98, finding 3): a level said once stays said for the session — no warning after a compaction
   ['levels never re-arm', 'return said.filter((l) => l <= pct); };', 'return said; };', /after a compaction .* re-arm/],
-  // (4) the same judge, finding 2: the owner's word (interview 047, Q6 = B) — at 80 % the owner is told BY VOICE
-  ['no voice at 80 %', "tell the owner once by voice that the window is at ' + pct + ' %.'", "' + pct + ' %.'", /told to the owner by voice/],
+  // (4) the same judge, finding 2: the owner's word (interview 047, Q6 = B) — at the warning step (75 % since №161) the owner is told BY VOICE
+  ['no voice at the warning', "tell the owner once by voice that the window is at ' + pct + ' %.'", "' + pct + ' %.'", /told to the owner by voice/],
+  // (5)–(7) session 103, the steps of decision №161 (75 · 80 · 85 · 92): the cut step never comes · the forced step dropped · a jump says
+  // the LOWEST step reached instead of the highest
+  ["the cut step never comes", "['cut', own('cutPct'), close - 5]", "['cut', own('cutPct'), close]",
+    [/80 % — bring the work to a logical cut/, /a jump 50 % → 86 %/, /the project's own steps/]],
+  ['the forced step dropped', "['force', own('forcePct'), close + 7]", "['force', own('forcePct'), close]",
+    [/92 % — finish the soft closure quickly/, /the project's own steps/]],
+  ['a jump says the lowest step', 'const hi = due[due.length - 1];', 'const hi = due[0];', /a jump 50 % → 86 %/],
 ];
 const run = (mut) => {
   const d = mkdtempSync(join(tmpdir(), 'kaif-pt6m-'));

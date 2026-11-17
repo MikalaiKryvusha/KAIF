@@ -21,6 +21,8 @@ try {
     return { status: r.status, line };
   };
   const d = run(null);
-  console.log('defaults 80/85: exit ' + d.status + ' · ' + (d.line || '(silence)'));
-  if (W) { const o = run({ warnPct: Number(W), closePct: Number(C) }); console.log('project ' + W + '/' + C + ': exit ' + o.status + ' · ' + (o.line || '(silence)')); }
+  console.log('defaults 75 · 80 · 85 · 92 (№161): exit ' + d.status + ' · ' + (d.line || '(silence)'));
+  // session 103 (№161): `--close N` — the project sets only closePct, the other steps follow at the owner's spacing (−10 · −5 · +7)
+  if (W === '--close') { const o = run({ closePct: Number(C) }); console.log('project closePct ' + C + ': exit ' + o.status + ' · ' + (o.line || '(silence)')); }
+  else if (W) { const o = run({ warnPct: Number(W), closePct: Number(C) }); console.log('project ' + W + '/' + C + ': exit ' + o.status + ' · ' + (o.line || '(silence)')); }
 } finally { rmSync(root, { recursive: true, force: true }); }

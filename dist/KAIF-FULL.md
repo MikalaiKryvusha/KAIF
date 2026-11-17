@@ -3361,9 +3361,11 @@ the project document where it lives, in this turn» on the strong moments — th
 source file (what the docs say of it is quoted; named nowhere — an order to add one line to the map) — and once per
 twelve plain tool results; state per session in `.kaif/knowledge-moment.json`; never a block — Claude Code only), `context-window.mjs`
 (2.10, epic PT; origin ticket #188: the session's used share of the context window — the last main-thread usage of the transcript
-against the window size by the vendor's model rule or the project's `contextWindow.tokens` — at `contextWindow.warnPct` (80) one warning
-line with no closing word, at `closePct` (85, then every 5 %) «finish to a logical cut, then `/end-chat-soft`»; once per level, the
-levels re-armed when a compaction lowers the share; state in `.kaif/context-window.json`; never a block, never a forced closure — Claude Code only),
+against the window size by the vendor's model rule or the project's `contextWindow.tokens` — four steps (decision №161 of the origin): at
+`contextWindow.warnPct` (75) one warning line with no closing word, at `cutPct` (80) «bring the work in hand to a logical cut», at
+`closePct` (85) «start `/end-chat-soft`», at `forcePct` (92) «finish the soft closure quickly, or start `/end-chat-force`»; a project that
+sets only `closePct` gets the others at −10 · −5 · +7; once per step (a jump says one line, the highest step), the steps re-armed when a
+compaction lowers the share; state in `.kaif/context-window.json`; never a block, a forced closure only at the forced step — Claude Code only),
 `test-after-code.mjs` (2.10, epic HC; origin tickets #175 · #176: a write of a file that changes the product — the project's kinds in
 `.kaif/kaif.json` → `testHook`, else a source file, configs excluded — is a test debt; only a run of its own kind clears it (for a source
 file — an interpreter with the file as its script; its name elsewhere in a command is not a run), a build, a linter, `--check`, `--help`

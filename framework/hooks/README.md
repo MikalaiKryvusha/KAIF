@@ -175,12 +175,15 @@ blocked earlier in the turn. `.kaif/farewell-capture.json` records which closure
 
 **The context-window hook — `context-window.mjs` (2.10, epic PT, origin #188) — is wired for Claude Code only.** A field agent read a
 warning at 70 % that already spoke of closing as the closure itself and stopped taking work with 30 % of the window left; another field
-owner set his own line: at 80 % a warning, at 85 % finish to a cut and close softly, no forced closure anywhere. The hook says exactly
-that, once per level; the warning carries no closing word. No hook event carries the window size, so the hook applies the vendor's rule
+owner set his own line. The KAIF owner set the steps (2.10, decision №161): at 75 % a warning that the end of the window is near, at
+80 % bring the work in hand to a logical cut, at 85 % start the soft closure, at 92 % finish the soft closure quickly — or start the forced
+one. The hook says each step once (a step jumped over is not said: one line, the highest step reached); the warning carries no closing word.
+The steps are `contextWindow.warnPct` · `cutPct` · `closePct` · `forcePct`; a project that sets only `closePct` gets the others at the
+owner's spacing around it (−10 · −5 · +7), and a derived step that does not climb above the one before it is dropped. No hook event carries the window size, so the hook applies the vendor's rule
 (1M for the models that run with it by default and for a `[1m]` model, 200K otherwise, `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` holds 200K)
 unless the project states `contextWindow.tokens` — the project's number wins over everything; without it a usage above 200K means the 1M
-window. A field session saw a 1M window auto-compact at ≈ 89 % (887 621 tokens), so 85 % comes first there; the point of a 200K window is
-not measured — a project whose sessions compact earlier sets a lower `contextWindow.closePct`. After a compaction the levels re-arm. Claude Code fires both this hook and the knowledge hook on a subagent's tool calls too, under the parent's session: a
+window. A field session saw a 1M window auto-compact at ≈ 89 % (887 621 tokens), so 85 % comes first there and the 92 % step may never
+come; the point of a 200K window is not measured — a project whose sessions compact earlier sets lower steps. After a compaction the steps re-arm. Claude Code fires both this hook and the knowledge hook on a subagent's tool calls too, under the parent's session: a
 subagent's event carries `agent_id` (observed), and both hooks stay silent on it.
 
 **The knowledge hook — `knowledge-moment.mjs` (2.10, epic MM, origin #160 · #159 · #186) — is wired for Claude Code only.** A session

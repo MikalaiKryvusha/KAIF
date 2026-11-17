@@ -109,8 +109,8 @@ ok(JSON.stringify((frag.hooks?.PreToolUse || []).map((g) => [g.matcher, (g.hooks
 {
   const hook = join(S, '.kaif', 'hooks', 'context-window.mjs');
   const st = spawnSync(process.execPath, [hook, '--selftest'], { encoding: 'utf8', timeout: 60000 });
-  ok(st.status === 0 && /selftest: all ok/.test(st.stdout || '') && /v 80 % — a warning without a closing word/.test(st.stdout || ''),
-     's14 PT: самопроверка развёрнутого хука окна контекста зелёная (80 % без слов закрытия · 85 % — до среза и /end-chat-soft · окно по правилу вендора)', `${st.status} ${(st.stdout || '').slice(-600)}`);
+  ok(st.status === 0 && /selftest: all ok/.test(st.stdout || '') && /v 75 % — a warning without a closing word/.test(st.stdout || '') && /v 92 % — finish the soft closure quickly/.test(st.stdout || ''),
+     's14 PT: самопроверка развёрнутого хука окна контекста зелёная (ступени №161: 75 % без слов закрытия · 80 % — к срезу · 85 % — /end-chat-soft · 92 % — /end-chat-force · окно по правилу вендора)', `${st.status} ${(st.stdout || '').slice(-600)}`);
   ok(JSON.stringify(frag.hooks?.UserPromptSubmit || []).includes('context-window.mjs') && JSON.stringify(frag.hooks?.PostToolUse || []).includes('context-window.mjs')
      && !JSON.stringify(frag.hooks?.Stop || []).includes('context-window.mjs'), 's14 PT: context-window подключён на UserPromptSubmit · PostToolUse, на Stop — нет');
   // Ворота закрытия (сессия 100): навык закрытия на 53 % без слова владельца отклоняется — развёрнутый хук, событие как у Claude Code, журнал

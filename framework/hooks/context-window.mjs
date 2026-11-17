@@ -1,18 +1,24 @@
 #!/usr/bin/env node
-// context-window.mjs — the "the window warns at 80 %, the soft closure starts at 85 %" hook (KAIF 2.10, epic PT; origin ticket #188 and
+// context-window.mjs — the "the window speaks in four steps: 75 · 80 · 85 · 92" hook (KAIF 2.10, epic PT; origin ticket #188 and
 // its comment — two field deployments carried their own budget hook; optional refresh-hooks module, deployed to .kaif/hooks/).
 // Claude Code events: UserPromptSubmit · PostToolUse · PreToolUse (matcher Skill — the closing gate, below).
 //
 // What it does: reads the session's last main-thread usage from the transcript (input + cache_creation + cache_read tokens — the vendor's
-// own formula for «used», code.claude.com/docs/en/statusline) and, once per level (re-armed after a compaction), puts ONE line into the agent's context:
-//   warnPct (default 80)  — a WARNING only: keep the normal pace, keep STATUS.md fresh, tell the owner once by voice. The line carries no
+// own formula for «used», code.claude.com/docs/en/statusline) and, once per step (re-armed after a compaction), puts ONE line into the
+// agent's context — the four steps of the KAIF owner (decision №161 of the origin, interview 049 Q1, rendered from Russian: «at 75 % the
+// agent gets a warning that the end of the context window is near; at 80 % the hook orders bringing the work to a logical cut; at 85 % it
+// requires starting the soft closure of the chat; at 92 % it requires finishing the soft closure quickly if it is running, or starts the
+// forced closure»):
+//   warnPct (default 75)  — a WARNING only: keep the normal pace, keep STATUS.md fresh, tell the owner once by voice. The line carries no
 //                           closing word — a field agent read «finish to a cut — at 75 % it is time to close» at 70 % as the closure itself
 //                           and stopped taking work with 30 % of the window left (the owner: «you close too early»);
-//   closePct (default 85) — finish the current work to a logical cut, THEN start /end-chat-soft; never a forced closure (the owner's word
-//                           of the second deployment: at 85 % — finish to a cut, then the soft closure; no forced closure at any level);
-//   every 5 % above closePct — the same order once more (90 · 95). A field session saw a 1M window auto-compact at ≈ 89 % (887 621
-//                           tokens, origin #188), so 85 % comes before it there; the point of a 200K window is not measured — a project
-//                           whose sessions compact earlier sets a lower closePct. After a compaction the levels re-arm (keptLevels).
+//   cutPct (default 80)   — bring the work in hand to a logical cut; no new heavy task;
+//   closePct (default 85) — start /end-chat-soft, the current work finished to its cut first; never a forced closure at this step;
+//   forcePct (default 92) — finish the running soft closure quickly, or start /end-chat-force.
+// A step jumped over is not said: one line, the highest step reached. A project that sets only closePct gets the others at the owner's
+// spacing around it (−10 · −5 · +7); a derived step that does not climb above the step before it is dropped. A field session saw a 1M
+// window auto-compact at ≈ 89 % (887 621 tokens, origin #188) — the 92 % step may never come there; a project whose sessions compact
+// earlier sets its own steps. After a compaction the steps re-arm (keptLevels).
 // The window size: no hook event carries it (vendor hooks reference); the rule — the project's `.kaif/kaif.json` → `contextWindow.tokens`
 // wins; else `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` → 200 000; else the model of the record: a `[1m]` suffix, or a family the vendor runs
 // with 1M by default (Fable 5 and later, Sonnet 5 and later, Haiku 5.5, Opus 4.7 and later — code.claude.com/docs/en/model-config) →
@@ -47,7 +53,22 @@ const STATE = join('.kaif', 'context-window.json');
 const DEPLOYMENT = join('.kaif', 'kaif.json');
 const TAIL_BYTES = 4 * 1024 * 1024;    // the last records of the transcript — the usage of the newest main-thread answer lives there
 const SESSIONS_KEPT = 20;
-export const DEFAULTS = { warnPct: 80, closePct: 85, step: 5 };
+export const DEFAULTS = { warnPct: 75, cutPct: 80, closePct: 85, forcePct: 92 };   // decision №161 of the origin
+const KINDS = ['warn', 'cut', 'close', 'force'];
+// The steps of a project — pure: (thresholds) → [{ kind, at }] climbing. A number the project set is kept as set; a missing one is derived
+// from closePct at the owner's spacing; a derived step at or below the step before it is dropped (a project 70 / 75 — warning 70, closing
+// 75, forced 82, no separate cut step: the closing line already says «finish to the cut first»).
+export function levelsOf(cfg = {}) {
+  const own = (k) => (Number(cfg[k]) > 0 ? Number(cfg[k]) : null);
+  const close = own('closePct') ?? DEFAULTS.closePct;
+  const want = [['warn', own('warnPct'), close - 10], ['cut', own('cutPct'), close - 5], ['close', close, close], ['force', own('forcePct'), close + 7]];
+  const out = [];
+  for (const [kind, set, derived] of want) {
+    if (set === null && out.length && derived <= out[out.length - 1].at) continue;
+    out.push({ kind, at: set ?? derived });
+  }
+  return out.sort((a, b) => a.at - b.at || KINDS.indexOf(a.kind) - KINDS.indexOf(b.kind));
+}
 export const SMALL = 200000, LARGE = 1000000;
 
 // The window size by the vendor's rule (see the header); `seen` — the largest usage observed in this session.
@@ -82,11 +103,18 @@ export function lastUsage(text) {
   }
   return null;
 }
+const atOf = (L, kind) => (L.find((l) => l.kind === kind) || {}).at;
 export const LINES = {
-  warn: (pct, used, win) => `KAIF context: the window is ${pct} % full (${used} of ${win} tokens). A WARNING only — keep working at your ` +
-    'normal pace and keep STATUS.md fresh; tell the owner once by voice that the window is at ' + pct + ' %.',
-  close: (pct, used, win) => `KAIF context: the window is ${pct} % full (${used} of ${win} tokens). Finish the current work to a logical cut, ` +
-    'then start /end-chat-soft — the soft closure, never a forced one.',
+  warn: (pct, used, win) => `KAIF context: the window is ${pct} % full (${used} of ${win} tokens). A WARNING only — the end of the window ` +
+    'is near: keep working at your normal pace and keep STATUS.md fresh; tell the owner once by voice that the window is at ' + pct + ' %.',
+  cut: (pct, used, win, L) => `KAIF context: the window is ${pct} % full (${used} of ${win} tokens). The step of ${atOf(L, 'cut')} %: bring the ` +
+    'work in hand to a logical cut — finish the current step, run it, commit it green; take no new heavy task.' +
+    (atOf(L, 'close') ? ` The soft closure comes at ${atOf(L, 'close')} %.` : ''),
+  close: (pct, used, win, L) => `KAIF context: the window is ${pct} % full (${used} of ${win} tokens). The step of ${atOf(L, 'close')} %: start ` +
+    'the soft closure now — /end-chat-soft; first finish the current work to its logical cut if it is not there. Never a forced closure at this step.',
+  force: (pct, used, win, L) => `KAIF context: the window is ${pct} % full (${used} of ${win} tokens). The step of ${atOf(L, 'force')} %: if ` +
+    'the soft closure is running — finish it quickly, the essentials first (STATUS.md, the farewell, commit and push); if it is not — ' +
+    'start /end-chat-force now.',
 };
 // Judge of session 97 (finding 4): Claude Code fires this hook on a SUBAGENT's tool calls too, under the parent's session and transcript.
 // Observed live (origin session 97, a temporary logging hook): a subagent's event carries `agent_id` and `agent_type`, the main thread's
@@ -97,15 +125,15 @@ export const fromSubagent = (ev) => Boolean(ev && ev.agent_id);
 // after a compaction (auto or /compact) the usage falls, and the 80 / 85 lines must come again when the window refills; pure.
 export const keptLevels = (used, win, said = []) => { const pct = win > 0 ? Math.floor((used / win) * 100) : 0; return said.filter((l) => l <= pct); };
 // The decision — pure: (used, window, thresholds, levels already said) → { line, level } or null
+// A step is said once: only steps ABOVE the highest one already said this fill of the window count (a state written by the 80 / 85
+// edition — [80, 85] — says nothing lower after the update); of those reached, ONE line — the highest; every reached step is marked said.
 export function decide(used, win, cfg, said = []) {
-  const warnPct = Number(cfg.warnPct) > 0 ? Number(cfg.warnPct) : DEFAULTS.warnPct;
-  const closePct = Number(cfg.closePct) > 0 ? Number(cfg.closePct) : DEFAULTS.closePct;
   const pct = win > 0 ? Math.floor((used / win) * 100) : 0;
-  let level = null;
-  if (pct >= closePct) level = closePct + Math.floor((pct - closePct) / DEFAULTS.step) * DEFAULTS.step;
-  else if (pct >= warnPct) level = warnPct;
-  if (level === null || said.includes(level)) return null;
-  return { level, line: level >= closePct ? LINES.close(pct, used, win) : LINES.warn(pct, used, win) };
+  const L = levelsOf(cfg || {}), top = Math.max(-1, ...said.filter((l) => l <= pct));
+  const due = L.filter((l) => l.at <= pct && l.at > top);
+  if (!due.length) return null;
+  const hi = due[due.length - 1];   // levelsOf climbs: the last reached step is the highest
+  return { level: hi.at, levels: [...new Set(due.map((l) => l.at))], kind: hi.kind, line: LINES[hi.kind](pct, used, win, L) };
 }
 
 // The closing gate — pure: (event, used, window, thresholds) → the hook's deny answer or null. A closing skill below closePct passes only
@@ -188,18 +216,31 @@ function tailOf(p) {
 if (process.argv[2] === '--selftest') {
   let bad = 0; const ok = (c, n) => { if (!c) { bad++; console.log('  x ' + n); } else console.log('  v ' + n); };
   const cfg = {};
-  ok(decide(790000, LARGE, cfg) === null, '79 % — silence');
-  const w = decide(800000, LARGE, cfg);
-  ok(w && w.level === 80 && !/clos|wrap|finish|end-chat|stop/i.test(w.line) && /tell the owner once by voice/.test(w.line),
-    '80 % — a warning without a closing word, told to the owner by voice (interview 047, Q6 = B)');
-  ok(decide(820000, LARGE, cfg, [80]) === null, '82 % after the 80 % line — silence (once per level)');
-  const c = decide(851000, LARGE, cfg, [80]);
-  ok(c && c.level === 85 && /logical cut/.test(c.line) && /\/end-chat-soft/.test(c.line) && /never a forced/.test(c.line), '85 % — finish to a cut, then /end-chat-soft');
-  ok(decide(905000, LARGE, cfg, [80, 85]).level === 90 && decide(905000, LARGE, cfg, [80, 85, 90]) === null, '90 % — the order once more, then silence');
-  ok(decide(150000, SMALL, { warnPct: 70, closePct: 75 }).level === 75, 'the project\'s own thresholds (70 / 75) are honoured');
-  { const kept = keptLevels(200000, LARGE, [80, 85]), again = decide(800000, LARGE, cfg, keptLevels(800000, LARGE, kept));
-    ok(kept.length === 0 && keptLevels(870000, LARGE, [80, 85]).length === 2 && again && again.level === 80,
-      'after a compaction (87 % → 20 %) the levels re-arm: the 80 % warning comes again when the window refills'); }
+  // the four steps of decision №161 (interview 049, Q1): 75 · 80 · 85 · 92
+  ok(decide(749000, LARGE, cfg) === null, '74 % — silence');
+  const w = decide(750000, LARGE, cfg);
+  ok(w && w.level === 75 && w.kind === 'warn' && !/clos|wrap|finish|end-chat|stop|cut/i.test(w.line) && /tell the owner once by voice/.test(w.line),
+    '75 % — a warning without a closing word, told to the owner by voice (№161; interview 047, Q6 = B)');
+  ok(decide(790000, LARGE, cfg, [75]) === null, '79 % after the 75 % line — silence (once per step)');
+  const u = decide(800000, LARGE, cfg, [75]);
+  ok(u && u.level === 80 && u.kind === 'cut' && /logical cut/.test(u.line) && /no new heavy task/.test(u.line) && !/end-chat/.test(u.line)
+    && /soft closure comes at 85 %/.test(u.line), '80 % — bring the work to a logical cut, no closing skill yet (№161)');
+  const c = decide(851000, LARGE, cfg, [75, 80]);
+  ok(c && c.level === 85 && c.kind === 'close' && /logical cut/.test(c.line) && /\/end-chat-soft/.test(c.line) && /Never a forced/.test(c.line),
+    '85 % — start /end-chat-soft, the work finished to its cut first (№161)');
+  const f = decide(921000, LARGE, cfg, [75, 80, 85]);
+  ok(f && f.level === 92 && f.kind === 'force' && /finish it quickly/.test(f.line) && /\/end-chat-force/.test(f.line)
+    && decide(950000, LARGE, cfg, [75, 80, 85, 92]) === null, '92 % — finish the soft closure quickly or start /end-chat-force; then silence (№161)');
+  { const j = decide(860000, LARGE, cfg, []), old = decide(860000, LARGE, cfg, [80, 85]);
+    ok(j && j.level === 85 && j.kind === 'close' && j.levels.join() === '75,80,85' && old === null,
+      'a jump 50 % → 86 % says ONE line, the highest step, and marks the lower said; a state of the 80 / 85 edition says nothing lower'); }
+  { const p = { warnPct: 70, closePct: 75 }, L = levelsOf(p).map((l) => l.kind + l.at).join(' ');
+    ok(L === 'warn70 close75 force82' && decide(140000, SMALL, p).kind === 'warn' && decide(150000, SMALL, p, [70]).kind === 'close'
+      && levelsOf({}).map((l) => l.at).join() === '75,80,85,92' && levelsOf({ closePct: 90 }).map((l) => l.at).join() === '80,85,90,97',
+      'the project\'s own steps (70 / 75 → warning 70 · closing 75 · forced 82, no cut step) and the owner\'s spacing around its closePct'); }
+  { const kept = keptLevels(200000, LARGE, [75, 80, 85]), again = decide(750000, LARGE, cfg, keptLevels(750000, LARGE, kept));
+    ok(kept.length === 0 && keptLevels(870000, LARGE, [75, 80, 85]).length === 3 && again && again.level === 75,
+      'after a compaction (87 % → 20 %) the levels re-arm: the 75 % warning comes again when the window refills'); }
   const rec = (u, side = false) => JSON.stringify({ type: 'assistant', isSidechain: side, message: { model: 'claude-opus-5-5', usage: u } });
   const t = [rec({ input_tokens: 2, cache_read_input_tokens: 780000, cache_creation_input_tokens: 2600 }), rec({ input_tokens: 9, cache_read_input_tokens: 10 }, true)].join('\n');
   const lu = lastUsage(t);
@@ -327,7 +368,7 @@ try {
       if (ev.hook_event_name === 'PreToolUse') process.exit(0);   // the gate's event says nothing else — the levels speak on the others
       st.said = keptLevels(lu.used, win, st.said || []);
       d = decide(lu.used, win, cw, st.said);
-      if (d) st.said = [...st.said, d.level];
+      if (d) st.said = [...new Set([...st.said, ...d.levels])];
     } else if (ev.hook_event_name === 'PreToolUse') process.exit(0);   // nothing to measure: the gate does not block; presence comes on the others
     all[id] = { ...st, at: new Date().toISOString() };
     const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
