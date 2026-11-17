@@ -400,6 +400,19 @@ ok(task14d.includes('- **withdrawn-phrases**') && wd14d.includes('FIXTURE-RETIRE
   const rcUB = run(S14d, 'checkpoint recheck');
   ok(/places left now: The machinery found 1 place\(s\)/.test(rcUB.out) && /plans\/fixture_plan\.md:2 «wire-hooks»/.test(rcUB.out) && !/fixture_plan\.md:[3-7] /.test(rcUB.out),
      'S14d/UB6 (е): записи снятия с маркером KAIF-WITHDRAWN-OK (на строке или строкой выше) и KAIF-VERSION-OK — не места; место без маркера осталось одно', rcUB.out.slice(-500));
+  // UB6 (е), судья закрытия сессии 99 (REFUTED): маркер НА записи прощает только её; строку ниже прощает лишь ОТДЕЛЬНАЯ строка-маркер —
+  // живое место под записью с маркером в конце, под строкой таблицы с маркером и под журналом с KAIF-VERSION-OK названо (3 места)
+  writeFileSync(join(S14d, 'plans', 'fixture_plan.md'), 'FIXTURE-RETIRED-PHRASE was retired by the update. <!-- KAIF-WITHDRAWN-OK: a record -->\n'
+    + 'Run FIXTURE-RETIRED-PHRASE before each release.\n'
+    + '| tool | FIXTURE-RETIRED-PHRASE | <!-- KAIF-WITHDRAWN-OK: a row of the record --> |\n'
+    + 'Run FIXTURE-RETIRED-PHRASE on each pull.\n'
+    + '- 2026-11-07: the old wire-hooks call is gone <!-- KAIF-VERSION-OK: journal -->\n'
+    + 'Call wire-hooks by hand after every pull.\n'
+    + '<!-- KAIF-WITHDRAWN-OK: the journal line below records it -> no place (a reason may hold > and ->) -->\n- 2026-11-17: we stopped calling FIXTURE-RETIRED-PHRASE.\n');
+  const rcUB2 = run(S14d, 'checkpoint recheck');
+  ok(/places left now: The machinery found 3 place\(s\)/.test(rcUB2.out) && [2, 4, 6].every((n) => new RegExp(`plans/fixture_plan\\.md:${n} `).test(rcUB2.out))
+     && !/fixture_plan\.md:[1357] /.test(rcUB2.out) && !/fixture_plan\.md:8 /.test(rcUB2.out),
+     'S14d/UB6 (е) судья: строку ниже прощает только ОТДЕЛЬНАЯ строка-маркер — живые места под записью, под строкой таблицы и под журналом с маркером названы (3)', rcUB2.out.slice(-600));
   // Критерий 16 сценарием: проект 3 раза шлёт за строкой таблицы в раздел руководства, перенесённый 2.8 в HOUSE_RULES.md, и 1 раз — к
   // отставной команде `/end-chat` (2.4). Интервал прыжка от версии старше 2.4 моделируется записью истории маркера (её читает recheck);
   // перенос и отставка — НАСТОЯЩИЕ записи меты этой сборки. `/end-chat-soft` — живая команда, не место.

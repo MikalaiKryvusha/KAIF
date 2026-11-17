@@ -1247,9 +1247,11 @@ function withdrawnPlaces(meta, fromVersion) {
       // 2.10, epic UB, step UB6 (e) (two field update reports #148 · #153): a line that RECORDS the withdrawal (a journal entry, a decision)
       // is not a place — the item told it «stays as it is», yet the count grew with every honest record (13 → 17 on one field). The
       // declared exception, as with stale-claims: `KAIF-WITHDRAWN-OK` (or the `KAIF-VERSION-OK` the field already puts on its journal) on
-      // the line or on the line above it; a table row carries it inside the row (the line above a row is another row)
-      // [NOT-TESTED]
-      if (/KAIF-(WITHDRAWN|VERSION)-OK/i.test(line) || (i > 0 && !/^\s*\|/.test(line) && /KAIF-(WITHDRAWN|VERSION)-OK/i.test(lines[i - 1]))) return;
+      // the line or on the line above it; a table row carries it inside the row (the line above a row is another row). The marker ON a
+      // line excuses that line only: the line above excuses the next one only when it is the marker ALONE — a record, a row or a journal
+      // line ending in a marker does not hide the live place under it (judge of session 99's close, REFUTED: three such places were silent)
+      // [NOT-TESTED] until s04 S14d (judge) — see the session 100 report
+      if (/KAIF-(WITHDRAWN|VERSION)-OK/i.test(line) || (i > 0 && /^\s*<!--\s*KAIF-(?:WITHDRAWN|VERSION)-OK\b.*?-->\s*$/i.test(lines[i - 1]))) return; // a reason may hold `>` or `->` (judge s100)
       const win = () => lines.slice(Math.max(0, i - 1), i + 2).join(' ');
       const hit = probes.filter((q) => q.re.test(line) && (!q.notWith || (f !== q.notWith && !win().includes(q.notWith))) && (!q.ctx || q.ctx.test(win())))
         .map((q) => ({ ...q, p: q.p || line.match(q.re)[0] }));
@@ -1499,6 +1501,8 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
       // [TESTED: 2026-11-07 · s29 C15 (three forms named, the attribution silent), red on the previous core; the #117 field tree at the
       //  commit before its hand fix — AGENTS.md:3 named, the 13 other places unchanged; eight live deployments — 0 added — testcases/reports/2026-11-07_hc2-stale-claims-version-paren.md]
       if (isProse) scan = scan.replace(/(?<!\])\(\s*((?:v|ver|version|версия|версии|release|релиз)\.?\s*\d+(?:\.\d+)+)\s*\)/giu, ' $1 '); // only a parenthesis that holds the version ALONE — «(версия 2.9 ядра голоса)» names another core (judge HC, hunt 3)
+      // OPEN (judges of session 99's close and of session 100): a parenthesis holding the version AND a tail is not yet judged — four claims
+      // stay silent, and a punctuation rule tried by session 100 named four versions of other subjects; the fixture set is in plans/140 HC2
       let judged = isProse ? scan.replace(/(?<!\])\([^)]*\)/g, '') : scan;
       // a parenthesis WRAPPED onto the next line (N4 · K-R4: «(KAIF 2.6; origin issue #52; the» ⏎ «field owner …) and»): the head of a line
       // up to an unmatched `)` continues a parenthesis from above, and an unclosed `(` runs to the end of its line
