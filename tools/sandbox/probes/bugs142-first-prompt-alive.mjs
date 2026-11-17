@@ -34,10 +34,20 @@ try {
   // runs its event block, which reads stdin and exits the process
   const a = { code: st['first-a'] ? 0 : 1 }, b = { code: st['first-b'] ? 0 : 1 };
   console.log('hook: ' + (rev ? 'revision ' + rev : 'this build'));
-  // judge of session 103 (finding 4): `--alive` itself is not run here (it needs the vendor's transcript store) — the line says the rule
   console.log('first prompt, transcript without a model answer: recorded by the --alive rule ' + (a.code ? 'NO' : 'yes') + ' (exit ' + a.code
     + ') · first prompt, no transcript yet: recorded ' + (b.code ? 'NO' : 'yes') + ' (exit ' + b.code + ')');
-  code = a.code === 0 && b.code === 0 ? 0 : 1;
+  // judge of session 103 (finding 4): the REAL `--alive` command too — a temporary vendor store (HOME / USERPROFILE) holds the session's
+  // first-prompt transcript under the project's slug, the project wires the hook on PostToolUse, the session id comes as Claude Code gives it
+  const home = join(work, 'home'), slug = resolve(proj).replace(/[^A-Za-z0-9]/g, '-');
+  mkdirSync(join(home, '.claude', 'projects', slug), { recursive: true });
+  writeFileSync(join(home, '.claude', 'projects', slug, 'first-a.jsonl'), readFileSync(tp));
+  mkdirSync(join(proj, '.claude'), { recursive: true });
+  writeFileSync(join(proj, '.claude', 'settings.json'), JSON.stringify({ hooks: { PostToolUse: [{ matcher: '*', hooks: [{ type: 'command', command: 'node',
+    args: ['context-window.mjs'] }] }] } }));
+  const al = spawnSync(process.execPath, [hook, '--alive'], { env: { ...process.env, CLAUDE_PROJECT_DIR: proj, CLAUDE_CODE_SESSION_ID: 'first-a',
+    USERPROFILE: home, HOME: home }, encoding: 'utf8', timeout: 20000 });
+  console.log('the real --alive of session first-a: exit ' + al.status + ' · ' + String(al.stdout || '').trim().slice(0, 110));
+  code = a.code === 0 && b.code === 0 && al.status === 0 ? 0 : 1;
   console.log(code === 0 ? '✅ the session is seen from its first prompt' : '✖ RED — a session whose hooks ran reads «NOT running» (bugs/142)');
 } finally { rmSync(work, { recursive: true, force: true }); }
 process.exit(code);
