@@ -88,6 +88,9 @@ export const PARSER = {
   freeFieldMarker: '<!--\\s*(?:questions-guard:no-scenario|contour:free-field)\\s+\\S',
   // the owner row of the identity table in AGENT_GUIDE.md — default for `contour.ownerName`
   identityOwnerLabels: 'Author\\s*/\\s*owner|Автор\\s*/\\s*владелец',
+  // the neutral words an anonymous deployment writes into that row instead of a name (2.10, decision №157) — and their translated twin,
+  // since a translated deployment localizes the table; such a cell is not a name (HC judge, finding 7)
+  anonymousOwnerWords: 'the\\s+project\\s+owner|владел\\p{L}*\\s+проекта',
   // headings of the questions section, dropped from the prose render (cards are the only form)
   questionsSectionHeadings: 'QUESTIONS|Вопросы',
   // the CREATION line of the document head (`> Created: …` · `> **Создан:** …`) — the archaeology axis

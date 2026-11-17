@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "3aa4b346ba3b23ecffaedc9db004c75a21858545b45688d947d20b10aa0193a8",
+    "sourceTree": "ddfa70d579439ccef175aef6f4af60891cb0284ecd51d52ab5b24850421dde11",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -10727,9 +10727,10 @@ export function ownerFromIdentityTable(root) {
   const m = stripBom(readFileSync(p, 'utf8')).match(re);
   if (!m) return null;
   const cell = m[1].replace(/\*\*/g, '').replace(/`/g, '').split(' · ')[0].trim();
-  // an unfilled `<AUTHOR>` placeholder is not a name; nor are the neutral words of an anonymous deployment (2.10, decision №157) — the
-  // call would address the owner as «the»
-  return cell && !/^<[A-Z_]+>$/.test(cell) && !/^the project owner$/i.test(cell) ? cell : null;
+  // an unfilled `<AUTHOR>` placeholder is not a name; nor are the neutral words of an anonymous deployment in either script (2.10,
+  // decision №157; the words are data in texts.mjs) — the call would address the owner by the first neutral word
+  const neutral = new RegExp('^(?:' + PARSER.anonymousOwnerWords + ')$', 'iu');
+  return cell && !/^<[A-Z_]+>$/.test(cell) && !neutral.test(cell) ? cell : null;
 }
 
 /**
@@ -11688,6 +11689,7 @@ import {
   shortName, // TK10 (a), #190: the default spoken address — read by the selftest
   withImages, imageRefs, // TK10 (b), #187: pictures of a document shown as pictures
   quietNow, ownerSeenAt, // TK10 (c), #193: the owner's presence lifts the quiet hours
+  DEFAULT_OWNER, // HC judge finding 7: the neutral owner words fall back to it
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 import { logPhrase, voiceSoftSelftest } from './voice-soft.mjs';
@@ -13930,6 +13932,13 @@ export async function selftest(log = console.log) {
   const cfg = cfgOf(root);
   ok(cfg.projectName === 'Probe Project' && cfg.ownerName === 'Jane Owner aka JO' && cfg.language === 'en' && cfg.decisionsDir === 'interviews/decisions',
     'config is read, never asked: project name from kaif.json, owner from the identity table, canon decisions dir');
+  { // HC judge finding 7 (2.10, decision №157): the neutral words of an anonymous deployment are not a name — in either script
+    for (const [label, words] of [['Author / owner', 'the project owner'], ['\u0410\u0432\u0442\u043e\u0440 / \u0432\u043b\u0430\u0434\u0435\u043b\u0435\u0446', '\u0412\u043b\u0430\u0434\u0435\u043b\u0435\u0446 \u043f\u0440\u043e\u0435\u043a\u0442\u0430']]) {
+      writeFileSync(join(root, 'AGENT_GUIDE.md'), '# Guide\n\n| Field | Value |\n|---|---|\n| **' + label + '** | ' + words + ' |\n');
+      ok(loadContourConfig(root).ownerName === DEFAULT_OWNER, 'HC #157 neutral owner words are not a name: «' + words + '» → the default owner');
+    }
+    writeFileSync(join(root, 'AGENT_GUIDE.md'), '# Guide\n\n| Field | Value |\n|---|---|\n| **Author / owner** | Jane Owner aka **JO** · second form |\n');
+  }
   ok(texts('de').fallbackFrom === 'de' && texts('ru').lang === 'ru' && texts('ru').btn.save !== texts('en').btn.save,
     'texts: RU and EN ship, an unknown language falls back to EN and says so');
   { // TK5 (d) (2.10, origin #136): a `format: html` artifact is shown as a page in a script-less frame; markdown keeps its render; one hash
@@ -15166,6 +15175,9 @@ export const PARSER = {
   freeFieldMarker: '<!--\\s*(?:questions-guard:no-scenario|contour:free-field)\\s+\\S',
   // the owner row of the identity table in AGENT_GUIDE.md — default for `contour.ownerName`
   identityOwnerLabels: 'Author\\s*/\\s*owner|Автор\\s*/\\s*владелец',
+  // the neutral words an anonymous deployment writes into that row instead of a name (2.10, decision №157) — and their translated twin,
+  // since a translated deployment localizes the table; such a cell is not a name (HC judge, finding 7)
+  anonymousOwnerWords: 'the\\s+project\\s+owner|владел\\p{L}*\\s+проекта',
   // headings of the questions section, dropped from the prose render (cards are the only form)
   questionsSectionHeadings: 'QUESTIONS|Вопросы',
   // the CREATION line of the document head (`> Created: …` · `> **Создан:** …`) — the archaeology axis

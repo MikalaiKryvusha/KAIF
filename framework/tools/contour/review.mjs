@@ -57,6 +57,7 @@ import {
   shortName, // TK10 (a), #190: the default spoken address — read by the selftest
   withImages, imageRefs, // TK10 (b), #187: pictures of a document shown as pictures
   quietNow, ownerSeenAt, // TK10 (c), #193: the owner's presence lifts the quiet hours
+  DEFAULT_OWNER, // HC judge finding 7: the neutral owner words fall back to it
 } from './core.mjs';
 import { texts, PARSER } from './texts.mjs';
 import { logPhrase, voiceSoftSelftest } from './voice-soft.mjs';
@@ -2299,6 +2300,13 @@ export async function selftest(log = console.log) {
   const cfg = cfgOf(root);
   ok(cfg.projectName === 'Probe Project' && cfg.ownerName === 'Jane Owner aka JO' && cfg.language === 'en' && cfg.decisionsDir === 'interviews/decisions',
     'config is read, never asked: project name from kaif.json, owner from the identity table, canon decisions dir');
+  { // HC judge finding 7 (2.10, decision №157): the neutral words of an anonymous deployment are not a name — in either script
+    for (const [label, words] of [['Author / owner', 'the project owner'], ['\u0410\u0432\u0442\u043e\u0440 / \u0432\u043b\u0430\u0434\u0435\u043b\u0435\u0446', '\u0412\u043b\u0430\u0434\u0435\u043b\u0435\u0446 \u043f\u0440\u043e\u0435\u043a\u0442\u0430']]) {
+      writeFileSync(join(root, 'AGENT_GUIDE.md'), '# Guide\n\n| Field | Value |\n|---|---|\n| **' + label + '** | ' + words + ' |\n');
+      ok(loadContourConfig(root).ownerName === DEFAULT_OWNER, 'HC #157 neutral owner words are not a name: «' + words + '» → the default owner');
+    }
+    writeFileSync(join(root, 'AGENT_GUIDE.md'), '# Guide\n\n| Field | Value |\n|---|---|\n| **Author / owner** | Jane Owner aka **JO** · second form |\n');
+  }
   ok(texts('de').fallbackFrom === 'de' && texts('ru').lang === 'ru' && texts('ru').btn.save !== texts('en').btn.save,
     'texts: RU and EN ship, an unknown language falls back to EN and says so');
   { // TK5 (d) (2.10, origin #136): a `format: html` artifact is shown as a page in a script-less frame; markdown keeps its render; one hash
