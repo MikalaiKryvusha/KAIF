@@ -991,6 +991,24 @@ for (const f of readdirSync(join(ROOT, 'framework', 'tools', 'contour')).filter(
     scan(join(ROOT, 'framework', 'tools')); scan(join(ROOT, 'framework', 'hooks'));
   }
 }
+// 5z. The farewell is written BY THE AGENT, the hook only repeats it (version KAIF 2.10; origin bugs/140 — a source chat in a folder
+//     without trust ended and its last words never reached FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md: the Stop hook was the only writer).
+//     The two closing skills tell the agent to write the farewell into the file before printing it, and /resume step 0 tells a session
+//     whose hooks do not run to do the same for the message that ends the chat. A refusal names the skill.
+//     [TESTED: 2026-11-17 · probe tools/sandbox/probes/farewell-by-hand-red.mjs: a copy of the tree — 0 lines «5z:»; the copy with the
+//      three skills of 7eebb9c — exactly 3, named before the run]
+{
+  const FAREWELL_BY_HAND = {
+    'end-chat-soft': 'Write the farewell into the file yourself, then say it.',
+    'end-chat-force': 'Write that line into `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root yourself',
+    resume: '`FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` yourself first, then print it',
+  };
+  for (const [n, phrase] of Object.entries(FAREWELL_BY_HAND)) {
+    const f = join(ROOT, 'framework', 'skills', n, 'SKILL.md');
+    const text = existsSync(f) ? readFileSync(f, 'utf8').replace(/\s+/g, ' ') : '';
+    if (!text.includes(phrase)) errors.push(`5z: framework/skills/${n}/SKILL.md does not tell the agent to write the farewell into the file itself («${phrase.slice(0, 60)}…») — the Stop hook alone loses it where hooks do not run`);
+  }
+}
 // 5y. No sweeping stage as an INSTRUCTION in the payload (version KAIF 2.10, epic UB, step UB5; origin bugs/79 — two owner files rode into
 //     origin under the agent's message through a sweeping `git add -A`; the origin's own skills are guarded by s09 G20, the payload by
 //     nobody: the closing skills and the default `<COMMIT_COMMAND>` still told a field agent «git add -A, then …»). The form lives in ONE

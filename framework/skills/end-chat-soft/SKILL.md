@@ -137,6 +137,11 @@ Co-Authored-By: <YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>
 
 Report to the human: what was recorded, what was built, the commit hash(es), what was pushed, and
 the handover in one paragraph — the main thing the NEXT chat should do first. That's the goodbye.
+
+**Write the farewell into the file yourself, then say it.** Put the whole farewell, exactly as you are about to print it, into
+`FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (replacing what is there), then print the same text as your last
+message. The Stop hook `stop-farewell-capture.mjs` only repeats that write; in a session whose hooks do not run (`--alive` exit 1)
+nothing else writes it, and the next chat's `/resume` reads an older chat's goodbye (2.10: a source chat's last words were lost so).
 It carries the ENTRY COST line `node .kaif/kaif-core.mjs check` printed (`ℹ entry cost: /resume reads … ~ Nk tokens — X % of …`),
 said in the owner's language: the price of entering the next chat is the owner's to see at every closing (2.8, origin issue #99).
 

@@ -2440,10 +2440,10 @@
       {
         "signature": "## Step 3. The one-line farewell",
         "class": "static",
-        "sha256": "8e6b9c8752aff9d7d8747839657e4efea4a2153f0dfd6d5bacf90f699dc08225",
+        "sha256": "e993aac9c92eac840556e230fd86d6bc5b713e12a93e65404a62cfc170401175",
         "lines": [
           51,
-          55
+          58
         ]
       },
       {
@@ -2451,8 +2451,8 @@
         "class": "static",
         "sha256": "89d0106b2f868f1034ced6324e7220eda1df9837e067fc79601b16ce83fe7b29",
         "lines": [
-          56,
-          63
+          59,
+          66
         ]
       },
       {
@@ -2460,8 +2460,8 @@
         "class": "static",
         "sha256": "d460cddf3c9477ef17f7b8ecd535bc20de3df7a8c51a226ead43be898506ca8f",
         "lines": [
-          64,
-          70
+          67,
+          73
         ]
       }
     ],
@@ -2550,10 +2550,10 @@
       {
         "signature": "### Step 5. The farewell report",
         "class": "static",
-        "sha256": "943f7ab63a9afcef7c3e5e15fe619275a1051a24e4619e5fb8a80e89b155b309",
+        "sha256": "0c804b7621610f2abb78da821377d00b9af5cea4f7dea1319b4fc3054a31f5ca",
         "lines": [
           136,
-          153
+          158
         ]
       },
       {
@@ -2561,8 +2561,8 @@
         "class": "static",
         "sha256": "18b2f1a2f80788a20798895b9080090c3d01bdce0905a7c888de1488e543b437",
         "lines": [
-          154,
-          166
+          159,
+          171
         ]
       }
     ],
@@ -4462,10 +4462,10 @@
       {
         "signature": "## Step 0. The chat's FIRST `/resume` — read the previous chat's farewell",
         "class": "static",
-        "sha256": "8a13ba73b50ce207e730781cf995bffa830172689749273ca841fe1aa9f35190",
+        "sha256": "2855e53f57aa16a6ad538760b30ca8d0511434fd642d3f88585e0235f2efd857",
         "lines": [
           15,
-          28
+          30
         ]
       },
       {
@@ -4473,8 +4473,8 @@
         "class": "static",
         "sha256": "a1ea7b977985b5cf41c1542401c6a7c8da978c63b1ebe291faf8104a74d13634",
         "lines": [
-          29,
-          66
+          31,
+          68
         ]
       },
       {
@@ -4482,8 +4482,8 @@
         "class": "static",
         "sha256": "9baa7a9d0b04519277773629b05a4fbde35162ccdd1916523c3d970e45db761e",
         "lines": [
-          67,
-          79
+          69,
+          81
         ]
       },
       {
@@ -4491,8 +4491,8 @@
         "class": "static",
         "sha256": "fba62c309334afeab3613fc37d87f4253186dda092ce817a67255bd72c165fae",
         "lines": [
-          80,
-          105
+          82,
+          107
         ]
       },
       {
@@ -4500,8 +4500,8 @@
         "class": "static",
         "sha256": "d5d3b385c0f180bd4702555c36f9770443d080ef8c11af6697ea24aef8bf8a02",
         "lines": [
-          106,
-          112
+          108,
+          114
         ]
       },
       {
@@ -4509,8 +4509,8 @@
         "class": "static",
         "sha256": "2db7bd1884b434e14137fa017f0bea1c8668cf2298868336e5e256fd398c243e",
         "lines": [
-          113,
-          117
+          115,
+          119
         ]
       }
     ],

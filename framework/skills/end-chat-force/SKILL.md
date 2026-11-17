@@ -53,6 +53,9 @@ retry once, and if it still fails, tell the human: the commit exists locally, no
 One line to the human: the commit hash, the single most important thing for the next chat, and
 the reminder that the ceremonies debt is recorded in `STATUS.md`. Goodbye.
 
+Write that line into `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root yourself (replacing what is there) before you
+print it: the Stop hook `stop-farewell-capture.mjs` only repeats the write, and in a session whose hooks do not run nothing else does.
+
 ## What this skill refuses to skip
 
 - **The handover.** No closure without Step 1 — that is the one thing force mode exists to protect.

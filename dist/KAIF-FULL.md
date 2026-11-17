@@ -3968,7 +3968,9 @@ Step 2. No file → go on; the owner may paste the farewell under `resume` as be
 **Do this session's hooks run?** After your first read: `node .kaif/hooks/context-window.mjs --alive` (where the refresh-hooks module is
 deployed). Exit 1 — the agent system ran none of the project's hooks in this session: say so to the owner as the FIRST line of your
 announcement — the project's hooks, skills and `CLAUDE.md` were not given to it — and name his action from the output (Claude Code: the
-window «Trust this folder in Claude Code?» → «Trust folder»); exit 2 — nothing to judge, go on. Wired is not running: a source session ran a
+window «Trust this folder in Claude Code?» → «Trust folder»). Until then no hook writes the farewell: the message that ends this chat —
+a closing ritual's farewell, or a report that sends the owner to reload or to a new chat — you write into
+`FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` yourself first, then print it. Exit 2 — nothing to judge, go on. Wired is not running: a source session ran a
 whole day with wired hooks that never ran (KAIF 2.10).
 
 ## Step 1. Read ALL the canon documents of the KAIF framework (in parallel)
@@ -6180,6 +6182,9 @@ retry once, and if it still fails, tell the human: the commit exists locally, no
 One line to the human: the commit hash, the single most important thing for the next chat, and
 the reminder that the ceremonies debt is recorded in `STATUS.md`. Goodbye.
 
+Write that line into `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root yourself (replacing what is there) before you
+print it: the Stop hook `stop-farewell-capture.mjs` only repeats the write, and in a session whose hooks do not run nothing else does.
+
 ## What this skill refuses to skip
 
 - **The handover.** No closure without Step 1 — that is the one thing force mode exists to protect.
@@ -6340,6 +6345,11 @@ Co-Authored-By: <YOUR AGENT/MODEL> <YOUR AGENT'S noreply EMAIL>
 
 Report to the human: what was recorded, what was built, the commit hash(es), what was pushed, and
 the handover in one paragraph — the main thing the NEXT chat should do first. That's the goodbye.
+
+**Write the farewell into the file yourself, then say it.** Put the whole farewell, exactly as you are about to print it, into
+`FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (replacing what is there), then print the same text as your last
+message. The Stop hook `stop-farewell-capture.mjs` only repeats that write; in a session whose hooks do not run (`--alive` exit 1)
+nothing else writes it, and the next chat's `/resume` reads an older chat's goodbye (2.10: a source chat's last words were lost so).
 It carries the ENTRY COST line `node .kaif/kaif-core.mjs check` printed (`ℹ entry cost: /resume reads … ~ Nk tokens — X % of …`),
 said in the owner's language: the price of entering the next chat is the owner's to see at every closing (2.8, origin issue #99).
 
