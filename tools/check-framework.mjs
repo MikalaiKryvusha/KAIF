@@ -16,6 +16,7 @@ import { scanText as scanInvisible, label as invisibleLabel } from './lib/invisi
 import { readBudgets } from './budget-gate.mjs';
 import { walkerDrift, WALKER_COPIES, CORE_PATH as WALKER_CORE } from './sync-walker.mjs';
 import { templatesOwnScan } from './lib/templates-own-scan.mjs';
+import { slotFindings } from './lib/slot-form.mjs';   // 5za (bugs/139): the instruction slot form, one place
 import { SWEEP, sweepInSkill, sweepInDoc } from './lib/sweep-stage.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -989,6 +990,24 @@ for (const f of readdirSync(join(ROOT, 'framework', 'tools', 'contour')).filter(
       }
     };
     scan(join(ROOT, 'framework', 'tools')); scan(join(ROOT, 'framework', 'hooks'));
+  }
+}
+// 5za. Every instruction slot of the payload is in the core's form (version KAIF 2.10, epic UB; origin bugs/139 · ideas/32 p. 14): a slot
+//     opens on a line that starts with «`<» and closes on a line that ENDS in «>`» — the only form instructionSlotLines() of the core reads.
+//     Closed in the middle of a line, a slot stays open and hides the template lines after it from update-verify (step 3 of /end-chat-soft
+//     hid the heading and the judge rule of step 4 since 2.9; the test-harness slot of AGENT_GUIDE.md hid its own next sentence); opened in
+//     the middle of a line (or a code span «`<…» broken by a line end), it is no slot for the core. The form lives in ONE place,
+//     tools/lib/slot-form.mjs. Scope — the files update-verify reads line by line: the key documents, the directory READMEs, the skills with
+//     their references (sphere and adapter libraries are machinery, replaced whole). A refusal names the file, the line and the form.
+//     [TESTED: 2026-11-18 · probe tools/sandbox/probes/bugs139-slot-red.mjs: a copy of the tree — 0 lines «5za:»; the five files of 6fa213d —
+//      exactly 5, named before the run; a mention and a one-line slot — 0]
+{
+  const md = [];
+  for (const d of [join(ROOT, 'framework'), join(ROOT, 'framework', 'readmes')]) for (const f of readdirSync(d)) if (f.endsWith('.md')) md.push(join(d, f));
+  const walk = (d) => { for (const e of readdirSync(d, { withFileTypes: true })) { const p = join(d, e.name); if (e.isDirectory()) walk(p); else if (e.name.endsWith('.md')) md.push(p); } };
+  walk(join(ROOT, 'framework', 'skills'));
+  for (const f of md.sort()) for (const x of slotFindings(readFileSync(f, 'utf8'))) {
+    errors.push(`5za: ${relative(ROOT, f).replace(/\\/g, '/')}:${x.line} — instruction slot ${x.kind} (bugs/139): the core reads a slot that opens on a line starting with «\`<» and closes on a line ENDING in «>\`» — put the slot on lines of its own, the next sentence on the next line`);
   }
 }
 // 5z. The farewell is written BY THE AGENT, the hook only repeats it (version KAIF 2.10; origin bugs/140 — a source chat in a folder

@@ -80,9 +80,58 @@ export function carriedWords(carried) {
   if (typeof carried === 'string') for (const m of carried.matchAll(PLACEHOLDER)) out.add(m[2]);   // escaped too (judge s95, hunt 3)
   return out;
 }
-export function fill(text, v, keep = new Set()) {
-  return typeof text === 'string' ? text.replace(PLACEHOLDER, (all, esc, word) => (keep.has(word) ? all : esc ? L + word + R : v[word])) : text;
+// bugs/143 (2.10; origin #197 pp. 1 and 3 — and the source's own session 103, four files): a placeholder written with ASCII brackets stayed
+// letters with no word from the hook, and a placeholder quoted in a code span — a text ABOUT it — got the clock's value. In a markdown
+// file the clock fills only OUTSIDE code (an inline code span, a fenced block); a write that carries the ASCII form outside code gets one
+// line to the agent alongside the tool result (PreToolUse `additionalContext` arrives with the result — researches/41 §5) — the text is
+// never changed for it and the write never stops.
+// [TESTED: 2026-11-18 01:29–01:34 · functional — the source's LIVE Claude Code session: the edit bringing ASCII forms got the line with the
+//  tool result (a .mjs — a false hit, narrowed to markdown; the next .mjs edit silent), two AGENT_GUIDE.md edits kept the placeholder in a code span
+//  literal; the prompt line came with the exact characters; probe pt1-clock-now.mjs —
+//  10 of 10, the HEAD hook red on exactly (8)–(10); hygiene — three selftest cases «bugs/143»; report testcases/reports/2026-11-18_bugs143-clock-placeholder.md]
+const ASCII_FORM = /\[(NOW-ISO|NOW)\]/g;
+export const isMarkdown = (p) => /\.(md|markdown)$/i.test(String(p || ''));
+// The text as [isCode, piece] pieces, joined back byte for byte: fenced blocks (``` or ~~~ lines) and inline code spans are code.
+export function codeSplit(text) {
+  const out = [];
+  let fence = null;
+  for (const line of String(text).split(/(?<=\n)/)) {   // the line ends stay with their lines
+    const f = /^\s*(```|~~~)/.exec(line);
+    if (fence) { out.push([true, line]); if (f && f[1] === fence) fence = null; continue; }
+    if (f) { fence = f[1]; out.push([true, line]); continue; }
+    let last = 0;
+    for (const m of line.matchAll(/(`+)[^`]*?\1/g)) {
+      if (m.index > last) out.push([false, line.slice(last, m.index)]);
+      out.push([true, m[0]]); last = m.index + m[0].length;
+    }
+    if (last < line.length) out.push([false, line.slice(last)]);
+  }
+  return out;
 }
+const outsideCode = (text, md, fn) => (md ? codeSplit(text).map(([code, piece]) => (code ? piece : fn(piece))).join('') : fn(text));
+export function fill(text, v, keep = new Set(), md = false) {
+  return typeof text === 'string'
+    ? outsideCode(text, md, (t) => t.replace(PLACEHOLDER, (all, esc, word) => (keep.has(word) ? all : esc ? L + word + R : v[word]))) : text;
+}
+// The ASCII forms a write brings outside code that the text it replaces did not hold already; [] — nothing to say.
+export function asciiForms(toolName, input, readOld = (p) => '') {
+  // markdown only: documents are where an agent writes a moment; a source file naming the ASCII form is talking about it (observed live
+  // at the source, session 103: this hook's own selftest edit got the line)
+  if (!input || typeof input !== 'object' || !(toolName in WRITE_FIELDS) || !isMarkdown(input.file_path)) return [];
+  const md = true;
+  const pairs = toolName === 'Write' ? [[input.content, readOld(input.file_path)]] : toolName === 'Edit' ? [[input.new_string, input.old_string]]
+    : (Array.isArray(input.edits) ? input.edits : []).map((e) => [e && e.new_string, e && e.old_string]);
+  const found = new Set();
+  for (const [nw, old] of pairs) {
+    if (typeof nw !== 'string') continue;
+    const had = new Set((typeof old === 'string' ? old.match(ASCII_FORM) : null) || []);
+    outsideCode(nw, md, (t) => { for (const m of t.match(ASCII_FORM) || []) if (!had.has(m)) found.add(m); return t; });
+  }
+  return [...found].sort();
+}
+export const asciiLine = (forms) => `clock-now · this write keeps ${forms.join(' · ')} as letters — the clock fills only the word between the white ` +
+  `square brackets ${L}NOW${R} (${L}NOW-ISO${R} · ${L}DATE${R} · ${L}TIME${R}), never ASCII [ ]: rewrite the moment with them; a text ABOUT the ` +
+  'placeholder keeps it in a code span.';
 const fileText = (p) => { try { return typeof p === 'string' ? readFileSync(p, 'utf8') : ''; } catch { return ''; } };
 // The new tool input, or null when nothing changes (the hook then stays silent).
 export function rewrite(toolName, input, v, readOld = fileText) {
@@ -90,11 +139,12 @@ export function rewrite(toolName, input, v, readOld = fileText) {
   const out = { ...input };
   let changed = false;
   const keep = carriedWords(toolName === 'Write' ? readOld(input.file_path) : input.old_string);
-  for (const f of WRITE_FIELDS[toolName]) { const t = fill(out[f], v, keep); if (t !== out[f]) { out[f] = t; changed = true; } }
+  const md = isMarkdown(input.file_path);
+  for (const f of WRITE_FIELDS[toolName]) { const t = fill(out[f], v, keep, md); if (t !== out[f]) { out[f] = t; changed = true; } }
   if (toolName === 'MultiEdit' && Array.isArray(input.edits)) {
     out.edits = input.edits.map((e) => {
       if (!e || typeof e !== 'object') return e;
-      const t = fill(e.new_string, v, carriedWords(e.old_string));
+      const t = fill(e.new_string, v, carriedWords(e.old_string), md);
       if (t === e.new_string) return e;
       changed = true;
       return { ...e, new_string: t };
@@ -131,6 +181,20 @@ if (process.argv[2] === '--selftest') {
   ok(s && s.content === 'about ' + P('NOW') + ', real 07:05', 'a backslash keeps the placeholder literal');
   ok(rewrite('Write', { file_path: 'e.md', content: 'plain' }, v) === null && rewrite('Bash', { command: P('NOW') }, v) === null,
     'silence: a write without a placeholder, a tool that is not a write');
+  { // bugs/143 (#197 pp. 1 and 3): a markdown code span and fenced block keep a placeholder; the ASCII form outside code is named
+    const md = rewrite('Write', { file_path: 'r.md', content: 'quoted `' + P('NOW') + '` · real ' + P('TIME') + '\n```\n' + P('DATE') + '\n```\nafter ' + P('DATE') }, v);
+    ok(md && md.content === 'quoted `' + P('NOW') + '` · real 07:05\n```\n' + P('DATE') + '\n```\nafter 2026-10-23',
+      'bugs/143 #197: a markdown code span and a fenced block keep the placeholder; outside them it is filled');
+    const js = rewrite('Write', { file_path: 'r.mjs', content: 'const at = `' + P('NOW') + '`;' }, v);
+    ok(js && js.content === 'const at = `2026-10-23 07:05 +03:00`;', 'bugs/143: outside markdown a backtick is the language\'s own — filled as before');
+    const a1 = asciiForms('Write', { file_path: 'n.md', content: 'Created: [NOW] · `[NOW-ISO]` in code' }, () => '');
+    const a2 = asciiForms('Edit', { file_path: 'n.md', old_string: 'was [NOW]', new_string: 'was [NOW] still' });
+    const a3 = asciiForms('Write', { file_path: 'n.md', content: 'plain ' + P('NOW') }, () => '');
+    const a4 = asciiForms('Edit', { file_path: 'x.mjs', old_string: 'a', new_string: "'[NOW]'" });
+    ok(a1.join() === '[NOW]' && a2.length === 0 && a3.length === 0 && a4.length === 0 && /never ASCII \[ \]/.test(asciiLine(a1))
+      && asciiLine(a1).includes(P('NOW')),
+      'bugs/143 #197: the ASCII form outside code of a markdown file is named with the exact characters; in code, carried, a real placeholder, a source file — silence');
+  }
   { // TK10 (c), #193: the owner's own prompt writes the presence mark; a notification, a harness text and a subagent's hand-back do not
     const t = mkdtempSync(join(tmpdir(), 'kaif-clock-presence-'));
     try {
@@ -158,12 +222,17 @@ try {
   const v = values();
   if (event === 'UserPromptSubmit') {
     try { markPresence(process.env.CLAUDE_PROJECT_DIR || deploymentRoot(input.cwd), input.prompt); } catch { /* the mark never stops the line */ }
-    const line = `clock-now · ${v.NOW} (ISO ${v['NOW-ISO']}) — the machine's clock; write a moment as the NOW placeholder in white square ` +
-      `brackets (NOW-ISO · DATE · TIME likewise) and this hook fills it on Write · Edit · MultiEdit.`;
+    // bugs/143: the exact characters, not their name — «white square brackets» was read as ASCII [ ] in the field and at the source
+    const line = `clock-now · ${v.NOW} (ISO ${v['NOW-ISO']}) — the machine's clock; write a moment as ${L}NOW${R} — the word NOW between the ` +
+      `white square brackets U+27E6 and U+27E7, never ASCII [NOW] (${L}NOW-ISO${R} · ${L}DATE${R} · ${L}TIME${R} likewise); this hook fills it on ` +
+      'Write · Edit · MultiEdit, outside code spans and code blocks of a markdown file.';
     process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: line } }));
   } else if (event === 'PreToolUse') {
-    const updated = rewrite(String(input.tool_name || ''), input.tool_input, v);
-    if (updated) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'PreToolUse', updatedInput: updated } }));
+    const tool = String(input.tool_name || '');
+    const updated = rewrite(tool, input.tool_input, v);
+    const forms = asciiForms(tool, input.tool_input, fileText);
+    const answer = { hookEventName: 'PreToolUse', ...(updated ? { updatedInput: updated } : {}), ...(forms.length ? { additionalContext: asciiLine(forms) } : {}) };
+    if (updated || forms.length) process.stdout.write(JSON.stringify({ hookSpecificOutput: answer }));
   }
 } catch { /* a hook must never take the session down with it */ }
 process.exit(0);

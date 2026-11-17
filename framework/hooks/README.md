@@ -146,8 +146,11 @@ from memory drifts with the amount of work done. The agent writes a PLACEHOLDER 
 `DATE` or `TIME` between white square brackets (U+27E6 and U+27E7) — and the hook fills it in the tool input before the write runs:
 `NOW` → `2026-10-23 14:41 +03:00`, `NOW-ISO` → `2026-10-23T14:41:10+03:00`, `DATE` → `2026-10-23`, `TIME` → `14:41`, the machine's
 local time. Only `content` (Write), `new_string` (Edit) and `edits[].new_string` (MultiEdit) are filled — `old_string` must match
-the file and is never touched; a backslash before the opening bracket keeps a placeholder literal (a text ABOUT them). A word the
-write only carries stays literal: it already stands in `old_string`, or in the file a Write replaces. The limit is by WORD, not by
+the file and is never touched; a backslash before the opening bracket keeps a placeholder literal (a text ABOUT them), and so does an
+inline code span or a fenced block of a markdown file (origin #197). A word the write only carries stays literal: it already stands in
+`old_string`, or in the file a Write replaces. A markdown write that brings the ASCII form `[NOW]` (or `[NOW-ISO]`) outside code gets
+one line to the agent with the tool result (`PreToolUse` `additionalContext`) — the letters stay, the agent rewrites them; the prompt
+line prints the exact characters. The limit is by WORD, not by
 occurrence — a second `NOW` added next to a carried `NOW` stays literal too; write another word there (`NOW-ISO`, `DATE`) or take a
 `date` probe. The answer
 carries `updatedInput` and no `permissionDecision`: "allow" would skip the owner's permission prompt. Without the hook the canon

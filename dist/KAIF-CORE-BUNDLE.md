@@ -9,7 +9,7 @@
   "version": "2.9",
   "released": "2026-10-16",
   "build": {
-    "sourceTree": "263cf110726590fecf3dbcf631ff88844dd891de4da4783d66ce5abea5770bd9",
+    "sourceTree": "dcad771458eb601465cd1499a37d047efb86479160ee61ec9c58a883de8d09ca",
     "prerelease": "2.10"
   },
   "templateNotes": [
@@ -122,6 +122,8 @@
       "THE ENTRY COST COUNTS THE WHOLE ENTRY (2.10, epic HC, step HC9; origin ticket #179, its cheap half — a field /resume read ≈ 140k tokens while the line said 112k): `check` → `ℹ entry cost` now adds every document the deployed `/resume` names as a bullet beyond the re-read core (by name; `EXPERIENCE.md` is grepped and stays out) and the skill file itself; a document over 25k tokens — more than one Read call of Claude Code returns — is named on a `⚠ entry cost:` line of its own. Reference, never a stop. MIGRATION — agent work: none; a named document is a candidate for moving its reference sections out.",
       "WHAT THE AGENT SAYS ALOUD IS KEPT IN THE PROJECT, AND THE SOFT VOICE SHIPS (2.10; decision №156 of the origin — the KAIF owner, rendered from Russian: \"what the agent wants to say it writes into a txt file — I see it in the harness window and it stays in the project history; put these phrases into a separate folder of the project, name the files by the current time, date and the meaning of what was said\" · \"the voice tuned on a field project — take those settings\"): the contour gains `.kaif/tools/contour/voice-soft.mjs`. `review.mjs --call` writes its phrase to `voice/<YYYY-MM-DD_HH-MM-SS>_<meaning>.txt` (`contour.voiceLog` names another folder); the guide's call line tells the agent to write a phrase file there first and speak it with `voice-soft.mjs --file <it> --play`; the tool names the file by the machine's clock. The same tool is a soft voice that honours the KAIF_VOICE_TOOL contract: an engine from `KAIF_VOICE_RENDER` or `KAIF_VOICE_BASE_TOOL` renders, and ffmpeg applies tempo 0.90, bass +6 dB at 140 Hz, a 4200 Hz lowpass, 1 s of silence first, the beeps at ×2.5 and 2 s before the words. MIGRATION — agent work: if the project already speaks through its own soft-voice script, point `KAIF_VOICE_TOOL` at `.kaif/tools/contour/voice-soft.mjs` only after the owner hears it; commit `voice/` (it is the project's history, not a temp folder).",
       "«ARE THIS SESSION'S HOOKS RUNNING?» IS TRUE FROM THE FIRST TOOL CALL (2.10; the source's own entry: `/resume` step 0 ran `.kaif/hooks/context-window.mjs --alive` in the session's first tool call and got «NOT running … Trust folder» while its prompt hooks had already run): the hook recorded a session only together with a measurement — a model answer with usage in the transcript — so nothing could be recorded before the first tool call ended. It now records the session's presence on every event of the main thread from the first prompt; the window levels are still judged by the measurement only. MIGRATION — agent work: none.",
+      "EVERY INSTRUCTION SLOT STANDS ON LINES OF ITS OWN (2.10, epic UB; a source judge found that the slot of /end-chat-soft step 3 closed in the middle of a line — «…README.pdf.>` If a build fails, stop …» — so `update-verify` read the heading and the judge rule of step 4 as the field's own slot text and never asked for them, since 2.9): `update-verify` reads a slot that opens on a line starting with «`<» and closes on a line ending in «>`». Five slots of the payload were in another form and are rewrapped — /end-chat-soft step 3, /release step 2, the test-harness slot of `AGENT_GUIDE.md`, the archaeology form in `KAIF_REFERENCE.md`, the board opt-out in the team constitution template; the words did not change, only where the lines break. MIGRATION — agent work: in a module that comes with a diff for one of these places, keep the project's own slot text and put the template's next sentence on the next line («If a build fails, stop and show the errors — don't commit broken state.» · «Grow this tooling over time; …»); a line that already stands in the file, joined to the slot text, is found as it is.",
+      "THE CLOCK NAMES A WRONG PLACEHOLDER AND LEAVES A QUOTED ONE ALONE (2.10; origin ticket #197 pp. 1 and 3 — a field agent wrote the moment placeholder with ASCII brackets and it stayed letters with no word from the hook, and a placeholder quoted in a code span of a report got the time instead of itself; the source's own session did both): `.kaif/hooks/clock-now.mjs` prints the exact characters in its prompt line («the word NOW between the white square brackets U+27E6 and U+27E7, never ASCII [NOW]»); in a markdown file a placeholder inside an inline code span or a fenced block stays literal; a write of a markdown file that brings the ASCII form outside code gets one line to the agent with the tool result (the text is not changed, no permission is taken). MIGRATION — agent work: none; a moment already left as ASCII letters in a document is fixed by hand where it is found.",
       "TWO DOCUMENTS WITH ONE FILE NAME KEEP TWO VERDICTS (2.10; origin ticket #199 — a field project had two mock-up pictures `compare.webp` in two folders, and the second verdict would have replaced the owner's first in the decision record the queue, the debt list and the page read): the contour named the decision record (`<decisionsDir>/<name>.decision.json`) and the page lock by the document's BARE file name. Now a document keeps the bare name while it is free or already its own; a document whose bare name ANOTHER document holds (the record's `document`, the lock's `doc`) gets `<name>--<8 hex of its path>.decision.json` and keeps it; a write over another document's record is refused before the source is touched, and such a record is never read as this one's. No record moves: every existing record still resolves to its own file. MIGRATION — agent work: none; a project that carried the local guard of the ticket (`recordDecision` refuses a foreign record, `readDecision` returns null for one) gets it as part of the shipped contour — the next update replaces the edited `core.mjs` with this one."
     ],
     "2.9": [
@@ -1120,9 +1122,8 @@ for errors only, how to do a headless vs. interactive build.>`
 `<Describe the tooling the agent uses to run, observe, and drive the software WITHOUT a human — the
 single most important investment for autonomous work. For a GUI app: a UI-automation/inspection tool.
 For a server: a request runner + log tail. For a CLI: scripted invocations + golden outputs. Always
-prefer deterministic reproduction and objective verification over eyeballing.>` Grow this tooling
-over time; each command, stand and device gets its row in the house-rules file — `HOUSE_RULES.md` →
-"Stands, environments and devices" — the day it is born.
+prefer deterministic reproduction and objective verification over eyeballing.>`
+Grow this tooling over time; each command, stand and device gets its row in the house-rules file — `HOUSE_RULES.md` → "Stands, environments and devices" — the day it is born.
 
 ---
 
@@ -1340,7 +1341,7 @@ of a MOMENT carries both, in the owner's local time:
   written down or committed. They differ, and the difference is often the interesting part.
 - **The moment is PROBED, never felt:** `date '+%Y-%m-%d %H:%M %z'` (`+0300` → write `+03:00`; PowerShell: `Get-Date -Format 'yyyy-MM-dd HH:mm zzz'`) in the SAME
   tool call as the write — a session's sense of time comes from the volume of work, not from the clock (origin issue #96: stamps 1–5 minutes ahead; "missed 12:00" said at 11:50); a decision about a named hour reads the probe too.
-  Where the clock hook is wired (`.kaif/hooks/clock-now.mjs`, 2.10), write the NOW placeholder — the word NOW in white square brackets — and the machine's clock fills it on the write; elsewhere, the probe.
+  Where the clock hook is wired (`.kaif/hooks/clock-now.mjs`, 2.10), write the NOW placeholder — `⟦NOW⟧`, the word NOW between U+27E6 and U+27E7, never ASCII `[NOW]` — and the machine's clock fills it on the write (in a code span it stays literal); elsewhere, the probe.
   Not captured → an honest `≈ 2026-08-07 10:05 +03:00` — an invented number is worse than a missing one (the three-doors rule in `PHILOSOPHY.md`).
 - **What is a stamp:** decisions, closures of tasks/phases/bugs, milestones in a document's status,
   receipts the machinery writes. **What is NOT** (a date is enough, and demanding time there is
@@ -3292,8 +3293,8 @@ and that door has a SECOND axis, the ARCHAEOLOGY of every live question (2.7, ep
 13 questions brought to one owner that his own prior answers had already settled, one of them 44 days
 after his answer). A question to the owner is a CLAIM that the matter is not settled, so a live question
 of a document dated on or after `2026-09-18` opens only with the attestation of the search that was run —
-`<!-- archaeology: grep -rniE "<the heading's words>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits ·
-read: <files|none> · prior: <none | "<the prior answer>" + address> -->` between the heading and the first
+`<!-- archaeology: grep -rniE "<the heading's words>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits ·`
+`read: <files|none> · prior: <none | "<the prior answer>" + address> -->` between the heading and the first
 option; without it the door exits 3 and PRINTS that ready command, `N > 0` with `prior: none` is refused
 too, `N = 0` is honest, and documents dated before that day are never judged (`--check` says which of the
 two it did). Since 2.8 (epic OW, origin issues #74 · #82) the door searches itself for a question in ANY transport, a
@@ -3785,8 +3786,9 @@ a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifi
 other systems' prompt field not verified), `clock-now.mjs` (2.10, epic PT; origin tickets #170 · #172: one context line with the
 machine's local moment on every prompt, and on the owner's own prompt the presence mark `.kaif/owner-presence.json` that lifts the
 contour's quiet hours while fresh (#193); on `PreToolUse` of Write · Edit · MultiEdit a time placeholder — the word NOW, NOW-ISO, DATE
-or TIME between white square brackets — is filled by the clock through `updatedInput`, with no permission decision; silent on a write
-without one — Claude Code only), `subagent-preamble.mjs` (2.10, epic PT; origin tickets #166 · #168: on `PreToolUse` of `Agent|Task` a
+or TIME between white square brackets — is filled by the clock through `updatedInput`, with no permission decision, outside the code
+spans and fenced blocks of a markdown file; a markdown write bringing the ASCII form `[NOW]` outside code gets one line to the agent
+(`additionalContext`, the text unchanged); silent on a write without one — Claude Code only), `subagent-preamble.mjs` (2.10, epic PT; origin tickets #166 · #168: on `PreToolUse` of `Agent|Task` a
 marked preamble in front of the subagent's task — read step 1 of `/resume`, quote one canon line first, no subagents of its own, no commit,
 no push — through `updatedInput`, with no permission decision; a marked task is left as it is; a journal line in
 `.kaif/subagent-preamble.jsonl` — Claude Code only), `stop-farewell-capture.mjs` (2.10, epic PT; origin ticket #181: on `Stop` of a turn
@@ -5323,7 +5325,8 @@ is bilingual, keep both languages in sync. Don't invent — reflect only what is
 
 `<Run the project build and any artifact regeneration (e.g. a rendered README.pdf). For this framework's
 own project: `node tools/build-framework.mjs` regenerates KAIF.md, and `node tools/readme-pdf.mjs`
-regenerates README.pdf.>` If a build fails, stop and show the errors — don't commit broken state.
+regenerates README.pdf.>`
+If a build fails, stop and show the errors — don't commit broken state.
 
 ### Step 4. Commit and push (judge first)
 
@@ -8662,8 +8665,8 @@ excuses next to a number, no hint of a backstage, no denial undermining a figure
 impersonal voice in a procedure, no internal label as a table row name, no estimate range wider
 than its source, no internal build command shown as proof, no instruction the human cannot execute
 (a flag the AGENT passes is not something the reader can "add"), and the two language halves must
-match in skeleton. `<If the project has a storefront linter, run it here; otherwise walk the ten
-rules by hand before handing the text over.>`
+match in skeleton.
+`<If the project has a storefront linter, run it here; otherwise walk the ten rules by hand before handing the text over.>`
 
 ## Step 3. Regenerate rendered docs
 
@@ -9648,8 +9651,8 @@ candidates the seat asks for (§ 2 rule 6); a bare `free` row makes the Manager 
 read a queue. Statuses are SHORT; the document never grows. The board shows the moment; the project's
 `STATUS.md` still carries the handover between sessions — the board never replaces it.
 The board lives OUTSIDE git (ignore-first; board document → "Where the board lives"); a tracked
-board is a named opt-out recorded HERE with its price: `<n/a | opt-out: <why> — price: a dirty
-main copy by construction>`.
+board is a named opt-out recorded HERE with its price:
+`<n/a | opt-out: <why> — price: a dirty main copy by construction>`
 
 ## 5. Git discipline
 
@@ -20212,9 +20215,58 @@ export function carriedWords(carried) {
   if (typeof carried === 'string') for (const m of carried.matchAll(PLACEHOLDER)) out.add(m[2]);   // escaped too (judge s95, hunt 3)
   return out;
 }
-export function fill(text, v, keep = new Set()) {
-  return typeof text === 'string' ? text.replace(PLACEHOLDER, (all, esc, word) => (keep.has(word) ? all : esc ? L + word + R : v[word])) : text;
+// bugs/143 (2.10; origin #197 pp. 1 and 3 — and the source's own session 103, four files): a placeholder written with ASCII brackets stayed
+// letters with no word from the hook, and a placeholder quoted in a code span — a text ABOUT it — got the clock's value. In a markdown
+// file the clock fills only OUTSIDE code (an inline code span, a fenced block); a write that carries the ASCII form outside code gets one
+// line to the agent alongside the tool result (PreToolUse `additionalContext` arrives with the result — researches/41 §5) — the text is
+// never changed for it and the write never stops.
+// [TESTED: 2026-11-18 01:29–01:34 · functional — the source's LIVE Claude Code session: the edit bringing ASCII forms got the line with the
+//  tool result (a .mjs — a false hit, narrowed to markdown; the next .mjs edit silent), two AGENT_GUIDE.md edits kept the placeholder in a code span
+//  literal; the prompt line came with the exact characters; probe pt1-clock-now.mjs —
+//  10 of 10, the HEAD hook red on exactly (8)–(10); hygiene — three selftest cases «bugs/143»; report testcases/reports/2026-11-18_bugs143-clock-placeholder.md]
+const ASCII_FORM = /\[(NOW-ISO|NOW)\]/g;
+export const isMarkdown = (p) => /\.(md|markdown)$/i.test(String(p || ''));
+// The text as [isCode, piece] pieces, joined back byte for byte: fenced blocks (``` or ~~~ lines) and inline code spans are code.
+export function codeSplit(text) {
+  const out = [];
+  let fence = null;
+  for (const line of String(text).split(/(?<=\n)/)) {   // the line ends stay with their lines
+    const f = /^\s*(```|~~~)/.exec(line);
+    if (fence) { out.push([true, line]); if (f && f[1] === fence) fence = null; continue; }
+    if (f) { fence = f[1]; out.push([true, line]); continue; }
+    let last = 0;
+    for (const m of line.matchAll(/(`+)[^`]*?\1/g)) {
+      if (m.index > last) out.push([false, line.slice(last, m.index)]);
+      out.push([true, m[0]]); last = m.index + m[0].length;
+    }
+    if (last < line.length) out.push([false, line.slice(last)]);
+  }
+  return out;
 }
+const outsideCode = (text, md, fn) => (md ? codeSplit(text).map(([code, piece]) => (code ? piece : fn(piece))).join('') : fn(text));
+export function fill(text, v, keep = new Set(), md = false) {
+  return typeof text === 'string'
+    ? outsideCode(text, md, (t) => t.replace(PLACEHOLDER, (all, esc, word) => (keep.has(word) ? all : esc ? L + word + R : v[word]))) : text;
+}
+// The ASCII forms a write brings outside code that the text it replaces did not hold already; [] — nothing to say.
+export function asciiForms(toolName, input, readOld = (p) => '') {
+  // markdown only: documents are where an agent writes a moment; a source file naming the ASCII form is talking about it (observed live
+  // at the source, session 103: this hook's own selftest edit got the line)
+  if (!input || typeof input !== 'object' || !(toolName in WRITE_FIELDS) || !isMarkdown(input.file_path)) return [];
+  const md = true;
+  const pairs = toolName === 'Write' ? [[input.content, readOld(input.file_path)]] : toolName === 'Edit' ? [[input.new_string, input.old_string]]
+    : (Array.isArray(input.edits) ? input.edits : []).map((e) => [e && e.new_string, e && e.old_string]);
+  const found = new Set();
+  for (const [nw, old] of pairs) {
+    if (typeof nw !== 'string') continue;
+    const had = new Set((typeof old === 'string' ? old.match(ASCII_FORM) : null) || []);
+    outsideCode(nw, md, (t) => { for (const m of t.match(ASCII_FORM) || []) if (!had.has(m)) found.add(m); return t; });
+  }
+  return [...found].sort();
+}
+export const asciiLine = (forms) => `clock-now · this write keeps ${forms.join(' · ')} as letters — the clock fills only the word between the white ` +
+  `square brackets ${L}NOW${R} (${L}NOW-ISO${R} · ${L}DATE${R} · ${L}TIME${R}), never ASCII [ ]: rewrite the moment with them; a text ABOUT the ` +
+  'placeholder keeps it in a code span.';
 const fileText = (p) => { try { return typeof p === 'string' ? readFileSync(p, 'utf8') : ''; } catch { return ''; } };
 // The new tool input, or null when nothing changes (the hook then stays silent).
 export function rewrite(toolName, input, v, readOld = fileText) {
@@ -20222,11 +20274,12 @@ export function rewrite(toolName, input, v, readOld = fileText) {
   const out = { ...input };
   let changed = false;
   const keep = carriedWords(toolName === 'Write' ? readOld(input.file_path) : input.old_string);
-  for (const f of WRITE_FIELDS[toolName]) { const t = fill(out[f], v, keep); if (t !== out[f]) { out[f] = t; changed = true; } }
+  const md = isMarkdown(input.file_path);
+  for (const f of WRITE_FIELDS[toolName]) { const t = fill(out[f], v, keep, md); if (t !== out[f]) { out[f] = t; changed = true; } }
   if (toolName === 'MultiEdit' && Array.isArray(input.edits)) {
     out.edits = input.edits.map((e) => {
       if (!e || typeof e !== 'object') return e;
-      const t = fill(e.new_string, v, carriedWords(e.old_string));
+      const t = fill(e.new_string, v, carriedWords(e.old_string), md);
       if (t === e.new_string) return e;
       changed = true;
       return { ...e, new_string: t };
@@ -20263,6 +20316,20 @@ if (process.argv[2] === '--selftest') {
   ok(s && s.content === 'about ' + P('NOW') + ', real 07:05', 'a backslash keeps the placeholder literal');
   ok(rewrite('Write', { file_path: 'e.md', content: 'plain' }, v) === null && rewrite('Bash', { command: P('NOW') }, v) === null,
     'silence: a write without a placeholder, a tool that is not a write');
+  { // bugs/143 (#197 pp. 1 and 3): a markdown code span and fenced block keep a placeholder; the ASCII form outside code is named
+    const md = rewrite('Write', { file_path: 'r.md', content: 'quoted `' + P('NOW') + '` · real ' + P('TIME') + '\n```\n' + P('DATE') + '\n```\nafter ' + P('DATE') }, v);
+    ok(md && md.content === 'quoted `' + P('NOW') + '` · real 07:05\n```\n' + P('DATE') + '\n```\nafter 2026-10-23',
+      'bugs/143 #197: a markdown code span and a fenced block keep the placeholder; outside them it is filled');
+    const js = rewrite('Write', { file_path: 'r.mjs', content: 'const at = `' + P('NOW') + '`;' }, v);
+    ok(js && js.content === 'const at = `2026-10-23 07:05 +03:00`;', 'bugs/143: outside markdown a backtick is the language\'s own — filled as before');
+    const a1 = asciiForms('Write', { file_path: 'n.md', content: 'Created: [NOW] · `[NOW-ISO]` in code' }, () => '');
+    const a2 = asciiForms('Edit', { file_path: 'n.md', old_string: 'was [NOW]', new_string: 'was [NOW] still' });
+    const a3 = asciiForms('Write', { file_path: 'n.md', content: 'plain ' + P('NOW') }, () => '');
+    const a4 = asciiForms('Edit', { file_path: 'x.mjs', old_string: 'a', new_string: "'[NOW]'" });
+    ok(a1.join() === '[NOW]' && a2.length === 0 && a3.length === 0 && a4.length === 0 && /never ASCII \[ \]/.test(asciiLine(a1))
+      && asciiLine(a1).includes(P('NOW')),
+      'bugs/143 #197: the ASCII form outside code of a markdown file is named with the exact characters; in code, carried, a real placeholder, a source file — silence');
+  }
   { // TK10 (c), #193: the owner's own prompt writes the presence mark; a notification, a harness text and a subagent's hand-back do not
     const t = mkdtempSync(join(tmpdir(), 'kaif-clock-presence-'));
     try {
@@ -20290,12 +20357,17 @@ try {
   const v = values();
   if (event === 'UserPromptSubmit') {
     try { markPresence(process.env.CLAUDE_PROJECT_DIR || deploymentRoot(input.cwd), input.prompt); } catch { /* the mark never stops the line */ }
-    const line = `clock-now · ${v.NOW} (ISO ${v['NOW-ISO']}) — the machine's clock; write a moment as the NOW placeholder in white square ` +
-      `brackets (NOW-ISO · DATE · TIME likewise) and this hook fills it on Write · Edit · MultiEdit.`;
+    // bugs/143: the exact characters, not their name — «white square brackets» was read as ASCII [ ] in the field and at the source
+    const line = `clock-now · ${v.NOW} (ISO ${v['NOW-ISO']}) — the machine's clock; write a moment as ${L}NOW${R} — the word NOW between the ` +
+      `white square brackets U+27E6 and U+27E7, never ASCII [NOW] (${L}NOW-ISO${R} · ${L}DATE${R} · ${L}TIME${R} likewise); this hook fills it on ` +
+      'Write · Edit · MultiEdit, outside code spans and code blocks of a markdown file.';
     process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: line } }));
   } else if (event === 'PreToolUse') {
-    const updated = rewrite(String(input.tool_name || ''), input.tool_input, v);
-    if (updated) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'PreToolUse', updatedInput: updated } }));
+    const tool = String(input.tool_name || '');
+    const updated = rewrite(tool, input.tool_input, v);
+    const forms = asciiForms(tool, input.tool_input, fileText);
+    const answer = { hookEventName: 'PreToolUse', ...(updated ? { updatedInput: updated } : {}), ...(forms.length ? { additionalContext: asciiLine(forms) } : {}) };
+    if (updated || forms.length) process.stdout.write(JSON.stringify({ hookSpecificOutput: answer }));
   }
 } catch { /* a hook must never take the session down with it */ }
 process.exit(0);
@@ -21340,8 +21412,11 @@ from memory drifts with the amount of work done. The agent writes a PLACEHOLDER 
 `DATE` or `TIME` between white square brackets (U+27E6 and U+27E7) — and the hook fills it in the tool input before the write runs:
 `NOW` → `2026-10-23 14:41 +03:00`, `NOW-ISO` → `2026-10-23T14:41:10+03:00`, `DATE` → `2026-10-23`, `TIME` → `14:41`, the machine's
 local time. Only `content` (Write), `new_string` (Edit) and `edits[].new_string` (MultiEdit) are filled — `old_string` must match
-the file and is never touched; a backslash before the opening bracket keeps a placeholder literal (a text ABOUT them). A word the
-write only carries stays literal: it already stands in `old_string`, or in the file a Write replaces. The limit is by WORD, not by
+the file and is never touched; a backslash before the opening bracket keeps a placeholder literal (a text ABOUT them), and so does an
+inline code span or a fenced block of a markdown file (origin #197). A word the write only carries stays literal: it already stands in
+`old_string`, or in the file a Write replaces. A markdown write that brings the ASCII form `[NOW]` (or `[NOW-ISO]`) outside code gets
+one line to the agent with the tool result (`PreToolUse` `additionalContext`) — the letters stay, the agent rewrites them; the prompt
+line prints the exact characters. The limit is by WORD, not by
 occurrence — a second `NOW` added next to a carried `NOW` stays literal too; write another word there (`NOW-ISO`, `DATE`) or take a
 `date` probe. The answer
 carries `updatedInput` and no `permissionDecision`: "allow" would skip the owner's permission prompt. Without the hook the canon

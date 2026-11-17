@@ -11,7 +11,8 @@
 //   route    — each subject is updated TWICE from the same starting copy: by THIS build and by the build 3057175 (before UB5), both
 //              labelled 2.10, `--baseline` = dist of the tag v2.9; `update` by the deployed core, then `update-verify` and `check` by the
 //              fresh one; no agent merge. Judged: «promised upstream line not found» lines naming a closing skill.
-//   verdict  — BAD when this build names a «not found» in a closing skill. The total per subject and the files where it differs from
+//   verdict  — BAD when this build names a «not found» in a closing skill of a line that skill already held at PRE_REV (since session
+//              103: a line new in the template since then — bugs/140's farewell — is a merge, printed as a count, not this class). The total per subject and the files where it differs from
 //              3057175 are printed as INFO (paths only): a module this build really changed — /release step 6 — is handed over with a
 //              diff on a deployment that rewrote it, and `update-verify` then lists every template line of that module the deployment's
 //              own flow does not carry (old lines included — the re-judgment of UB5, finding 5); the builder note 2.10 tells the field.
@@ -105,6 +106,14 @@ function fieldClone(dep, k) {
 
 // ---- one walk: update → update-verify, count «not found»
 const CLOSING = /end-chat-(soft|force)/;
+// Session 103: the false class this probe judges is a «not found» of a line the closing skills ALREADY HELD at PRE_REV (the co-author line
+// with a filled placeholder). A line NEW in the template since then — bugs/140's farewell lines (66a6b5c) — is a real merge for a deployment
+// whose closing skills went to «Module diffs», and the old criterion «no not-found at all» read it as BAD on deployment #8 from 66a6b5c on.
+// The core prints the first 78 characters of the promised line; whitespace is flattened on both sides.
+const flatWs = (s) => String(s).replace(/\s+/g, ' ').trim();
+const PRE_CLOSING = flatWs(['end-chat-soft', 'end-chat-force'].map((n) =>
+  execFileSync('git', ['show', PRE_REV + ':framework/skills/' + n + '/SKILL.md'], { cwd: REPO, encoding: 'utf8', maxBuffer: 1 << 26 })).join('\n'));
+const heldAtPre = (l) => { const m = l.match(/ :: (.+)$/); return Boolean(m) && PRE_CLOSING.includes(flatWs(m[1])); };
 function walk(label, base, srcName, baseline) {
   const P = join(ROOT, `${label.replace(/[^a-z0-9]+/gi, '-')}-${srcName}`); cpSync(base, P, { recursive: true });
   const u = core(P, ['update', '--source', SRC[srcName], '--baseline', baseline]);
@@ -118,8 +127,10 @@ function walk(label, base, srcName, baseline) {
 function judge(label, base, baseline = V29) {
   const a = walk(label, base, 'NEW', baseline), b = walk(label, base, 'OLD', baseline);
   say(a.u === 0 && b.u === 0, `${label}: update exit ${a.u} (this build) · ${b.u} (${PRE_REV})`);
-  say(a.closing.length === 0, `${label}: «not found» in the closing skills — ${a.closing.length} (this build) · ${b.closing.length} (${PRE_REV})`);
-  for (const l of a.closing) console.log('       ' + l.replace(/Co-Authored-By: [^<]*</, 'Co-Authored-By: …<').slice(0, 200));
+  const falseNf = a.closing.filter(heldAtPre), newNf = a.closing.length - falseNf.length;
+  say(falseNf.length === 0, `${label}: «not found» in the closing skills of a line they held at ${PRE_REV} — ${falseNf.length} (this build) · `
+    + `${b.closing.length} (${PRE_REV})` + (newNf ? ` · ${newNf} line(s) new in the template since ${PRE_REV} — a merge, not this class` : ''));
+  for (const l of falseNf) console.log('       ' + l.replace(/Co-Authored-By: [^<]*</, 'Co-Authored-By: …<').slice(0, 200));
   // INFO, not a verdict: a module this build really changed (/release step 6) is handed over with a diff, and on a deployment that
   // rewrote it every template line its own flow lacks stands «not found» — a listing for the merge, not the false class judged above
   const delta = [...new Set([...Object.keys(a.byFile), ...Object.keys(b.byFile)])].sort()

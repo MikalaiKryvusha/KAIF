@@ -113,8 +113,8 @@ candidates the seat asks for (§ 2 rule 6); a bare `free` row makes the Manager 
 read a queue. Statuses are SHORT; the document never grows. The board shows the moment; the project's
 `STATUS.md` still carries the handover between sessions — the board never replaces it.
 The board lives OUTSIDE git (ignore-first; board document → "Where the board lives"); a tracked
-board is a named opt-out recorded HERE with its price: `<n/a | opt-out: <why> — price: a dirty
-main copy by construction>`.
+board is a named opt-out recorded HERE with its price:
+`<n/a | opt-out: <why> — price: a dirty main copy by construction>`
 
 ## 5. Git discipline
 

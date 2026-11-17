@@ -123,8 +123,8 @@ and that door has a SECOND axis, the ARCHAEOLOGY of every live question (2.7, ep
 13 questions brought to one owner that his own prior answers had already settled, one of them 44 days
 after his answer). A question to the owner is a CLAIM that the matter is not settled, so a live question
 of a document dated on or after `2026-09-18` opens only with the attestation of the search that was run —
-`<!-- archaeology: grep -rniE "<the heading's words>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits ·
-read: <files|none> · prior: <none | "<the prior answer>" + address> -->` between the heading and the first
+`<!-- archaeology: grep -rniE "<the heading's words>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits ·`
+`read: <files|none> · prior: <none | "<the prior answer>" + address> -->` between the heading and the first
 option; without it the door exits 3 and PRINTS that ready command, `N > 0` with `prior: none` is refused
 too, `N = 0` is honest, and documents dated before that day are never judged (`--check` says which of the
 two it did). Since 2.8 (epic OW, origin issues #74 · #82) the door searches itself for a question in ANY transport, a
@@ -616,8 +616,9 @@ a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifi
 other systems' prompt field not verified), `clock-now.mjs` (2.10, epic PT; origin tickets #170 · #172: one context line with the
 machine's local moment on every prompt, and on the owner's own prompt the presence mark `.kaif/owner-presence.json` that lifts the
 contour's quiet hours while fresh (#193); on `PreToolUse` of Write · Edit · MultiEdit a time placeholder — the word NOW, NOW-ISO, DATE
-or TIME between white square brackets — is filled by the clock through `updatedInput`, with no permission decision; silent on a write
-without one — Claude Code only), `subagent-preamble.mjs` (2.10, epic PT; origin tickets #166 · #168: on `PreToolUse` of `Agent|Task` a
+or TIME between white square brackets — is filled by the clock through `updatedInput`, with no permission decision, outside the code
+spans and fenced blocks of a markdown file; a markdown write bringing the ASCII form `[NOW]` outside code gets one line to the agent
+(`additionalContext`, the text unchanged); silent on a write without one — Claude Code only), `subagent-preamble.mjs` (2.10, epic PT; origin tickets #166 · #168: on `PreToolUse` of `Agent|Task` a
 marked preamble in front of the subagent's task — read step 1 of `/resume`, quote one canon line first, no subagents of its own, no commit,
 no push — through `updatedInput`, with no permission decision; a marked task is left as it is; a journal line in
 `.kaif/subagent-preamble.jsonl` — Claude Code only), `stop-farewell-capture.mjs` (2.10, epic PT; origin ticket #181: on `Stop` of a turn

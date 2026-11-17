@@ -74,5 +74,17 @@ say(r6.code === 0 && r6.out.trim() === '', '(6) a write without a placeholder �
 const r7 = call('{ not json');
 say(r7.code === 0 && r7.out.trim() === '', '(7) a broken stdin → no output, exit ' + r7.code);
 
+// bugs/143 (session 103; origin #197 pp. 1 and 3): the exact characters in the context line; a code span of a markdown file keeps the
+// placeholder; the ASCII form outside code is named to the agent alongside the result — the text untouched, no permission decision
+say(r1.hso && String(r1.hso.additionalContext).includes(ph('NOW')) && /never ASCII \[NOW\]/.test(String(r1.hso.additionalContext)),
+  '(8) the context line prints the exact characters of the placeholder and «never ASCII [NOW]»');
+const r9 = call(pre('Write', { file_path: 'notes/f.md', content: 'quoted `' + ph('NOW') + '`, real ' + ph('TIME') }));
+const u9 = r9.hso && r9.hso.updatedInput;
+say(r9.code === 0 && u9 && u9.content.startsWith('quoted `' + ph('NOW') + '`, real ') && /\d{2}:\d{2}$/.test(u9.content),
+  '(9) a markdown code span keeps the placeholder, outside it is filled: ' + String(u9 && u9.content).slice(0, 60));
+const r10 = call(pre('Write', { file_path: 'notes/g.md', content: 'Created: [NOW]' }));
+say(r10.code === 0 && r10.hso && !r10.hso.updatedInput && /keeps \[NOW\] as letters/.test(String(r10.hso.additionalContext))
+  && !('permissionDecision' in r10.hso), '(10) the ASCII form → one line to the agent, the text untouched, no permission decision');
+
 console.log(bad ? `✖ ${bad} BAD` : '✅ the clock hook answers by the PT1 contract: the minute in context, placeholders filled without a permission decision, silence otherwise');
 process.exit(bad ? 1 : 0);

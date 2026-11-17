@@ -102,8 +102,8 @@ excuses next to a number, no hint of a backstage, no denial undermining a figure
 impersonal voice in a procedure, no internal label as a table row name, no estimate range wider
 than its source, no internal build command shown as proof, no instruction the human cannot execute
 (a flag the AGENT passes is not something the reader can "add"), and the two language halves must
-match in skeleton. `<If the project has a storefront linter, run it here; otherwise walk the ten
-rules by hand before handing the text over.>`
+match in skeleton.
+`<If the project has a storefront linter, run it here; otherwise walk the ten rules by hand before handing the text over.>`
 
 ## Step 3. Regenerate rendered docs
 

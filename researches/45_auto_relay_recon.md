@@ -12,7 +12,7 @@
 
 | Часть документа | У KAIF | Разница |
 |---|---|---|
-| датчик окна по `usage` транскрипта (`input + cache_read + cache_creation`, без `isSidechain`) | хук окна `framework/hooks/context-window.mjs` — та же формула, 80 % предупреждение, 85 % — довести до среза и `/end-chat-soft`; ворота закрытия и `--measure` (`bugs/137`) | у документа один порог передачи (85 % на 1M, 70 % на 200k) |
+| датчик окна по `usage` транскрипта (`input + cache_read + cache_creation`, без `isSidechain`) | хук окна `framework/hooks/context-window.mjs` — та же формула, ступени №161 — 75 % предупреждение, 80 % к логическому срезу, 85 % `/end-chat-soft`, 92 % срочное (с сессии 103; прежде 80 / 85); ворота закрытия и `--measure` (`bugs/137`) | у документа один порог передачи (85 % на 1M, 70 % на 200k) |
 | передача «с чего продолжить» (`HANDOVER.md`) | эстафета `STATUS.md` п. 0 + прощание `stop-farewell-capture.mjs` → `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` | у KAIF два носителя уже есть — третий файл передачи был бы парой (DRY) |
 | приказ новому чату («auto-relay continue» → навык) | хук первого слова `prompt-resume-word.mjs`: `resume` → `/resume` | слово входа у KAIF — `resume` |
 | лимит цепочки и `stop` | условия остановки циклов (`/dayloop` · `/autoloop` · `/guarded-loop`) | счётчика чатов нет |

@@ -671,9 +671,8 @@ for errors only, how to do a headless vs. interactive build.>`
 `<Describe the tooling the agent uses to run, observe, and drive the software WITHOUT a human — the
 single most important investment for autonomous work. For a GUI app: a UI-automation/inspection tool.
 For a server: a request runner + log tail. For a CLI: scripted invocations + golden outputs. Always
-prefer deterministic reproduction and objective verification over eyeballing.>` Grow this tooling
-over time; each command, stand and device gets its row in the house-rules file — `HOUSE_RULES.md` →
-"Stands, environments and devices" — the day it is born.
+prefer deterministic reproduction and objective verification over eyeballing.>`
+Grow this tooling over time; each command, stand and device gets its row in the house-rules file — `HOUSE_RULES.md` → "Stands, environments and devices" — the day it is born.
 
 ---
 
@@ -891,7 +890,7 @@ of a MOMENT carries both, in the owner's local time:
   written down or committed. They differ, and the difference is often the interesting part.
 - **The moment is PROBED, never felt:** `date '+%Y-%m-%d %H:%M %z'` (`+0300` → write `+03:00`; PowerShell: `Get-Date -Format 'yyyy-MM-dd HH:mm zzz'`) in the SAME
   tool call as the write — a session's sense of time comes from the volume of work, not from the clock (origin issue #96: stamps 1–5 minutes ahead; "missed 12:00" said at 11:50); a decision about a named hour reads the probe too.
-  Where the clock hook is wired (`.kaif/hooks/clock-now.mjs`, 2.10), write the NOW placeholder — the word NOW in white square brackets — and the machine's clock fills it on the write; elsewhere, the probe.
+  Where the clock hook is wired (`.kaif/hooks/clock-now.mjs`, 2.10), write the NOW placeholder — `⟦NOW⟧`, the word NOW between U+27E6 and U+27E7, never ASCII `[NOW]` — and the machine's clock fills it on the write (in a code span it stays literal); elsewhere, the probe.
   Not captured → an honest `≈ 2026-08-07 10:05 +03:00` — an invented number is worse than a missing one (the three-doors rule in `PHILOSOPHY.md`).
 - **What is a stamp:** decisions, closures of tasks/phases/bugs, milestones in a document's status,
   receipts the machinery writes. **What is NOT** (a date is enough, and demanding time there is
@@ -2856,8 +2855,8 @@ and that door has a SECOND axis, the ARCHAEOLOGY of every live question (2.7, ep
 13 questions brought to one owner that his own prior answers had already settled, one of them 44 days
 after his answer). A question to the owner is a CLAIM that the matter is not settled, so a live question
 of a document dated on or after `2026-09-18` opens only with the attestation of the search that was run —
-`<!-- archaeology: grep -rniE "<the heading's words>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits ·
-read: <files|none> · prior: <none | "<the prior answer>" + address> -->` between the heading and the first
+`<!-- archaeology: grep -rniE "<the heading's words>" interviews/ GOAL.md MASTER_PLAN.md plans/ → N hits ·`
+`read: <files|none> · prior: <none | "<the prior answer>" + address> -->` between the heading and the first
 option; without it the door exits 3 and PRINTS that ready command, `N > 0` with `prior: none` is refused
 too, `N = 0` is honest, and documents dated before that day are never judged (`--check` says which of the
 two it did). Since 2.8 (epic OW, origin issues #74 · #82) the door searches itself for a question in ANY transport, a
@@ -3349,8 +3348,9 @@ a leading "stop" → the order to stop in this turn (2.8, epic OW — an amplifi
 other systems' prompt field not verified), `clock-now.mjs` (2.10, epic PT; origin tickets #170 · #172: one context line with the
 machine's local moment on every prompt, and on the owner's own prompt the presence mark `.kaif/owner-presence.json` that lifts the
 contour's quiet hours while fresh (#193); on `PreToolUse` of Write · Edit · MultiEdit a time placeholder — the word NOW, NOW-ISO, DATE
-or TIME between white square brackets — is filled by the clock through `updatedInput`, with no permission decision; silent on a write
-without one — Claude Code only), `subagent-preamble.mjs` (2.10, epic PT; origin tickets #166 · #168: on `PreToolUse` of `Agent|Task` a
+or TIME between white square brackets — is filled by the clock through `updatedInput`, with no permission decision, outside the code
+spans and fenced blocks of a markdown file; a markdown write bringing the ASCII form `[NOW]` outside code gets one line to the agent
+(`additionalContext`, the text unchanged); silent on a write without one — Claude Code only), `subagent-preamble.mjs` (2.10, epic PT; origin tickets #166 · #168: on `PreToolUse` of `Agent|Task` a
 marked preamble in front of the subagent's task — read step 1 of `/resume`, quote one canon line first, no subagents of its own, no commit,
 no push — through `updatedInput`, with no permission decision; a marked task is left as it is; a journal line in
 `.kaif/subagent-preamble.jsonl` — Claude Code only), `stop-farewell-capture.mjs` (2.10, epic PT; origin ticket #181: on `Stop` of a turn
@@ -5772,8 +5772,8 @@ excuses next to a number, no hint of a backstage, no denial undermining a figure
 impersonal voice in a procedure, no internal label as a table row name, no estimate range wider
 than its source, no internal build command shown as proof, no instruction the human cannot execute
 (a flag the AGENT passes is not something the reader can "add"), and the two language halves must
-match in skeleton. `<If the project has a storefront linter, run it here; otherwise walk the ten
-rules by hand before handing the text over.>`
+match in skeleton.
+`<If the project has a storefront linter, run it here; otherwise walk the ten rules by hand before handing the text over.>`
 
 ## Step 3. Regenerate rendered docs
 
@@ -6324,7 +6324,8 @@ is bilingual, keep both languages in sync. Don't invent — reflect only what is
 
 `<Run the project build and any artifact regeneration (e.g. a rendered README.pdf). For this framework's
 own project: `node tools/build-framework.mjs` regenerates KAIF.md, and `node tools/readme-pdf.mjs`
-regenerates README.pdf.>` If a build fails, stop and show the errors — don't commit broken state.
+regenerates README.pdf.>`
+If a build fails, stop and show the errors — don't commit broken state.
 
 ### Step 4. Commit and push (judge first)
 

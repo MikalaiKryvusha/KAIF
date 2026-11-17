@@ -96,6 +96,20 @@
 
 ## Записи
 
+### EXP-0214 · 2026-11-18 · ❌→✅ · #mutants #addressees #predicate #repeat #exp-0169 #hooks #bugs-142
+класс: counter-stale-in-prose
+**Ситуация:** сессия 103 дописала в самопроверку хука окна случай `bugs/142`, читающий предикат `fromSubagent`, прогнала самопроверку и
+пробу G7 · G8 и закоммитила (`76801dd`); проба `pt6-context-window-mutant.mjs`, чей мутант «a subagent's call judged» читает тот же предикат,
+не прогонялась — она стояла BAD («red 3, named 2»), пока следующий шаг не запустил её случайно. Повтор EXP-0169: урок был, механизма — нет.
+**Итог:** ❌→✅ — адресат дописан (`6fa213d`); раннер `tools/sandbox/probes/mutants-of.mjs <файл>` находит все пробы мутантов файла и гоняет их;
+красный доказан на дереве `76801dd`.
+**Урок:** урок «новая проверка того же предиката → адресаты мутантов» не исполняется памятью — нужен шаг, который сам находит пробы по
+файлу. Правишь файл с пробами мутантов — раннер до коммита.
+**Repro:** рабочее дерево `76801dd` + `node tools/sandbox/probes/mutants-of.mjs framework/hooks/context-window.mjs` → «BAD pt6-context-window-mutant.mjs».
+**Trigger:** правишь модуль, по имени которого в `tools/sandbox/probes/` есть `*mutant*.mjs`.
+**Not for:** модули без проб мутантов (раннер скажет «nothing to run»).
+**Механизация:** механизировано: `tools/sandbox/probes/mutants-of.mjs` · строка `HOUSE_RULES.md` §1.
+
 ### EXP-0213 · 2026-11-18 · ❌→✅ · #hooks #alive #witness #first-call #timing #bugs-142
 класс: tool-lied-silently
 **Ситуация:** шаг 0 `/resume` (сессия 103): `--alive` в ПЕРВОМ вызове сессии — «NOT running … Trust folder», код 1, хотя четыре хука

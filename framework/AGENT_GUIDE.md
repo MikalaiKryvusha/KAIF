@@ -526,9 +526,8 @@ for errors only, how to do a headless vs. interactive build.>`
 `<Describe the tooling the agent uses to run, observe, and drive the software WITHOUT a human — the
 single most important investment for autonomous work. For a GUI app: a UI-automation/inspection tool.
 For a server: a request runner + log tail. For a CLI: scripted invocations + golden outputs. Always
-prefer deterministic reproduction and objective verification over eyeballing.>` Grow this tooling
-over time; each command, stand and device gets its row in the house-rules file — `HOUSE_RULES.md` →
-"Stands, environments and devices" — the day it is born.
+prefer deterministic reproduction and objective verification over eyeballing.>`
+Grow this tooling over time; each command, stand and device gets its row in the house-rules file — `HOUSE_RULES.md` → "Stands, environments and devices" — the day it is born.
 
 ---
 
@@ -746,7 +745,7 @@ of a MOMENT carries both, in the owner's local time:
   written down or committed. They differ, and the difference is often the interesting part.
 - **The moment is PROBED, never felt:** `date '+%Y-%m-%d %H:%M %z'` (`+0300` → write `+03:00`; PowerShell: `Get-Date -Format 'yyyy-MM-dd HH:mm zzz'`) in the SAME
   tool call as the write — a session's sense of time comes from the volume of work, not from the clock (origin issue #96: stamps 1–5 minutes ahead; "missed 12:00" said at 11:50); a decision about a named hour reads the probe too.
-  Where the clock hook is wired (`.kaif/hooks/clock-now.mjs`, 2.10), write the NOW placeholder — the word NOW in white square brackets — and the machine's clock fills it on the write; elsewhere, the probe.
+  Where the clock hook is wired (`.kaif/hooks/clock-now.mjs`, 2.10), write the NOW placeholder — `⟦NOW⟧`, the word NOW between U+27E6 and U+27E7, never ASCII `[NOW]` — and the machine's clock fills it on the write (in a code span it stays literal); elsewhere, the probe.
   Not captured → an honest `≈ 2026-08-07 10:05 +03:00` — an invented number is worse than a missing one (the three-doors rule in `PHILOSOPHY.md`).
 - **What is a stamp:** decisions, closures of tasks/phases/bugs, milestones in a document's status,
   receipts the machinery writes. **What is NOT** (a date is enough, and demanding time there is
