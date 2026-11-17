@@ -228,8 +228,12 @@ for (const m of MUTANTS) {
   }
   let out = '';
   const suite = m.suite || 's14-refresh-hooks.mjs';
-  try { out = execFileSync(process.execPath, [join(REPO, 'tools', 'sandbox', suite)], { env: { ...process.env, KAIF_DIST: dist }, stdio: 'pipe' }).toString(); }
+  // the suite's root is OURS (an explicit path belongs to the caller, tools/lib/temp-root.mjs): a red suite keeps its root by design, and under
+  // a mutant red is the point — so the probe removes it after reading (session 101: 33 kept roots per run were left in the OS temp)
+  const suiteRoot = join(root, 'suite');
+  try { out = execFileSync(process.execPath, [join(REPO, 'tools', 'sandbox', suite), suiteRoot], { env: { ...process.env, KAIF_DIST: dist }, stdio: 'pipe' }).toString(); }
   catch (e) { out = String(e.stdout || '') + String(e.stderr || ''); }
+  rmSync(suiteRoot, { recursive: true, force: true });
   const lines = out.split(/\r?\n/);
   // s14 names every case «s14 …»; another suite's red line is any «❌ » but its closing tally (a died setup step is red too — EXP-0158)
   const red = m.suite ? lines.filter((l) => l.startsWith('❌ ') && !/^❌ ПРОВАЛОВ/.test(l)) : lines.filter((l) => l.startsWith('❌ s14'));

@@ -45,6 +45,8 @@ matcher `Skill`), замер руками `context-window.mjs --measure` (сес
 | 20 | 2026-11-17 ≈ 15:49 +03:00 | `--selftest` · `--measure` · `--measure <журнал сессии 100>` · `timeout 20 … --alive` | all ok · 54 % код 1 · «586042 of 1000000» (было «0 %») · «NOT running … (session by session id)» код 1 |
 | 21 | 2026-11-17 15:50:25 → 15:54:41 +03:00 | сборка · s14 · `gate-close-mutant` (G1–G6) · pt6 · experience/counters/doc-header/questions/testrun | 0 · 172 зелёных · все на адресатах · OK · линтеры OK (шапки — 4 находки по документу владельца) |
 | 22 | 2026-11-17 15:56 → 16:03 +03:00 | повторный суд тем же судьёй (раздел «Повторный суд» его отчёта) | 12 из 13 закрыты; открыта 7 (граница — «не позднее 2.1.323», не 2.1.322); новые N1–N3 — исправлены ≈ 16:04–16:05, до сборки 16:05:39 (исправлено: стояло «в 16:06–16:08» — метка по ощущению) |
+| 24 | 2026-11-17 ≈ 16:23 +03:00 | `KAIF_MUTANTS_ONLY=M1,W9 node tools/sandbox/probes/hooks-mutants.mjs` (явный корень свода внутри пробы) | 0 · «2 mutants red exactly…»; каталогов `kaif-*` до и после — 1 и 1 |
+| 25 | 2026-11-17 16:24:35 → 16:31:35 +03:00 | `npm run test:core` | 0 · «all 28 suites green»; каталогов `kaif-*` после — 1 (чужой) |
 | 23 | 2026-11-17 16:05:39 → 16:19:09 +03:00 | `node tools/build-framework.mjs` · `node tools/sandbox/probes/hooks-mutants.mjs` · `npm run test:core` | 0 · «34 mutants red exactly on their named addressees» (16:05:42 → 16:12:14) · «all 28 suites green» (16:12:14 → 16:19:09) |
 
 ## 4. Проверки
