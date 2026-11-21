@@ -1,5 +1,7 @@
-# Kimi Code user-level config.toml fragment. Merge into ~/.kimi-code/config.toml, then reload/new session.
-# Commands run from Kimi's local project directory; each KAIF deployment carries these scripts.
+# Kimi Code user-level config.toml fragment. Merge into ~/.kimi-code/config.toml, validate with `kimi doctor config`, then /reload or a
+# new session. Commands run from Kimi's local session folder; each KAIF deployment carries these scripts.
+# Kimi's `matcher` is an UNANCHORED regular expression and an invalid one (such as "*") matches nothing, silently — an entry meant for every
+# tool has NO matcher; a named tool is anchored (^Agent$). One entry with an unknown key drops the whole hooks section (bugs/145).
 
 [[hooks]]
 event = "SessionStart"
@@ -38,13 +40,13 @@ timeout = 5
 
 [[hooks]]
 event = "PreToolUse"
-matcher = "Write|Edit|MultiEdit"
+matcher = "^(Write|Edit)$"
 command = "node .kaif/hooks/clock-now.mjs --kimi"
 timeout = 5
 
 [[hooks]]
 event = "PreToolUse"
-matcher = "Agent"
+matcher = "^Agent$"
 command = "node .kaif/hooks/subagent-preamble.mjs --kimi"
 timeout = 5
 
@@ -55,31 +57,28 @@ timeout = 5
 
 [[hooks]]
 event = "PostToolUse"
-matcher = "*"
 command = "node .kaif/hooks/context-window.mjs --kimi"
 timeout = 5
 
+# Every tool: the closing gate on Skill, and the one-time block that carries a window step into the running turn (only UserPromptSubmit
+# text and a PreToolUse / Stop block reach the model in Kimi).
 [[hooks]]
 event = "PreToolUse"
-matcher = "Skill"
 command = "node .kaif/hooks/context-window.mjs --kimi"
 timeout = 5
 
 [[hooks]]
 event = "PostToolUse"
-matcher = "*"
 command = "node .kaif/hooks/knowledge-moment.mjs --kimi"
 timeout = 5
 
 [[hooks]]
 event = "PostToolUse"
-matcher = "*"
 command = "node .kaif/hooks/test-after-code.mjs --kimi"
 timeout = 5
 
 [[hooks]]
 event = "PostToolUseFailure"
-matcher = "*"
 command = "node .kaif/hooks/knowledge-moment.mjs --kimi"
 timeout = 5
 
@@ -90,6 +89,12 @@ timeout = 10
 
 [[hooks]]
 event = "Stop"
+command = "node .kaif/hooks/stop-farewell-capture.mjs --kimi"
+timeout = 10
+
+# A turn that dies of a provider error (the 5-hour quota) runs no closing ritual: the farewell file names the error and the last words.
+[[hooks]]
+event = "StopFailure"
 command = "node .kaif/hooks/stop-farewell-capture.mjs --kimi"
 timeout = 10
 
@@ -111,6 +116,5 @@ timeout = 5
 # PermissionRequest fires before Kimi waits for approval; the hook starts the voice in the background.
 [[hooks]]
 event = "PermissionRequest"
-matcher = "*"
 command = "node .kaif/hooks/kimi-permission-call.mjs"
 timeout = 5

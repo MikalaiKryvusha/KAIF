@@ -150,7 +150,55 @@ export function readKimiTurn(text) {
   return { closed, closureId, text: lastText };
 }
 
+// A Kimi chat that dies of a provider error runs no closing ritual and leaves no farewell (plans/143 KA6 of the origin: a chat ended on the
+// 5-hour quota — 429 APIProviderQuotaExhaustedError, never retried — and the TUI record said only «[object Object]»). Kimi fires StopFailure
+// instead of Stop; the hook then writes the farewell itself: the error, from the wire (print mode: `turn.ended` reason failed with the error)
+// or from the session's own log (TUI: `agent.turn.ended` outcome failed; the log line `llm request failed … errorName=… errorMessage="…"`),
+// and the chat's last assistant text. Pure: (wire text, session log text) → { name, message, lastText } or null.
+// [TESTED: 2026-11-21 · selftest (both record forms, a good turn → null); functional — the hook run with a StopFailure event over the two
+//  REAL Kimi sessions of the owner's machine that died on the quota that day (print mode and TUI), in a temp project: both farewells name
+//  APIProviderQuotaExhaustedError and Kimi's own message; report testcases/reports/2026-11-21_ki-ka1-ka3-kimi-hooks-and-window.md]
+export function readKimiFailure(wireText, logText = '') {
+  let failed = null, lastText = '';
+  for (const line of String(wireText).split('\n')) {
+    if (!line.trim()) continue;
+    let rec;
+    try { rec = JSON.parse(line); } catch { continue; }
+    if (rec.type === 'turn.ended' && rec.reason === 'failed') {
+      const e = rec.error && typeof rec.error === 'object' ? rec.error : {};
+      failed = { name: String(e.name || e.code || ''), message: String(e.message || '') };
+    }
+    if (rec.type === 'agent.turn.ended' && rec.outcome === 'failed') failed = { name: '', message: String(rec.errorMessage || '').replace('[object Object]', '') };
+    const msg = rec.message?.message || rec.message || {};
+    if (msg.role === 'assistant' && Array.isArray(msg.content)) {
+      const t = msg.content.filter((b) => b && b.type === 'text' && String(b.text || '').trim()).map((b) => b.text.trim());
+      if (t.length) lastText = t.join('\n');
+    }
+  }
+  if (!failed) return null;
+  if (!failed.name || !failed.message) {
+    const hits = String(logText).split('\n').filter((l) => /llm request failed/.test(l));
+    const last = hits[hits.length - 1] || '';
+    failed.name ||= (/errorName=(\S+)/.exec(last) || [])[1] || '';
+    failed.message ||= (/errorMessage="([^"]*)"/.exec(last) || [])[1] || '';
+  }
+  return { ...failed, lastText };
+}
+export const failureFarewell = (f) => `KAIF: this Kimi chat ended by an error before any closing ritual — ${f.name || 'an error Kimi did not name'}` +
+  `${f.message ? `: ${f.message}` : ''}. Nothing was closed: STATUS.md may lag behind the work — read \`git status\` and the last commits before ` +
+  'continuing.' + (f.lastText ? `\n\nThe chat's last words:\n\n${f.lastText}` : '');
+export function captureKimiFailure(event, home) {
+  if (!event || event.hook_event_name !== 'StopFailure' || !event.session_id) return null;
+  const wire = kimiWireOf(event.session_id, home);
+  if (!wire) return null;
+  let log = '';
+  try { log = readFileSync(join(dirname(dirname(dirname(wire))), 'logs', 'kimi-code.log'), 'utf8'); } catch { /* the session log exists only after a diagnostic event */ }
+  const f = readKimiFailure(readFileSync(wire, 'utf8'), log);
+  return f ? { root: projectRoot(String(event.cwd || process.cwd())), text: failureFarewell(f), closureId: `failure:${event.session_id}` } : null;
+}
+
 export function captureKimi(event, home) {
+  if (event && event.hook_event_name === 'StopFailure') return captureKimiFailure(event, home);
   if (!event || event.hook_event_name !== 'Stop' || !event.session_id) return null;
   const wire = kimiWireOf(event.session_id, home);
   if (!wire) return null;
@@ -196,6 +244,19 @@ if (process.argv[2] === '--selftest') {
     J({ type: 'agent.message.appended', message: { message: { role: 'assistant', content: [{ type: 'text', text: 'Bye from Kimi.' }] } } }),
   ].join('\n');
   ok(readKimiTurn(wire).text === 'Bye from Kimi.' && readKimiTurn(wire).closed, 'Kimi wire: a closing skill and the final assistant text are read');
+  // KA6: the two live record forms of a failed Kimi turn (session 104 of the origin, the owner's machine, 2026-11-21)
+  const said = J({ type: 'agent.message.appended', message: { message: { role: 'assistant', content: [{ type: 'text', text: 'Running the live check.' }] } } });
+  const printFail = J({ type: 'turn.ended', agentId: 'main', turnId: 0, reason: 'failed', error: { code: 'provider.api_error',
+    message: "You've reached your 5-hour usage limit.", name: 'APIProviderQuotaExhaustedError', retryable: false } });
+  const tuiFail = J({ turnId: 3, outcome: 'failed', errorMessage: '[object Object]', type: 'agent.turn.ended' });
+  const log = '2026-11-21T13:24:02.996Z WARN  llm request failed  turnStep=0.4 model=kimi-code/k3.1-pro errorName=quota_exhausted ' +
+    'errorMessage="You\'ve reached your 5-hour usage limit." statusCode=429';
+  const fp = readKimiFailure([said, printFail].join('\n')), ft = readKimiFailure([said, tuiFail].join('\n'), log);
+  ok(fp && fp.name === 'APIProviderQuotaExhaustedError' && /5-hour usage limit/.test(fp.message) && fp.lastText === 'Running the live check.'
+    && ft && ft.name === 'quota_exhausted' && /5-hour usage limit/.test(ft.message) && readKimiFailure([said, wire].join('\n')) === null,
+    'Kimi failure: print-mode and TUI records of a failed turn are read (the TUI one through the session log); a turn that ended well — null');
+  ok(/ended by an error before any closing ritual — APIProviderQuotaExhaustedError: You've reached/.test(failureFarewell(fp))
+    && /The chat's last words:\n\nRunning the live check\./.test(failureFarewell(fp)), 'Kimi failure farewell: the error and the last words');
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }

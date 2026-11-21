@@ -877,10 +877,17 @@ const CONTEXT_POINTER =
   '`STATUS.md` (current state); think per `PHILOSOPHY.md`; write requirements per `REQUIREMENTS_FRAMEWORK.md`; ' +
   'test per `TESTING_FRAMEWORK.md`; debug per `BUG_FIXING_FRAMEWORK.md`; execute ' +
   'tasks per the fable loop (`/fable-method`, `/fable-judge`).\n\n' + RESUME_RULE;
+// Kimi's Never Ask mode tells the model it «decides everything on its own» (researches/50 §10 of the origin): in a KAIF project that covers
+// tool calls only — the KAIF owner's word (origin decision №164, D2): the CLI tools do not ask; vision-level decisions go to the owner's
+// interview through the KAIF interactive contour. Kimi reads AGENTS.md, so the line rides in it whenever kimi-code is a target.
+const KIMI_MODE_RULE = '\nKimi Code: a permission mode that runs tools without asking (Never Ask) covers tool calls only. A vision-level ' +
+  'decision of the project is never decided alone: bring it to the owner as an interview in `interviews/` through the KAIF interactive ' +
+  'contour (`AGENT_GUIDE.md` → "Decisions the agent must NOT make alone — interviews").\n';
 const KIMI_POINTER = CONTEXT_POINTER.replaceAll('/fable-method', '/skill:fable-method')
   .replaceAll('/fable-judge', '/skill:fable-judge').replace('the /resume alias', 'the resume alias')
-  .replace('/resume in full', '/skill:resume in full');
-const contextPointer = () => AGENTS.length === 1 && AGENTS[0] === 'kimi-code' ? KIMI_POINTER : CONTEXT_POINTER;
+  .replace('/resume in full', '/skill:resume in full') + KIMI_MODE_RULE;
+const contextPointer = () => !AGENTS.includes('kimi-code') ? CONTEXT_POINTER
+  : AGENTS.length === 1 ? KIMI_POINTER : CONTEXT_POINTER + KIMI_MODE_RULE;
 // Zoo Code's own pointer gained the rule in 2.9 (epic UT2, origin ticket #120: it never carried it, and its text never changed)
 const ZOO_POINTER = '# KAIF\n\nRead `AGENT_GUIDE.md` before every task; keep `STATUS.md` current. ' +
   'Skills live in `.roo/commands/` (one `/command` per KAIF skill).\n\n' + RESUME_RULE;

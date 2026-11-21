@@ -1,6 +1,7 @@
 # Bug 145 — Kimi: хуки KAIF с `matcher = "*"` никогда не запускаются
 
-**Status:** 🔴 OPEN · **Severity:** S1 (голос до ожидания разрешения — слово владельца — молча перестал звучать; заявления о живых хуках
+**Status:** 🔧 fix in the tree, live check pending (2026-11-21 17:19 +03:00: fragment fixed, guard 5zb red on `9263794` exactly 5, the owner's config rewritten
+with a backup and `kimi doctor` OK; DONE — after a live Kimi run writes the trace of each of the five hooks, `plans/143` KA9) · **Severity:** S1 (голос до ожидания разрешения — слово владельца — молча перестал звучать; заявления о живых хуках
 неверны) · **Version/build:** KAIF 2.10 WIP (`9263794`), Kimi Code CLI 2.7.2 · **When/context:** 2026-11-21 16:52 +03:00, разведка `researches/50` (сессия 104)
 **Fixing:** `plans/143`, первый шаг адаптации после разведки — до живой приёмки критериев 37–39.
 

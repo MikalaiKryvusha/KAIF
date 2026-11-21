@@ -75,6 +75,7 @@ KAIF/
 │   ├── lib/voice-env.mjs                  # окружение голоса истока — одно место (обёртка контура и say.mjs)
 │   ├── lib/polygon-lock.mjs               # замок живого полигона .kaif/polygon.lock: сборка отказывает, пока идёт npm run test:core (EXP-0206)
 │   ├── lib/slot-form.mjs                  # форма слота-инструкции поставки (bugs/139): её читают гард сборки 5za и проба bugs139-slot-form
+│   ├── lib/kimi-hooks-form.mjs            # форма записи [[hooks]] Kimi Code (bugs/145): её читают гард сборки 5zb и проба bugs145-matcher-red
 │   ├── sandbox/probes/mutants-of.mjs      # раннер: все пробы мутантов, мутирующие названный файл (EXP-0214) — гонять до коммита
 │   ├── voice/soft_say.py                  # рендер Silero с удвоенными паузами на знаках (ресурс ЭТОЙ машины; не поставка)
 │   └── kaif.mjs                           # ручки жизненного цикла (npm run kaif:*)
@@ -91,6 +92,7 @@ KAIF/
 ├── PROJECT_ARCHITECTURE_INTERNAL_MAP.md   # внутренняя карта
 ├── HOUSE_RULES.md                         # домашние правила истока (ярус 4): инструменты · реестр пар · команды контура · досье окружения · ядро голоса; вне ядра перечитывания (2.7 CB)
 ├── CLAUDE.md                              # авто-загружаемый контекст → указывает на AGENT_GUIDE.md
+├── AGENTS.md                              # вход Kimi Code (Kimi CLAUDE.md не читает): слово resume → /skill:resume, указатель на CLAUDE.md (2.10, №164)
 ├── .kaif/kaif.json                        # маркер развёртывания (схема — Reference §12.1)
 ├── .claude/skills/<name>/SKILL.md         # экземпляр навыков этого проекта (плейсхолдеры заполнены)
 ├── plans/       (README + NN_*.md)        # пошаговые планы

@@ -28,7 +28,10 @@ Kimi usage and window size, knowledge queued to the next prompt, wire-based fare
 `PermissionRequest`. Kimi has no documented `updatedInput`; clock writes and subagent launches use an explicit
 retry with the corrected content. `kimi-permission-call.mjs` accepts `KAIF_VOICE_FILE_TOOL` or
 `.kaif/kaif.json` → `contour.voiceFileTool`; quiet hours hold and voice errors fail open. The adapter
-`framework/adapters/kimi-code.md` carries the contract and no-sound checks.
+`framework/adapters/kimi-code.md` carries the contract and no-sound checks. Kimi's matcher is an unanchored regular
+expression and an invalid one (`*`) silently matches nothing, so a Kimi entry for every tool has no matcher — the
+build refuses a fragment Kimi would never fire (guard 5zb). Under Kimi the window steps count against Kimi's own
+compaction point (0.85 of the window or 50 000 before its end, `[loop_control]` of its config), not the whole window.
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
 predicate, or names why it needs none, and the table above says which; a suppression window

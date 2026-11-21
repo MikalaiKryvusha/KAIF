@@ -56,11 +56,27 @@ project-level settings file. KAIF does not auto-write that global file during in
 `.kaif/hooks/kimi-config-fragment.toml`, validate with `kimi doctor config`, then `/reload` or start a new
 session. The fragment wires the full KAIF set, with these adaptations:
 
-- Plain stdout carries context on `UserPromptSubmit`; `SessionStart` and `PostCompact` leave a pending
-  refresh mark for the next prompt because those events are observation-only.
+- **Matchers are unanchored regular expressions.** An invalid one — `"*"`, Claude Code's spelling of «every
+  tool» — matches NOTHING, silently, and `kimi doctor config` stays green. An entry for every tool carries no
+  matcher; a named tool is anchored (`^Agent$`, `^(Write|Edit)$`). One entry with a key other than `event` ·
+  `matcher` · `command` · `timeout` drops the whole hooks section.
+- Only `UserPromptSubmit` text reaches the model; a `PreToolUse` or `Stop` block carries its reason into the
+  context; every other event is observation-only. `SessionStart` and `PostCompact` leave a pending refresh
+  mark for the next prompt.
 - `Stop` blocks through exit 2 + stderr; this covers STATUS, test debt and context-window closure levels.
+- **The window steps count against Kimi's own compaction point**, not the whole window: Kimi compacts the context
+  by itself once used ≥ `compaction_trigger_ratio` (default 0.85) of the window or used + `reserved_context_size`
+  (default 50 000) ≥ the window, both under `[loop_control]` of its config. The KAIF steps (75 · 80 · 85 · 92 %
+  by default) are taken of that point, so the cut and the soft closure come before the compaction; Kimi's trigger
+  is never changed. A step found on an observation-only event waits and goes out on the next prompt or as a
+  one-time block of the next tool call (the agent repeats that call).
 - Kimi usage is `inputOther + inputCacheRead + inputCacheCreation`; the model's `max_context_size` comes
   from Kimi's config, with `.kaif/kaif.json` → `contextWindow.tokens` as the explicit override.
+- **The owner's word during a turn:** Kimi queues a message typed while the agent works until the turn ends.
+  KAIF answers the owner at once, so set `follow_up_behavior = "steer"` in the user-level
+  `~/.kimi-code/tui.toml` (validate with `kimi doctor tui`) — the message then joins the running turn.
+- **Never Ask mode** runs tool calls without asking; it does not hand vision-level decisions to the agent — those
+  go to `interviews/` through the KAIF contour (the line rides in `AGENTS.md`).
 - Kimi documents no `updatedInput`. A placeholder write is refused with the clock fix; an Agent launch
   without the KAIF preamble is returned to the main agent with the full prompt to retry.
 - `PostToolUse` knowledge findings queue to the next `UserPromptSubmit`; the farewell hook reads Kimi's

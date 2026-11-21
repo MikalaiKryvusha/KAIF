@@ -89,6 +89,12 @@ function bigByDefault(model) {
 }
 export const usedOf = (u) => (u ? (Number(u.input_tokens) || 0) + (Number(u.cache_creation_input_tokens) || 0) + (Number(u.cache_read_input_tokens) || 0) : 0);
 export const kimiUsedOf = (u) => (u ? (Number(u.inputOther) || 0) + (Number(u.inputCacheCreation) || 0) + (Number(u.inputCacheRead) || 0) : 0);
+// The session's model is not always known to the hook (Kimi's measured record carries none): then Kimi's own `default_model` (a top-level
+// key, before the first table) names it — without it the window fell to the generic 1 000 000 floor (session 104, a real Kimi wire).
+export function kimiDefaultModel(configText) {
+  const m = /^\s*default_model\s*=\s*"([^"]+)"/m.exec(String(configText).split(/^\[/m)[0]);   // the text before the first table
+  return m ? m[1] : '';
+}
 export function kimiConfiguredWindow(model, configText) {
   const names = new Set([String(model || ''), String(model || '').split('/').pop()].filter(Boolean));
   for (const section of String(configText).split(/(?=^\[)/m)) {
@@ -100,7 +106,25 @@ export function kimiConfiguredWindow(model, configText) {
   return null;
 }
 
-// [TESTED: 2026-11-21 15:22 +03:00 · real PostToolUse + s14; report testcases/reports/2026-11-21_kimi_context_window.md] Kimi's display count is a record of its own.
+// Kimi compacts the context BY ITSELF before every step once used ≥ ratio · window OR used + reserved ≥ window (agent-core-v2
+// fullCompaction/strategy.ts:18-28, 118-134; the same code in the installed 2.7.2 bundle): ratio = [loop_control] compaction_trigger_ratio
+// (0.5..0.99, default 0.85), reserved = [loop_control] reserved_context_size (default 50 000). The KAIF steps under Kimi are counted against
+// that point, not the whole window — the cut and the soft closure come before Kimi's own compaction; Kimi's trigger is never changed
+// (the KAIF owner, decision №164 of the origin, D1). Pure: (window, Kimi config text) → the token count where Kimi compacts.
+export const KIMI_COMPACTION = { ratio: 0.85, reserved: 50000 };
+export function kimiCompactionPoint(win, configText = '') {
+  const lc = String(configText).split(/(?=^\[)/m).find((s) => /^\[loop_control\]\s*$/m.test(s.split('\n')[0])) || '';
+  const num = (k) => { const m = new RegExp(`^\\s*${k}\\s*=\\s*([0-9._]+)\\s*(?:#.*)?$`, 'm').exec(lc); return m ? Number(m[1].replaceAll('_', '')) : null; };
+  const r = num('compaction_trigger_ratio'), res = num('reserved_context_size');
+  const ratio = r !== null && r >= 0.5 && r <= 0.99 ? r : KIMI_COMPACTION.ratio;
+  const reserved = res !== null && res >= 0 ? res : KIMI_COMPACTION.reserved;
+  let point = Math.floor(win * ratio);
+  if (reserved > 0 && reserved < win) point = Math.min(point, win - reserved);
+  return point;
+}
+
+// [NOT-TESTED: 2026-11-21 15:22 +03:00 the script was proven by events fed to it directly (s14); Kimi itself never ran its PostToolUse entry —
+//  the fragment's matcher was «*» (bugs/145); the live run is plans/143 KA9] Kimi's display count is a record of its own.
 export function lastKimiContext(text) {
   const lines = String(text).split('\n');
   for (let i = lines.length - 1; i >= 0; i--) {
@@ -363,31 +387,97 @@ if (process.argv[2] === '--selftest') {
     ok(lu && lu.used === 891655 && lastKimiContext([usage, measured, compacted].join('\n')) === null,
       'Kimi: token_counting.measured wins; records before a compaction are stale');
 
+    // Kimi's own compaction point (№164, D1): 0.85 · window or window − 50 000, whichever is lower; [loop_control] moves it
+    ok(kimiCompactionPoint(1048576, '') === 891289 && kimiCompactionPoint(262144, '') === 212144
+      && kimiCompactionPoint(1048576, '[loop_control]\ncompaction_trigger_ratio = 0.95\n') === 996147
+      && kimiCompactionPoint(1048576, '[loop_control]\nreserved_context_size = 0\n') === 891289
+      && kimiCompactionPoint(1048576, '[models."x"]\nreserved_context_size = 900000\n') === 891289,
+      'Kimi compaction point: min(0.85 · W, W − 50 000); compaction_trigger_ratio and reserved_context_size are read from [loop_control] only');
+    { const cfgK = 'default_model = "kimi-code/k3.1-pro"\n\n[models."kimi-code/k3.1-pro"]\nmax_context_size = 1048576\n';
+      ok(kimiDefaultModel(cfgK) === 'kimi-code/k3.1-pro' && kimiConfiguredWindow(kimiDefaultModel(cfgK), cfgK) === 1048576
+        && kimiDefaultModel('[models."x"]\ndefault_model = "y"\n') === '',
+        'Kimi window without a known model: default_model (top level only) names it — 1 048 576, not the generic floor'); }
+    { const good = '[thinking]\neffort = "high"\n\n[[hooks]]\nevent = "PostToolUse"\ncommand = "node .kaif/hooks/context-window.mjs --kimi"\n',
+        star = good + '\n[[hooks]]\nevent = "PostToolUse"\nmatcher = "*"\ncommand = "node .kaif/hooks/knowledge-moment.mjs --kimi"\n'
+          + '\n[[hooks]]\nevent = "Notification"\nmatcher = "*"\ncommand = "terminal-notifier"\n';
+      const a = kimiWiring(good), b = kimiWiring(star), c = kimiWiring('[[hooks]]\nevent = "Stop"\ncommand = "node other.mjs"\n');
+      ok(a.wired && a.star === 0 && b.wired && b.star === 1 && !c.wired,
+        `Kimi wiring (KA4): the window hook found in config.toml; a KAIF entry with matcher "*" counted, the owner's own entry not — ${JSON.stringify({ a, b, c })}`); }
+
     const dir = mkdtempSync(join(tmpdir(), 'kaif-cw-kimi-'));
     try {
       const home = join(dir, 'home'), root = join(dir, 'project');
       mkdirSync(join(root, '.kaif'), { recursive: true });
       writeFileSync(join(root, DEPLOYMENT), JSON.stringify({ contextWindow: { tokens: 1048576 } }));
       const tp = join(home, 'sessions', 'wd_test', 'session_live', 'agents', 'main', 'wire.jsonl');
-      mkdirSync(dirname(tp), { recursive: true }); writeFileSync(tp, usage + '\n' + measured + '\n');
-      const run = (event) => spawnSync(process.execPath, [fileURLToPath(import.meta.url), '--kimi'], {
-        input: JSON.stringify({ hook_event_name: event, session_id: 'session_live', cwd: root }),
+      const at = (n) => JSON.stringify({ type: 'token_counting.measured', agentId: 'main', tokens: n });
+      mkdirSync(dirname(tp), { recursive: true }); writeFileSync(tp, usage + '\n' + at(760000) + '\n');
+      const run = (event, extra = {}) => spawnSync(process.execPath, [fileURLToPath(import.meta.url), '--kimi'], {
+        input: JSON.stringify({ hook_event_name: event, session_id: 'session_live', cwd: root, ...extra }),
         env: { ...process.env, KIMI_CODE_HOME: home }, encoding: 'utf8', timeout: 20000 });
-      const first = run('PostToolUse'), repeat = run('PostToolUse');
-      ok(first.status === 0 && /85 % full \(891655 of 1048576 tokens\)/.test(first.stdout)
-        && /\/skill:end-chat-soft/.test(first.stdout) && repeat.stdout === '',
-      'Kimi PostToolUse: 85 % starts the soft closure during the turn and speaks only once');
-      writeFileSync(tp, usage + '\n' + measured + '\n' + compacted + '\n');
-      const post = run('PostCompact'), stale = run('PostToolUse');
-      writeFileSync(tp, usage + '\n' + measured + '\n' + compacted + '\n'
-        + JSON.stringify({ type: 'token_counting.measured', agentId: 'main', tokens: 840000 }) + '\n');
-      const refilled = run('PostToolUse');
-      ok(post.stdout === '' && stale.stdout === '' && /80 % full \(840000 of 1048576 tokens\)/.test(refilled.stdout),
-        `Kimi PostCompact: old usage stays silent; a fresh 80 % measurement rearms the cut step — ${JSON.stringify({ post: post.stdout, stale: stale.stdout, refilled: refilled.stdout })}`);
+      // 760 000 of Kimi's point 891 289 = 85 % — the soft closure, found on PostToolUse (whose text reaches nobody in Kimi)
+      const post = run('PostToolUse'), pre = run('PreToolUse', { tool_name: 'Read' }), again = run('PreToolUse', { tool_name: 'Read' });
+      ok(post.status === 0 && post.stdout === '' && pre.status === 2 && /\/skill:end-chat-soft/.test(pre.stderr)
+        && /it compacts at 891289 of 1048576 tokens\) is 85 % full \(760000 of 891289 tokens\)/.test(pre.stderr)
+        && again.status === 0 && again.stderr === '',
+      `Kimi: 85 % of Kimi's own compaction point waits after PostToolUse and goes out once as a PreToolUse block — ${JSON.stringify({ post: post.stdout, pre: pre.stderr.slice(0, 200), again: again.stderr })}`);
+      writeFileSync(tp, usage + '\n' + at(760000) + '\n' + compacted + '\n');
+      const pc = run('PostCompact'), stale = run('PostToolUse'), quiet = run('PreToolUse', { tool_name: 'Read' });
+      writeFileSync(tp, usage + '\n' + at(760000) + '\n' + compacted + '\n' + at(715000) + '\n');
+      const refill = run('PostToolUse'), prompt = run('UserPromptSubmit', { prompt: 'go on' });
+      ok(pc.stdout === '' && stale.stdout === '' && quiet.status === 0 && refill.stdout === ''
+        && /80 % full \(715000 of 891289 tokens\)/.test(prompt.stdout) && /logical cut/.test(prompt.stdout),
+        `Kimi after a compaction: old counts stay silent; a fresh 80 % of the point waits and is said on the next prompt — ${JSON.stringify({ pc: pc.stdout, stale: stale.stdout, prompt: prompt.stdout.slice(0, 200) })}`);
+      const stop = spawnSync(process.execPath, [fileURLToPath(import.meta.url), '--kimi'], {
+        input: JSON.stringify({ hook_event_name: 'Stop', session_id: 'session_stop', cwd: root, usage: { inputOther: 760000, inputCacheRead: 0, inputCacheCreation: 0 } }),
+        env: { ...process.env, KIMI_CODE_HOME: home }, encoding: 'utf8', timeout: 20000 });
+      ok(stop.status === 2 && /\/skill:end-chat-soft/.test(stop.stderr), 'Kimi Stop at 85 % of the point: exit 2 — a continuation turn with the soft closure');
     } finally { rmSync(dir, { recursive: true, force: true }); }
   }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
+}
+
+// Kimi (plans/143 KA4 of the origin): the agent's own commands run with KIMI_CODE_SESSION_ID (Kimi's Bash tool sets it); Kimi's hooks are
+// wired in the user-level ~/.kimi-code/config.toml, never in .claude/settings.json — `--alive` and `--measure` judge Kimi by Kimi's files.
+// Pure: (config text) → { wired, star } — is the window hook wired, and how many KAIF entries carry the matcher Kimi never fires (bugs/145).
+// [TESTED: 2026-11-21 · selftest case «Kimi wiring (KA4)»; functional — `--alive` / `--measure` with KIMI_CODE_SESSION_ID of two REAL Kimi
+//  sessions of the origin on the owner's machine: the recorded one exit 0, the unrecorded one exit 1 with Kimi's action; --measure read the
+//  real wire (447 025 tokens); report testcases/reports/2026-11-21_ki-ka1-ka3-kimi-hooks-and-window.md]
+export function kimiWiring(configText) {
+  const entries = String(configText).split(/^\[\[hooks\]\][ \t]*\r?$/m).slice(1).map((e) => e.split(/^\[/m)[0]);
+  const ours = entries.filter((e) => /\.kaif[\\/]hooks[\\/]/.test(e));
+  return { wired: ours.some((e) => /context-window\.mjs/.test(e) && /^\s*event\s*=\s*"(?:PostToolUse|UserPromptSubmit|Stop)"/m.test(e)),
+    star: ours.filter((e) => /^\s*matcher\s*=\s*"\*"/m.test(e)).length };
+}
+const kimiIds = (sid) => [...new Set([sid, sid.startsWith('session_') ? sid.slice(8) : `session_${sid}`])];
+if (process.env.KIMI_CODE_SESSION_ID && (process.argv[2] === '--alive' || process.argv[2] === '--measure')) {
+  const sid = process.env.KIMI_CODE_SESSION_ID, root = projectRoot(process.cwd());
+  const home = process.env.KIMI_CODE_HOME || join(homedir(), '.kimi-code');
+  let configText = '';
+  try { configText = readFileSync(join(home, 'config.toml'), 'utf8'); } catch { /* no Kimi config */ }
+  const marker = readJson(join(root, DEPLOYMENT)) || {};
+  const cw = (marker.contextWindow && typeof marker.contextWindow === 'object') ? marker.contextWindow : {};
+  if (process.argv[2] === '--alive') {
+    if (marker.hooks === 'off') { console.log('KAIF hooks: off by the owner\'s word (.kaif/kaif.json "hooks": "off") — nothing to judge.'); process.exit(2); }
+    const w = kimiWiring(configText);
+    if (!w.wired) { console.log(`KAIF hooks: the context-window hook is not wired in ${join(home, 'config.toml')} (Kimi) — nothing to judge.`); process.exit(2); }
+    if (w.star) console.log(`KAIF hooks: ${w.star} KAIF hook entr${w.star === 1 ? 'y' : 'ies'} in Kimi's config carr${w.star === 1 ? 'ies' : 'y'} matcher "*" — Kimi never fires ${w.star === 1 ? 'it' : 'them'} (bugs/145); remove the matcher line.`);
+    const st = readJson(join(root, STATE)) || {}, id = kimiIds(sid).find((k) => st[k]);
+    if (id) { console.log(`KAIF hooks: running in this Kimi session (${id}) — the context-window hook recorded it at ${st[id].at}.`); process.exit(0); }
+    console.log(`KAIF hooks: NOT running in this Kimi session (${sid}) — wired in ${join(home, 'config.toml')}, yet no hook recorded the session. ` +
+      'Kimi reads hooks when a session starts: run /reload or start a new session; `kimi doctor config` names an entry that drops the whole hooks section.');
+    process.exit(1);
+  }
+  const tp = kimiIds(sid).map((k) => kimiWireOf(k)).find(Boolean) || '';
+  const lu = tp ? lastKimiContext(tailOf(tp)) : null;
+  if (!lu) { console.log(`KAIF context: nothing to measure (no Kimi wire for session ${sid}) — the window cannot close the chat; only the owner's word can.`); process.exit(2); }
+  const st = (readJson(join(root, STATE)) || {})[kimiIds(sid).find((k) => (readJson(join(root, STATE)) || {})[k]) || ''] || {};
+  const full = windowOf({ tokens: cw.tokens || kimiConfiguredWindow(st.model || lu.model || kimiDefaultModel(configText), configText), seen: lu.used });
+  const point = kimiCompactionPoint(full, configText);
+  const m = measureLine(lu.used, point, cw);
+  console.log(`${m.line.replace('the window is', `the room before Kimi's own compaction (it compacts at ${point} of ${full} tokens) is`)} (Kimi wire: ${tp})`);
+  process.exit(m.may ? 0 : 1);
 }
 
 if (process.argv[2] === '--alive') {   // never reads stdin: a hand command, not an event
@@ -431,37 +521,51 @@ if (process.argv[2] === '--kimi') {
     const id = ev.session_id, all = readJson(join(root, STATE)) || {};
     const st = all[id] || { said: [], seen: 0 };
     if (typeof ev.model === 'string' && ev.model) st.model = ev.model;
-    if (ev.hook_event_name === 'PostCompact') { st.said = []; st.seen = 0; }
+    const evn = ev.hook_event_name;
+    if (evn === 'PostCompact') { st.said = []; st.seen = 0; delete st.pending; }
     const direct = kimiUsedOf(ev.usage);
     const tp = kimiWireOf(id);
     const observed = tp ? lastKimiContext(tailOf(tp)) : null;
-    const measured = ev.hook_event_name === 'PostCompact' ? 0 : direct || (observed ? observed.used : 0);
+    const measured = evn === 'PostCompact' ? 0 : direct || (observed ? observed.used : 0);
     const used = measured || st.seen || 0;
-    let configured = null;
+    let configured = null, configText = '';
     try {
       const configHome = process.env.KIMI_CODE_HOME || join(homedir(), '.kimi-code');
-      configured = kimiConfiguredWindow(st.model, readFileSync(join(configHome, 'config.toml'), 'utf8'));
-    } catch { /* no readable Kimi config — the generic floor applies */ }
-    const win = windowOf({ tokens: cw.tokens || configured, seen: Math.max(st.seen || 0, used) });
+      configText = readFileSync(join(configHome, 'config.toml'), 'utf8');
+      configured = kimiConfiguredWindow(st.model || kimiDefaultModel(configText), configText);
+    } catch { /* no readable Kimi config — the generic floor and Kimi's default trigger apply */ }
+    const full = windowOf({ tokens: cw.tokens || configured, seen: Math.max(st.seen || 0, used) });
+    const win = kimiCompactionPoint(full, configText);   // the steps count up to Kimi's own compaction (№164, D1)
     const gate = closeGate(ev, used, win, cw);
     if (gate) { process.stdout.write(JSON.stringify(gate)); process.exit(0); }
     let d = null;
-    if (measured > 0 && ev.hook_event_name !== 'PreToolUse') {
+    if (measured > 0 && evn !== 'PreToolUse') {
       st.seen = Math.max(st.seen || 0, measured);
       st.said = keptLevels(measured, win, st.said || []);
       d = decide(measured, win, cw, st.said);
       if (d) {
-        d = { ...d, line: d.line.replaceAll('/end-chat-soft', '/skill:end-chat-soft').replaceAll('/end-chat-force', '/skill:end-chat-force') };
+        d = { ...d, line: d.line.replaceAll('/end-chat-soft', '/skill:end-chat-soft').replaceAll('/end-chat-force', '/skill:end-chat-force')
+          .replace('the window is', `the room before Kimi's own compaction (it compacts at ${win} of ${full} tokens) is`) };
         st.said = [...new Set([...st.said, ...d.levels])];
       }
     }
+    // Delivery (researches/50 §6): Kimi gives the model a hook's text on UserPromptSubmit only, and a PreToolUse or Stop block carries its
+    // reason into the context; PostToolUse, PostCompact and a Stop that does not block reach nobody. A step found there waits as `pending`
+    // and goes out once — on the next prompt as text, or on the next tool call as a one-time block (the agent repeats that call).
+    const stopBlocks = d && (d.kind === 'close' || d.kind === 'force') && evn === 'Stop';
+    if (d && evn !== 'UserPromptSubmit' && !stopBlocks) st.pending = d.line;
+    if (stopBlocks || (d && evn === 'UserPromptSubmit')) delete st.pending;
+    let say = d && evn === 'UserPromptSubmit' ? d.line : '';
+    let block = stopBlocks ? d.line : '';
+    if (!d && st.pending && evn === 'UserPromptSubmit') { say = st.pending; delete st.pending; }
+    if (!d && st.pending && evn === 'PreToolUse') { block = `${st.pending} (KAIF delivered this before your tool call; the call was not run — repeat it after you have read this.)`; delete st.pending; }
     all[id] = { ...st, at: new Date().toISOString() };
     const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
     const kept = {}; for (const k of ids) kept[k] = all[k];
     const p = join(root, STATE); mkdirSync(dirname(p), { recursive: true });
     writeFileSync(p + '.tmp', JSON.stringify(kept)); renameSync(p + '.tmp', p);
-    if (d && (d.kind === 'close' || d.kind === 'force') && ev.hook_event_name === 'Stop') { console.error(d.line); process.exit(2); }
-    if (d) process.stdout.write(d.line);
+    if (block) { console.error(block); process.exit(2); }
+    if (say) process.stdout.write(say);
   } catch { /* a hook never breaks the session */ }
   process.exit(0);
 }

@@ -4,11 +4,11 @@
   "released": "2026-11-21",
   "codename": "Confronted KAIF",
   "sha256": {
-    "KAIF-CORE.mjs": "d0363dc50ef5e0477be6c795b7aa2f1b4c5de3458fa44423407604622d8cde0a",
-    "KAIF-CORE-BUNDLE.md": "7b63a3a2311949482c3a3fa164c907323589a09d547533c1033022fb2bb84244"
+    "KAIF-CORE.mjs": "d135238c5cc38e06f4de4b5f7952dbabe2e0876137ec1682edc8254b208379a9",
+    "KAIF-CORE-BUNDLE.md": "cd9b6a333421ead0f596d0be959c1ccad9a94b126a999909ee73bf1801bdb62e"
   },
   "sourceTree": {
-    "sha256": "f6d517effafc1ff8c31e4af43e5c137f80203e80d520f38fea73b117ae2191cd",
+    "sha256": "97c785b3855d14b0b7f3ecc65105bc8eb565165198feb0c72959bbc9d653b462",
     "files": 219
   },
   "prerelease": null,

@@ -3,7 +3,12 @@
 > **Создан:** 2026-11-21 (Kimi Code; owner's «гоу» after the sixth scope revision) · **rev. 2** 2026-11-21 16:55 +03:00 (session 104, Claude Opus 5.5; owner's
 > word 2026-11-21 16:35 +03:00: «иди в интернет в разведку … и потом план. как KAIF под KIMI адаптировать»). Written in English by rule №163.
 > **Родитель:** `plans/136` criteria 37–40 · `researches/50` (harness + K3.1 Pro recon — every step below cites it) · `researches/48` · №162.
-> **Статус:** 🟢 rev. 2 2026-11-21 16:55 +03:00 — recon done; KA0 in progress; KA1–KA9 open; four owner decisions open (§ Owner decisions).
+> **Статус:** 🟢 rev. 2 2026-11-21 16:55 +03:00 — recon done; KA0 ✅ (`21584dc`); D1–D4 answered 2026-11-21 17:07 +03:00 (№164); KA1 · KA3 ·
+> D2 · D3 · D4 done 2026-11-21 17:19 +03:00 (guard 5zb red on `9263794` exactly 5; window mutants K1–K3 red on their cases; the owner's
+> `~/.kimi-code/config.toml` and new `tui.toml` written with a backup, `kimi doctor` OK; the D2 line in a Kimi install's `AGENTS.md` and in
+> the origin's new `AGENTS.md`); KA6 2026-11-21 17:28 +03:00 — a farewell on `StopFailure`, read right on the two real quota-dead sessions of the day
+> (the `PARKED:` line of the step is dropped: the farewell file alone reaches the next `/resume` first — `[ИИ]`); Kimi firing the hooks live —
+> KA9, after the 5-hour quota resets. KA2 · KA4 · KA5 · KA8 open.
 > **Вовне:** four owner decisions (interview, scenario form) · one write permission for the owner's `~/.kimi-code/config.toml`.
 
 ## Goal vector (Achieve)
@@ -78,7 +83,16 @@ owner's questions and mid-turn words reaching the agent, and a chat that dies of
 
 Total ≈ 11–18 h of work, plus the owner's answers to D1–D4.
 
-## Owner decisions (to `interviews/`, scenario form; D4 — one chat question)
+## Owner decisions — ANSWERED 2026-11-21 17:07 +03:00 in chat (journal №164)
+
+- **D1 → keep Kimi's compaction trigger; move KAIF's stages for Kimi below it** — «порог KIMI не трогаем, правим наши правила для этой ИИ
+  системы, чтобы она запускала срез и мягкое завершение чата раньше, не доходя до сжатия контекста».
+- **D2 → Never Ask stays for tool calls; vision-level decisions go to `interviews/` through the KAIF contour** — «инструменты CLI пусть не
+  спрашивает. Высокоуровневые проектые решения уровня видения - пусть носит в интервью интерактивным контуром KAIF».
+- **D3 → steer, no queue** — «Сразу, без очередей.»
+- **D4 → granted** — «РАЗРЕШАЮ ПРАВИТЬ.»
+
+The questions as they were asked (kept for the record):
 
 - **D1 — where the window stages sit under Kimi.** A: KAIF moves its stages below Kimi's compaction (soft close at the trigger minus a
   margin). B: KAIF raises Kimi's compaction trigger (`compaction_trigger_ratio` 0.95) so 75 · 80 · 85 · 92 stay. C: both.

@@ -17,6 +17,7 @@ import { readBudgets } from './budget-gate.mjs';
 import { walkerDrift, WALKER_COPIES, CORE_PATH as WALKER_CORE } from './sync-walker.mjs';
 import { templatesOwnScan } from './lib/templates-own-scan.mjs';
 import { slotFindings } from './lib/slot-form.mjs';   // 5za (bugs/139): the instruction slot form, one place
+import { kimiHookFindings } from './lib/kimi-hooks-form.mjs';   // 5zb (bugs/145): the Kimi `[[hooks]]` entry form, one place
 import { SWEEP, sweepInSkill, sweepInDoc } from './lib/sweep-stage.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -1008,6 +1009,18 @@ for (const f of readdirSync(join(ROOT, 'framework', 'tools', 'contour')).filter(
   walk(join(ROOT, 'framework', 'skills'));
   for (const f of md.sort()) for (const x of slotFindings(readFileSync(f, 'utf8'))) {
     errors.push(`5za: ${relative(ROOT, f).replace(/\\/g, '/')}:${x.line} — instruction slot ${x.kind} (bugs/139): the core reads a slot that opens on a line starting with «\`<» and closes on a line ENDING in «>\`» — put the slot on lines of its own, the next sentence on the next line`);
+  }
+}
+// 5zb. Every Kimi Code hook entry the payload ships is one Kimi fires (version KAIF 2.10; origin bugs/145 — five `matcher = "*"` entries of
+//     the Kimi fragment were never run by Kimi: its matcher is an unanchored regular expression and an invalid one matches nothing, silently;
+//     one entry with an unknown key drops the whole hooks section). Scope — every `*.toml` under framework/hooks. The form lives in ONE
+//     place, tools/lib/kimi-hooks-form.mjs. A refusal names the file, the line and the problem.
+//     [TESTED: 2026-11-21 · probe tools/sandbox/probes/bugs145-matcher-red.mjs: the fragment of 9263794 — exactly 5, all «*», named before the
+//      run; this tree — 0; four synthetic entries — one each]
+{
+  const dir = join(ROOT, 'framework', 'hooks');
+  for (const f of readdirSync(dir).filter((n) => n.endsWith('.toml')).sort()) {
+    for (const x of kimiHookFindings(readFileSync(join(dir, f), 'utf8'))) errors.push(`5zb: framework/hooks/${f}:${x.line} — Kimi hook entry (bugs/145): ${x.problem}`);
   }
 }
 // 5z. The farewell is written BY THE AGENT, the hook only repeats it (version KAIF 2.10; origin bugs/140 — a source chat in a folder

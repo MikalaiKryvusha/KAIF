@@ -23,11 +23,14 @@ const MUTANTS = [
   ['no voice at the warning', "tell the owner once by voice that the window is at ' + pct + ' %.'", "' + pct + ' %.'", /told to the owner by voice/],
   // (5)–(7) session 103, the steps of decision №161 (75 · 80 · 85 · 92): the cut step never comes · the forced step dropped · a jump says
   // the LOWEST step reached instead of the highest
+  // session 104 (plans/143 KA3, №164): the Kimi turn cases read the same steps — the cut one at 80 % of Kimi's compaction point, the jump
+  // ones at 85 % reached from below (EXP-0169: a new case reading an old mutant's predicate joins its addressees)
   ["the cut step never comes", "['cut', own('cutPct'), close - 5]", "['cut', own('cutPct'), close]",
-    [/80 % — bring the work to a logical cut/, /a jump 50 % → 86 %/, /the project's own steps/]],
+    [/80 % — bring the work to a logical cut/, /a jump 50 % → 86 %/, /the project's own steps/, /Kimi after a compaction/]],
   ['the forced step dropped', "['force', own('forcePct'), close + 7]", "['force', own('forcePct'), close]",
     [/92 % — finish the soft closure quickly/, /the project's own steps/]],
-  ['a jump says the lowest step', 'const hi = due[due.length - 1];', 'const hi = due[0];', /a jump 50 % → 86 %/],
+  ['a jump says the lowest step', 'const hi = due[due.length - 1];', 'const hi = due[0];',
+    [/a jump 50 % → 86 %/, /85 % of Kimi's own compaction point/, /Kimi after a compaction/, /Kimi Stop at 85 % of the point/]],
 ];
 const run = (mut) => {
   const d = mkdtempSync(join(tmpdir(), 'kaif-pt6m-'));
