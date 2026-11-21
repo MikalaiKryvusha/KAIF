@@ -21,7 +21,8 @@ const MUTANTS = [
     // every case that needs a WRITTEN debt; the deploy cases write their debt by another line and stay green
     addressees: ['criterion 28: an edit of src/app.mjs', 'a second file', 'hygiene', 'a heredoc body', 'criterion 28: the stop with debt', 'criterion 28: a repeated stop',
       'a run of the file itself', 'a NEW write', 'project kinds', "the project's guards", 'a game run clears the game kind',
-      "the file's name in a command", 'a later turn', 'a continued line'] },
+      "the file's name in a command", 'a later turn', 'a continued line',
+      'Kimi Write {path'] },   // session 104 (bugs/146): the Kimi write case reads the same written debt (EXP-0169)
   { name: 'hygiene clears', from: "const segments = segmentsOf(command).filter((s) => !rules.hygiene.some((r) => r.test(s)));", to: "const segments = segmentsOf(command);", addressees: ['hygiene', 'a continued line'] },
   { name: 'heredoc body is a command', from: "withoutHeredocBodies(String(command || '').replace(", to: "((x) => x)(String(command || '').replace(", addressees: ['a heredoc body'] },
   // light judge of session 98: a continued line («node x \\ ⏎ --help») split into a run and a lone --help

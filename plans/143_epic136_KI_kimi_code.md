@@ -9,6 +9,11 @@
 > the origin's new `AGENTS.md`); KA6 2026-11-21 17:28 +03:00 — a farewell on `StopFailure`, read right on the two real quota-dead sessions of the day
 > (the `PARKED:` line of the step is dropped: the farewell file alone reaches the next `/resume` first — `[ИИ]`); Kimi firing the hooks live —
 > KA9, after the 5-hour quota resets. KA2 · KA4 · KA5 · KA8 open.
+> **KA9 live 2026-11-21 17:57 +03:00 (three `kimi -p` runs, the owner's new quota window):** Kimi itself fired `UserPromptSubmit`, `SessionStart` →
+> `/skill:resume`, `PostToolUse` and `PreToolUse` without matchers (knowledge weight, the test debt of `src/app.mjs`, the closing gate at
+> «69178 of 891289»), `--alive` exit 0; found and fixed `bugs/146` (Kimi's `Write {path}`); NOT observed — a Stop block opening a
+> continuation turn in `kimi -p`, `PostToolUseFailure`, `PermissionRequest`, `PostCompact`/`StopFailure` live (`StopFailure` proven on real
+> records); next — one TUI session for the Stop path. KA4 ✅ · KA5 (bare `/resume` hint for a Kimi + Codex install) ✅ in part.
 > **Вовне:** four owner decisions (interview, scenario form) · one write permission for the owner's `~/.kimi-code/config.toml`.
 
 ## Goal vector (Achieve)

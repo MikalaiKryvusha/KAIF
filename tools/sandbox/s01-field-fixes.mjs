@@ -534,6 +534,8 @@ const kiPointer = readFileSync(join(KI, 'AGENTS.md'), 'utf8');
 ok(kiPointer.includes('AGENT_GUIDE.md') && kiPointer.includes('/skill:resume')
    && kiPointer.includes('/skill:fable-method') && !kiPointer.includes('`/fable-method`'),
    'S15 нативный AGENTS.md указывает на канон и использует явные Kimi-команды');
+ok(kiPointer.includes('Never Ask') && kiPointer.includes('interviews/') && kiPointer.includes('a bare `/resume` is Kimi'),
+   'S15 AGENTS.md несёт правило №164 D2 (Never Ask — только инструменты, развилки — интервью) и подсказку /skill:resume', kiPointer.slice(-500));
 ok(!existsSync(join(KI, 'CLAUDE.md')) && !existsSync(join(KI, '.grok')) && !existsSync(join(KI, '.cline'))
    && !existsSync(join(KI, '.roo')) && !existsSync(join(KI, '.agents')),
    'S15 узкая Kimi-установка не создаёт копии других систем');

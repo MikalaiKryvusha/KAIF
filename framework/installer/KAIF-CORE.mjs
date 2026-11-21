@@ -880,7 +880,8 @@ const CONTEXT_POINTER =
 // Kimi's Never Ask mode tells the model it «decides everything on its own» (researches/50 §10 of the origin): in a KAIF project that covers
 // tool calls only — the KAIF owner's word (origin decision №164, D2): the CLI tools do not ask; vision-level decisions go to the owner's
 // interview through the KAIF interactive contour. Kimi reads AGENTS.md, so the line rides in it whenever kimi-code is a target.
-const KIMI_MODE_RULE = '\nKimi Code: a permission mode that runs tools without asking (Never Ask) covers tool calls only. A vision-level ' +
+const KIMI_MODE_RULE = '\nKimi Code: run a KAIF skill as `/skill:<name>` — a bare `/resume` is Kimi\'s own session list, so the entry ritual ' +
+  'is `/skill:resume`. A permission mode that runs tools without asking (Never Ask) covers tool calls only. A vision-level ' +
   'decision of the project is never decided alone: bring it to the owner as an interview in `interviews/` through the KAIF interactive ' +
   'contour (`AGENT_GUIDE.md` → "Decisions the agent must NOT make alone — interviews").\n';
 const KIMI_POINTER = CONTEXT_POINTER.replaceAll('/fable-method', '/skill:fable-method')

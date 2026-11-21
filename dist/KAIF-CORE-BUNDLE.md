@@ -9,7 +9,7 @@
   "version": "2.10",
   "released": "2026-11-21",
   "build": {
-    "sourceTree": "97c785b3855d14b0b7f3ecc65105bc8eb565165198feb0c72959bbc9d653b462",
+    "sourceTree": "af636019b001c082348132c34e514349521f9844db5d2676a4cb419742bf74a5",
     "prerelease": null
   },
   "templateNotes": [
@@ -20428,8 +20428,12 @@ try {
     process.stdout.write(kimi ? line : JSON.stringify({ hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: line } }));
   } else if (event === 'PreToolUse') {
     const tool = String(input.tool_name || '');
-    const updated = rewrite(tool, input.tool_input, v);
-    const forms = asciiForms(tool, input.tool_input, fileText);
+    // Kimi's Write / Edit name the file `path`, relative to the session folder (live wire of 2026-11-21: {"path":"src/app.mjs",…};
+    // bugs/146 of the origin) — the readers below take `file_path`
+    const ti = input.tool_input && typeof input.tool_input === 'object' && !input.tool_input.file_path && typeof input.tool_input.path === 'string'
+      ? { ...input.tool_input, file_path: resolve(String(input.cwd || process.cwd()), input.tool_input.path) } : input.tool_input;
+    const updated = rewrite(tool, ti, v);
+    const forms = asciiForms(tool, ti, fileText);
     if (kimi && updated) {
       // Kimi's documented PreToolUse contract has no updatedInput: refuse this write with the cure instead of pretending it was rewritten.
       console.error(`clock-now: this write carries a time placeholder. Run \`date\`, replace the placeholder with the machine's value, then retry. Kimi has no documented updatedInput contract.`);
@@ -23106,7 +23110,10 @@ export function handle(ev, st, root, rules, now) {
   if (name !== 'PostToolUse') return { out: null, state: s };
   const say = (text) => ({ hookSpecificOutput: { hookEventName: 'PostToolUse', additionalContext: text } });
   if (WRITE_TOOLS.has(tool)) {
-    const file = (ev.tool_input || {}).file_path || (ev.tool_input || {}).notebook_path;
+    // Kimi's Write / Edit name the file `path`, relative to the session folder (live wire of 2026-11-21: {"path":"src/app.mjs",…};
+    // bugs/146 of the origin) — without it a Kimi write was never a debt and the stop never asked for a run
+    const ti = ev.tool_input || {};
+    const file = ti.file_path || ti.notebook_path || (typeof ti.path === 'string' && ti.path ? resolve(String(ev.cwd || root), ti.path) : '');
     if (!file) return { out: null, state: s };
     const rel = relative(root, resolve(root, file)).split(sep).join('/');
     if (isAbsolute(rel)) return { out: null, state: s };
@@ -23159,6 +23166,11 @@ if (argv[0] === '--selftest') {
         stop: (active) => step({ hook_event_name: 'Stop', stop_hook_active: active }) };
     };
     const ctx = (o) => (o && o.hookSpecificOutput && o.hookSpecificOutput.additionalContext) || '';
+    { // bugs/146: Kimi's Write names the file `path`, relative to the session folder — the live form {"path":"src/app.mjs","content":…}
+      let st = {};
+      const r = handle({ hook_event_name: 'PostToolUse', tool_name: 'Write', cwd: R, tool_input: { path: 'src/app.mjs', content: "console.log('ok');" } }, st, R, rulesOf({}), T);
+      ok(Object.keys((r.state && r.state.debt) || {}).includes('src/app.mjs'), 'Kimi Write {path: "src/app.mjs"} — a debt, as a Claude Write {file_path} is (bugs/146)');
+    }
     const D = rulesOf({});
     let s = session(D);
     ok(s.edit('README.md') === null && s.edit('package.json') === null && Object.keys(s.debt).length === 0, 'a document and a config are not test debt');

@@ -258,8 +258,12 @@ try {
     process.stdout.write(kimi ? line : JSON.stringify({ hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: line } }));
   } else if (event === 'PreToolUse') {
     const tool = String(input.tool_name || '');
-    const updated = rewrite(tool, input.tool_input, v);
-    const forms = asciiForms(tool, input.tool_input, fileText);
+    // Kimi's Write / Edit name the file `path`, relative to the session folder (live wire of 2026-11-21: {"path":"src/app.mjs",…};
+    // bugs/146 of the origin) — the readers below take `file_path`
+    const ti = input.tool_input && typeof input.tool_input === 'object' && !input.tool_input.file_path && typeof input.tool_input.path === 'string'
+      ? { ...input.tool_input, file_path: resolve(String(input.cwd || process.cwd()), input.tool_input.path) } : input.tool_input;
+    const updated = rewrite(tool, ti, v);
+    const forms = asciiForms(tool, ti, fileText);
     if (kimi && updated) {
       // Kimi's documented PreToolUse contract has no updatedInput: refuse this write with the cure instead of pretending it was rewritten.
       console.error(`clock-now: this write carries a time placeholder. Run \`date\`, replace the placeholder with the machine's value, then retry. Kimi has no documented updatedInput contract.`);

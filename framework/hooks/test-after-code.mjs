@@ -157,7 +157,10 @@ export function handle(ev, st, root, rules, now) {
   if (name !== 'PostToolUse') return { out: null, state: s };
   const say = (text) => ({ hookSpecificOutput: { hookEventName: 'PostToolUse', additionalContext: text } });
   if (WRITE_TOOLS.has(tool)) {
-    const file = (ev.tool_input || {}).file_path || (ev.tool_input || {}).notebook_path;
+    // Kimi's Write / Edit name the file `path`, relative to the session folder (live wire of 2026-11-21: {"path":"src/app.mjs",…};
+    // bugs/146 of the origin) — without it a Kimi write was never a debt and the stop never asked for a run
+    const ti = ev.tool_input || {};
+    const file = ti.file_path || ti.notebook_path || (typeof ti.path === 'string' && ti.path ? resolve(String(ev.cwd || root), ti.path) : '');
     if (!file) return { out: null, state: s };
     const rel = relative(root, resolve(root, file)).split(sep).join('/');
     if (isAbsolute(rel)) return { out: null, state: s };
@@ -210,6 +213,11 @@ if (argv[0] === '--selftest') {
         stop: (active) => step({ hook_event_name: 'Stop', stop_hook_active: active }) };
     };
     const ctx = (o) => (o && o.hookSpecificOutput && o.hookSpecificOutput.additionalContext) || '';
+    { // bugs/146: Kimi's Write names the file `path`, relative to the session folder — the live form {"path":"src/app.mjs","content":…}
+      let st = {};
+      const r = handle({ hook_event_name: 'PostToolUse', tool_name: 'Write', cwd: R, tool_input: { path: 'src/app.mjs', content: "console.log('ok');" } }, st, R, rulesOf({}), T);
+      ok(Object.keys((r.state && r.state.debt) || {}).includes('src/app.mjs'), 'Kimi Write {path: "src/app.mjs"} — a debt, as a Claude Write {file_path} is (bugs/146)');
+    }
     const D = rulesOf({});
     let s = session(D);
     ok(s.edit('README.md') === null && s.edit('package.json') === null && Object.keys(s.debt).length === 0, 'a document and a config are not test debt');
