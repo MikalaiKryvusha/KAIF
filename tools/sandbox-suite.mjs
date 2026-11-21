@@ -130,6 +130,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { basename, dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { tmpdir } from 'node:os';
 import { auditFixedTempNames, selfProof } from './lib/temp-root.mjs';
 import { scanSuite } from './sandbox-mute-guard.mjs';
 import { takePolygonLock } from './lib/polygon-lock.mjs'; // EXP-0206: a build refuses while this run lives
@@ -295,6 +296,10 @@ if (!process.env.KAIF_DIST) {
   }
 }
 takePolygonLock(REPO); // EXP-0206: `node tools/build-framework.mjs` refuses while this run holds .kaif/polygon.lock
+// plans/143 KA2 (2.10): an install task names the Kimi wiring item only when Kimi Code is set up for the user — on a machine that has
+// it, every suite ticking every item would then judge the owner's REAL ~/.kimi-code/config.toml. The polygon points Kimi's home at a
+// folder that does not exist (no item, nothing read or written); a suite that tests Kimi sets its own sandbox KIMI_CODE_HOME.
+process.env.KIMI_CODE_HOME = join(tmpdir(), `kaif-polygon-no-kimi-${process.pid}`);
 console.log(`✅ preflight: run roots are unique by construction · no assertion that can never fail · no mute command · every machinery file carries a test-status marker · the contour generator never reaches the owner from a sandbox run · dist is fresh against framework/ (${SUITES.length} suites)`);
 
 // Упавший свод называется ПОИМЁННО с кодом/сигналом (bugs/61, наблюдение 2026-08-21): прежний

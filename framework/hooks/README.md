@@ -33,6 +33,17 @@ expression and an invalid one (`*`) silently matches nothing, so a Kimi entry fo
 build refuses a fragment Kimi would never fire (guard 5zb). Under Kimi the window steps count against Kimi's own
 compaction point (0.85 of the window or 50 000 before its end, `[loop_control]` of its config), not the whole window.
 
+**Wiring Kimi Code — one dispatcher per user (2.10).** Kimi reads hooks only from the user-level `config.toml` and runs a
+command from the session folder, so `node .kaif/hooks/x.mjs` warns in every other folder and finds nothing from a subfolder.
+Run `node .kaif/kaif-core.mjs wire-hooks --kimi`: it copies `kimi-hook.mjs` to `<Kimi home>/kaif/` and writes the fragment's
+entries with every command routed through it, between two marker lines a repeat run rewrites (a hand merge of the fragment is
+replaced; the owner's own lines stay in place; a timestamped backup first; `kimi doctor config` validates before the swap). The
+dispatcher walks up from the session folder to `.kaif/kaif.json` and runs that project's own script with the same input — a
+folder without KAIF, or with `"hooks": "off"`, stays silent. `node .kaif/hooks/kimi-hook.mjs --selftest` proves it. By Kimi Code
+2.7.2 source, the `Stop` continuation opens in a session that stays alive (TUI, an editor over ACP, `kimi web`); `kimi -p` keeps
+it only while other work is pending (a turn, a goal, a cron fire, a background task), and a turn ending with a queued request runs
+no `Stop` at all.
+
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
 predicate, or names why it needs none, and the table above says which; a suppression window
 exists where repeating would be noise (`stop-status-guard.mjs` fires at most once per session) and is absent ON

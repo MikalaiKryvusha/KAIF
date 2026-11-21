@@ -402,7 +402,9 @@ if (process.argv[2] === '--selftest') {
           + '\n[[hooks]]\nevent = "Notification"\nmatcher = "*"\ncommand = "terminal-notifier"\n';
       const a = kimiWiring(good), b = kimiWiring(star), c = kimiWiring('[[hooks]]\nevent = "Stop"\ncommand = "node other.mjs"\n');
       ok(a.wired && a.star === 0 && b.wired && b.star === 1 && !c.wired,
-        `Kimi wiring (KA4): the window hook found in config.toml; a KAIF entry with matcher "*" counted, the owner's own entry not — ${JSON.stringify({ a, b, c })}`); }
+        `Kimi wiring (KA4): the window hook found in config.toml; a KAIF entry with matcher "*" counted, the owner's own entry not — ${JSON.stringify({ a, b, c })}`);
+      const d = kimiWiring('[[hooks]]\nevent = "PostToolUse"\ncommand = "node \\"C:/Users/o/.kimi-code/kaif/kimi-hook.mjs\\" context-window.mjs --kimi"\n');
+      ok(d.wired, `Kimi wiring (KA2): an entry routed through the dispatcher kimi-hook.mjs counts as the window hook — ${JSON.stringify(d)}`); }
 
     const dir = mkdtempSync(join(tmpdir(), 'kaif-cw-kimi-'));
     try {
@@ -446,7 +448,7 @@ if (process.argv[2] === '--selftest') {
 //  real wire (447 025 tokens); report testcases/reports/2026-11-21_ki-ka1-ka3-kimi-hooks-and-window.md]
 export function kimiWiring(configText) {
   const entries = String(configText).split(/^\[\[hooks\]\][ \t]*\r?$/m).slice(1).map((e) => e.split(/^\[/m)[0]);
-  const ours = entries.filter((e) => /\.kaif[\\/]hooks[\\/]/.test(e));
+  const ours = entries.filter((e) => /\.kaif[\\/]hooks[\\/]|kimi-hook\.mjs/.test(e));   // a hand merge, or `wire-hooks --kimi` (the dispatcher, KA2)
   return { wired: ours.some((e) => /context-window\.mjs/.test(e) && /^\s*event\s*=\s*"(?:PostToolUse|UserPromptSubmit|Stop)"/m.test(e)),
     star: ours.filter((e) => /^\s*matcher\s*=\s*"\*"/m.test(e)).length };
 }

@@ -33,9 +33,9 @@
 //   --force             overwrite existing non-empty files.
 //
 // Exit code 0 = the step is 100% satisfied; non-zero = incomplete (fix and re-run).
-import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync, readdirSync, rmSync, unlinkSync, mkdtempSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync, readdirSync, rmSync, unlinkSync, mkdtempSync, copyFileSync, renameSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
-import { tmpdir } from 'node:os';
+import { tmpdir, homedir } from 'node:os';
 import { execSync, execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 
@@ -1176,6 +1176,7 @@ function writeAdaptationTask(unresolvedLive, translated, meta, values = {}) {
   // a 352-line task with 80 useful). The item names the origin ONLY on tracking: origin — fieldReportDelivery() (2.8, epic CH,
   // origin #78: there the report is delivered in the same move); an anonymous deployment's task never reaches for the origin.
   if (wantsWireHooks()) items.push(wireHooksItem());
+  if (wantsKimiHooks()) items.push(kimiWireItem());   // KA2 (2.10): Kimi Code set up on this machine
   items.push(['field-report', `MANDATORY field install report (the framework's feedback loop — written even when the install went smoothly): create \`reports/KAIF_UPDATES/<PROJECT>_KAIF_${meta.version}_INSTALL_REPORT.md\`, strictly in English, terse. Sections (genre canon: reports/README.md): 1. Chronology with numbers · 2. Friction and rakes (verbatim evidence; an explicit framework defect/improvement also gets its own ticket — skill /report-bug, templates A/B) · 3. What confused a cold agent (top 3) · 4. Final state and judge verdict (run a /fable-judge pass over the install; every number is a command's output).${fieldReportDelivery()}`]);
   items.push(['verify', 'Run `node .kaif/kaif-core.mjs verify-final` — it checks these checkpoints and self-cleans the installer. Then commit `chore: deploy KAIF`.']);
 
@@ -1790,6 +1791,7 @@ function writeUpdateTask(diverged, meta, contextLine, opts = {}) {
   // "nothing stops the first closing" is a printed verdict and never an absent item.
   if (ownerVoice) items.push(['owner-voice-core', ownerVoiceInstruction(ownerVoice)]);
   if (wantsWireHooks()) items.push(wireHooksItem());
+  if (wantsKimiHooks()) items.push(kimiWireItem());   // KA2 (2.10): Kimi Code set up on this machine
   const gates = {}, forecast = closingGatesForecast(meta.version, gates);
   const baselineItem = lintBaselineItem(gates.unbaselined);
   if (baselineItem) items.push(baselineItem);
@@ -4771,6 +4773,17 @@ function cmdCheckpoint() {
       verdictLine = `${tag}: wire-hooks NOT wired (${why}): ${v}`;
     }
   }
+  if (id === 'wire-kimi-hooks') {
+    // KA2 (2.10): the item EXECUTES its gate like wire-hooks — the Kimi config routes the delivered hooks through the dispatcher, the owner
+    // opted out, or Kimi Code is not set up here → recorded; NOT wired → only with the words of a refusal, never silently
+    const kw = kimiWiringState();
+    if (!['wired', 'off', 'no-kimi'].includes(kw.state)) {
+      const { firstLine: v } = readOwnerText(val('--verdict'), val('--verdict-file'), 'verdict');
+      const why = kw.state === 'missing' ? `${kw.cfg} does not route the delivered hooks through ${kw.disp}` : kw.error || `${KIMI_FRAGMENT} or ${KIMI_DISPATCHER} missing`;
+      if (!v) die(`the Kimi Code hooks are NOT wired (${why}) — run \`node .kaif/kaif-core.mjs wire-hooks --kimi\`; if your harness REFUSED that write, do not work around it: record its words — \`checkpoint wire-kimi-hooks --verdict "<the refusal>"\``);
+      verdictLine = `${tag}: wire-kimi-hooks NOT wired (${why}): ${v}`;
+    }
+  }
   if (id === 'lint-baselines') {
     // SW2 (2.9, origin issue #115): the item EXECUTES its gate — every lint the task named has its baseline on disk now
     const absent = CLOSING_LINTS.filter(([, mod, b]) => b && task.includes(`node ${mod} check --write-baseline`) && !existsSync(b));
@@ -5118,6 +5131,7 @@ const wireHooksItem = () => ['wire-hooks', 'Wire the delivered refresh hooks: ru
 const wantsWireHooks = () => { try { if (readJson(KAIF_JSON).hooks === 'off') return false; } catch { /* no marker yet — the run\'s agent list decides */ } return AGENTS.some((a) => HOOK_SYSTEMS.includes(a)); };
 
 function cmdWireHooks() {
+  if (has('--kimi')) return cmdWireKimiHooks();   // KA2 (2.10): Kimi Code's user-level config, below
   const st = hookWiringState();
   const localNote = (s) => { if (s.retiredLocal && s.retiredLocal.length) console.error(`⚠ ${HOOK_SETTINGS_LOCAL} (personal, never edited by KAIF) still runs a hook KAIF retired: ${s.retiredLocal.join(' · ')} — remove that entry by hand`); };
   if (st.state === 'off') {
@@ -5126,7 +5140,7 @@ function cmdWireHooks() {
     localNote(st);
     return;
   }
-  if (st.state === 'no-system') { log(`= no agent system of this deployment reads ${HOOK_SETTINGS} (agents: ${st.agents.join(', ')}) — nothing to wire`); return; }
+  if (st.state === 'no-system') { log(`= no agent system of this deployment reads ${HOOK_SETTINGS} (agents: ${st.agents.join(', ')}) — nothing to wire${st.agents.includes('kimi-code') ? '; Kimi Code reads its user-level config: `node .kaif/kaif-core.mjs wire-hooks --kimi`' : ''}`); return; }
   if (st.state === 'no-fragment') die(`${HOOK_FRAGMENT} not found — the refresh-hooks module is not deployed here (run \`node .kaif/kaif-core.mjs check\`)`);
   if (st.state === 'unreadable') {
     console.error(`⚠ ${st.file}: ${st.error} — hooks NOT wired and the file is untouched: fix it, or merge ${HOOK_FRAGMENT} into it by hand`);
@@ -5168,6 +5182,148 @@ function cmdWireHooks() {
   log(`  ${st.missing.reduce((n, m) => n + m.group.hooks.length, 0)} of ${st.total} KAIF hooks added; ${raw == null ? 'a new file' : 'the owner\'s entries kept'}${raw != null && keepArrayStyle(JSON.stringify(orig, null, indent), raw, new Set()) + '\n' !== raw.replace(/^\uFEFF/, '').replace(/\r\n/g, '\n') ? ' (the file was re-serialized with its own indent — values unchanged, proven before the write)' : ''}; opt out: "hooks": "off" in .kaif/kaif.json`);
   if (st.retired.length) log(`  ${st.retired.length} entr${st.retired.length === 1 ? 'y' : 'ies'} of retired KAIF hooks removed — the owner's other entries and their order kept, values proven before the write`);
   localNote(st);
+}
+
+// ── KA2 (2.10, plans/143 of the origin): Kimi Code hooks through ONE user-level dispatcher ─────────────────────────────────────────────
+// Kimi reads hooks ONLY from the user-level <Kimi home>/config.toml (no project-level file, by its design) and runs each command through
+// the shell from the SESSION folder, not the git root. The fragment's project-relative commands (`node .kaif/hooks/x.mjs`) therefore warn
+// in every folder that is not a KAIF project and find nothing from a subfolder of one. `wire-hooks --kimi` copies the dispatcher
+// .kaif/hooks/kimi-hook.mjs to <Kimi home>/kaif/kimi-hook.mjs and writes the fragment's entries into config.toml with every command routed
+// through it (`node "<dispatcher>" <script.mjs> <args…>`), between two marker lines a repeat run rewrites. The dispatcher walks up from the
+// session folder to the project and runs THAT project's own hook script; a folder without KAIF stays silent — so one wiring serves every
+// KAIF project of the machine and costs nothing elsewhere, which is why the agent wires it like the Claude Code hooks, without a question
+// to the owner (the KAIF owner's rule, origin #115). Entries of a hand merge (`.kaif/hooks/` commands, no marker lines) are replaced with
+// the comment lines right above them; every other line keeps its place (proven before the write — the owner's tables, keys and entries
+// compare equal, in order). The candidate is validated by `kimi doctor config <file>` when Kimi is on PATH; a timestamped backup goes
+// first. "hooks": "off" in .kaif/kaif.json refuses. The newest KAIF project of a machine should wire: an older one's fragment may lack a
+// hook — the dispatcher skips a script a project does not have, so wiring from the newest is safe for the older ones.
+// [NOT-TESTED: s14 «Kimi wire-hooks» cases (sandbox KIMI_CODE_HOME); the owner's real config — the KA2 run report of the origin]
+const KIMI_FRAGMENT = '.kaif/hooks/kimi-config-fragment.toml';
+const KIMI_DISPATCHER = '.kaif/hooks/kimi-hook.mjs';
+const KIMI_BEGIN = '# >>> KAIF hooks';
+const KIMI_END = '# <<< KAIF hooks';
+const KAIF_KIMI_COMMAND_RE = /\.kaif[\\/]hooks[\\/]|kimi-hook\.mjs/;
+const KIMI_DOCTOR_TIMEOUT_MS = 60000;
+const kimiHome = () => process.env.KIMI_CODE_HOME || join(homedir(), '.kimi-code');
+const kimiDispatcherAt = (home) => join(home, 'kaif', 'kimi-hook.mjs');
+const TOML_HEADER_RE = /^\s*\[\[?[^[\]]+\]\]?\s*(#.*)?$/;
+const isTomlNote = (l) => /^\s*(#.*)?$/.test(l);   // a comment or a blank line
+const HOOKS_HEADER_RE = /^\s*\[\[\s*hooks\s*\]\]\s*(#.*)?$/;   // `[[hooks]]`, also with a comment after it (judge of session 105, finding H)
+// a comment line KAIF wrote — it names KAIF or is a comment line of the fragment; only such a line goes with a KAIF entry (finding A)
+const isKaifNote = (l, fragNotes) => /^\s*#/.test(l) && (/KAIF/.test(l) || fragNotes.has(l.trim()));
+// the [[hooks]] entries of config lines: { start (its header), end (its last content line), kaif (its command runs a KAIF hook) }
+function kimiHookBlocks(lines) {
+  const heads = [];
+  lines.forEach((l, i) => { if (TOML_HEADER_RE.test(l)) heads.push(i); });
+  const out = [];
+  heads.forEach((h, k) => {
+    if (!HOOKS_HEADER_RE.test(lines[h])) return;
+    let end = (k + 1 < heads.length ? heads[k + 1] : lines.length) - 1;
+    while (end > h && isTomlNote(lines[end])) end--;
+    out.push({ start: h, end, kaif: lines.slice(h + 1, end + 1).some((l) => /^\s*command\s*=/.test(l) && KAIF_KIMI_COMMAND_RE.test(l)) });
+  });
+  return out;
+}
+// the managed section: the fragment's entries, every command routed through the dispatcher; a fragment line of another shape refuses
+function kimiSection(fragment, dispatcher) {
+  const disp = dispatcher.replace(/\\/g, '/');
+  const lines = [`${KIMI_BEGIN} — written by \`node .kaif/kaif-core.mjs wire-hooks --kimi\`: every KAIF project of this machine runs its own`,
+    `# hooks through the dispatcher below, other folders stay silent. A repeat run rewrites these lines; change ${KIMI_FRAGMENT} instead.`];
+  let entries = 0;
+  const notes = new Set();
+  for (const line of fragment.replace(/^\uFEFF/, '').split(/\r?\n/)) {
+    if (isTomlNote(line)) { if (line.trim()) notes.add(line.trim()); continue; }
+    const t = line.trim();
+    if (t === '[[hooks]]') { lines.push('', t); entries++; continue; }
+    const m = /^command\s*=\s*"node \.kaif\/hooks\/([\w.-]+\.mjs)((?: [^"\\]*)?)"$/.exec(t);
+    if (m) { lines.push(`command = ${JSON.stringify(`node "${disp}" ${m[1]}${m[2]}`)}`); continue; }
+    if (/^(event|matcher|timeout)\s*=/.test(t)) { lines.push(t); continue; }
+    return { error: `${KIMI_FRAGMENT}: a line the dispatcher cannot route — ${JSON.stringify(t)}` };
+  }
+  lines.push('', KIMI_END);
+  return { lines, entries, notes };
+}
+// config text → the same text with the managed section in place of the previous one and of every unmarked KAIF entry
+function kimiConfigWith(raw, section) {
+  const bom = raw.startsWith('\uFEFF') ? '\uFEFF' : '', eol = raw.includes('\r\n') ? '\r\n' : '\n';
+  const lines = raw.replace(/^\uFEFF/, '').split(/\r?\n/);
+  const b = lines.findIndex((l) => l.startsWith(KIMI_BEGIN)), e = lines.findIndex((l) => l.startsWith(KIMI_END));
+  if ((b === -1) !== (e === -1) || e < b) return { error: `the KAIF section of the Kimi config is broken (a «${KIMI_BEGIN}» line ${b === -1 ? 'missing' : 'at ' + (b + 1)}, a «${KIMI_END}» line ${e === -1 ? 'missing' : 'at ' + (e + 1)}) — fix it by hand` };
+  const drop = new Set();
+  if (b !== -1) for (let i = b; i <= e; i++) drop.add(i);
+  let removed = 0;
+  for (const blk of kimiHookBlocks(lines)) {
+    if (!blk.kaif || drop.has(blk.start)) continue;
+    removed++;
+    let lead = blk.start;
+    while (lead > 0 && isKaifNote(lines[lead - 1], section.notes) && !drop.has(lead - 1)) lead--;   // KAIF's own comment lines right above it
+    if (lead > 0 && lines[lead - 1].trim() === '' && !drop.has(lead - 1)) lead--;      // and the one blank line that set it apart
+    for (let i = lead; i <= blk.end; i++) drop.add(i);
+  }
+  const kept = lines.filter((_, i) => !drop.has(i));
+  while (kept.length && kept[kept.length - 1].trim() === '') kept.pop();
+  return { text: bom + [...kept, ...(kept.length ? [''] : []), ...section.lines, ''].join(eol), removed, hadSection: b !== -1 };
+}
+// the owner's lines of a config — every table, key, entry AND comment that is not KAIF's (a KAIF hook entry, the marked section, a
+// comment KAIF wrote), in order; blanks aside. Comments are in: the first proof skipped them, and an owner's commented-out entry above a
+// KAIF one went with it unseen (judge of session 105, finding A).
+function kimiOwnerContent(text, fragNotes) {
+  const lines = text.replace(/^\uFEFF/, '').split(/\r?\n/), ours = new Set();
+  for (const blk of kimiHookBlocks(lines)) if (blk.kaif) for (let i = blk.start; i <= blk.end; i++) ours.add(i);
+  const b = lines.findIndex((l) => l.startsWith(KIMI_BEGIN)), e = lines.findIndex((l) => l.startsWith(KIMI_END));
+  if (b !== -1 && e >= b) for (let i = b; i <= e; i++) ours.add(i);
+  return lines.filter((l, i) => !ours.has(i) && l.trim() !== '' && !isKaifNote(l, fragNotes)).map((l) => l.trim());
+}
+// where the Kimi wiring stands — read-only; shared by `wire-hooks --kimi`, the install/update task and its checkpoint
+function kimiWiringState() {
+  let marker = {};
+  try { marker = readJson(KAIF_JSON); } catch { /* no marker yet — the run's own flags decide */ }
+  const home = kimiHome(), cfg = join(home, 'config.toml'), disp = kimiDispatcherAt(home);
+  if (marker.hooks === 'off') return { state: 'off', home, cfg };
+  if (!existsSync(cfg)) return { state: 'no-kimi', home, cfg };
+  if (!okOnDisk(KIMI_FRAGMENT) || !okOnDisk(KIMI_DISPATCHER)) return { state: 'no-fragment', home, cfg };
+  const section = kimiSection(readFileSync(KIMI_FRAGMENT, 'utf8'), disp);
+  if (section.error) return { state: 'unreadable', error: section.error, home, cfg };
+  const raw = readFileSync(cfg, 'utf8'), next = kimiConfigWith(raw, section);
+  if (next.error) return { state: 'unreadable', error: next.error, home, cfg };
+  const dispOk = existsSync(disp) && readFileSync(disp, 'utf8') === readFileSync(KIMI_DISPATCHER, 'utf8');
+  return { state: next.text === raw && dispOk ? 'wired' : 'missing', home, cfg, disp, raw, section, next, dispOk };
+}
+const wantsKimiHooks = () => AGENTS.includes('kimi-code') && !['off', 'no-kimi'].includes(kimiWiringState().state);
+const kimiWireItem = () => ['wire-kimi-hooks', 'Wire the Kimi Code hooks: run `node .kaif/kaif-core.mjs wire-hooks --kimi` now, WITHOUT asking the owner (KAIF 2.10: Kimi reads hooks only from its user-level config.toml, so the run copies ONE dispatcher to <Kimi home>/kaif/ and routes the delivered entries through it — every KAIF project of this machine runs its own hooks, other folders stay silent; the old config is backed up first and the new one validated by `kimi doctor config`). The write is yours and open to your harness: if it REFUSES, do not work around it — record its words with `node .kaif/kaif-core.mjs checkpoint wire-kimi-hooks --verdict "<the refusal>"` and give the owner that one command. Kimi reads hooks when a session starts: in the NEXT Kimi session (or after /reload) `node .kaif/hooks/context-window.mjs --alive` tells whether they run.'];
+
+function cmdWireKimiHooks() {
+  const st = kimiWiringState();
+  if (st.state === 'off') { log(`= "hooks": "off" in .kaif/kaif.json — the owner opted out; ${st.cfg} untouched`); return; }
+  if (st.state === 'no-kimi') { log(`= no Kimi Code config at ${st.cfg} (Kimi Code is not set up for this user, or KIMI_CODE_HOME points elsewhere) — nothing to wire`); return; }
+  if (st.state === 'no-fragment') die(`${KIMI_FRAGMENT} or ${KIMI_DISPATCHER} not found — the refresh-hooks module is not deployed here (run \`node .kaif/kaif-core.mjs check\`)`);
+  if (st.state === 'unreadable') die(`${st.error} — ${st.cfg} untouched`);
+  if (st.state === 'wired') { log(`= all ${st.section.entries} KAIF hooks already wired in ${st.cfg} through ${st.disp} — untouched`); return; }
+  // PROOF before the write: the owner's own lines stay, in order; the only KAIF entries left are the section's
+  const after = st.next.text.replace(/^\uFEFF/, '').split(/\r?\n/);
+  const kaifAfter = kimiHookBlocks(after).filter((blk) => blk.kaif).length;
+  if (JSON.stringify(kimiOwnerContent(st.raw, st.section.notes)) !== JSON.stringify(kimiOwnerContent(st.next.text, st.section.notes)) || kaifAfter !== st.section.entries)
+    die(`the rewritten ${st.cfg} would change the owner's own lines — refusing; merge ${KIMI_FRAGMENT} by hand`);
+  // the dispatcher goes in only after the config passed (judge of session 105: it stayed behind on a refusal)
+  const placeDispatcher = () => { if (!st.dispOk) { mkdirSync(dirname(st.disp), { recursive: true }); copyFileSync(KIMI_DISPATCHER, st.disp); log(`+ ${st.disp}: the KAIF hook dispatcher`); } };
+  if (st.next.text === st.raw) { placeDispatcher(); log(`= ${st.cfg} already routes the KAIF hooks through the dispatcher — untouched`); return; }
+  const cand = st.cfg + '.kaif-new';
+  writeFileSync(cand, st.next.text);
+  const present = spawnSync('kimi --version', { shell: true, encoding: 'utf8', timeout: KIMI_DOCTOR_TIMEOUT_MS }).status === 0;
+  if (present) {
+    const doc = spawnSync(`kimi doctor config "${cand}"`, { shell: true, encoding: 'utf8', timeout: KIMI_DOCTOR_TIMEOUT_MS });
+    if (doc.status !== 0) { rmSync(cand, { force: true }); die(`kimi doctor config refused the rewritten config (exit ${doc.status}) — ${st.cfg} untouched:\n${`${doc.stdout || ''}${doc.stderr || ''}`.trim().slice(0, 1200)}`); }
+  }
+  const d = new Date(), p2 = (n) => String(n).padStart(2, '0');
+  const backup = `${st.cfg}.${d.getFullYear()}${p2(d.getMonth() + 1)}${p2(d.getDate())}-${p2(d.getHours())}${p2(d.getMinutes())}${p2(d.getSeconds())}.bak`;
+  copyFileSync(st.cfg, backup);
+  renameSync(cand, st.cfg);
+  placeDispatcher();
+  if (st.next.removed) log(`- ${st.cfg}: ${st.next.removed} KAIF entr${st.next.removed === 1 ? 'y' : 'ies'} of a hand merge removed (project-relative \`.kaif/hooks/\` commands; a line changed by hand inside one is not carried over — the backup keeps it)`);
+  log(`+ ${st.cfg}: ${st.section.entries} KAIF hooks ${st.next.hadSection ? 're-written' : 'wired'} through ${st.disp}; the owner's other lines kept in order (proven before the write)`);
+  log(`  backup: ${backup}`);
+  log(present ? '  validated: `kimi doctor config` — OK' : '⚠ not validated: `kimi` is not on PATH — run `kimi doctor config` before the next session');
+  log('  Kimi reads hooks when a session starts: /reload or a new session, then `node .kaif/hooks/context-window.mjs --alive` from inside it');
 }
 
 // The owner's array style in the file `wire-hooks` writes (2.9, epic SW judge J-SW2 — the functional run over clones of five real v2.8
@@ -5212,7 +5368,7 @@ const COMMANDS = {
   report:          { fn: cmdReport,       mutating: true, desc: 'deliver a KAIF-defect ticket to the origin via gh (standing authorization, issue #15) and write the URL into it; --dry-run calls nothing', flags: { '--dry-run': false }, pos: 1 },
   'project-name':  { fn: cmdProjectName,  mutating: true, desc: "record the project's CANONICAL name (identity is the owner's; heals the marker and the fill map)", flags: { '--name-file': true }, pos: 1 },
   sync:            { fn: cmdSync,         mutating: true, desc: 're-sync per-system skill mirrors from .claude/skills/', flags: {}, pos: 0 },
-  'wire-hooks':    { fn: cmdWireHooks,    mutating: true, desc: 'wire the delivered refresh hooks into .claude/settings.json — additive, the owner\'s entries kept, a repeat run changes nothing; "hooks": "off" in .kaif/kaif.json opts out (2.9, issue #115)', flags: {}, pos: 0 },
+  'wire-hooks':    { fn: cmdWireHooks,    mutating: true, desc: 'wire the delivered refresh hooks into .claude/settings.json — additive, the owner\'s entries kept, a repeat run changes nothing; "hooks": "off" in .kaif/kaif.json opts out (2.9, issue #115); --kimi wires Kimi Code\'s user-level config.toml through one dispatcher (backup first, `kimi doctor config` before the swap; 2.10)', flags: { '--kimi': false }, pos: 0 },
   'adopt-current': { fn: cmdAdoptCurrent, mutating: true, desc: 'rebuild the snapshot after a manual migration', flags: {}, pos: 0 },
 };
 

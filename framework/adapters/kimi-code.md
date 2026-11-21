@@ -52,9 +52,12 @@ skills in `.claude/skills/`, then run `node .kaif/kaif-core.mjs sync`; do not fo
 ## Hooks (optional enforcement)
 
 Kimi hooks live in the user-level `~/.kimi-code/config.toml` or an enabled plugin manifest, not in a
-project-level settings file. KAIF does not auto-write that global file during installation. Merge
-`.kaif/hooks/kimi-config-fragment.toml`, validate with `kimi doctor config`, then `/reload` or start a new
-session. The fragment wires the full KAIF set, with these adaptations:
+project-level settings file, and a hook command runs from the session folder. Wire them with
+`node .kaif/kaif-core.mjs wire-hooks --kimi` (the install and update tasks name it when Kimi Code is set up for the
+user): one dispatcher, `<Kimi home>/kaif/kimi-hook.mjs`, runs each KAIF project's own hook scripts — from any subfolder,
+silent in folders without KAIF — so one wiring serves every KAIF project of the machine. The run backs the config up,
+validates the result with `kimi doctor config` and rewrites only the lines between its two marker lines. Then `/reload` or
+start a new session. The fragment `.kaif/hooks/kimi-config-fragment.toml` is the table it wires, with these adaptations:
 
 - **Matchers are unanchored regular expressions.** An invalid one — `"*"`, Claude Code's spelling of «every
   tool» — matches NOTHING, silently, and `kimi doctor config` stays green. An entry for every tool carries no
@@ -64,10 +67,11 @@ session. The fragment wires the full KAIF set, with these adaptations:
   context; every other event is observation-only. `SessionStart` and `PostCompact` leave a pending refresh
   mark for the next prompt.
 - `Stop` blocks through exit 2 + stderr; this covers STATUS, test debt and context-window closure levels.
-  Kimi runs `Stop` asynchronously after the turn ends and opens the continuation turn only in a session that
-  stays alive — the TUI, an editor over ACP, `kimi web`. **`kimi -p` drops the continuation:** print mode
-  waits for its own turn only, then cancels the loop on exit (Kimi Code 2.7.2 source). Run work that relies
-  on the Stop gates in a live session.
+  Kimi runs `Stop` asynchronously after the turn ends; in a session that stays alive (the TUI, an editor over
+  ACP, `kimi web`) the block opens a continuation turn. **`kimi -p` usually drops it:** print mode follows further
+  turns only while a turn, a goal, a cron fire or a background task is pending, otherwise it exits and cancels the
+  loop before the Stop hook returns. And Kimi skips `Stop` for a turn that ends with a queued request (an owner's
+  message waiting in the queue). Kimi Code 2.7.2 source; run work that relies on the Stop gates in a live session.
 - **The window steps count against Kimi's own compaction point**, not the whole window: Kimi compacts the context
   by itself once used ≥ `compaction_trigger_ratio` (default 0.85) of the window or used + `reserved_context_size`
   (default 50 000) ≥ the window, both under `[loop_control]` of its config. The KAIF steps (75 · 80 · 85 · 92 %

@@ -9,7 +9,7 @@
   "version": "2.10",
   "released": "2026-11-21",
   "build": {
-    "sourceTree": "12a4cad6884cbfbcd6c30fd200683082e93996371cdff4dd2e4d8e9314b36121",
+    "sourceTree": "b038524d0b40308555ac1cbbdf315b0c50b656a1d6f1166df62843e6609c7a77",
     "prerelease": null
   },
   "templateNotes": [
@@ -454,6 +454,7 @@
     ".kaif/hooks/clock-now.mjs": "framework/hooks/clock-now.mjs",
     ".kaif/hooks/context-window.mjs": "framework/hooks/context-window.mjs",
     ".kaif/hooks/kimi-config-fragment.toml": "framework/hooks/kimi-config-fragment.toml",
+    ".kaif/hooks/kimi-hook.mjs": "framework/hooks/kimi-hook.mjs",
     ".kaif/hooks/kimi-permission-call.mjs": "framework/hooks/kimi-permission-call.mjs",
     ".kaif/hooks/knowledge-moment.mjs": "framework/hooks/knowledge-moment.mjs",
     ".kaif/hooks/prompt-refresh-timer.mjs": "framework/hooks/prompt-refresh-timer.mjs",
@@ -20853,7 +20854,9 @@ if (process.argv[2] === '--selftest') {
           + '\n[[hooks]]\nevent = "Notification"\nmatcher = "*"\ncommand = "terminal-notifier"\n';
       const a = kimiWiring(good), b = kimiWiring(star), c = kimiWiring('[[hooks]]\nevent = "Stop"\ncommand = "node other.mjs"\n');
       ok(a.wired && a.star === 0 && b.wired && b.star === 1 && !c.wired,
-        `Kimi wiring (KA4): the window hook found in config.toml; a KAIF entry with matcher "*" counted, the owner's own entry not — ${JSON.stringify({ a, b, c })}`); }
+        `Kimi wiring (KA4): the window hook found in config.toml; a KAIF entry with matcher "*" counted, the owner's own entry not — ${JSON.stringify({ a, b, c })}`);
+      const d = kimiWiring('[[hooks]]\nevent = "PostToolUse"\ncommand = "node \\"C:/Users/o/.kimi-code/kaif/kimi-hook.mjs\\" context-window.mjs --kimi"\n');
+      ok(d.wired, `Kimi wiring (KA2): an entry routed through the dispatcher kimi-hook.mjs counts as the window hook — ${JSON.stringify(d)}`); }
 
     const dir = mkdtempSync(join(tmpdir(), 'kaif-cw-kimi-'));
     try {
@@ -20897,7 +20900,7 @@ if (process.argv[2] === '--selftest') {
 //  real wire (447 025 tokens); report testcases/reports/2026-11-21_ki-ka1-ka3-kimi-hooks-and-window.md]
 export function kimiWiring(configText) {
   const entries = String(configText).split(/^\[\[hooks\]\][ \t]*\r?$/m).slice(1).map((e) => e.split(/^\[/m)[0]);
-  const ours = entries.filter((e) => /\.kaif[\\/]hooks[\\/]/.test(e));
+  const ours = entries.filter((e) => /\.kaif[\\/]hooks[\\/]|kimi-hook\.mjs/.test(e));   // a hand merge, or `wire-hooks --kimi` (the dispatcher, KA2)
   return { wired: ours.some((e) => /context-window\.mjs/.test(e) && /^\s*event\s*=\s*"(?:PostToolUse|UserPromptSubmit|Stop)"/m.test(e)),
     star: ours.filter((e) => /^\s*matcher\s*=\s*"\*"/m.test(e)).length };
 }
@@ -21062,8 +21065,9 @@ process.exit(0);
 > **FILE: `.kaif/hooks/kimi-config-fragment.toml`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
 
 ``````md
-# Kimi Code user-level config.toml fragment. Merge into ~/.kimi-code/config.toml, validate with `kimi doctor config`, then /reload or a
-# new session. Commands run from Kimi's local session folder; each KAIF deployment carries these scripts.
+# Kimi Code user-level config.toml fragment — the table `node .kaif/kaif-core.mjs wire-hooks --kimi` wires: it routes every command
+# through ONE dispatcher (<Kimi home>/kaif/kimi-hook.mjs) that runs the session's KAIF project's own script from any subfolder and stays
+# silent outside KAIF. Commands run from Kimi's session folder, so this table merged by hand works only at a project root.
 # Kimi's `matcher` is an UNANCHORED regular expression and an invalid one (such as "*") matches nothing, silently — an entry meant for every
 # tool has NO matcher; a named tool is anchored (^Agent$). One entry with an unknown key drops the whole hooks section (bugs/145).
 
@@ -21182,6 +21186,129 @@ timeout = 5
 event = "PermissionRequest"
 command = "node .kaif/hooks/kimi-permission-call.mjs"
 timeout = 5
+``````
+
+> **FILE: `.kaif/hooks/kimi-hook.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
+
+``````js
+#!/usr/bin/env node
+// Kimi Code hook dispatcher — one user-level entry point for every KAIF hook (plans/143 KA2 of the origin).
+// Kimi reads hooks only from the user-level ~/.kimi-code/config.toml and runs each command through the shell from the SESSION folder,
+// not the git root. A project-relative command (`node .kaif/hooks/x.mjs`) therefore fails with a warning in every folder that is not a
+// KAIF project and finds nothing from a subfolder of one. `wire-hooks --kimi` copies this file to <Kimi home>/kaif/kimi-hook.mjs and
+// wires `node "<that path>" <script.mjs> <args…>`; the dispatcher:
+//   1. reads the hook input from stdin and takes its `cwd` (Kimi sends it; the process folder otherwise);
+//   2. walks up to the nearest .kaif/kaif.json — none, or "hooks": "off" in it (the owner's opt-out) → exit 0, silent;
+//   3. runs that project's own .kaif/hooks/<script.mjs> (in the KAIF origin's source tree — framework/hooks/) with the same stdin, from
+//      the project root, and returns its stdout, stderr and exit code (2 = block, as Kimi reads it); no such script → exit 0, silent.
+// It carries no hook logic and no version: the project's scripts decide, so one copy serves every KAIF project of the machine.
+// [NOT-TESTED: the selftest cases below run the dispatcher as a child process; a live Kimi session through it — plans/143 KA9]
+import { spawnSync } from 'node:child_process';
+import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const MARKER = join('.kaif', 'kaif.json');
+const SCRIPT_NAME_RE = /^[\w.-]+\.mjs$/;       // a bare file name: no folder, no way out of the hooks folder
+const ORIGIN_SIGN = join('framework', 'installer', 'KAIF-CORE.mjs'); // the KAIF origin keeps its hook sources in framework/hooks/
+
+// the nearest folder at or above `start` that holds .kaif/kaif.json, or null
+export function projectRoot(start) {
+  for (let dir = resolve(start || '.'); ;) {
+    if (existsSync(join(dir, MARKER))) return dir;
+    const parent = dirname(dir);
+    if (parent === dir) return null;
+    dir = parent;
+  }
+}
+
+// the hook script a project runs for `name`: its deployed copy, or the origin's source; null when it has none
+export function scriptOf(root, name) {
+  const deployed = join(root, '.kaif', 'hooks', name);
+  if (existsSync(deployed)) return deployed;
+  const source = join(root, 'framework', 'hooks', name);
+  return existsSync(join(root, ORIGIN_SIGN)) && existsSync(source) ? source : null;
+}
+
+const stripBom = (s) => (s.charCodeAt(0) === 0xfeff ? s.slice(1) : s);   // a byte-order mark before JSON (bugs/119 of the origin)
+const readStdin = () => { try { return readFileSync(0); } catch { return Buffer.alloc(0); } };
+function cwdOf(raw) {
+  try { const ev = JSON.parse(stripBom(raw.toString('utf8')) || '{}'); return typeof ev.cwd === 'string' && ev.cwd ? ev.cwd : null; } catch { return null; }
+}
+const optedOut = (root) => { try { return JSON.parse(stripBom(readFileSync(join(root, MARKER), 'utf8'))).hooks === 'off'; } catch { return false; } };
+
+function dispatch(argv) {
+  const [name, ...args] = argv;
+  if (!name || !SCRIPT_NAME_RE.test(name)) {
+    process.stderr.write(`KAIF kimi-hook: expected a hook script name (like context-window.mjs) as the first argument, got ${JSON.stringify(name ?? '')}\n`);
+    return 1;                                   // Kimi: neither 0 nor 2 = allowed, one warning per session
+  }
+  const raw = readStdin();
+  const root = projectRoot(cwdOf(raw) || process.cwd());
+  if (!root || optedOut(root)) return 0;        // not a KAIF project, or its owner turned the hooks off
+  const script = scriptOf(root, name);
+  if (!script) return 0;                        // this project's KAIF has no such hook (older version, module not deployed)
+  const r = spawnSync(process.execPath, [script, ...args], { input: raw, cwd: root, stdio: ['pipe', 'inherit', 'inherit'] });
+  return typeof r.status === 'number' ? r.status : 0; // killed or failed to start → allow (Kimi's own fail-open rule)
+}
+
+function selftest() {
+  let bad = 0;
+  const ok = (cond, name, detail = '') => { console.log(`${cond ? 'v' : 'x'} ${name}${cond || !detail ? '' : ' — ' + detail}`); if (!cond) bad++; };
+  const self = fileURLToPath(import.meta.url);
+  const tmp = mkdtempSync(join(tmpdir(), 'kaif-kimi-hook-'));
+  try {
+    const run = (cwd, input, args) => spawnSync(process.execPath, [self, ...args], { input: JSON.stringify(input), cwd, encoding: 'utf8', timeout: 20000 });
+    // a hook that reports where it ran and what it got, then blocks (exit 2 + stderr) — the shape of KAIF's Stop and PreToolUse gates
+    const probe = "import { readFileSync } from 'node:fs'; const stripBom = (s) => (s.charCodeAt(0) === 0xfeff ? s.slice(1) : s); const ev = JSON.parse(stripBom(readFileSync(0, 'utf8'))); " +
+      "console.log(JSON.stringify({ at: process.cwd(), cwd: ev.cwd, args: process.argv.slice(2) })); process.stderr.write('blocked by probe'); process.exit(2);";
+    const plain = join(tmp, 'plain'); mkdirSync(join(plain, 'src'), { recursive: true });
+    const proj = join(tmp, 'proj'); mkdirSync(join(proj, '.kaif', 'hooks'), { recursive: true }); mkdirSync(join(proj, 'src', 'deep'), { recursive: true });
+    writeFileSync(join(proj, '.kaif', 'kaif.json'), JSON.stringify({ framework: 'KAIF', agents: ['kimi-code'] }));
+    writeFileSync(join(proj, '.kaif', 'hooks', 'probe.mjs'), probe);
+
+    let x = run(join(plain, 'src'), { hook_event_name: 'Stop', cwd: join(plain, 'src') }, ['probe.mjs']);
+    ok(x.status === 0 && x.stdout === '' && x.stderr === '', 'outside a KAIF project: exit 0, no output', JSON.stringify(x));
+
+    x = run(join(proj, 'src', 'deep'), { hook_event_name: 'Stop', cwd: join(proj, 'src', 'deep') }, ['probe.mjs', '--kimi']);
+    let seen = {}; try { seen = JSON.parse(x.stdout); } catch { /* the case below is red */ }
+    ok(x.status === 2 && x.stderr.includes('blocked by probe') && resolve(seen.at || '') === resolve(proj) && seen.cwd === join(proj, 'src', 'deep')
+      && JSON.stringify(seen.args) === '["--kimi"]', 'from a subfolder: the project\'s hook runs at the root with the same stdin and args; its exit 2 and stderr come back', JSON.stringify(x));
+
+    x = run(tmp, { hook_event_name: 'Stop', cwd: join(proj, 'src') }, ['probe.mjs']);
+    ok(x.status === 2, 'the stdin cwd decides, not the process folder (Kimi sends the session folder)', JSON.stringify(x));
+
+    x = run(join(proj, 'src'), { hook_event_name: 'Stop', cwd: join(proj, 'src') }, ['absent.mjs']);
+    ok(x.status === 0 && x.stdout === '' && x.stderr === '', 'a hook this project does not have: exit 0, silent', JSON.stringify(x));
+
+    x = run(join(proj, 'src'), { hook_event_name: 'Stop', cwd: join(proj, 'src') }, ['../kaif.json']);
+    ok(x.status === 1 && /expected a hook script name/.test(x.stderr), 'a name with a folder in it is refused (exit 1, the reason on stderr)', JSON.stringify(x));
+
+    const off = join(tmp, 'off'); mkdirSync(join(off, '.kaif', 'hooks'), { recursive: true });
+    writeFileSync(join(off, '.kaif', 'kaif.json'), JSON.stringify({ framework: 'KAIF', hooks: 'off' }));
+    writeFileSync(join(off, '.kaif', 'hooks', 'probe.mjs'), probe);
+    x = run(off, { hook_event_name: 'Stop', cwd: off }, ['probe.mjs']);
+    ok(x.status === 0 && x.stdout === '', '"hooks": "off" in the project marker: exit 0, the hook does not run', JSON.stringify(x));
+
+    const origin = join(tmp, 'origin'); mkdirSync(join(origin, '.kaif'), { recursive: true });
+    mkdirSync(join(origin, 'framework', 'hooks'), { recursive: true }); mkdirSync(join(origin, 'framework', 'installer'), { recursive: true });
+    writeFileSync(join(origin, '.kaif', 'kaif.json'), JSON.stringify({ framework: 'KAIF' }));
+    writeFileSync(join(origin, 'framework', 'installer', 'KAIF-CORE.mjs'), '// sign');
+    writeFileSync(join(origin, 'framework', 'hooks', 'probe.mjs'), probe);
+    x = run(origin, { hook_event_name: 'Stop', cwd: origin }, ['probe.mjs']);
+    ok(x.status === 2, 'the KAIF origin: its framework/hooks/ source runs when .kaif/hooks/ has no copy', JSON.stringify(x));
+    rmSync(join(origin, 'framework', 'installer'), { recursive: true, force: true });
+    x = run(origin, { hook_event_name: 'Stop', cwd: origin }, ['probe.mjs']);
+    ok(x.status === 0 && x.stdout === '', 'a plain project\'s own framework/hooks/ folder is never run', JSON.stringify(x));
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+  console.log(bad ? `x ${bad} case(s) failed` : 'v kimi-hook selftest: all ok');
+  return bad ? 1 : 0;
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  process.exitCode = process.argv[2] === '--selftest' ? selftest() : dispatch(process.argv.slice(2));
+}
 ``````
 
 > **FILE: `.kaif/hooks/kimi-permission-call.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
@@ -21831,6 +21958,17 @@ retry with the corrected content. `kimi-permission-call.mjs` accepts `KAIF_VOICE
 expression and an invalid one (`*`) silently matches nothing, so a Kimi entry for every tool has no matcher — the
 build refuses a fragment Kimi would never fire (guard 5zb). Under Kimi the window steps count against Kimi's own
 compaction point (0.85 of the window or 50 000 before its end, `[loop_control]` of its config), not the whole window.
+
+**Wiring Kimi Code — one dispatcher per user (2.10).** Kimi reads hooks only from the user-level `config.toml` and runs a
+command from the session folder, so `node .kaif/hooks/x.mjs` warns in every other folder and finds nothing from a subfolder.
+Run `node .kaif/kaif-core.mjs wire-hooks --kimi`: it copies `kimi-hook.mjs` to `<Kimi home>/kaif/` and writes the fragment's
+entries with every command routed through it, between two marker lines a repeat run rewrites (a hand merge of the fragment is
+replaced; the owner's own lines stay in place; a timestamped backup first; `kimi doctor config` validates before the swap). The
+dispatcher walks up from the session folder to `.kaif/kaif.json` and runs that project's own script with the same input — a
+folder without KAIF, or with `"hooks": "off"`, stays silent. `node .kaif/hooks/kimi-hook.mjs --selftest` proves it. By Kimi Code
+2.7.2 source, the `Stop` continuation opens in a session that stays alive (TUI, an editor over ACP, `kimi web`); `kimi -p` keeps
+it only while other work is pending (a turn, a goal, a cron fire, a background task), and a turn ending with a queued request runs
+no `Stop` at all.
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
 predicate, or names why it needs none, and the table above says which; a suppression window

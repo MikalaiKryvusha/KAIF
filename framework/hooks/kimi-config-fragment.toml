@@ -1,5 +1,6 @@
-# Kimi Code user-level config.toml fragment. Merge into ~/.kimi-code/config.toml, validate with `kimi doctor config`, then /reload or a
-# new session. Commands run from Kimi's local session folder; each KAIF deployment carries these scripts.
+# Kimi Code user-level config.toml fragment — the table `node .kaif/kaif-core.mjs wire-hooks --kimi` wires: it routes every command
+# through ONE dispatcher (<Kimi home>/kaif/kimi-hook.mjs) that runs the session's KAIF project's own script from any subfolder and stays
+# silent outside KAIF. Commands run from Kimi's session folder, so this table merged by hand works only at a project root.
 # Kimi's `matcher` is an UNANCHORED regular expression and an invalid one (such as "*") matches nothing, silently — an entry meant for every
 # tool has NO matcher; a named tool is anchored (^Agent$). One entry with an unknown key drops the whole hooks section (bugs/145).
 

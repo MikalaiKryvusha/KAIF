@@ -68,7 +68,8 @@ const HOOK_FILES = ['session-start-refresh.mjs', 'prompt-refresh-timer.mjs', 'st
                     // фаза O5: образцы под остальные системы с ПОДТВЕРЖДЁННЫМ живым контрактом
                     'sample-codex-hooks.json', 'sample-cursor-hooks.json',
                     'sample-copilot-hooks.json', 'sample-antigravity-hooks.json',
-                    'kimi-permission-call.mjs', 'kimi-config-fragment.toml'];
+                    'kimi-permission-call.mjs', 'kimi-config-fragment.toml',
+                    'kimi-hook.mjs'];         // 2.10, plans/143 KA2: один диспетчер хуков Kimi на пользователя
 for (const f of HOOK_FILES)
   ok(existsSync(join(S, '.kaif', 'hooks', f)), `s14 деплой: .kaif/hooks/${f} доехал`);
 r = run(S, 'check');
@@ -1044,6 +1045,69 @@ const runKimi = (script, input, args = [], env = process.env) => spawnSync(proce
   const fragmentK = readFileSync(join(S, '.kaif', 'hooks', 'kimi-config-fragment.toml'), 'utf8');
   ok(['SessionStart', 'PostCompact', 'UserPromptSubmit', 'PreToolUse', 'PostToolUse', 'PostToolUseFailure', 'Stop', 'PermissionRequest']
     .every((ev) => fragmentK.includes(`event = "${ev}"`)), 's14 Kimi config: все нужные события имеют проводку');
+}
+
+console.log('\n=== s14: KA2 — хуки Kimi через один диспетчер пользователя (2.10, plans/143) ===');
+// Дом Kimi — песочный (KIMI_CODE_HOME): настоящий ~/.kimi-code/config.toml машины свод не трогает.
+{
+  const kimiRun = (home, args) => { const p = spawnSync(process.execPath, [join(S, '.kaif', 'kaif-core.mjs'), ...args], { cwd: S, encoding: 'utf8', env: { ...process.env, KIMI_CODE_HOME: home } }); return { code: p.status, out: `${p.stdout || ''}${p.stderr || ''}` }; };
+  const H = join(ROOT, 'kimi-home-ka2'); mkdirSync(H, { recursive: true });
+  const OWNER_HEAD = 'default_model = "kimi-code/k3.1-pro"\n\n[thinking]\neffort = "high"\n\n# my notifier\n[[hooks]]\nevent = "Notification"\ncommand = "terminal-notifier"\n';
+  const HAND = '\n# KAIF hooks (a hand merge)\n[[hooks]]\nevent = "Stop"\ncommand = "node .kaif/hooks/test-after-code.mjs --kimi"\ntimeout = 10\n\n' +
+    '[[hooks]]\nevent = "UserPromptSubmit"\ncommand = "node .kaif/hooks/prompt-resume-word.mjs --emit kimi"\ntimeout = 5\n';
+  const TAIL = '\n[services.moonshot_search]\nbase_url = "https://example.invalid"\n';
+  writeFileSync(join(H, 'config.toml'), OWNER_HEAD + HAND + TAIL);
+  let w = kimiRun(H, ['wire-hooks', '--kimi']);
+  const cfg1 = existsSync(join(H, 'config.toml')) ? readFileSync(join(H, 'config.toml'), 'utf8') : '';
+  const fragEntries = (readFileSync(join(S, '.kaif', 'hooks', 'kimi-config-fragment.toml'), 'utf8').match(/^\[\[hooks\]\]/gm) || []).length;
+  const disp = join(H, 'kaif', 'kimi-hook.mjs');
+  ok(w.code === 0 && existsSync(disp) && readFileSync(disp, 'utf8') === readFileSync(join(S, '.kaif', 'hooks', 'kimi-hook.mjs'), 'utf8'),
+    's14 KA2: wire-hooks --kimi — код 0, диспетчер скопирован в <дом Kimi>/kaif/', w.out);
+  ok(!cfg1.includes('node .kaif/hooks/') && !cfg1.includes('a hand merge') && (cfg1.match(/kimi-hook\.mjs/g) || []).length === fragEntries
+    && cfg1.includes('# >>> KAIF hooks') && cfg1.includes('# <<< KAIF hooks'),
+    `s14 KA2: записи ручного слияния заменены ${fragEntries} записями через диспетчер между строками-метками`, cfg1.slice(-400));
+  ok(cfg1.startsWith(OWNER_HEAD) && cfg1.includes(TAIL.trim()) && cfg1.indexOf('terminal-notifier') < cfg1.indexOf('# >>> KAIF hooks'),
+    's14 KA2: свои записи и таблицы владельца стоят на месте и в своём порядке', cfg1.slice(0, 300));
+  ok(readdirSync(H).filter((f) => f.endsWith('.bak')).length === 1, 's14 KA2: резервная копия прежнего конфига — одна');
+  w = kimiRun(H, ['wire-hooks', '--kimi']);
+  ok(w.code === 0 && /already wired/.test(w.out) && readFileSync(join(H, 'config.toml'), 'utf8') === cfg1 && readdirSync(H).filter((f) => f.endsWith('.bak')).length === 1,
+    's14 KA2: повтор ничего не меняет и копии не пишет', w.out);
+  // команда из конфига так, как её запускает Kimi (шелл, папка сессии): из подпапки отвечает хук проекта, вне KAIF — тишина
+  const line = cfg1.split(/\r?\n/).find((l) => l.includes('prompt-resume-word.mjs')) || '';
+  let cmd = ''; try { cmd = JSON.parse(line.replace(/^command\s*=\s*/, '')); } catch { /* ассерты ниже честно красные */ }
+  mkdirSync(join(S, 'src', 'deep'), { recursive: true });
+  const viaShell = (cwd) => spawnSync(cmd || 'exit 9', { shell: true, cwd, encoding: 'utf8', timeout: 30000,
+    input: JSON.stringify({ hook_event_name: 'UserPromptSubmit', session_id: 'ka2-s14', cwd, prompt: 'resume\ncontinue' }) });
+  let x = viaShell(join(S, 'src', 'deep'));
+  ok(x.status === 0 && (x.stdout || '').includes('/skill:resume'), 's14 KA2: команда из конфига через шелл из подпапки проекта — хук проекта отвечает (/skill:resume)',
+    `${x.status} ${x.stdout} ${x.stderr}`.slice(0, 300));
+  const outside = join(ROOT, 'not-kaif', 'sub'); mkdirSync(outside, { recursive: true });
+  x = viaShell(outside);
+  ok(x.status === 0 && x.stdout === '' && x.stderr === '', 's14 KA2: та же команда в папке без KAIF — тишина, код 0', `${x.status} ${x.stdout} ${x.stderr}`.slice(0, 300));
+  // машина без Kimi и отказ владельца
+  const H2 = join(ROOT, 'kimi-home-none');
+  w = kimiRun(H2, ['wire-hooks', '--kimi']);
+  ok(w.code === 0 && /nothing to wire/.test(w.out) && !existsSync(H2), 's14 KA2: без конфига Kimi — «nothing to wire», ничего не создано', w.out);
+  const mk = join(S, '.kaif', 'kaif.json'), mOrig = readFileSync(mk, 'utf8');
+  writeFileSync(mk, JSON.stringify({ ...JSON.parse(mOrig), hooks: 'off' }, null, 2) + '\n');
+  writeFileSync(join(H, 'config.toml'), OWNER_HEAD + HAND);
+  w = kimiRun(H, ['wire-hooks', '--kimi']);
+  ok(w.code === 0 && /opted out/.test(w.out) && readFileSync(join(H, 'config.toml'), 'utf8') === OWNER_HEAD + HAND, 's14 KA2: «hooks»: «off» — конфиг Kimi не тронут', w.out);
+  writeFileSync(mk, mOrig);
+  // судья сессии 105, находки A и H: закомментированная запись владельца прямо над записью KAIF остаётся; заголовок с комментарием
+  // `[[hooks]] # …` узнаётся — старая запись не остаётся дублем рядом с секцией
+  const H3 = join(ROOT, 'kimi-home-ka2-judge'); mkdirSync(H3, { recursive: true });
+  const OWNER_NOTE = '# [[hooks]]\n# event = "Stop"\n# command = "my-notify.sh"\n';
+  writeFileSync(join(H3, 'config.toml'), 'default_model = "x"\n\n' + OWNER_NOTE +
+    '[[hooks]]\nevent = "Stop"\ncommand = "node .kaif/hooks/stop-status-guard.mjs --kimi"\ntimeout = 10\n\n' +
+    '[[hooks]] # KAIF: test gate\nevent = "Stop"\ncommand = "node .kaif/hooks/test-after-code.mjs --kimi"\ntimeout = 10\n');
+  w = kimiRun(H3, ['wire-hooks', '--kimi']);
+  const cfg3 = existsSync(join(H3, 'config.toml')) ? readFileSync(join(H3, 'config.toml'), 'utf8') : '';
+  ok(w.code === 0 && cfg3.includes(OWNER_NOTE), 's14 KA2 (судья, A): закомментированная запись владельца над записью KAIF осталась на месте', `${w.out}\n${cfg3.slice(0, 300)}`);
+  ok(!cfg3.includes('node .kaif/hooks/') && (cfg3.match(/test-after-code\.mjs/g) || []).length === (readFileSync(join(S, '.kaif', 'hooks', 'kimi-config-fragment.toml'), 'utf8').match(/test-after-code\.mjs/g) || []).length,
+    's14 KA2 (судья, H): заголовок `[[hooks]] # …` узнан — старой записи нет, дубля рядом с секцией нет', cfg3.slice(-500));
+  x = spawnSync(process.execPath, [join(S, '.kaif', 'hooks', 'kimi-hook.mjs'), '--selftest'], { encoding: 'utf8', timeout: 60000 });
+  ok(x.status === 0 && /all ok/.test(x.stdout), 's14 KA2: самопроверка диспетчера зелёная (вне KAIF · подпапка · «off» · исток)', `${x.status} ${x.stdout}`.slice(-300));
 }
 
 console.log('\n=== s14: деплой без ПОДКЛЮЧЕНИЯ хуков — инвариант §9.10 ===');

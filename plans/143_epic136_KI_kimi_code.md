@@ -15,9 +15,10 @@
 > continuation turn in `kimi -p`, `PostToolUseFailure`, `PermissionRequest`, `PostCompact`/`StopFailure` live (`StopFailure` proven on real
 > records); next — one TUI session for the Stop path. KA4 ✅ · KA5 (bare `/resume` hint for a Kimi + Codex install) ✅ in part.
 > **Stop path by Kimi's code 2026-11-21 18:25 +03:00 (session 105):** the block does open a continuation turn in a session that stays alive (TUI · ACP ·
-> web: `runStop` → `loop.notify` → `releaseIntake` → `schedule`), and `kimi -p` drops it — print mode waits for its own turn only, then
-> `cleanup → quiesceSessionAgents` cancels the loop while the asynchronous Stop hook is still running (`researches/50` §14). The adapter
-> says so. Live proof in a live session — batched into KA9 with KA2 (one ACP-driven run, not a TUI at the owner's keyboard).
+> web: `runStop` → `loop.notify` → `releaseIntake` → `schedule`), and `kimi -p` usually drops it — print mode follows further turns only while a turn, a goal, a cron fire or a background
+> task is pending, otherwise `cleanup → quiesceSessionAgents` cancels the loop while the asynchronous Stop hook still runs; a turn ending
+> with a queued request runs no Stop at all (`researches/50` §14; narrowed by the judge of session 105 — it said «waits for its own turn
+> only»). The adapter says so. Live proof in a live session — batched into KA9 with KA2 (one ACP-driven run, not a TUI at the owner's keyboard).
 > **Вовне:** four owner decisions (interview, scenario form) · one write permission for the owner's `~/.kimi-code/config.toml`.
 
 ## Goal vector (Achieve)
@@ -54,7 +55,14 @@ owner's questions and mid-turn words reaching the agent, and a chat that dies of
   every Kimi matcher compiles with `new RegExp`, and every `[[hooks]]` entry has only `event · matcher · command · timeout` with a known
   event (one bad entry drops the whole section — §6). Prove red on `9263794`. Fix the `[TESTED]` line of `context-window.mjs:103`.
   ≈ 1–1.5 h.
-- [ ] **KA2 — One user-level dispatcher, not 21 project-relative commands.** Anchor: criterion 38. Kimi hooks are user-level only, run in
+- [x] **KA2 — One user-level dispatcher, not 21 project-relative commands.** (✅ 2026-11-21 18:51 +03:00 session 105: `framework/hooks/kimi-hook.mjs` +
+  `wire-hooks --kimi` + task item `wire-kimi-hooks` with an executing gate; selftest 8/8, mutants D1–D5, `s14` «KA2» 10 cases; the owner's real
+  config rewired with a backup, its commands answer from the origin root and a subfolder and stay silent outside KAIF — report
+  `testcases/reports/2026-11-21_ka2-kimi-hook-dispatcher.md`; Kimi itself firing it live — KA9. `[ИИ]` deviations from the step: the run writes
+  without a separate «owner's explicit word» — the dispatcher makes the global wiring silent outside KAIF, so it is wired like Claude's hooks
+  (#115); the origin's untracked `.kaif/hooks/` copy is dropped and the dispatcher falls back to `framework/hooks/` when the KAIF origin sign
+  `framework/installer/KAIF-CORE.mjs` exists; the task item appears only when Kimi Code is set up for the user — the polygon points
+  `KIMI_CODE_HOME` at a missing folder.) Anchor: criterion 38. Kimi hooks are user-level only, run in
   the session folder (not the git root) through `cmd.exe` (§6). `FORK: options <A per-event "node .kaif/hooks/x.mjs" as now | B one
   dispatcher ~/.kimi-code/kaif/kaif-hook.mjs <hook> that walks up from stdin cwd to .kaif/kaif.json and runs that project's own script |
   C a user-level KAIF plugin with hooks + systemPrompt> · price of error <hooks dead from subfolders and noisy in every non-KAIF folder (A);
@@ -135,3 +143,13 @@ Build guard of KA1 (red on `9263794`); dispatcher selftest; `context-window.mjs 
 1. `[ИИ]` rev. 2 replaces rev. 1 in place instead of a second plan (one goal, one plan); rev. 1 KI0–KI6 live on as KA0, KA8, KA9.
 2. `[ИИ]` KA2 option B (dispatcher) over plugin C — reasons in its `FORK:` line; the plugin goes to `ideas/33`.
 3. `[ИИ]` The mid-turn delivery channel of KA3 is a one-time `PreToolUse` block for the window order only — not for owner messages (№144).
+4. `[ИИ]` (session 105, KA2) The field task item `wire-kimi-hooks` writes the user-level `~/.kimi-code/config.toml` WITHOUT asking the owner
+   — against rev. 1 of this plan («writes only on the owner's explicit word»). Reason: the dispatcher makes the global wiring silent outside
+   KAIF, so it is wired like Claude's hooks by the KAIF owner's rule (#115); a backup and `kimi doctor config` come first. Since the default
+   agent list holds `kimi-code`, ANY default install on a machine with Kimi Code set up gets the item. Revisable by the owner's word.
+5. `[ИИ]` (session 105) The dispatcher falls back to `framework/hooks/` only where `framework/installer/KAIF-CORE.mjs` exists (the KAIF
+   origin); the origin's untracked `.kaif/hooks/` copy was dropped.
+6. `[ИИ]` (session 105) The polygon runner points `KIMI_CODE_HOME` at a missing folder; a sandbox suite run ALONE on a machine with Kimi
+   still reads the real config for the task item (s04 · s07 tick every item) — named, not fixed.
+7. `[ИИ]` (session 105) Known limits of `wire-hooks --kimi`, named in its log or here: a line the owner changed inside a KAIF entry is not
+   carried over (the backup keeps it); a config with mixed line endings is written with one.
