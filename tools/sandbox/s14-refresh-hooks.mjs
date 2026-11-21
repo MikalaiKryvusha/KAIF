@@ -980,6 +980,58 @@ W = wcopy(null, null); setMarker(W, { agents: ['codex'] }); wr = runAll(W, ['wir
 ok(wr.code === 0 && settingsOf(W) === null && /nothing to wire/.test(wr.out),
    's14 SW2: развёртывание только под Codex — settings.json не создан («nothing to wire»)', wr.out.slice(-200));
 
+console.log('\n=== s14: Kimi Code — события и контракты хуков (2.10) ===');
+const runKimi = (script, input, args = [], env = process.env) => spawnSync(process.execPath,
+  [join(S, '.kaif', 'hooks', script), ...args], { input: JSON.stringify(input), cwd: S, env, encoding: 'utf8', timeout: 30000 });
+{
+  const sidK = 'kimi-s14';
+  let x = runKimi('prompt-resume-word.mjs', { hook_event_name: 'UserPromptSubmit', session_id: sidK, cwd: S, prompt: 'resume\ncontinue' }, ['--emit', 'kimi']);
+  ok(x.status === 0 && x.stdout.includes('/skill:resume') && !x.stdout.trimStart().startsWith('{'),
+    's14 Kimi resume: plain stdout и явный /skill:resume', `${x.status} ${x.stdout}`.slice(0, 300));
+  x = runKimi('prompt-refresh-timer.mjs', { hook_event_name: 'UserPromptSubmit', session_id: sidK, cwd: S }, ['--emit', 'kimi']);
+  ok(x.status === 0 && x.stdout.includes('KAIF context refresh') && !x.stdout.trimStart().startsWith('{'),
+    's14 Kimi refresh: plain stdout, не Claude JSON-конверт', `${x.status} ${x.stdout}`.slice(0, 300));
+  runKimi('session-start-refresh.mjs', { hook_event_name: 'SessionStart', session_id: sidK, cwd: S }, ['--emit', 'kimi']);
+  x = runKimi('session-start-refresh.mjs', { hook_event_name: 'UserPromptSubmit', session_id: sidK, cwd: S }, ['--emit', 'kimi']);
+  ok(x.status === 0 && x.stdout.includes('/skill:resume') && existsSync(join(S, '.kaif', 'kimi-refresh.json')),
+    's14 Kimi SessionStart: observation-only событие оставляет pending mark, следующий промпт выдаёт приказ', x.stdout.slice(0, 300));
+  x = runKimi('clock-now.mjs', { hook_event_name: 'UserPromptSubmit', session_id: sidK, cwd: S, prompt: 'work' }, ['--kimi']);
+  ok(x.status === 0 && /clock-now · \d{4}-\d{2}-\d{2} /.test(x.stdout), 's14 Kimi clock: машинное время приходит plain text', x.stdout.slice(0, 200));
+  x = runKimi('clock-now.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Write', tool_input: { file_path: 'x.md', content: 'at ⟦NOW⟧' } }, ['--kimi']);
+  ok(x.status === 2 && x.stderr.includes('Kimi has no documented updatedInput contract'),
+    's14 Kimi clock: placeholder не притворяется перезаписанным — отказ с исправлением', `${x.status} ${x.stderr}`.slice(0, 300));
+  x = runKimi('subagent-preamble.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Agent', tool_input: { prompt: 'inspect the code', description: 'inspect' } }, ['--kimi']);
+  ok(x.status === 2 && x.stderr.includes('[KAIF subagent preamble v1]') && x.stderr.includes('Retry the Agent call'),
+    's14 Kimi subagent: без updatedInput вызов возвращается главному агенту с полным брифом', `${x.status} ${x.stderr}`.slice(0, 300));
+  runKimi('knowledge-moment.mjs', { hook_event_name: 'PostToolUse', session_id: sidK, cwd: S, tool_name: 'Read', tool_input: { file_path: 'STATUS.md' } }, ['--kimi']);
+  x = runKimi('knowledge-moment.mjs', { hook_event_name: 'UserPromptSubmit', session_id: sidK, cwd: S, prompt: '<task-notification>done</task-notification>' }, ['--kimi']);
+  ok(x.status === 0 && x.stdout.includes('KAIF knowledge'),
+    's14 Kimi knowledge: observation-only находка ждёт следующего UserPromptSubmit', x.stdout.slice(0, 300));
+  x = runKimi('test-after-code.mjs', { hook_event_name: 'PostToolUse', session_id: sidK, cwd: S, tool_name: 'Edit', tool_input: { file_path: 'src/app.mjs' } }, ['--kimi']);
+  x = runKimi('test-after-code.mjs', { hook_event_name: 'Stop', session_id: sidK, cwd: S }, ['--kimi']);
+  ok(x.status === 2 && x.stderr.includes('src/app.mjs'), 's14 Kimi test debt: Stop блокируется через exit 2 со списком', `${x.status} ${x.stderr}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'Stop', session_id: sidK, cwd: S, usage: { inputOther: 150000, inputCacheRead: 10000, inputCacheCreation: 0 } }, ['--kimi']);
+  ok(x.status === 0 && x.stdout.includes('80 % full') && x.stdout.includes('logical cut'),
+    's14 Kimi window: Stop usage по формуле Kimi → ступень 80 %', `${x.status} ${x.stdout} ${x.stderr}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'Stop', session_id: sidK, cwd: S, usage: { inputOther: 171000, inputCacheRead: 0, inputCacheCreation: 0 } }, ['--kimi']);
+  ok(x.status === 2 && x.stderr.includes('/skill:end-chat-soft'), 's14 Kimi window: 85 % — exit 2 и Kimi-навык закрытия', `${x.status} ${x.stderr}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'PostCompact', session_id: sidK, cwd: S }, ['--kimi']);
+  x = runKimi('context-window.mjs', { hook_event_name: 'Stop', session_id: sidK, cwd: S, usage: { inputOther: 160000, inputCacheRead: 0, inputCacheCreation: 0 } }, ['--kimi']);
+  ok(x.status === 0 && x.stdout.includes('80 % full'), 's14 Kimi PostCompact: ступени взводятся повторно', `${x.status} ${x.stdout} ${x.stderr}`.slice(0, 300));
+  const homeK = join(ROOT, 'kimi-home'), wireK = join(homeK, 'sessions', 'wd-test', 'closing-kimi', 'agents', 'main');
+  mkdirSync(wireK, { recursive: true });
+  writeFileSync(join(wireK, 'wire.jsonl'), [
+    JSON.stringify({ type: 'agent.message.appended', message: { message: { role: 'assistant', content: [{ type: 'tool_use', name: 'Skill', input: { skill: 'end-chat-soft' } }] } } }),
+    JSON.stringify({ type: 'agent.message.appended', message: { message: { role: 'assistant', content: [{ type: 'text', text: 'Farewell from Kimi.' }] } } }),
+  ].join('\n'));
+  x = runKimi('stop-farewell-capture.mjs', { hook_event_name: 'Stop', session_id: 'closing-kimi', cwd: S }, ['--kimi'], { ...process.env, KIMI_CODE_HOME: homeK });
+  ok(x.status === 0 && readFileSync(join(S, 'FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md'), 'utf8').includes('Farewell from Kimi.'),
+    's14 Kimi farewell: Stop читает wire.jsonl и пишет файл эстафеты', `${x.status} ${x.stderr}`.slice(0, 300));
+  const fragmentK = readFileSync(join(S, '.kaif', 'hooks', 'kimi-config-fragment.toml'), 'utf8');
+  ok(['SessionStart', 'PostCompact', 'UserPromptSubmit', 'PreToolUse', 'PostToolUse', 'PostToolUseFailure', 'Stop', 'PermissionRequest']
+    .every((ev) => fragmentK.includes(`event = "${ev}"`)), 's14 Kimi config: все нужные события имеют проводку');
+}
+
 console.log('\n=== s14: деплой без ПОДКЛЮЧЕНИЯ хуков — инвариант §9.10 ===');
 ok(!existsSync(join(S, '.claude', 'settings.json')) && !existsSync(join(S, '.claude', 'settings.local.json')),
    's14 без подключения: settings.json в песочнице НЕТ — хуки развёрнуты, но не активированы');

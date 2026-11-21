@@ -21,7 +21,11 @@ export function projectRoot(cwd) {
 
 export function voiceCommand(root, phraseFile, env = process.env) {
   let custom = null;
-  try { custom = env.KAIF_VOICE_FILE_TOOL ? JSON.parse(env.KAIF_VOICE_FILE_TOOL) : null; } catch { custom = null; }
+  try {
+    const marker = JSON.parse(readFileSync(join(root, MARKER), 'utf8').replace(/^\uFEFF/, ''));
+    custom = marker.contour && marker.contour.voiceFileTool;
+  } catch { /* no marker-level engine */ }
+  try { if (env.KAIF_VOICE_FILE_TOOL) custom = JSON.parse(env.KAIF_VOICE_FILE_TOOL); } catch { custom = null; }
   const prefix = Array.isArray(custom) && custom.length && custom.every((x) => typeof x === 'string')
     ? custom
     : [process.execPath, join(root, '.kaif', 'tools', 'contour', 'voice-soft.mjs'), '--file', '{file}', '--play'];

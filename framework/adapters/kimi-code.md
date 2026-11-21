@@ -52,9 +52,21 @@ skills in `.claude/skills/`, then run `node .kaif/kaif-core.mjs sync`; do not fo
 ## Hooks (optional enforcement)
 
 Kimi hooks live in the user-level `~/.kimi-code/config.toml` or an enabled plugin manifest, not in a
-project-level settings file. KAIF therefore does not auto-write global Kimi configuration and does not
-claim that its Claude-shaped `.claude/settings.json` fragment works in Kimi. The markdown rituals remain
-the complete baseline; a Kimi hook/plugin wiring can be added separately after a live contract test.
+project-level settings file. KAIF does not auto-write that global file during installation. Merge
+`.kaif/hooks/kimi-config-fragment.toml`, validate with `kimi doctor config`, then `/reload` or start a new
+session. The fragment wires the full KAIF set, with these adaptations:
+
+- Plain stdout carries context on `UserPromptSubmit`; `SessionStart` and `PostCompact` leave a pending
+  refresh mark for the next prompt because those events are observation-only.
+- `Stop` blocks through exit 2 + stderr; this covers STATUS, test debt and context-window closure levels.
+- Kimi usage is `inputOther + inputCacheRead + inputCacheCreation`; the model's `max_context_size` comes
+  from Kimi's config, with `.kaif/kaif.json` → `contextWindow.tokens` as the explicit override.
+- Kimi documents no `updatedInput`. A placeholder write is refused with the clock fix; an Agent launch
+  without the KAIF preamble is returned to the main agent with the full prompt to retry.
+- `PostToolUse` knowledge findings queue to the next `UserPromptSubmit`; the farewell hook reads Kimi's
+  `agents/main/wire.jsonl` and writes the same project handoff file.
+
+The markdown rituals remain the complete baseline. Do not copy `.claude/settings.json` into Kimi.
 
 ## Voice before a permission wait
 
@@ -71,8 +83,9 @@ receives the UTF-8 phrase path:
 ["<pythonw.exe>", "-I", "<say.py>", "--file", "{file}"]
 ```
 
-The selected `say.py` must accept `--file` and produce/play the whole configured sound. Machine paths
-stay in the environment, never in the KAIF template. Verify without sound using the hook's `--selftest`
+The selected `say.py` must accept `--file` and produce/play the whole configured sound. Set the prefix
+through the environment or the deployment's `.kaif/kaif.json` → `contour.voiceFileTool` array; never in
+the KAIF template. Verify without sound using the hook's `--selftest`
 and a `PermissionRequest` event with `--dry-run`; then check the voice engine's own output and exit code.
 
 ## Deploy checklist

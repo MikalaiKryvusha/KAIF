@@ -14,6 +14,13 @@
     "projectName": "KAIF",
     "spokenProjectName": "КАИФ",
     "ownerName": "Mikalai Kryvusha (KOT KRINIK)",
-    "callName": "Криник"
+    "callName": "Криник",
+    "voiceFileTool": [
+      "D:/work/ai_sandbox/tools/silero_tts/venv/Scripts/pythonw.exe",
+      "-I",
+      "D:/work/ai_sandbox/tools/silero_tts/say.py",
+      "--file",
+      "{file}"
+    ]
   }
 }

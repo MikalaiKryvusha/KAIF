@@ -9,7 +9,7 @@
   "version": "2.10",
   "released": "2026-11-21",
   "build": {
-    "sourceTree": "22346c7875b5d09047761effee9116e96153374026d07881bc0e6248690d7e55",
+    "sourceTree": "ff85a6f4099cb16745960a3995ce183efbdf4d24d1fdc2c2b13ba8064a0e6210",
     "prerelease": null
   },
   "templateNotes": [
@@ -21195,7 +21195,8 @@ export function docsLookup(root, read = (p) => (existsSync(p) ? readFileSync(p, 
 
 // The decision — pure: (event, the session's state, root, exists, lookup) → { line | null, state }.
 export function decide(ev, st, root, exists = existsSync, lookup = docsLookup(root)) {
-  const s = { weight: st.weight || 0, notes: Array.isArray(st.notes) ? st.notes.slice() : [], code: Array.isArray(st.code) ? st.code.slice() : [] };
+  const s = { weight: st.weight || 0, notes: Array.isArray(st.notes) ? st.notes.slice() : [], code: Array.isArray(st.code) ? st.code.slice() : [],
+    pendingLines: Array.isArray(st.pendingLines) ? st.pendingLines.slice() : [] };
   const name = ev.hook_event_name;
   if (name === 'UserPromptSubmit') {
     if (NOT_THE_OWNER.test(String(ev.prompt || ''))) return { line: null, state: s };

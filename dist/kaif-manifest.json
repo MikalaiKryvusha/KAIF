@@ -5,10 +5,10 @@
   "codename": "",
   "sha256": {
     "KAIF-CORE.mjs": "d0363dc50ef5e0477be6c795b7aa2f1b4c5de3458fa44423407604622d8cde0a",
-    "KAIF-CORE-BUNDLE.md": "f99a0609773e078d9e5d7b853593397501472f396cdf1a40da872cc1b3538533"
+    "KAIF-CORE-BUNDLE.md": "3259342bcf63ccfc5ea9c95b43e6079b84bbacb56dd67703d94d309b657cea34"
   },
   "sourceTree": {
-    "sha256": "22346c7875b5d09047761effee9116e96153374026d07881bc0e6248690d7e55",
+    "sha256": "ff85a6f4099cb16745960a3995ce183efbdf4d24d1fdc2c2b13ba8064a0e6210",
     "files": 219
   },
   "prerelease": null,

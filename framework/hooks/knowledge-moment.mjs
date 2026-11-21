@@ -111,7 +111,8 @@ export function docsLookup(root, read = (p) => (existsSync(p) ? readFileSync(p, 
 
 // The decision — pure: (event, the session's state, root, exists, lookup) → { line | null, state }.
 export function decide(ev, st, root, exists = existsSync, lookup = docsLookup(root)) {
-  const s = { weight: st.weight || 0, notes: Array.isArray(st.notes) ? st.notes.slice() : [], code: Array.isArray(st.code) ? st.code.slice() : [] };
+  const s = { weight: st.weight || 0, notes: Array.isArray(st.notes) ? st.notes.slice() : [], code: Array.isArray(st.code) ? st.code.slice() : [],
+    pendingLines: Array.isArray(st.pendingLines) ? st.pendingLines.slice() : [] };
   const name = ev.hook_event_name;
   if (name === 'UserPromptSubmit') {
     if (NOT_THE_OWNER.test(String(ev.prompt || ''))) return { line: null, state: s };

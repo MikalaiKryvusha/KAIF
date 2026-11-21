@@ -93,4 +93,19 @@ scopes и hooks — эти границы учтены в нашем sandbox и 
 `D:/work/ai_sandbox/tools/silero_tts/VOICE_RULES.md`. В поставку перенесён не абсолютный путь, а контракт
 `KAIF_VOICE_FILE_TOOL` (JSON command prefix с `{file}`); по умолчанию — shipped `voice-soft.mjs`. Имя, проект,
 язык, тихие часы и журнал берутся из существующего контура KAIF. Пример проводки — `kimi-config-fragment.toml`;
-глобальный Kimi config автоматически не переписывается.
+глобальный Kimi config установщик автоматически не переписывает. Движок также принимает `contour.voiceFileTool`
+в маркере развёртывания; переменная среды сильнее маркера.
+
+## 6. Полная активация хуков
+
+Коллега подтвердил установку официального Kimi CLI 2.7.2, doctor и живую активацию. Его схема перенесена и
+расширена на весь набор KAIF. События observation-only не выдаются за инжекцию: SessionStart/PostCompact пишут
+pending mark, PostToolUse knowledge queue читается следующим UserPromptSubmit. Kimi usage — формула
+`inputOther + inputCacheRead + inputCacheCreation`; окно читается из `max_context_size` модели, явный override —
+`contextWindow.tokens`.
+
+Конфиг истока изменён через копию `config-new.toml`, doctor, timestamped backup и только затем overwrite.
+Старые абсолютные пути соседа заменены проектно-переносимыми `.kaif/hooks/…`, дублей событий нет. Живая проверка
+`kimi -p` 2026-11-21 показала SessionStart → UserPromptSubmit, refresh timer, clock-now и knowledge-moment;
+ответ модели — OK. Голосовой зов до двух вопросов владельца реально прошёл через Silero + Glass, со строкой
+`soft voice:` и кодом 0. Полный контрактный свод s14 с Kimi-случаями зелёный.

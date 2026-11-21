@@ -34,10 +34,10 @@ The project's history lives in the [releases](https://github.com/MikalaiKryvusha
 and in section 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.10_GitHub_LOGO.webp" alt="KAIF 2.10 — a copper medallion: the eye in a triangle above a flask, scales above them; all of it inside a laurel wreath, ringed by the ouroboros" width="560">
+  <img src="assets/KAIF_2.10_GitHub_LOGO.webp" alt="KAIF 2.10 Confronted KAIF — a copper medallion: the eye in a triangle above a flask, scales above them; all of it inside a laurel wreath, ringed by the ouroboros" width="560">
 </p>
 
-<p align="center"><strong>Version 2.10</strong> · 2026-11-21</p>
+<p align="center"><strong>Version 2.10 — Confronted KAIF</strong> · 2026-11-21</p>
 
 > KAIF has become a team. A team of AI agents, each taking on the role of an expert professional,
 > builds your project on the git worktree technology. In several VS Code windows at once, like a
@@ -494,7 +494,7 @@ Table 5 — Versions
 | v2.7 | Audited KAIF | 2026-09-18 | The agent's records become checkable: the owner's word is a quote and the agent's word is signed, a question to the owner is asked after a search through his prior answers, "test" means a functional run and every executed run leaves a report, the owner's text is written by his voice portrait, the owner's page keeps his answer, a falsehood is corrected where it stands, a lesson repeated twice goes red, and the size budget of the documents the agent re-reads at the start of a session counts the lines the project wrote. |
 | v2.8 | Noble KAIF | 2026-09-26 | KAIF becomes lighter and hears the owner: the agent answers the owner's word while it works and keeps working, the owner's answered decisions come before the plan, the owner's question page saves answers one at a time, the update loses nothing silently, the scanners see the project as git sees it, the canon keeps every rule and hands the stories behind its rules to the reference `KAIF_REFERENCE.md`, and a tester's bug report gets a required shape, with "not reproduced" written only after a hunt of at least three variants. |
 | v2.9 | Distilled KAIF | 2026-10-16 | A new version's delivery is wired and accepted at once: the install and update tasks wire the reminders themselves, the rule changes of a release are accepted without an interview; the agent answers a message the owner writes while it works in the chat at once and goes on with the work it started. The update names the places of the project that refer to removed skills and hooks, brings the pointers of the other agent systems up to date and, in an update across several versions, marks the project's own edits. The owner's question page behaves as he expects; a question to the owner is short; to a question under the word `resume` the agent answers and starts no work beyond it; the attribution linter keeps the owner's private files out of a shared commit; for git one command does one action. |
-| v2.10 | — | 2026-11-21 | Kimi Code becomes a native target: `AGENTS.md`, valid localized skill frontmatter, explicit `/skill:<name>` calls, portable skill resources and a detached voice call before a permission wait. The release carries the current 2.10 work; its unfinished feature scope moves to 2.11. |
+| v2.10 | Confronted KAIF | 2026-11-21 | Kimi Code becomes a native target: `AGENTS.md`, valid localized skill frontmatter, explicit `/skill:<name>` calls, portable skill resources and a detached voice call before a permission wait. The release carries the current 2.10 work; its unfinished feature scope moves to 2.11. |
 
 ### 8.2. Repository layout
 
@@ -598,10 +598,10 @@ KAIF — это агентный харнесс (обвязка): рабочее
 разделе 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.10_GitHub_LOGO.webp" alt="KAIF 2.10 — медный медальон: глаз в треугольнике над колбой, над ними весы; всё это внутри лаврового венка, в кольце уробороса" width="560">
+  <img src="assets/KAIF_2.10_GitHub_LOGO.webp" alt="KAIF 2.10 Confronted KAIF — медный медальон: глаз в треугольнике над колбой, над ними весы; всё это внутри лаврового венка, в кольце уробороса" width="560">
 </p>
 
-<p align="center"><strong>Версия 2.10</strong> · 21.11.2026</p>
+<p align="center"><strong>Версия 2.10 — Confronted KAIF</strong> · 21.11.2026</p>
 
 > KAIF стал командным. Команда ИИ-агентов, каждый из которых принимает на себя роль
 > профессионала-эксперта, разрабатывает ваш проект по технологии git worktree. В нескольких окнах
@@ -1053,7 +1053,7 @@ zh-Hans, es, hi, ar, pt, fr, de, ja — и дописывает каждому �
 | v2.7 | Audited KAIF | 18.09.2026 | Записи агента становятся проверяемыми: слово владельца цитируется, слово агента подписывается; вопрос владельцу задаётся после поиска по его прежним ответам; «тест» — это функциональный прогон, и каждый прогон оставляет отчёт; текст владельца пишется по портрету его голоса; страница владельца сохраняет его ответ; ложь исправляется там, где оставлена; урок, повторившийся дважды, краснеет; бюджет документов, которые агент перечитывает в начале сессии, считается по строкам, которые написал сам проект. |
 | v2.8 | Noble KAIF | 26.09.2026 | KAIF становится легче и слышит владельца: агент отвечает на слово владельца, пока работает, и работает дальше; отвеченные решения владельца идут раньше плана; страница вопросов владельца записывает ответы по одному; обновление ничего не теряет молча; сканеры видят проект так, как его видит git; канон держит каждое правило, истории правил переехали в пояснительную записку `KAIF_REFERENCE.md`; баг-репорт тестировщика получил обязательную форму, и «не воспроизвелось» пишется только после охоты за шагами. |
 | v2.9 | Distilled KAIF | 16.10.2026 | Поставка новой версии подключается и принимается сразу: задания установки и обновления сами подключают напоминания, правила новой версии принимаются без интервью; на сообщение владельца, написанное посреди работы, агент сразу отвечает в чате и продолжает начатую работу. Обновление называет места проекта, которые ссылаются на удалённые навыки и хуки, обновляет указатели других агентских систем и при обновлении через несколько версий помечает собственные правки проекта. Страница вопросов ведёт себя так, как ждёт владелец; вопрос владельцу короткий; на вопрос под словом `resume` агент отвечает и работу сверх ответа не начинает; линтер авторства не уносит личные файлы владельца в общий коммит; для git одна команда делает одно действие. |
-| v2.10 | — | 21.11.2026 | Kimi Code становится родной целевой системой: `AGENTS.md`, корректный YAML локализованных навыков, явные вызовы `/skill:<name>`, переносимые ресурсы и фоновый голосовой зов перед ожиданием разрешения. Версия несёт текущую работу 2.10; незавершённый скоуп фич переходит в 2.11. |
+| v2.10 | Confronted KAIF | 21.11.2026 | Kimi Code становится родной целевой системой: `AGENTS.md`, корректный YAML локализованных навыков, явные вызовы `/skill:<name>`, переносимые ресурсы и фоновый голосовой зов перед ожиданием разрешения. Версия несёт текущую работу 2.10; незавершённый скоуп фич переходит в 2.11. |
 
 ### 8.2. Структура репозитория
 
