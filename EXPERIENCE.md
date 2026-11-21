@@ -96,6 +96,17 @@
 
 ## Записи
 
+### EXP-0216 · 2026-11-21 · ❌→✅ · #kimi #hooks #context-window #compaction
+класс: claim-before-evidence
+**Ситуация:** Kimi сжал контекст на отображаемых 85 % раньше Stop-only хука KAIF.
+**Сделано:** прочитаны официальные `loop_control`/`token_counting` и живой wire; свежий `token_counting.measured` подключён на prompt/tool events.
+**Итог:** ❌→✅ — 85 % срабатывает во время хода один раз, compaction отсекает старое, свежие 80 % взводят cut; s14 зелёный. → `bugs/144`.
+**Урок:** provider usage, внешний счётчик окна и внутренний триггер compaction — разные наблюдаемые; адаптер строится по живому event stream.
+**Repro:** `node framework/hooks/context-window.mjs --selftest`; mutant без чтения wire делает оба Kimi-сценария красными.
+**Trigger:** меняешь контроль окна → сначала найди в живом wire `token_counting.measured`, `usage.record`, `context.apply_compaction`.
+**Not for:** вывода точного reserved threshold, который документация для этой конфигурации не раскрывает.
+механизировано: framework/hooks/context-window.mjs --selftest
+
 ### EXP-0215 · 2026-11-18 · ❌→✅ · #hooks #root #cwd #sibling #claude-project-dir #issue-194
 класс: field-dropped-in-rebuild
 **Ситуация:** origin #194 (S3): у сессии с дополнительными рабочими папками cwd события — соседняя папка; починка 2.9 (вверх до `.kaif/kaif.json`)

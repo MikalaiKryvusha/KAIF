@@ -2958,10 +2958,12 @@ skill set lives in `.claude/skills/`; mirrors derive from it mechanically (`sync
 `.kimi-code/skills/<name>/SKILL.md`: descriptions become folded YAML blocks (safe for `: ` and localized
 alias tails), invocations become `/skill:<name>`, resources use `${KIMI_SKILL_DIR}`, and references travel
 beside the skill. The Kimi-specific directory keeps its adapted text separate from Codex's `.agents/skills/`
-copy when both systems are selected. Kimi's optional `kimi-config-fragment.toml` wires
-`kimi-permission-call.mjs` on `PermissionRequest`: the voice starts detached before the wait, from a UTF-8
-phrase file; `KAIF_VOICE_FILE_TOOL` is a JSON command prefix with a `{file}` slot (Silero + Glass, or another
-file-based engine), defaulting to `voice-soft.mjs`. Cognitive work lands in the canon only — a mirror is
+copy when both systems are selected. Kimi's optional `kimi-config-fragment.toml` wires the full hook set:
+plain prompt context, pending refresh after observation-only events, Stop blocks, Kimi usage/window accounting,
+knowledge queued to the next prompt, wire-based farewell and the detached permission voice. Kimi has no
+documented `updatedInput`, so clock and subagent input rewrites become explicit retries. The voice accepts
+`KAIF_VOICE_FILE_TOOL` or `contour.voiceFileTool`, a command prefix with a `{file}` slot (Silero + Glass, or
+another file-based engine), defaulting to `voice-soft.mjs`. Cognitive work lands in the canon only — a mirror is
 never edited by hand.
 
 ### 7.4 Languages

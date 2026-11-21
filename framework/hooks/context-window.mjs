@@ -100,6 +100,36 @@ export function kimiConfiguredWindow(model, configText) {
   return null;
 }
 
+// [TESTED: 2026-11-21 15:22 +03:00 · real PostToolUse + s14; report testcases/reports/2026-11-21_kimi_context_window.md] Kimi's display count is a record of its own.
+export function lastKimiContext(text) {
+  const lines = String(text).split('\n');
+  for (let i = lines.length - 1; i >= 0; i--) {
+    if (!/token_counting\.measured|usage\.record|context\.apply_compaction/.test(lines[i])) continue;
+    try {
+      const r = JSON.parse(lines[i]);
+      if (r.agentId !== 'main') continue;
+      if (r.type === 'context.apply_compaction') return null;
+      if (r.type === 'token_counting.measured' && Number(r.tokens) > 0) return { used: Number(r.tokens), model: '' };
+      if (r.type === 'usage.record' && kimiUsedOf(r.usage) > 0) return { used: kimiUsedOf(r.usage), model: String(r.model || '') };
+    } catch { /* a torn line at the cut of the tail */ }
+  }
+  return null;
+}
+
+export function kimiWireOf(id, home = process.env.KIMI_CODE_HOME || join(homedir(), '.kimi-code')) {
+  const base = join(home, 'sessions');
+  const ids = id.startsWith('session_') ? [id] : [id, `session_${id}`];
+  try {
+    for (const workdir of readdirSync(base)) {
+      for (const session of ids) {
+        const p = join(base, workdir, session, 'agents', 'main', 'wire.jsonl');
+        if (existsSync(p)) return p;
+      }
+    }
+  } catch { /* no Kimi session store */ }
+  return '';
+}
+
 // The newest main-thread assistant record with usage, from the transcript's tail.
 export function lastUsage(text) {
   const lines = String(text).split('\n');
@@ -325,6 +355,37 @@ if (process.argv[2] === '--selftest') {
         'alive from the first prompt (bugs/142): no model answer yet, no transcript yet — recorded; a subagent\'s event — not');
     } finally { rmSync(dir, { recursive: true, force: true }); }
   }
+  { // Kimi emits the display count during a turn, before Stop; a compaction invalidates every older count.
+    const usage = JSON.stringify({ type: 'usage.record', agentId: 'main', model: 'kimi-code/k3.1-pro', usage: { inputOther: 5486, inputCacheRead: 891014, inputCacheCreation: 0 } });
+    const measured = JSON.stringify({ type: 'token_counting.measured', agentId: 'main', tokens: 891655 });
+    const compacted = JSON.stringify({ type: 'context.apply_compaction', agentId: 'main', tokensAfter: 23531 });
+    const lu = lastKimiContext([usage, measured].join('\n'));
+    ok(lu && lu.used === 891655 && lastKimiContext([usage, measured, compacted].join('\n')) === null,
+      'Kimi: token_counting.measured wins; records before a compaction are stale');
+
+    const dir = mkdtempSync(join(tmpdir(), 'kaif-cw-kimi-'));
+    try {
+      const home = join(dir, 'home'), root = join(dir, 'project');
+      mkdirSync(join(root, '.kaif'), { recursive: true });
+      writeFileSync(join(root, DEPLOYMENT), JSON.stringify({ contextWindow: { tokens: 1048576 } }));
+      const tp = join(home, 'sessions', 'wd_test', 'session_live', 'agents', 'main', 'wire.jsonl');
+      mkdirSync(dirname(tp), { recursive: true }); writeFileSync(tp, usage + '\n' + measured + '\n');
+      const run = (event) => spawnSync(process.execPath, [fileURLToPath(import.meta.url), '--kimi'], {
+        input: JSON.stringify({ hook_event_name: event, session_id: 'session_live', cwd: root }),
+        env: { ...process.env, KIMI_CODE_HOME: home }, encoding: 'utf8', timeout: 20000 });
+      const first = run('PostToolUse'), repeat = run('PostToolUse');
+      ok(first.status === 0 && /85 % full \(891655 of 1048576 tokens\)/.test(first.stdout)
+        && /\/skill:end-chat-soft/.test(first.stdout) && repeat.stdout === '',
+      'Kimi PostToolUse: 85 % starts the soft closure during the turn and speaks only once');
+      writeFileSync(tp, usage + '\n' + measured + '\n' + compacted + '\n');
+      const post = run('PostCompact'), stale = run('PostToolUse');
+      writeFileSync(tp, usage + '\n' + measured + '\n' + compacted + '\n'
+        + JSON.stringify({ type: 'token_counting.measured', agentId: 'main', tokens: 840000 }) + '\n');
+      const refilled = run('PostToolUse');
+      ok(post.stdout === '' && stale.stdout === '' && /80 % full \(840000 of 1048576 tokens\)/.test(refilled.stdout),
+        `Kimi PostCompact: old usage stays silent; a fresh 80 % measurement rearms the cut step — ${JSON.stringify({ post: post.stdout, stale: stale.stdout, refilled: refilled.stdout })}`);
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
@@ -371,7 +432,10 @@ if (process.argv[2] === '--kimi') {
     const st = all[id] || { said: [], seen: 0 };
     if (typeof ev.model === 'string' && ev.model) st.model = ev.model;
     if (ev.hook_event_name === 'PostCompact') { st.said = []; st.seen = 0; }
-    const measured = kimiUsedOf(ev.usage);
+    const direct = kimiUsedOf(ev.usage);
+    const tp = kimiWireOf(id);
+    const observed = tp ? lastKimiContext(tailOf(tp)) : null;
+    const measured = ev.hook_event_name === 'PostCompact' ? 0 : direct || (observed ? observed.used : 0);
     const used = measured || st.seen || 0;
     let configured = null;
     try {
@@ -382,7 +446,7 @@ if (process.argv[2] === '--kimi') {
     const gate = closeGate(ev, used, win, cw);
     if (gate) { process.stdout.write(JSON.stringify(gate)); process.exit(0); }
     let d = null;
-    if (measured > 0 && ev.hook_event_name === 'Stop') {
+    if (measured > 0 && ev.hook_event_name !== 'PreToolUse') {
       st.seen = Math.max(st.seen || 0, measured);
       st.said = keptLevels(measured, win, st.said || []);
       d = decide(measured, win, cw, st.said);
@@ -396,7 +460,7 @@ if (process.argv[2] === '--kimi') {
     const kept = {}; for (const k of ids) kept[k] = all[k];
     const p = join(root, STATE); mkdirSync(dirname(p), { recursive: true });
     writeFileSync(p + '.tmp', JSON.stringify(kept)); renameSync(p + '.tmp', p);
-    if (d && (d.kind === 'close' || d.kind === 'force')) { console.error(d.line); process.exit(2); }
+    if (d && (d.kind === 'close' || d.kind === 'force') && ev.hook_event_name === 'Stop') { console.error(d.line); process.exit(2); }
     if (d) process.stdout.write(d.line);
   } catch { /* a hook never breaks the session */ }
   process.exit(0);

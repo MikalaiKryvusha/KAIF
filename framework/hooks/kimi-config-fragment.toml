@@ -49,6 +49,17 @@ command = "node .kaif/hooks/subagent-preamble.mjs --kimi"
 timeout = 5
 
 [[hooks]]
+event = "UserPromptSubmit"
+command = "node .kaif/hooks/context-window.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "PostToolUse"
+matcher = "*"
+command = "node .kaif/hooks/context-window.mjs --kimi"
+timeout = 5
+
+[[hooks]]
 event = "PreToolUse"
 matcher = "Skill"
 command = "node .kaif/hooks/context-window.mjs --kimi"

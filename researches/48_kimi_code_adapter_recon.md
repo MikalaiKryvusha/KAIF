@@ -109,3 +109,27 @@ pending mark, PostToolUse knowledge queue читается следующим Us
 `kimi -p` 2026-11-21 показала SessionStart → UserPromptSubmit, refresh timer, clock-now и knowledge-moment;
 ответ модели — OK. Голосовой зов до двух вопросов владельца реально прошёл через Silero + Glass, со строкой
 `soft voice:` и кодом 0. Полный контрактный свод s14 с Kimi-случаями зелёный.
+
+## 5. Контроль окна и автоматическое сжатие — полевая поправка 2026-11-21
+
+Официальная конфигурация Kimi Code CLI 2.7.2 различает два числа:
+
+- `loop_control.reserved_context_size` управляет автоматическим сжатием: оно запускается, когда
+  остаток окна становится меньше резерва. Точный резерв K3.1 Pro в наблюденной конфигурации не назван.
+- `token_counting.strategy = "measured+estimated"` по умолчанию показывает снаружи измеренное usage
+  плюс оценку ещё не измеренного хвоста. Внутренняя логика использует и usage, и оценки.
+  Источник: https://www.kimi.com/code/docs/en/kimi-code-cli/configuration/config-files.html
+  (`loop_control`, `token_counting`).
+
+В живом журнале соседнего проекта перед `context.apply_compaction` последний
+`token_counting.measured` равен 891655 (85,04 % от 1048576), а запись compaction содержит
+`tokensBefore: 851835` (81,24 %). Значит, счётчик интерфейса и внутренний порог compaction не обязаны
+совпадать. Прежний адаптер читал только `Stop.usage`: длинный ход сжался до `Stop`, поэтому ступени
+80/85 % не успели сработать.
+
+Правильный источник для предупреждений KAIF — свежий `token_counting.measured` в
+`agents/main/wire.jsonl` на `UserPromptSubmit` и `PostToolUse`; `Stop.usage` остаётся запасным
+источником. Записи до последнего `context.apply_compaction` нельзя использовать после compaction.
+Проверка: настоящий `PostToolUse` на fixture 891655 выдаёт `/skill:end-chat-soft` один раз;
+`PostCompact` сбрасывает ступени; свежие 840000 снова дают ступень 80 %. Мутация, отключающая чтение
+wire, должна делать оба сценария красными.

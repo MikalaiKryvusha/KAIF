@@ -9,12 +9,12 @@
   "version": "2.10",
   "released": "2026-11-21",
   "build": {
-    "sourceTree": "ff85a6f4099cb16745960a3995ce183efbdf4d24d1fdc2c2b13ba8064a0e6210",
+    "sourceTree": "f6d517effafc1ff8c31e4af43e5c137f80203e80d520f38fea73b117ae2191cd",
     "prerelease": null
   },
   "templateNotes": [
-    "Release title: KAIF 2.10 (neutral, no codename — the owner has not named this version).",
-    "KIMI CODE IS A NATIVE TARGET (2.10, criterion 37; the KAIF owner: \"adapt KAIF 2.10 to KIMI and release it as it is\"): `--agents kimi-code` writes native `AGENTS.md` and `.kimi-code/skills/<name>/SKILL.md` with references; descriptions become folded YAML so `: ` and localized alias tails parse, skill calls use `/skill:<name>`, resources use `${KIMI_SKILL_DIR}`, and `check`/`sync`/`update-verify` apply the same transform. The Kimi-specific directory does not collide with Codex's `.agents/skills/` copy. Refresh hooks stay unwired: Kimi reads user `config.toml` or plugin hooks, not `.claude/settings.json`. A separate `PermissionRequest` sample starts the configured file-based voice detached before the permission wait; `KAIF_VOICE_FILE_TOOL` carries the machine's engine and `{file}` receives the UTF-8 phrase. MIGRATION — agent work: add `kimi-code` to the deployment's agents and run `node .kaif/kaif-core.mjs sync`; invoke the KAIF entry skill as `/skill:resume`, not Kimi's built-in `/resume`.",
+    "Release codename for this version: KAIF 2.10 — Confronted KAIF (owner's choice, background question, 2026-11-21).",
+    "KIMI CODE IS A NATIVE TARGET (2.10, criterion 37; the KAIF owner: \"adapt KAIF 2.10 to KIMI and release it as it is\"): `--agents kimi-code` writes native `AGENTS.md` and `.kimi-code/skills/<name>/SKILL.md` with references; descriptions become folded YAML so `: ` and localized alias tails parse, skill calls use `/skill:<name>`, resources use `${KIMI_SKILL_DIR}`, and `check`/`sync`/`update-verify` apply the same transform. The Kimi-specific directory does not collide with Codex's `.agents/skills/` copy. The optional `kimi-config-fragment.toml` wires the full hook set into Kimi's user `config.toml`: pending refresh after observation-only events, Stop blocks, Kimi usage/window accounting, queued knowledge, wire-based farewell and closing gates. Kimi has no documented `updatedInput`; clock and subagent rewrites become explicit retries. A `PermissionRequest` hook starts the configured file-based voice detached before the permission wait; `KAIF_VOICE_FILE_TOOL` carries the machine's engine and `{file}` receives the UTF-8 phrase. MIGRATION — agent work: add `kimi-code` to the deployment's agents and run `node .kaif/kaif-core.mjs sync`; invoke the KAIF entry skill as `/skill:resume`, not Kimi's built-in `/resume`.",
     "THE ANSWER TO THE OWNER'S WORD HAS NO PRESCRIBED OPENING (2.10, epic TK; origin ticket #156 — the KAIF owner on a field project, rendered from Russian: \"do not say where the AI agent should start, let it decide itself\"): \"The owner's word mid-turn\" says only: answer at once, as text, by its kind, then work on with what you were doing. MIGRATION — agent work: if your own texts (STATUS, house rules, experience, local skills) prescribe how your answer to the owner opens, delete that line.",
     "A TURN THAT ENDS ON A QUESTION TO THE OWNER FIRST DECIDES WHOSE STEP IT IS (2.10, epic TK; origin tickets #140 · #157 — the KAIF owner on a field project, rendered from Russian: \"the agent stopped, waits for the owner and did not call by voice — and it had to!\"): your own next step by the plan — take it, never ask leave for it; work that stops until the owner acts or answers — the turn's last call is `review.mjs --call \"<what is needed>\"`, then the text. `/fable-judge` hunts the leave asked for own work.",
     "AN AUTONOMOUS RUN DOES NOT STAND STILL WHILE IT WAITS (2.10, epic TK; the KAIF owner, rendered from Russian: \"the agent was told to work autonomously — and it stands and does not work!\"): waiting on a background task before a named time, take the next step that does not collide with it in the same turn, or watch THAT task within the turn; `/autoloop` no longer says \"continue when ready\", and the judge's early-finish hunt covers a turn ended on such a wait. Since origin tickets #174 · #182 · #185 (field deployments): a loop whose only effect is passing the clock (`sleep` against `date`) is the early finish in disguise, not a watch; the order to work autonomously in any wording enters a loop at once, and a task given mid-loop is done, then the loop resumes; the state of a screen or a device is claimed only after a frame — a wait on a proxy (USB presence, a port, the system's own \"will restart\" text) is not a look; the judge hunts both. MIGRATION — agent work: if your own loop texts let a wait end the turn, rewrite that line.",
@@ -112,8 +112,8 @@
       "Release codename for this version: KAIF 2.5 — Experienced KAIF"
     ],
     "2.10": [
-      "Release title: KAIF 2.10 (neutral, no codename — the owner has not named this version).",
-      "KIMI CODE IS A NATIVE TARGET (2.10, criterion 37; the KAIF owner: \"adapt KAIF 2.10 to KIMI and release it as it is\"): `--agents kimi-code` writes native `AGENTS.md` and `.kimi-code/skills/<name>/SKILL.md` with references; descriptions become folded YAML so `: ` and localized alias tails parse, skill calls use `/skill:<name>`, resources use `${KIMI_SKILL_DIR}`, and `check`/`sync`/`update-verify` apply the same transform. The Kimi-specific directory does not collide with Codex's `.agents/skills/` copy. Refresh hooks stay unwired: Kimi reads user `config.toml` or plugin hooks, not `.claude/settings.json`. A separate `PermissionRequest` sample starts the configured file-based voice detached before the permission wait; `KAIF_VOICE_FILE_TOOL` carries the machine's engine and `{file}` receives the UTF-8 phrase. MIGRATION — agent work: add `kimi-code` to the deployment's agents and run `node .kaif/kaif-core.mjs sync`; invoke the KAIF entry skill as `/skill:resume`, not Kimi's built-in `/resume`.",
+      "Release codename for this version: KAIF 2.10 — Confronted KAIF (owner's choice, background question, 2026-11-21).",
+      "KIMI CODE IS A NATIVE TARGET (2.10, criterion 37; the KAIF owner: \"adapt KAIF 2.10 to KIMI and release it as it is\"): `--agents kimi-code` writes native `AGENTS.md` and `.kimi-code/skills/<name>/SKILL.md` with references; descriptions become folded YAML so `: ` and localized alias tails parse, skill calls use `/skill:<name>`, resources use `${KIMI_SKILL_DIR}`, and `check`/`sync`/`update-verify` apply the same transform. The Kimi-specific directory does not collide with Codex's `.agents/skills/` copy. The optional `kimi-config-fragment.toml` wires the full hook set into Kimi's user `config.toml`: pending refresh after observation-only events, Stop blocks, Kimi usage/window accounting, queued knowledge, wire-based farewell and closing gates. Kimi has no documented `updatedInput`; clock and subagent rewrites become explicit retries. A `PermissionRequest` hook starts the configured file-based voice detached before the permission wait; `KAIF_VOICE_FILE_TOOL` carries the machine's engine and `{file}` receives the UTF-8 phrase. MIGRATION — agent work: add `kimi-code` to the deployment's agents and run `node .kaif/kaif-core.mjs sync`; invoke the KAIF entry skill as `/skill:resume`, not Kimi's built-in `/resume`.",
       "THE ANSWER TO THE OWNER'S WORD HAS NO PRESCRIBED OPENING (2.10, epic TK; origin ticket #156 — the KAIF owner on a field project, rendered from Russian: \"do not say where the AI agent should start, let it decide itself\"): \"The owner's word mid-turn\" says only: answer at once, as text, by its kind, then work on with what you were doing. MIGRATION — agent work: if your own texts (STATUS, house rules, experience, local skills) prescribe how your answer to the owner opens, delete that line.",
       "A TURN THAT ENDS ON A QUESTION TO THE OWNER FIRST DECIDES WHOSE STEP IT IS (2.10, epic TK; origin tickets #140 · #157 — the KAIF owner on a field project, rendered from Russian: \"the agent stopped, waits for the owner and did not call by voice — and it had to!\"): your own next step by the plan — take it, never ask leave for it; work that stops until the owner acts or answers — the turn's last call is `review.mjs --call \"<what is needed>\"`, then the text. `/fable-judge` hunts the leave asked for own work.",
       "AN AUTONOMOUS RUN DOES NOT STAND STILL WHILE IT WAITS (2.10, epic TK; the KAIF owner, rendered from Russian: \"the agent was told to work autonomously — and it stands and does not work!\"): waiting on a background task before a named time, take the next step that does not collide with it in the same turn, or watch THAT task within the turn; `/autoloop` no longer says \"continue when ready\", and the judge's early-finish hunt covers a turn ended on such a wait. Since origin tickets #174 · #182 · #185 (field deployments): a loop whose only effect is passing the clock (`sleep` against `date`) is the early finish in disguise, not a watch; the order to work autonomously in any wording enters a loop at once, and a task given mid-loop is done, then the loop resumes; the state of a screen or a device is claimed only after a frame — a wait on a proxy (USB presence, a port, the system's own \"will restart\" text) is not a look; the judge hunts both. MIGRATION — agent work: if your own loop texts let a wait end the turn, rewrite that line.",
@@ -3418,10 +3418,12 @@ skill set lives in `.claude/skills/`; mirrors derive from it mechanically (`sync
 `.kimi-code/skills/<name>/SKILL.md`: descriptions become folded YAML blocks (safe for `: ` and localized
 alias tails), invocations become `/skill:<name>`, resources use `${KIMI_SKILL_DIR}`, and references travel
 beside the skill. The Kimi-specific directory keeps its adapted text separate from Codex's `.agents/skills/`
-copy when both systems are selected. Kimi's optional `kimi-config-fragment.toml` wires
-`kimi-permission-call.mjs` on `PermissionRequest`: the voice starts detached before the wait, from a UTF-8
-phrase file; `KAIF_VOICE_FILE_TOOL` is a JSON command prefix with a `{file}` slot (Silero + Glass, or another
-file-based engine), defaulting to `voice-soft.mjs`. Cognitive work lands in the canon only — a mirror is
+copy when both systems are selected. Kimi's optional `kimi-config-fragment.toml` wires the full hook set:
+plain prompt context, pending refresh after observation-only events, Stop blocks, Kimi usage/window accounting,
+knowledge queued to the next prompt, wire-based farewell and the detached permission voice. Kimi has no
+documented `updatedInput`, so clock and subagent input rewrites become explicit retries. The voice accepts
+`KAIF_VOICE_FILE_TOOL` or `contour.voiceFileTool`, a command prefix with a `{file}` slot (Silero + Glass, or
+another file-based engine), defaulting to `voice-soft.mjs`. Cognitive work lands in the canon only — a mirror is
 never edited by hand.
 
 ### 7.4 Languages
@@ -20545,6 +20547,36 @@ export function kimiConfiguredWindow(model, configText) {
   return null;
 }
 
+// [TESTED: 2026-11-21 15:22 +03:00 · real PostToolUse + s14; report testcases/reports/2026-11-21_kimi_context_window.md] Kimi's display count is a record of its own.
+export function lastKimiContext(text) {
+  const lines = String(text).split('\n');
+  for (let i = lines.length - 1; i >= 0; i--) {
+    if (!/token_counting\.measured|usage\.record|context\.apply_compaction/.test(lines[i])) continue;
+    try {
+      const r = JSON.parse(lines[i]);
+      if (r.agentId !== 'main') continue;
+      if (r.type === 'context.apply_compaction') return null;
+      if (r.type === 'token_counting.measured' && Number(r.tokens) > 0) return { used: Number(r.tokens), model: '' };
+      if (r.type === 'usage.record' && kimiUsedOf(r.usage) > 0) return { used: kimiUsedOf(r.usage), model: String(r.model || '') };
+    } catch { /* a torn line at the cut of the tail */ }
+  }
+  return null;
+}
+
+export function kimiWireOf(id, home = process.env.KIMI_CODE_HOME || join(homedir(), '.kimi-code')) {
+  const base = join(home, 'sessions');
+  const ids = id.startsWith('session_') ? [id] : [id, `session_${id}`];
+  try {
+    for (const workdir of readdirSync(base)) {
+      for (const session of ids) {
+        const p = join(base, workdir, session, 'agents', 'main', 'wire.jsonl');
+        if (existsSync(p)) return p;
+      }
+    }
+  } catch { /* no Kimi session store */ }
+  return '';
+}
+
 // The newest main-thread assistant record with usage, from the transcript's tail.
 export function lastUsage(text) {
   const lines = String(text).split('\n');
@@ -20770,6 +20802,37 @@ if (process.argv[2] === '--selftest') {
         'alive from the first prompt (bugs/142): no model answer yet, no transcript yet — recorded; a subagent\'s event — not');
     } finally { rmSync(dir, { recursive: true, force: true }); }
   }
+  { // Kimi emits the display count during a turn, before Stop; a compaction invalidates every older count.
+    const usage = JSON.stringify({ type: 'usage.record', agentId: 'main', model: 'kimi-code/k3.1-pro', usage: { inputOther: 5486, inputCacheRead: 891014, inputCacheCreation: 0 } });
+    const measured = JSON.stringify({ type: 'token_counting.measured', agentId: 'main', tokens: 891655 });
+    const compacted = JSON.stringify({ type: 'context.apply_compaction', agentId: 'main', tokensAfter: 23531 });
+    const lu = lastKimiContext([usage, measured].join('\n'));
+    ok(lu && lu.used === 891655 && lastKimiContext([usage, measured, compacted].join('\n')) === null,
+      'Kimi: token_counting.measured wins; records before a compaction are stale');
+
+    const dir = mkdtempSync(join(tmpdir(), 'kaif-cw-kimi-'));
+    try {
+      const home = join(dir, 'home'), root = join(dir, 'project');
+      mkdirSync(join(root, '.kaif'), { recursive: true });
+      writeFileSync(join(root, DEPLOYMENT), JSON.stringify({ contextWindow: { tokens: 1048576 } }));
+      const tp = join(home, 'sessions', 'wd_test', 'session_live', 'agents', 'main', 'wire.jsonl');
+      mkdirSync(dirname(tp), { recursive: true }); writeFileSync(tp, usage + '\n' + measured + '\n');
+      const run = (event) => spawnSync(process.execPath, [fileURLToPath(import.meta.url), '--kimi'], {
+        input: JSON.stringify({ hook_event_name: event, session_id: 'session_live', cwd: root }),
+        env: { ...process.env, KIMI_CODE_HOME: home }, encoding: 'utf8', timeout: 20000 });
+      const first = run('PostToolUse'), repeat = run('PostToolUse');
+      ok(first.status === 0 && /85 % full \(891655 of 1048576 tokens\)/.test(first.stdout)
+        && /\/skill:end-chat-soft/.test(first.stdout) && repeat.stdout === '',
+      'Kimi PostToolUse: 85 % starts the soft closure during the turn and speaks only once');
+      writeFileSync(tp, usage + '\n' + measured + '\n' + compacted + '\n');
+      const post = run('PostCompact'), stale = run('PostToolUse');
+      writeFileSync(tp, usage + '\n' + measured + '\n' + compacted + '\n'
+        + JSON.stringify({ type: 'token_counting.measured', agentId: 'main', tokens: 840000 }) + '\n');
+      const refilled = run('PostToolUse');
+      ok(post.stdout === '' && stale.stdout === '' && /80 % full \(840000 of 1048576 tokens\)/.test(refilled.stdout),
+        `Kimi PostCompact: old usage stays silent; a fresh 80 % measurement rearms the cut step — ${JSON.stringify({ post: post.stdout, stale: stale.stdout, refilled: refilled.stdout })}`);
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
@@ -20816,7 +20879,10 @@ if (process.argv[2] === '--kimi') {
     const st = all[id] || { said: [], seen: 0 };
     if (typeof ev.model === 'string' && ev.model) st.model = ev.model;
     if (ev.hook_event_name === 'PostCompact') { st.said = []; st.seen = 0; }
-    const measured = kimiUsedOf(ev.usage);
+    const direct = kimiUsedOf(ev.usage);
+    const tp = kimiWireOf(id);
+    const observed = tp ? lastKimiContext(tailOf(tp)) : null;
+    const measured = ev.hook_event_name === 'PostCompact' ? 0 : direct || (observed ? observed.used : 0);
     const used = measured || st.seen || 0;
     let configured = null;
     try {
@@ -20827,7 +20893,7 @@ if (process.argv[2] === '--kimi') {
     const gate = closeGate(ev, used, win, cw);
     if (gate) { process.stdout.write(JSON.stringify(gate)); process.exit(0); }
     let d = null;
-    if (measured > 0 && ev.hook_event_name === 'Stop') {
+    if (measured > 0 && ev.hook_event_name !== 'PreToolUse') {
       st.seen = Math.max(st.seen || 0, measured);
       st.said = keptLevels(measured, win, st.said || []);
       d = decide(measured, win, cw, st.said);
@@ -20841,7 +20907,7 @@ if (process.argv[2] === '--kimi') {
     const kept = {}; for (const k of ids) kept[k] = all[k];
     const p = join(root, STATE); mkdirSync(dirname(p), { recursive: true });
     writeFileSync(p + '.tmp', JSON.stringify(kept)); renameSync(p + '.tmp', p);
-    if (d && (d.kind === 'close' || d.kind === 'force')) { console.error(d.line); process.exit(2); }
+    if (d && (d.kind === 'close' || d.kind === 'force') && ev.hook_event_name === 'Stop') { console.error(d.line); process.exit(2); }
     if (d) process.stdout.write(d.line);
   } catch { /* a hook never breaks the session */ }
   process.exit(0);
@@ -20939,6 +21005,17 @@ command = "node .kaif/hooks/subagent-preamble.mjs --kimi"
 timeout = 5
 
 [[hooks]]
+event = "UserPromptSubmit"
+command = "node .kaif/hooks/context-window.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "PostToolUse"
+matcher = "*"
+command = "node .kaif/hooks/context-window.mjs --kimi"
+timeout = 5
+
+[[hooks]]
 event = "PreToolUse"
 matcher = "Skill"
 command = "node .kaif/hooks/context-window.mjs --kimi"
@@ -21021,7 +21098,11 @@ export function projectRoot(cwd) {
 
 export function voiceCommand(root, phraseFile, env = process.env) {
   let custom = null;
-  try { custom = env.KAIF_VOICE_FILE_TOOL ? JSON.parse(env.KAIF_VOICE_FILE_TOOL) : null; } catch { custom = null; }
+  try {
+    const marker = JSON.parse(readFileSync(join(root, MARKER), 'utf8').replace(/^\uFEFF/, ''));
+    custom = marker.contour && marker.contour.voiceFileTool;
+  } catch { /* no marker-level engine */ }
+  try { if (env.KAIF_VOICE_FILE_TOOL) custom = JSON.parse(env.KAIF_VOICE_FILE_TOOL); } catch { custom = null; }
   const prefix = Array.isArray(custom) && custom.length && custom.every((x) => typeof x === 'string')
     ? custom
     : [process.execPath, join(root, '.kaif', 'tools', 'contour', 'voice-soft.mjs'), '--file', '{file}', '--play'];
@@ -21628,11 +21709,13 @@ lacking them.
 | `knowledge-moment.mjs` (2.10, epic MM) | `UserPromptSubmit`; `PostToolUse` and `PostToolUseFailure`, matcher `*` | STRONG moments speak at once — the owner's own prompt (a background task's notification is not), a failed tool call, a Read of a knowledge document (maps, `STATUS.md`, `EXPERIENCE.md`, `HOUSE_RULES.md`, `plans/`, `researches/`), the first touch in a session of a file whose component has `NOTES.md`, the first Read in a session of a project source file — a config file (`package.json`, `*.yaml`, `*.toml`) is not one, a generic name (`index`, `utils`, `main` …) is looked up by its full path only (the docs that name it are quoted — «does the code say the same?»; named nowhere — «before you answer, add one line to the map»); every other tool result adds weight 1, and the hook speaks at 12 | per moment; the weight resets after each line; component notes — once per session | one `additionalContext` line: write what you understood into the project document where it lives, in this turn — never a block, never a stop, never a document body; state per session in `.kaif/knowledge-moment.json` |
 | `test-after-code.mjs` (2.10, epic HC) | `PostToolUse`, matcher `*`; `Stop` | a write of a product file (the project's kinds in `.kaif/kaif.json` → `testHook`, else a source file, configs excluded); a shell command that is a RUN of its kind clears it — a build, a linter, `--check`, `--help`, a heredoc body never do | per write; the stop is refused once per debt signature, a repeated stop with nothing new written passes | the order «run it before you stop», the list of what was not run; state in `.kaif/test-debt.json`; `--waive "<why>"` · `--status` · `--selftest` |
 
-**Kimi-only voice call (2.10, adapter criterion 37).** `kimi-permission-call.mjs` is not a refresh hook and
-is not wired into Claude's fragment. On Kimi `PermissionRequest` it writes a localized phrase to `voice/`
-and starts the configured file-based voice tool detached, before the permission wait; quiet hours hold and
-errors fail open. Merge `kimi-config-fragment.toml` into Kimi's user-level `config.toml`; the adapter
-`framework/adapters/kimi-code.md` documents `KAIF_VOICE_FILE_TOOL` and the no-sound checks.
+**Kimi Code (2.10, adapter criterion 37).** `kimi-config-fragment.toml` wires the full KAIF set into Kimi's
+user-level `config.toml`: plain prompt context, pending refresh after observation-only events, Stop blocks,
+Kimi usage and window size, knowledge queued to the next prompt, wire-based farewell, and a detached voice on
+`PermissionRequest`. Kimi has no documented `updatedInput`; clock writes and subagent launches use an explicit
+retry with the corrected content. `kimi-permission-call.mjs` accepts `KAIF_VOICE_FILE_TOOL` or
+`.kaif/kaif.json` → `contour.voiceFileTool`; quiet hours hold and voice errors fail open. The adapter
+`framework/adapters/kimi-code.md` carries the contract and no-sound checks.
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
 predicate, or names why it needs none, and the table above says which; a suppression window
@@ -21738,7 +21821,7 @@ reachable from that session): each of them can now return the agent to work from
 |---|---|---|---|---|
 | **Claude Code** | `settings-fragment.json` | ✅ | ✅ | ✅ |
 | **OpenAI Codex** | `sample-codex-hooks.json` | ✅ same field names, matcher on `source` | ✅ | ❌ not wired — `Stop` returns `{"decision":"block","reason"}` (2026-09-29); continuation cap not found |
-| **Kimi Code** | `kimi-config-fragment.toml` — voice only | ❌ observation-only; markdown ritual | ❌ not wired | ❌ not wired |
+| **Kimi Code** | `kimi-config-fragment.toml` — full KAIF set | ✅ pending mark → next `UserPromptSubmit` | ✅ plain stdout | ✅ exit 2 on `Stop`, once per session |
 | **Cursor** | `sample-cursor-hooks.json` | ✅ `additional_context` | ❌ `beforeSubmitPrompt` cannot inject agent context | ❌ `stop` auto-submits a followup prompt instead |
 | **Google Antigravity** | `sample-antigravity-hooks.json` | ❌ no session/compaction event exists | ✅ `PreInvocation` → `injectSteps` | ❌ field names match, blocking value not verified |
 | **GitHub Copilot** | `sample-copilot-hooks.json` | ✅ `additionalContext` on `sessionStart` | ❌ injection not permitted on `userPromptSubmitted` | ❌ not wired — `agentStop` returns `{"decision":"block","reason"}`, 8 in a row (2026-09-29) |
@@ -21789,7 +21872,7 @@ task's notification does not open a new turn: a closing turn that waited on a po
 replaces the interim line. `stop_hook_active` is not the test — it is already true on the first stop after the closure when a guard
 blocked earlier in the turn. `.kaif/farewell-capture.json` records which closure wrote last. Both files are session state (ignored). Without the hook the owner's paste under `resume` stands as before.
 
-**The context-window hook — `context-window.mjs` (2.10, epic PT, origin #188) — is wired for Claude Code only.** A field agent read a
+**The context-window hook — `context-window.mjs` (2.10, epic PT, origin #188) — is wired for Claude Code and Kimi Code.** A field agent read a
 warning at 70 % that already spoke of closing as the closure itself and stopped taking work with 30 % of the window left; another field
 owner set his own line. The KAIF owner set the steps (2.10, decision №161): at 75 % a warning that the end of the window is near, at
 80 % bring the work in hand to a logical cut, at 85 % start the soft closure, at 92 % finish the soft closure quickly — or start the forced
@@ -21801,6 +21884,10 @@ unless the project states `contextWindow.tokens` — the project's number wins o
 window. A field session saw a 1M window auto-compact at ≈ 89 % (887 621 tokens), so 85 % comes first there and the 92 % step may never
 come; the point of a 200K window is not measured — a project whose sessions compact earlier sets lower steps. After a compaction the steps re-arm. Claude Code fires both this hook and the knowledge hook on a subagent's tool calls too, under the parent's session: a
 subagent's event carries `agent_id` (observed), and both hooks stay silent on it.
+Kimi Code reports its displayed context size as `token_counting.measured` in `agents/main/wire.jsonl` during a turn, before `Stop`.
+The Kimi adapter therefore measures on `UserPromptSubmit` and `PostToolUse`, keeps `Stop.usage` as a fallback, and rejects records older
+than the latest `context.apply_compaction`; `PostCompact` rearms the steps. Automatic compaction uses `loop_control.reserved_context_size`,
+so its internal trigger need not equal the displayed percentage (Kimi Code configuration docs, `loop_control` and `token_counting`).
 
 **The knowledge hook — `knowledge-moment.mjs` (2.10, epic MM, origin #160 · #159 · #186) — is wired for Claude Code only.** A session
 understood how a part works, or saw a map say otherwise, and the finding stayed in the chat. The hook speaks at the moments a memory is

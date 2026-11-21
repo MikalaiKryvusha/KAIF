@@ -185,7 +185,7 @@ task's notification does not open a new turn: a closing turn that waited on a po
 replaces the interim line. `stop_hook_active` is not the test — it is already true on the first stop after the closure when a guard
 blocked earlier in the turn. `.kaif/farewell-capture.json` records which closure wrote last. Both files are session state (ignored). Without the hook the owner's paste under `resume` stands as before.
 
-**The context-window hook — `context-window.mjs` (2.10, epic PT, origin #188) — is wired for Claude Code only.** A field agent read a
+**The context-window hook — `context-window.mjs` (2.10, epic PT, origin #188) — is wired for Claude Code and Kimi Code.** A field agent read a
 warning at 70 % that already spoke of closing as the closure itself and stopped taking work with 30 % of the window left; another field
 owner set his own line. The KAIF owner set the steps (2.10, decision №161): at 75 % a warning that the end of the window is near, at
 80 % bring the work in hand to a logical cut, at 85 % start the soft closure, at 92 % finish the soft closure quickly — or start the forced
@@ -197,6 +197,10 @@ unless the project states `contextWindow.tokens` — the project's number wins o
 window. A field session saw a 1M window auto-compact at ≈ 89 % (887 621 tokens), so 85 % comes first there and the 92 % step may never
 come; the point of a 200K window is not measured — a project whose sessions compact earlier sets lower steps. After a compaction the steps re-arm. Claude Code fires both this hook and the knowledge hook on a subagent's tool calls too, under the parent's session: a
 subagent's event carries `agent_id` (observed), and both hooks stay silent on it.
+Kimi Code reports its displayed context size as `token_counting.measured` in `agents/main/wire.jsonl` during a turn, before `Stop`.
+The Kimi adapter therefore measures on `UserPromptSubmit` and `PostToolUse`, keeps `Stop.usage` as a fallback, and rejects records older
+than the latest `context.apply_compaction`; `PostCompact` rearms the steps. Automatic compaction uses `loop_control.reserved_context_size`,
+so its internal trigger need not equal the displayed percentage (Kimi Code configuration docs, `loop_control` and `token_counting`).
 
 **The knowledge hook — `knowledge-moment.mjs` (2.10, epic MM, origin #160 · #159 · #186) — is wired for Claude Code only.** A session
 understood how a part works, or saw a map say otherwise, and the finding stayed in the chat. The hook speaks at the moments a memory is
