@@ -13,6 +13,8 @@
 //      the machine's clock at the moment of speaking — the tool renames a file whose stamp is stale, never trusts the agent's sense of time.
 //
 // Engines (machine resources, reached through the environment, never a path inside the project):
+//   KAIF_VOICE_FILE_TOOL — JSON array, a complete file-based command prefix with `{file}`; it wins and runs BEFORE the renderer below
+//                          (the origin's Silero + Glass, bugs/148; the phrase is logged first);
 //   KAIF_VOICE_RENDER    — JSON array, a command prefix called with `<text> <out.wav> <voice>` (e.g. a renderer with longer pauses on
 //                          punctuation); tried first;
 //   KAIF_VOICE_BASE_TOOL — a node script `<text> --voice <name> --out <wav>`; the fallback;
@@ -215,9 +217,25 @@ function main(args) {
     process.exit(1);
   }
   // the contour logs the phrases it calls with itself (KAIF_VOICE_LOGGED=1 in the child's environment) — never twice
+  let loggedFile = file;
   if (process.env.KAIF_VOICE_LOGGED !== '1') {
     const root = projectRoot();
-    console.log('voice log: ' + logPhrase(root, phrase, { file, slug: val('--slug') }));
+    loggedFile = logPhrase(root, phrase, { file, slug: val('--slug') });
+    console.log('voice log: ' + loggedFile);
+  }
+  // The owner's configured file-based engine (Silero + Glass at the origin) wins over this tool's own beep-based renderer (bugs/148).
+  let fileVoice = null;
+  try { const custom = process.env.KAIF_VOICE_FILE_TOOL ? JSON.parse(process.env.KAIF_VOICE_FILE_TOOL) : null;
+    if (Array.isArray(custom) && custom.length && custom.every((x) => typeof x === 'string')) fileVoice = custom; } catch { /* use the renderer below */ }
+  if (fileVoice) {
+    const scratch = loggedFile ? '' : mkdtempSync(join(tmpdir(), 'kaif-voice-file-'));
+    const phraseFile = loggedFile ? resolve(projectRoot(), loggedFile) : join(scratch, 'phrase.txt');
+    if (!file) writeFileSync(phraseFile, phrase + '\n', 'utf8');
+    const command = fileVoice.map((part) => part.replaceAll('{file}', phraseFile));
+    if (args.includes('--dry-run')) { console.log('voice file tool (dry run): ' + JSON.stringify(command)); if (scratch) rmSync(scratch, { recursive: true, force: true }); return; }
+    const r = spawnSync(command[0], command.slice(1), { cwd: projectRoot(), stdio: 'inherit', windowsHide: true, timeout: RENDER_TIMEOUT_MS });
+    if (scratch) rmSync(scratch, { recursive: true, force: true });
+    process.exit(r.status ?? 1);
   }
   const voiceArg = val('--voice');
   const voice = voiceArg && voiceArg !== 'default' ? voiceArg : (process.env.KAIF_VOICE && process.env.KAIF_VOICE !== 'default' ? process.env.KAIF_VOICE : DEFAULT_VOICE);

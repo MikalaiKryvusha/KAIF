@@ -169,6 +169,9 @@ ok(dedupScan('installer/KAIF-CORE.mjs::stale-claims', 'stale-claims-noise').leng
    'S13-M5 эвал-ловушка дедупа: существующий fingerprint НАЙДЕН по surface+class («+1 наблюдение», не новый тикет)');
 ok(dedupScan('installer/KAIF-CORE.mjs::stale-claims', 'scanner-false-green').length === 0,
    'S13-M5 эвал-ловушка дедупа: чужой symptom-class НЕ матчится (негативный контроль — новый сигнал = новый тикет)');
+// KA8 (criterion 40): the full install fills both maps before ticking their executing checkpoint.
+for (const map of ['PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md'])
+  writeFileSync(join(S13, map), readFileSync(join(S13, map), 'utf8').replace(/<(?:The |Where |Describe |Why )[\s\S]*?>/g, 'filled from the sandbox project').replace(/<[^>\n]+>/g, 'filled from the sandbox project'));
 const adaptIds = [...new Set([...readFileSync(join(S13, 'KAIF_ADAPTATION_TASK.md'), 'utf8').matchAll(/kaif-core\.mjs checkpoint ([a-z-]+)/g)].map((m) => m[1]))];
 // U′3 issue #4: гейт owner-voice объективен — «нет портрета» фиксируется канонической строкой
 writeFileSync(join(S13, 'AGENT_GUIDE.md'),

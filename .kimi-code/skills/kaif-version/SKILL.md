@@ -2,6 +2,8 @@
 name: kaif-version
 description: >-
   Report the KAIF version deployed in this project and check the origin repository for a newer release. Reads the .kaif/kaif.json marker (version, release date, origin, tracking mode). Use when the human says "what KAIF version", "check for KAIF updates", "is there a new framework version", "kaif version", "проверь версию KAIF", "есть ли обновление фреймворка".
+whenToUse: >-
+  Report the KAIF version deployed in this project and check the origin repository for a newer release. Reads the .kaif/kaif.json marker (version, release date, origin, tracking mode). Use when the human says "what KAIF version", "check for KAIF updates", "is there a new framework version", "kaif version", "проверь версию KAIF", "есть ли обновление фреймворка".
 ---
 
 # /skill:kaif-version — report the deployed KAIF version & check origin for updates

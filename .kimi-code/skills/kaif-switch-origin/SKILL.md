@@ -2,6 +2,8 @@
 name: kaif-switch-origin
 description: >-
   Switch this project's KAIF tracking from the user's fork back to the official origin (Mikalai Kryvusha's repo), performing a respectful migration that preserves the project and its content artifacts. Use when the human says "switch back to official KAIF", "track the origin again", "return to upstream KAIF", "вернись на официальный KAIF", "переключись обратно на origin".
+whenToUse: >-
+  Switch this project's KAIF tracking from the user's fork back to the official origin (Mikalai Kryvusha's repo), performing a respectful migration that preserves the project and its content artifacts. Use when the human says "switch back to official KAIF", "track the origin again", "return to upstream KAIF", "вернись на официальный KAIF", "переключись обратно на origin".
 ---
 
 # /skill:kaif-switch-origin — return tracking to the official origin

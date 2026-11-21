@@ -491,6 +491,14 @@ const MOVES = [
 // own change type with a named intent). Shape: { '<template dest>': [['<old heading>', '<new heading>'], …] }.
 // Empty is the normal state; a rename NOT declared here is a silent duplicate in every field tree.
 const RENAMES_BY_VERSION = {
+  '2.10': {
+    // KA8 (origin #195): the two shipped Russian headings no longer trip the voice rule against "здесь".
+    'templates/languages/ru/KAIF_FRAMEWORK.md': [
+      ['# KAIF в <PROJECT_NAME> — фреймворк, развёрнутый здесь', '# KAIF в <PROJECT_NAME> — развёрнутый фреймворк'],
+      ['## Зачем он здесь — что он даёт проекту', '## Что KAIF даёт проекту'],
+      ['## Как это работает здесь — движущиеся части', '## Устройство KAIF в этом проекте'],
+    ],
+  },
   '2.7': {
     '.claude/skills/end-chat-soft/SKILL.md': [
       ['### Step 1. Record status & the baton in STATUS.md', '### Step 1. Record status & the handover in STATUS.md'],

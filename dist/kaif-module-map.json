@@ -1447,7 +1447,7 @@
       {
         "signature": "### 10.7 Commands",
         "class": "static",
-        "sha256": "16b80481bfbade2e3acd6c36d1b438f2f31dc968c1e523804010fcf58d6ad158",
+        "sha256": "292845162162d33601f1cab21d2d1555c89f9074b6b7cf114abd27770d3329c5",
         "lines": [
           439,
           466
@@ -7650,9 +7650,9 @@
     ],
     "templates/languages/ru/KAIF_FRAMEWORK.md": [
       {
-        "signature": "# KAIF в <PROJECT_NAME> — фреймворк, развёрнутый здесь",
+        "signature": "# KAIF в <PROJECT_NAME> — развёрнутый фреймворк",
         "class": "owner",
-        "sha256": "234a443e6eaa6af88303f1e2eb5d64eefae5b13bf26d35f83193b334ce5cd083",
+        "sha256": "d3b6e2d98e0be12c8222997766699720b1638b7fe1ae7c9d921348a7ee0f0c7e",
         "lines": [
           1,
           13
@@ -7668,18 +7668,18 @@
         ]
       },
       {
-        "signature": "## Зачем он здесь — что он даёт проекту",
+        "signature": "## Что KAIF даёт проекту",
         "class": "owner",
-        "sha256": "b95e4a1c0ad0c5fcab02e2610571a104fe97d7c69b9d1d2aed9ee497c682f014",
+        "sha256": "b8d3499d428a6a3d10ec6595e2741637b92bdbd6650aa1e6f5b154953c0fb0e5",
         "lines": [
           23,
           29
         ]
       },
       {
-        "signature": "## Как это работает здесь — движущиеся части",
+        "signature": "## Устройство KAIF в этом проекте",
         "class": "owner",
-        "sha256": "1587835c71670d1bfb85fca2fa2e6df1278a984ca0727f77479e657159c7a324",
+        "sha256": "097ce5405dc321084e41ee5f4ee7726901e8e495ceca588a910cc58cd46121e1",
         "lines": [
           30,
           43

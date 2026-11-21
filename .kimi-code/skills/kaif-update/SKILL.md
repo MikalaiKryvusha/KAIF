@@ -2,6 +2,8 @@
 name: kaif-update
 description: >-
   Respectfully update & migrate the KAIF framework deployed in this project to a newer version from the origin repository, preserving local customizations and all content artifacts. Use when the human accepts an update offer, or says "update KAIF", "migrate to the new framework version", "respectful update", "обнови KAIF", "проведи миграцию фреймворка".
+whenToUse: >-
+  Respectfully update & migrate the KAIF framework deployed in this project to a newer version from the origin repository, preserving local customizations and all content artifacts. Use when the human accepts an update offer, or says "update KAIF", "migrate to the new framework version", "respectful update", "обнови KAIF", "проведи миграцию фреймворка".
 ---
 
 # /skill:kaif-update — respectful migration update from origin

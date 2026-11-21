@@ -8,7 +8,7 @@
 > `~/.kimi-code/config.toml` and new `tui.toml` written with a backup, `kimi doctor` OK; the D2 line in a Kimi install's `AGENTS.md` and in
 > the origin's new `AGENTS.md`); KA6 2026-11-21 17:28 +03:00 — a farewell on `StopFailure`, read right on the two real quota-dead sessions of the day
 > (the `PARKED:` line of the step is dropped: the farewell file alone reaches the next `/resume` first — `[ИИ]`); Kimi firing the hooks live —
-> KA9, after the 5-hour quota resets. KA2 · KA4 · KA5 · KA8 open.
+> KA9, after the 5-hour quota resets. KA2 · KA4 · KA5 · KA8 done (KA5 + KA8 — 2026-11-21 21:04 +03:00, report below).
 > **KA9 live 2026-11-21 17:57 +03:00 (three `kimi -p` runs, the owner's new quota window):** Kimi itself fired `UserPromptSubmit`, `SessionStart` →
 > `/skill:resume`, `PostToolUse` and `PreToolUse` without matchers (knowledge weight, the test debt of `src/app.mjs`, the closing gate at
 > «69178 of 891289»), `--alive` exit 0; found and fixed `bugs/146` (Kimi's `Write {path}`); NOT observed — a Stop block opening a
@@ -81,22 +81,25 @@ owner's questions and mid-turn words reaching the agent, and a chat that dies of
   (`context-window.mjs:397-401`) and always answers «nothing to judge» under Kimi (`researches/50` §12.6). Under Kimi it reads the
   `[[hooks]]` of `~/.kimi-code/config.toml` (and flags invalid matchers) plus the session record; `check` on a Kimi-only install reports Kimi
   wiring instead of Claude's. ≈ 1–1.5 h.
-- [ ] **KA5 — Skills: listing, root, triggers.** Anchor: criterion 37. (a) Kimi shows the model only the first 250 characters of a
-  `description` and the full `whenToUse` (§5, code `registry.ts:13, 271-278`) — the Kimi copy moves KAIF's trigger aliases into
-  `whenToUse`. (b) Project skills are found only under the nearest `.git` ancestor (§4) — `install` / `check` say so when there is none.
-  (c) Live: the `Skill` tool calls a KAIF skill with an argument and a `${KIMI_SKILL_DIR}` reference (doc says inline-only — §13.4).
-  ≈ 1–2 h.
+- [x] **KA5 — Skills: listing, root, triggers.** ✅ 2026-11-21 21:04 +03:00. (a) Every Kimi copy carries the full description, aliases included,
+  in folded `whenToUse`; 37/37 at the origin and in the fresh install, and the running Kimi VS Code session re-read its catalog live. (b) Without
+  a nearest `.git` ancestor both `install` and `check` say that Kimi cannot discover the project skills (s01 S9). (c) This live session called
+  `Skill(fable-method, args="report")`, received the expanded skill with its resolved reference paths, then read
+  `.kimi-code/skills/fable-method/references/failure-modes.md`. Report `testcases/reports/2026-11-21_ka5-ka8-kimi-skills-and-install.md`.
 - [x] **KA6 — Quota death leaves a handoff.** Anchor: criterion 39. The prior Kimi chat died on the 5-hour quota (429, not retried) with
   `[object Object]` and no farewell (§12.5). Wire `stop-farewell-capture.mjs` also on `StopFailure`: on a quota error it writes the farewell
   file and a `PARKED:` line naming the reason. ≈ 0.5–1 h.
 - [x] **KA7 — Owner conversation under Kimi.** (D1–D4 answered in chat, №164; the adapter names steer · Never Ask · the window steps) Anchor: criterion 39. Interview with decisions D1–D3 (below), then the adapter and
   `framework/adapters/kimi-code.md` say what each chosen setting does. ≈ 0.5–1 h plus the owner's answers.
-- [ ] **KA8 — Install findings (criterion 40, interview №050 Q1 = A).** Unchanged from rev. 1: one red case each for empty maps, two
-  standard headings and the `sync` hint; fix; green; functional install in a fresh project. ≈ 1–1.5 h.
+- [x] **KA8 — Install findings (criterion 40, interview №050 Q1 = A).** ✅ 2026-11-21 21:40 +03:00 after the judge's refutation: the maps checkpoint refuses shipped template slots, passes after filling, and also passes the origin's real filled maps containing generic `<name>`/`<dir>`/`<DOC>` notation. The Russian KAIF document is clean under the voice lint (H1 + two H2, all declared as renames); the drift warning names `sync`. Each finding has a red control on its exact pre-fix construct in `tools/sandbox/probes/ka8-install-findings.mjs`; fresh install and s01 green. Report `testcases/reports/2026-11-21_ka5-ka8-kimi-skills-and-install.md`; judge `reports/KAIF_AUDIT/2026-11-21_kimi_session_judge.md`.
 - [ ] **KA9 — Live acceptance, polygon, judge.** Anchor: «Готово, когда» of `plans/136`, criteria 18 and `plans/141` RL1. Fresh `git init`
   project from the built `dist`, Kimi-only install, wiring by the owner's word; `kimi -p` runs (auto permission — §11) after the quota
   window resets: `/skill:resume`, a skill with an argument and a reference, a voice call before a wait, recovery after `/compact`; run reports
-  in `testcases/reports/`; full `npm run test:core` alone; `/fable-judge` on every KI claim; hand over to `plans/141`. ≈ 3–5 h.
+  in `testcases/reports/`; full `npm run test:core` alone; `/fable-judge` on every KI claim; hand over to `plans/141`. The generic live-evidence
+  contract is `framework/adapters/_template.md`. The first VS Code Stop probe failed because the process held the pre-dispatcher wiring; the false
+  green `--alive` became `bugs/147` (fixed in the tree, positive live check pending a new/reloaded session). On 2026-11-21 21:42 +03:00 this
+  process reached `context.apply_compaction` before soft closure: `bugs/149` is a release blocker and can close only on a real new/reloaded Kimi
+  session whose 75/80/85 stages arrive and whose soft closure starts before compaction. ≈ 3–5 h.
 
 Total ≈ 11–18 h of work, plus the owner's answers to D1–D4.
 

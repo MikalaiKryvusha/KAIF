@@ -34,7 +34,7 @@ const ok = (cond, name, extra = '') => {
 const run = (cwd, rawArgs) => {
   const args = hermeticArgs(ROOT, rawArgs);
   try {
-    const out = execSync(`node ${join(cwd, '.kaif', 'kaif-core.mjs')} ${args}`, { cwd, stdio: 'pipe' });
+    const out = execSync(`node ${join(cwd, '.kaif', 'kaif-core.mjs')} ${args} 2>&1`, { cwd, stdio: 'pipe' });
     return { code: 0, out: out.toString() };
   } catch (e) { return failed(e, { root: ROOT, cwd: cwd, args: args }); }
 };
@@ -42,7 +42,7 @@ const run = (cwd, rawArgs) => {
 const runDist = (cwd, rawArgs) => {
   const args = hermeticArgs(ROOT, rawArgs);
   try {
-    const out = execSync(`node ${join(DIST, 'KAIF-CORE.mjs')} ${args}`, { cwd, stdio: 'pipe' });
+    const out = execSync(`node ${join(DIST, 'KAIF-CORE.mjs')} ${args} 2>&1`, { cwd, stdio: 'pipe' });
     return { code: 0, out: out.toString() };
   } catch (e) { return failed(e, { root: ROOT, cwd: cwd, args: args }); }
 };
@@ -57,6 +57,14 @@ console.log('\n=== S1: свежая установка (standard) ===');
 const S1 = join(ROOT, 's1'); mkdirSync(S1); seedBundle(S1);
 let r = run(S1, 'install');
 ok(r.code === 0, 'S1 install exit 0', r.out.slice(-400));
+r = run(S1, 'checkpoint maps');
+ok(r.code === 1 && /checkpoint maps REFUSED/.test(r.out) && /PROJECT_STRUCTURE_EXTERNAL_MAP\.md/.test(r.out)
+   && /PROJECT_ARCHITECTURE_INTERNAL_MAP\.md/.test(r.out),
+   'S1 KA8 (#195): контрольная точка карт ОТКАЗЫВАЕТ на строках-заглушках обеих карт', r.out.slice(-600));
+for (const map of ['PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md'])
+  writeFileSync(join(S1, map), readFileSync(join(S1, map), 'utf8').replace(/<(?:The |Where |Describe |Why )[\s\S]*?>/g, 'filled from the project').replace(/<[^>\n]+>/g, 'filled from the project'));
+r = run(S1, 'checkpoint maps');
+ok(r.code === 0 && /both project maps are filled/.test(r.out), 'S1 KA8: после заполнения карт та же точка проходит и записывает отметку', r.out.slice(-400));
 const gi1 = existsSync(join(S1, '.gitignore')) ? readFileSync(join(S1, '.gitignore'), 'utf8') : '';
 ok(gi1.includes('.kaif/install/') && gi1.includes('KAIF_UPDATE_TASK.md') && gi1.includes('KAIF_ADAPTATION_TASK.md'),
    'S1 ignore-first: транзиенты в .gitignore ДО работы');
@@ -461,6 +469,10 @@ const S9n = join(ROOT, 's9-no-git'); mkdirSync(S9n); seedBundle(S9n);
 const rn9 = runAll9(S9n, 'install');
 ok(rn9.code === 0 && /⚠ this folder is not a git repository, and the deploy ends with a commit — run `git init` now; commit the owner's own files first/.test(rn9.out),
    'S9 #143: установка в папку без git — сводка называет `git init` и порядок коммитов', rn9.out.slice(-400));
+const rk9 = runAll9(S9n, 'check');
+ok(/Kimi Code discovers project skills only under the nearest \.git ancestor/.test(rn9.out)
+   && rk9.code === 0 && /Kimi Code discovers project skills only under the nearest \.git ancestor/.test(rk9.out),
+   'S9 KA5: без .git и install, и check называют невидимость проектных навыков Kimi', `${rn9.out.slice(-300)} | ${rk9.out.slice(-300)}`);
 ok(!/this folder is not a git repository/.test(inst9.out), 'S9 #143: в git-проекте строки о `git init` нет (свежая установка S9)', inst9.out.slice(-200));
 // #146 (2.9, критерий 24, решение №145): классификатор разрешений авторежима отказывал склеенным `git add … && git commit … && git push`
 // и пропускал те же шаги поодиночке. Поставка не предписывает склейку нигде: ни бандл (руководство, навыки закрытия и выпуска), ни
@@ -544,14 +556,18 @@ const kiCanonNames = readdirSync(kiCanonRoot).filter((n) => existsSync(join(kiCa
 const kiNames = existsSync(kiRoot) ? readdirSync(kiRoot).filter((n) => existsSync(join(kiRoot, n, 'SKILL.md'))).sort() : [];
 ok(kiCanonNames.length > 30 && JSON.stringify(kiNames) === JSON.stringify(kiCanonNames),
    `S15 все ${kiCanonNames.length} канонических навыков развёрнуты для Kimi`, kiNames.join(','));
-let kiBadYaml = [], kiBare = [];
+let kiBadYaml = [], kiBare = [], kiBadWhen = [];
 for (const n of kiNames) {
   const text = readFileSync(join(kiRoot, n, 'SKILL.md'), 'utf8');
   const fm = text.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
   if (!fm || !new RegExp(`^name: ${n}$`, 'm').test(fm[1]) || !/^description: >-\r?\n  \S/m.test(fm[1])) kiBadYaml.push(n);
+  const description = fm && fm[1].match(/^description: >-\r?\n  ([^\r\n]+)/m), when = fm && fm[1].match(/^whenToUse: >-\r?\n  ([^\r\n]+)/m);
+  if (!description || !when || when[1] !== description[1]) kiBadWhen.push(n);
   for (const skill of kiNames) if (new RegExp(`(?<![\\w:./-])/${skill}(?![\\w-])`).test(text)) { kiBare.push(`${n} → ${skill}`); break; }
 }
 ok(kiBadYaml.length === 0, 'S15 каждый Kimi frontmatter несёт name и folded description (безопасен для `: ` и ru-алиасов)', kiBadYaml.join(','));
+ok(kiBadWhen.length === 0 && readFileSync(join(kiRoot, 'resume', 'SKILL.md'), 'utf8').match(/^whenToUse: >-\r?\n  .*«возобнови»/m),
+   'S15 KA5: полный текст вызова и ru-алиасы стоят в whenToUse, который Kimi не обрезает', kiBadWhen.join(','));
 ok(kiBare.length === 0, 'S15 все вызовы навыков используют явный /skill:<name>', kiBare.slice(0, 8).join(','));
 ok(!readFileSync(join(kiRoot, 'fable-method', 'SKILL.md'), 'utf8').match(/^trigger:/m),
    'S15 legacy trigger поле не уезжает в Kimi');
@@ -573,12 +589,22 @@ for (const n of kiCanonNames) {
 ok(kiRefTotal > 0 && kiRefBad.length === 0, `S15 все ${kiRefTotal} reference-файла лежат рядом с Kimi-навыками`, kiRefBad.join(','));
 r = run(KI, 'check');
 ok(r.code === 0, 'S15 check Kimi-установки зелёный', r.out.slice(-600));
+cpSync(join(REPO, 'AUTHOR_STYLOMETRY.md'), join(KI, 'AUTHOR_STYLOMETRY.md'));
+const kiVoiceTool = join(KI, '.kaif', 'tools', 'kaif-voice-lint.mjs');
+const kiVoiceLoad = spawnSync(process.execPath, [kiVoiceTool, 'load'], { cwd: KI, encoding: 'utf8' });
+const kiVoiceCheck = spawnSync(process.execPath, [kiVoiceTool, 'check', 'KAIF_FRAMEWORK.md', '--genre', 'document'], { cwd: KI, encoding: 'utf8' });
+ok(kiVoiceLoad.status === 0 && kiVoiceCheck.status === 0 && !/здесь/.test(kiVoiceCheck.stdout + kiVoiceCheck.stderr),
+   'S15 KA8 (#195): штатный ru KAIF_FRAMEWORK проходит поставочный линтер голоса без двух находок «здесь»', (kiVoiceCheck.stdout + kiVoiceCheck.stderr).slice(-600));
 appendFileSync(join(kiCanonRoot, 'resume', 'SKILL.md'), '\nKimi sync probe: this line must travel.\n');
 r = run(KI, 'sync');
 ok(r.code === 0 && readFileSync(join(kiRoot, 'resume', 'SKILL.md'), 'utf8').includes('Kimi sync probe: this line must travel.'),
    'S15 sync доставляет правку канонического навыка в Kimi-копию', r.out.slice(-400));
 r = run(KI, 'check');
 ok(r.code === 0 && !/mirror drifted/.test(r.out), 'S15 check после sync не видит ложного дрейфа Kimi-копии', r.out.slice(-400));
+appendFileSync(join(kiCanonRoot, 'resume', 'SKILL.md'), '\nKimi drift probe: the warning must name its cure.\n');
+r = run(KI, 'check');
+ok(r.code === 0 && /mirror copies lag the canon/.test(r.out) && /kaif-core\.mjs sync/.test(r.out),
+   'S15 KA8 (#197): предупреждение об устаревших копиях называет команду sync', r.out.slice(-500));
 const kiVoiceHook = join(KI, '.kaif', 'hooks', 'kimi-permission-call.mjs');
 const kiVoiceSelf = spawnSync(process.execPath, [kiVoiceHook, '--selftest'], { cwd: KI, encoding: 'utf8' });
 ok(kiVoiceSelf.status === 0 && /selftest: all ok/.test(kiVoiceSelf.stdout),

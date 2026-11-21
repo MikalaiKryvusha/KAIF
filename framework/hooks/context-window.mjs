@@ -154,6 +154,42 @@ export function kimiWireOf(id, home = process.env.KIMI_CODE_HOME || join(homedir
   return '';
 }
 
+// A hand command may lack the agent's session id (observed in Kimi's VS Code tools): use the newest session of THIS project,
+// never a newer-looking record of the other agent system. The output names this fallback; simultaneous chats remain ambiguous.
+export function latestKimiSession(root, home = process.env.KIMI_CODE_HOME || join(homedir(), '.kimi-code')) {
+  const base = join(home, 'sessions'), same = (a, b) => {
+    const x = resolve(a), y = resolve(b);
+    return process.platform === 'win32' ? x.toLowerCase() === y.toLowerCase() : x === y;
+  };
+  let found = null;
+  try {
+    for (const workdir of readdirSync(base)) {
+      for (const id of readdirSync(join(base, workdir))) {
+        const dir = join(base, workdir, id), wire = join(dir, 'agents', 'main', 'wire.jsonl'), state = readJson(join(dir, 'state.json'));
+        if (!state || !state.cwd || !same(state.cwd, root) || !existsSync(wire)) continue;
+        const mtimeMs = statSync(wire).mtimeMs;
+        if (!found || mtimeMs > found.mtimeMs || (mtimeMs === found.mtimeMs && id > found.id)) found = { id, path: wire, mtimeMs };
+      }
+    }
+  } catch { /* no Kimi session store */ }
+  return found;
+}
+function kimiFallbackId(root, home) {
+  const marker = readJson(join(root, DEPLOYMENT)) || {};
+  if (!Array.isArray(marker.agents) || !marker.agents.includes('kimi-code')) return '';
+  const k = latestKimiSession(root, home);
+  if (!k) return '';
+  const t = transcriptOf(root);
+  return !t || k.mtimeMs >= statSync(t.path).mtimeMs ? k.id : '';
+}
+// With no system id, a newer Claude transcript must not become evidence for an existing Kimi session. Claude-only projects keep their route.
+function kimiFallbackConflict(root, home) {
+  const marker = readJson(join(root, DEPLOYMENT)) || {};
+  if (!Array.isArray(marker.agents) || !marker.agents.includes('kimi-code')) return null;
+  const k = latestKimiSession(root, home), t = transcriptOf(root);
+  return k && t && k.mtimeMs < statSync(t.path).mtimeMs ? { kimi: k.id, claude: t.id } : null;
+}
+
 // The newest main-thread assistant record with usage, from the transcript's tail.
 export function lastUsage(text) {
   const lines = String(text).split('\n');
@@ -440,8 +476,9 @@ if (process.argv[2] === '--selftest') {
   process.exit(bad ? 1 : 0);
 }
 
-// Kimi (plans/143 KA4 of the origin): the agent's own commands run with KIMI_CODE_SESSION_ID (Kimi's Bash tool sets it); Kimi's hooks are
-// wired in the user-level ~/.kimi-code/config.toml, never in .claude/settings.json — `--alive` and `--measure` judge Kimi by Kimi's files.
+// Kimi (plans/143 KA4 of the origin): use KIMI_CODE_SESSION_ID where the command environment carries it; the VS Code tool environment was
+// observed without it, so the newest session of this project is the named fallback (bugs/147). Kimi's hooks are wired in the user-level
+// ~/.kimi-code/config.toml, never in .claude/settings.json — `--alive` and `--measure` judge Kimi by Kimi's files.
 // Pure: (config text) → { wired, star } — is the window hook wired, and how many KAIF entries carry the matcher Kimi never fires (bugs/145).
 // [TESTED: 2026-11-21 · selftest case «Kimi wiring (KA4)»; functional — `--alive` / `--measure` with KIMI_CODE_SESSION_ID of two REAL Kimi
 //  sessions of the origin on the owner's machine: the recorded one exit 0, the unrecorded one exit 1 with Kimi's action; --measure read the
@@ -453,9 +490,19 @@ export function kimiWiring(configText) {
     star: ours.filter((e) => /^\s*matcher\s*=\s*"\*"/m.test(e)).length };
 }
 const kimiIds = (sid) => [...new Set([sid, sid.startsWith('session_') ? sid.slice(8) : `session_${sid}`])];
-if (process.env.KIMI_CODE_SESSION_ID && (process.argv[2] === '--alive' || process.argv[2] === '--measure')) {
-  const sid = process.env.KIMI_CODE_SESSION_ID, root = projectRoot(process.cwd());
-  const home = process.env.KIMI_CODE_HOME || join(homedir(), '.kimi-code');
+const handRoot = process.env.CLAUDE_PROJECT_DIR || projectRoot(process.cwd());
+const handKimiHome = process.env.KIMI_CODE_HOME || join(homedir(), '.kimi-code');
+const handKimiId = process.env.KIMI_CODE_SESSION_ID || (!process.env.CLAUDE_CODE_SESSION_ID && ['--alive', '--measure'].includes(process.argv[2]) ? kimiFallbackId(handRoot, handKimiHome) : '');
+const handKimiBy = process.env.KIMI_CODE_SESSION_ID ? 'session id' : 'the newest Kimi session of the project';
+const handConflict = !process.env.KIMI_CODE_SESSION_ID && !process.env.CLAUDE_CODE_SESSION_ID && !handKimiId && ['--alive', '--measure'].includes(process.argv[2])
+  ? kimiFallbackConflict(handRoot, handKimiHome) : null;
+if (handConflict) {
+  console.log(`KAIF session: ambiguous without an agent session id — Kimi ${handConflict.kimi} is older than Claude ${handConflict.claude}; ` +
+    'neither is evidence for the current session. Set KIMI_CODE_SESSION_ID (Kimi) or CLAUDE_CODE_SESSION_ID (Claude), or use the newest session.');
+  process.exit(2);
+}
+if (handKimiId && (process.argv[2] === '--alive' || process.argv[2] === '--measure')) {
+  const sid = handKimiId, root = handRoot, home = handKimiHome;
   let configText = '';
   try { configText = readFileSync(join(home, 'config.toml'), 'utf8'); } catch { /* no Kimi config */ }
   const marker = readJson(join(root, DEPLOYMENT)) || {};
@@ -466,8 +513,8 @@ if (process.env.KIMI_CODE_SESSION_ID && (process.argv[2] === '--alive' || proces
     if (!w.wired) { console.log(`KAIF hooks: the context-window hook is not wired in ${join(home, 'config.toml')} (Kimi) — nothing to judge.`); process.exit(2); }
     if (w.star) console.log(`KAIF hooks: ${w.star} KAIF hook entr${w.star === 1 ? 'y' : 'ies'} in Kimi's config carr${w.star === 1 ? 'ies' : 'y'} matcher "*" — Kimi never fires ${w.star === 1 ? 'it' : 'them'} (bugs/145); remove the matcher line.`);
     const st = readJson(join(root, STATE)) || {}, id = kimiIds(sid).find((k) => st[k]);
-    if (id) { console.log(`KAIF hooks: running in this Kimi session (${id}) — the context-window hook recorded it at ${st[id].at}.`); process.exit(0); }
-    console.log(`KAIF hooks: NOT running in this Kimi session (${sid}) — wired in ${join(home, 'config.toml')}, yet no hook recorded the session. ` +
+    if (id) { console.log(`KAIF hooks: running in this Kimi session (${id}) — the context-window hook recorded it at ${st[id].at} (session by ${handKimiBy}).`); process.exit(0); }
+    console.log(`KAIF hooks: NOT running in this Kimi session (${sid}) — wired in ${join(home, 'config.toml')}, yet no hook recorded the session (session by ${handKimiBy}). ` +
       'Kimi reads hooks when a session starts: run /reload or start a new session; `kimi doctor config` names an entry that drops the whole hooks section.');
     process.exit(1);
   }
@@ -478,7 +525,7 @@ if (process.env.KIMI_CODE_SESSION_ID && (process.argv[2] === '--alive' || proces
   const full = windowOf({ tokens: cw.tokens || kimiConfiguredWindow(st.model || lu.model || kimiDefaultModel(configText), configText), seen: lu.used });
   const point = kimiCompactionPoint(full, configText);
   const m = measureLine(lu.used, point, cw);
-  console.log(`${m.line.replace('the window is', `the room before Kimi's own compaction (it compacts at ${point} of ${full} tokens) is`)} (Kimi wire: ${tp})`);
+  console.log(`${m.line.replace('the window is', `the room before Kimi's own compaction (it compacts at ${point} of ${full} tokens) is`)} (Kimi wire: ${tp}; session by ${handKimiBy})`);
   process.exit(m.may ? 0 : 1);
 }
 

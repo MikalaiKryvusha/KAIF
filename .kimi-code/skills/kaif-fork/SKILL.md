@@ -2,6 +2,8 @@
 name: kaif-fork
 description: >-
   Snapshot this project's evolved KAIF into the user's own GitHub repository and switch version tracking to that fork — so the user develops and versions their own evolution of KAIF independently of the origin. Use when the human says "fork KAIF", "make my own KAIF", "snapshot the framework to my repo", "track my own KAIF", "сделай свой слепок KAIF", "форкни фреймворк под себя".
+whenToUse: >-
+  Snapshot this project's evolved KAIF into the user's own GitHub repository and switch version tracking to that fork — so the user develops and versions their own evolution of KAIF independently of the origin. Use when the human says "fork KAIF", "make my own KAIF", "snapshot the framework to my repo", "track my own KAIF", "сделай свой слепок KAIF", "форкни фреймворк под себя".
 ---
 
 # /skill:kaif-fork — snapshot KAIF into the user's own repo & track it

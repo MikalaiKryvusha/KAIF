@@ -266,8 +266,13 @@ const PH_ALL = ['<PROJECT_NAME>', '<SHORT_NAME>', '<AUTHOR>', '<REPO_URL>', '<LO
   "<YOUR AGENT'S noreply EMAIL>", '<OWNER_LANGUAGE>'];
 const fillCanon = (dir, skipPh = []) => {
   const fill = (p) => { let t = readFileSync(p, 'utf8'); for (const ph of PH_ALL) { if (skipPh.includes(ph)) continue; t = t.split(ph).join('X'); } writeFileSync(p, t); };
+  // KA8 (criterion 40): the maps are part of the filled canon; their checkpoint executes the refusal on template slots.
   for (const doc of ['AGENT_GUIDE.md', 'PHILOSOPHY.md', 'BUG_FIXING_FRAMEWORK.md', 'TESTING_FRAMEWORK.md'])
     if (existsSync(join(dir, doc))) fill(join(dir, doc));
+  for (const doc of ['PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md']) {
+    const p = join(dir, doc);
+    if (existsSync(p)) writeFileSync(p, readFileSync(p, 'utf8').replace(/<(?:The |Where |Describe |Why )[\s\S]*?>/g, 'X').replace(/<[^>\n]+>/g, 'X'));
+  }
   for (const n of readdirSync(join(dir, '.claude', 'skills')))
     if (existsSync(join(dir, '.claude', 'skills', n, 'SKILL.md'))) fill(join(dir, '.claude', 'skills', n, 'SKILL.md'));
   if (existsSync(join(dir, '.kaif', 'spheres')))

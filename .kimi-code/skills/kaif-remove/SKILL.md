@@ -2,6 +2,8 @@
 name: kaif-remove
 description: >-
   Respectfully remove KAIF from the project. Default — surgical removal of the framework core/wrapper while KEEPING the content artifacts (bugs, interviews, ideas, homework). Full mode (--all) also removes the artifacts. Either way the user's own project stays whole and working. Use when the human says "remove KAIF", "uninstall the framework", "remove KAIF but keep my bug reports", "fully remove KAIF", "удали KAIF", "убери фреймворк, артефакты оставь", "выжги KAIF полностью".
+whenToUse: >-
+  Respectfully remove KAIF from the project. Default — surgical removal of the framework core/wrapper while KEEPING the content artifacts (bugs, interviews, ideas, homework). Full mode (--all) also removes the artifacts. Either way the user's own project stays whole and working. Use when the human says "remove KAIF", "uninstall the framework", "remove KAIF but keep my bug reports", "fully remove KAIF", "удали KAIF", "убери фреймворк, артефакты оставь", "выжги KAIF полностью".
 ---
 
 # /skill:kaif-remove — respectful removal of KAIF (partial or full)

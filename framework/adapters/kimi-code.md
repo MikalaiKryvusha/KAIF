@@ -120,3 +120,9 @@ and a `PermissionRequest` event with `--dry-run`; then check the voice engine's 
 - [ ] invocations use `/skill:<name>` and resource links use `${KIMI_SKILL_DIR}`
 - [ ] `node .kaif/kaif-core.mjs check` and `sync` are green
 - [ ] `.kaif/kaif.json` → `agents` includes `"kimi-code"`
+- [ ] the live acceptance contract of `_template.md` is executed in a new/reloaded Kimi session; every unobserved mechanism stays pending
+
+`context-window.mjs --alive` / `--measure` use `KIMI_CODE_SESSION_ID` when the command environment carries it. Where it does not
+(observed in the VS Code tool environment), they deliberately fall back to the newest Kimi session whose `state.json` names this
+project, compared by freshness with Claude's newest transcript; the output names that fallback. No record of that Kimi session means
+NOT running — another agent system's record never counts (origin bugs/147).

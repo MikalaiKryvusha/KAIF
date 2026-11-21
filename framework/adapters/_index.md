@@ -78,6 +78,8 @@ designed, complete fallback, and the priority target (Zoo Code) runs on them alo
    instruct the human to invoke them by name.
 4. Generate `AGENTS.md` (fallback) pointing at `AGENT_GUIDE.md`.
 5. Record `agent` in `.kaif/kaif.json`.
+6. Prove the connection in a real session by `_template.md`: a config entry is wiring, not a running mechanism; each skill,
+   hook and owner-facing mechanism has its own live observation there.
 
 Authored adapters in this repo: `claude-code.md` (reference), plus the priority systems. Others are
 authored on demand from `_template.md`.

@@ -2,6 +2,8 @@
 name: fable-judge
 description: >-
   Adversarial verification of finished work. Treats any "done" as a set of claims, then re-runs the claimed verifications, diffs what actually changed, detects weakened tests and false completion claims, and delivers an evidence-based verdict (VERIFIED / VERIFIED WITH CAVEATS / REFUTED). Use after any agent or model claims work is complete - "/skill:fable-judge", "judge this work", "verify what it did", "did that actually work?". Also runs the fable-method trap suite against a skill or model via "/skill:fable-judge suite <target>".
+whenToUse: >-
+  Adversarial verification of finished work. Treats any "done" as a set of claims, then re-runs the claimed verifications, diffs what actually changed, detects weakened tests and false completion claims, and delivers an evidence-based verdict (VERIFIED / VERIFIED WITH CAVEATS / REFUTED). Use after any agent or model claims work is complete - "/skill:fable-judge", "judge this work", "verify what it did", "did that actually work?". Also runs the fable-method trap suite against a skill or model via "/skill:fable-judge suite <target>".
 ---
 
 > **Vendored into KAIF from [fable-method](https://github.com/Sahir619/fable-method) v1.4.0 — © Sahir619, MIT.**

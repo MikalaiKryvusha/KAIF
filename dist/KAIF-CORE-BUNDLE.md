@@ -9,7 +9,7 @@
   "version": "2.10",
   "released": "2026-11-21",
   "build": {
-    "sourceTree": "b038524d0b40308555ac1cbbdf315b0c50b656a1d6f1166df62843e6609c7a77",
+    "sourceTree": "4194008d08b1ea6c1bc20ac42bd6669e3383569216bcfb1cdc1180c69d0455a2",
     "prerelease": null
   },
   "templateNotes": [
@@ -347,6 +347,22 @@
     ]
   },
   "renamesByVersion": {
+    "2.10": {
+      "templates/languages/ru/KAIF_FRAMEWORK.md": [
+        [
+          "# KAIF в <PROJECT_NAME> — фреймворк, развёрнутый здесь",
+          "# KAIF в <PROJECT_NAME> — развёрнутый фреймворк"
+        ],
+        [
+          "## Зачем он здесь — что он даёт проекту",
+          "## Что KAIF даёт проекту"
+        ],
+        [
+          "## Как это работает здесь — движущиеся части",
+          "## Устройство KAIF в этом проекте"
+        ]
+      ]
+    },
     "2.7": {
       ".claude/skills/end-chat-soft/SKILL.md": [
         [
@@ -3643,7 +3659,7 @@ old source and the new one and compare both with the disk; the deployment's hand
 without `--source` refuses, and an anonymous deployment is never rendered an origin-tied skill install would not write there) · `adopt-current` (after a MANUAL migration: re-adopt
 reality so the mechanical road stays alive) · `sync` (re-mirror skills) · `modules` (print the
 machinery's module cut) · `stale-claims` (since 2.8, epic SC: re-run the scan for lines asserting an older version, READ-ONLY —
-`--from <v> --to <v>`, the default is the last update receipt; exit 1 only when the walk failed or no interval is known) · `checkpoint` · `update-verify` · `check` (the deployed tree against its manifest and the marker — a tree with neither the bundle nor the deploy manifest is refused: is KAIF deployed here? So are a bundle that cannot be read (absent, without FILE blocks or its manifest block, a language pack's triggers in bad JSON) and a deploy manifest unreadable as JSON — restore it from git. A deployed file, agent artifact or the marker MISSING or empty, a broken marker schema (§12.1), a two-headed document or an unpaired anchor block (§10.2) and a deployed artifact git-ignored by a line KAIF wrote itself (the next update anchors it to the root) are failures, summed up in one closing `INCOMPLETE: N artifacts missing` line with exit 1; warnings, never a failure: a deployed artifact git-ignored by the project's own rule, named with its `.gitignore` line and the `!<file>` cure (since 2.9, origin issue #130; the install summary prints the same scan), a delivered hook not wired, a retired hook still wired in `.claude/settings.json` or in the personal `settings.local.json`, and a settings file unreadable (since 2.9, epics SW and WH — §14), mirror drift of the skill copies other agent systems read (three named, the rest counted; `sync` cures it), a sphere with no library under `.kaif/spheres/`, a step of the closing or release skill that is still an instruction slot of the template — «`<Run the project build …>`» (since 2.9, origin issue #141: the ritual ran no build for 18 days), and the /resume list — a re-read core document the deployed `/resume` does not name as a Step 1 bullet, or a bullet naming a file missing on disk (since 2.7, epic TR); since 2.7, epic SD — origin issue #65 — also the axis "undelivered signal", an allowlist: on tracking: origin a numbered `bugs/KAIF/NN_*.md` ticket is silent only when its `Delivered upstream:` line names an issue — a `…/issues/N` URL or `#NN` — and does not say NOT YET; NOT YET is named with the ready `report` command, a missing, translated or unreadable line, or NOT YET beside an issue, as "no readable delivery state" with both legal forms, and the third form, `resolved in origin <version>`, is silent only with a version no newer than the deployment; a warning, read by the same function as `report`; since 2.8, epic CH — origin issue #78 — the same axis reads the field reports `reports/KAIF_UPDATES/*_KAIF_<X.Y>_{UPDATE,INSTALL}_REPORT.md` of 2.8 and later; older ones were local by the canon of their time) · (since 2.7, epic FR — origin issue #68 — also the axis "constitution keeps the obligations of its template": with a `TEAM_CONSTITUTION.md` in the root and the skill's template on disk, every bold anchor of § 2's numbered items and every one of the nine `## N.` headings must survive generation — headings matched by NUMBER, rules by anchor, and a document where not one anchor matches is translated, so the axis counts and says so; losses are named one by one, a warning never a failure, and `<!-- constitution-ok: <why> -->` beside the item is the declared exemption) · (since 2.7, epic CB — origin issues #43/#45/#71 — the size budgets of the re-read core are judged by the project's OWN lines: a disk module whose (signature, sha256) pair is in the deployment's `moduleShas` ARRIVED and is not counted, so a 1655-line `AGENT_GUIDE.md` with 300 arrived lines is judged at 1355; the warning carries `own lines N of budget ~M` and the ADDRESS the overflow moves to, taken per document from `DOC_BUDGETS` — the chronicle for `STATUS.md`, the chronicle · `researches/` · a house-rules file for the rest; three fallbacks name themselves in the line instead of going silent — no module cut for the file, a file translated WHOLESALE (not one template signature survives, so a by-signature cut is impossible by construction) and an OWNER-SEEDED document whose shipped skeleton the project wrote over, all three counting every line as the project's own; `--gate-budgets` turns the advice into a DOOR — exit 1 after every other axis has spoken, one `<document>: own lines N of budget M → <address>` line each, while the bare `check` keeps the warning and exit 0 so no update road fails on a long document; the closing ritual `/end-chat-soft` runs the flag. The same epic judges the SKILL LANGUAGE MIX by the share of foreign-script prose tokens instead of a single occurrence of a script — fenced blocks and inline code spans are not prose, a body with not one token in the owner's script is ENGLISH as before, and a body that keeps the owner's script while at or above the named threshold of its tokens are foreign is a MIX, named with its percentage: a fully English skill carrying three stray localized words used to be invisible to both counts) · (since 2.8, epic CK — origin issues #84 #85 #99 — the budget door is a RATCHET over `.kaif/budget-baseline.json`, rewritten on every run and committed with the closing (since 2.9, epic UT — criterion 18 — except while an update task is open: the door then writes nothing and says to run the door LAST, after `update-verify`): the first run of a version records the debt above budget and passes, afterwards a document above budget passes only while its own lines shrink, and growth, a standstill or a new overflow stop the closing — an unreadable base stops too: restore it from git; a document the owner declared his verbatim ARCHIVE (`archives`, §12.1) is judged by its digest, its own size is information; the warning of a file translated wholesale names the shipped template's length (`templateLines` of the deploy manifest) and the room it leaves; the move-out address names `HOUSE_RULES.md` with the command that creates it, and `STATUS.md` gets it as a second address for standing rules and reference tables; the count of English skills speaks only where the marker declares `i18n: translated`, the MIX line stays unconditional; and every `check` prints the ENTRY COST as reference — the re-read core, plus `HOUSE_RULES.md` where it exists, plus since 2.10 (epic HC, origin #179) every other document the deployed `/resume` names as a bullet (by name; `EXPERIENCE.md` is grepped and stays out) and the skill file itself, in thousands of tokens and as a share of a 1M-token model window, at two named rates of characters per token, never a stop; a document over 25k tokens — more than one Read call of Claude Code returns — gets an ENTRY COST warning line of its own) · `version` · `report
+`--from <v> --to <v>`, the default is the last update receipt; exit 1 only when the walk failed or no interval is known) · `checkpoint` · `update-verify` · `check` (the deployed tree against its manifest and the marker — a tree with neither the bundle nor the deploy manifest is refused: is KAIF deployed here? So are a bundle that cannot be read (absent, without FILE blocks or its manifest block, a language pack's triggers in bad JSON) and a deploy manifest unreadable as JSON — restore it from git. A deployed file, agent artifact or the marker MISSING or empty, a broken marker schema (§12.1), a two-headed document or an unpaired anchor block (§10.2) and a deployed artifact git-ignored by a line KAIF wrote itself (the next update anchors it to the root) are failures, summed up in one closing `INCOMPLETE: N artifacts missing` line with exit 1; warnings, never a failure: a deployed artifact git-ignored by the project's own rule, named with its `.gitignore` line and the `!<file>` cure (since 2.9, origin issue #130; the install summary prints the same scan), a delivered hook not wired, a retired hook still wired in `.claude/settings.json` or in the personal `settings.local.json`, and a settings file unreadable (since 2.9, epics SW and WH — §14), mirror drift of the skill copies other agent systems read (three named, the rest counted; `sync` cures it), Kimi skills without git (Kimi discovers project skills only under the nearest `.git` ancestor; `git init` is named), a sphere with no library under `.kaif/spheres/`, a step of the closing or release skill that is still an instruction slot of the template — «`<Run the project build …>`» (since 2.9, origin issue #141: the ritual ran no build for 18 days), and the /resume list — a re-read core document the deployed `/resume` does not name as a Step 1 bullet, or a bullet naming a file missing on disk (since 2.7, epic TR); since 2.7, epic SD — origin issue #65 — also the axis "undelivered signal", an allowlist: on tracking: origin a numbered `bugs/KAIF/NN_*.md` ticket is silent only when its `Delivered upstream:` line names an issue — a `…/issues/N` URL or `#NN` — and does not say NOT YET; NOT YET is named with the ready `report` command, a missing, translated or unreadable line, or NOT YET beside an issue, as "no readable delivery state" with both legal forms, and the third form, `resolved in origin <version>`, is silent only with a version no newer than the deployment; a warning, read by the same function as `report`; since 2.8, epic CH — origin issue #78 — the same axis reads the field reports `reports/KAIF_UPDATES/*_KAIF_<X.Y>_{UPDATE,INSTALL}_REPORT.md` of 2.8 and later; older ones were local by the canon of their time) · (since 2.7, epic FR — origin issue #68 — also the axis "constitution keeps the obligations of its template": with a `TEAM_CONSTITUTION.md` in the root and the skill's template on disk, every bold anchor of § 2's numbered items and every one of the nine `## N.` headings must survive generation — headings matched by NUMBER, rules by anchor, and a document where not one anchor matches is translated, so the axis counts and says so; losses are named one by one, a warning never a failure, and `<!-- constitution-ok: <why> -->` beside the item is the declared exemption) · (since 2.7, epic CB — origin issues #43/#45/#71 — the size budgets of the re-read core are judged by the project's OWN lines: a disk module whose (signature, sha256) pair is in the deployment's `moduleShas` ARRIVED and is not counted, so a 1655-line `AGENT_GUIDE.md` with 300 arrived lines is judged at 1355; the warning carries `own lines N of budget ~M` and the ADDRESS the overflow moves to, taken per document from `DOC_BUDGETS` — the chronicle for `STATUS.md`, the chronicle · `researches/` · a house-rules file for the rest; three fallbacks name themselves in the line instead of going silent — no module cut for the file, a file translated WHOLESALE (not one template signature survives, so a by-signature cut is impossible by construction) and an OWNER-SEEDED document whose shipped skeleton the project wrote over, all three counting every line as the project's own; `--gate-budgets` turns the advice into a DOOR — exit 1 after every other axis has spoken, one `<document>: own lines N of budget M → <address>` line each, while the bare `check` keeps the warning and exit 0 so no update road fails on a long document; the closing ritual `/end-chat-soft` runs the flag. The same epic judges the SKILL LANGUAGE MIX by the share of foreign-script prose tokens instead of a single occurrence of a script — fenced blocks and inline code spans are not prose, a body with not one token in the owner's script is ENGLISH as before, and a body that keeps the owner's script while at or above the named threshold of its tokens are foreign is a MIX, named with its percentage: a fully English skill carrying three stray localized words used to be invisible to both counts) · (since 2.8, epic CK — origin issues #84 #85 #99 — the budget door is a RATCHET over `.kaif/budget-baseline.json`, rewritten on every run and committed with the closing (since 2.9, epic UT — criterion 18 — except while an update task is open: the door then writes nothing and says to run the door LAST, after `update-verify`): the first run of a version records the debt above budget and passes, afterwards a document above budget passes only while its own lines shrink, and growth, a standstill or a new overflow stop the closing — an unreadable base stops too: restore it from git; a document the owner declared his verbatim ARCHIVE (`archives`, §12.1) is judged by its digest, its own size is information; the warning of a file translated wholesale names the shipped template's length (`templateLines` of the deploy manifest) and the room it leaves; the move-out address names `HOUSE_RULES.md` with the command that creates it, and `STATUS.md` gets it as a second address for standing rules and reference tables; the count of English skills speaks only where the marker declares `i18n: translated`, the MIX line stays unconditional; and every `check` prints the ENTRY COST as reference — the re-read core, plus `HOUSE_RULES.md` where it exists, plus since 2.10 (epic HC, origin #179) every other document the deployed `/resume` names as a bullet (by name; `EXPERIENCE.md` is grepped and stays out) and the skill file itself, in thousands of tokens and as a share of a 1M-token model window, at two named rates of characters per token, never a stop; a document over 25k tokens — more than one Read call of Claude Code returns — gets an ENTRY COST warning line of its own) · `version` · `report
 <ticket>` (2.5, epic SG: deliver a `bugs/KAIF/` ticket — since 2.8, epic CH, also an update's field report — to the origin through `gh` under the KAIF
 owner's standing authorization — origin issue #15 — with an authorship trailer, and write the
 issue URL into its `Delivered upstream:` line; refusals named: `tracking: anonymous`, no `gh`,
@@ -15738,6 +15754,8 @@ export function texts(language) {
 //      the machine's clock at the moment of speaking — the tool renames a file whose stamp is stale, never trusts the agent's sense of time.
 //
 // Engines (machine resources, reached through the environment, never a path inside the project):
+//   KAIF_VOICE_FILE_TOOL — JSON array, a complete file-based command prefix with `{file}`; it wins and runs BEFORE the renderer below
+//                          (the origin's Silero + Glass, bugs/148; the phrase is logged first);
 //   KAIF_VOICE_RENDER    — JSON array, a command prefix called with `<text> <out.wav> <voice>` (e.g. a renderer with longer pauses on
 //                          punctuation); tried first;
 //   KAIF_VOICE_BASE_TOOL — a node script `<text> --voice <name> --out <wav>`; the fallback;
@@ -15940,9 +15958,25 @@ function main(args) {
     process.exit(1);
   }
   // the contour logs the phrases it calls with itself (KAIF_VOICE_LOGGED=1 in the child's environment) — never twice
+  let loggedFile = file;
   if (process.env.KAIF_VOICE_LOGGED !== '1') {
     const root = projectRoot();
-    console.log('voice log: ' + logPhrase(root, phrase, { file, slug: val('--slug') }));
+    loggedFile = logPhrase(root, phrase, { file, slug: val('--slug') });
+    console.log('voice log: ' + loggedFile);
+  }
+  // The owner's configured file-based engine (Silero + Glass at the origin) wins over this tool's own beep-based renderer (bugs/148).
+  let fileVoice = null;
+  try { const custom = process.env.KAIF_VOICE_FILE_TOOL ? JSON.parse(process.env.KAIF_VOICE_FILE_TOOL) : null;
+    if (Array.isArray(custom) && custom.length && custom.every((x) => typeof x === 'string')) fileVoice = custom; } catch { /* use the renderer below */ }
+  if (fileVoice) {
+    const scratch = loggedFile ? '' : mkdtempSync(join(tmpdir(), 'kaif-voice-file-'));
+    const phraseFile = loggedFile ? resolve(projectRoot(), loggedFile) : join(scratch, 'phrase.txt');
+    if (!file) writeFileSync(phraseFile, phrase + '\n', 'utf8');
+    const command = fileVoice.map((part) => part.replaceAll('{file}', phraseFile));
+    if (args.includes('--dry-run')) { console.log('voice file tool (dry run): ' + JSON.stringify(command)); if (scratch) rmSync(scratch, { recursive: true, force: true }); return; }
+    const r = spawnSync(command[0], command.slice(1), { cwd: projectRoot(), stdio: 'inherit', windowsHide: true, timeout: RENDER_TIMEOUT_MS });
+    if (scratch) rmSync(scratch, { recursive: true, force: true });
+    process.exit(r.status ?? 1);
   }
   const voiceArg = val('--voice');
   const voice = voiceArg && voiceArg !== 'default' ? voiceArg : (process.env.KAIF_VOICE && process.env.KAIF_VOICE !== 'default' ? process.env.KAIF_VOICE : DEFAULT_VOICE);
@@ -20606,6 +20640,42 @@ export function kimiWireOf(id, home = process.env.KIMI_CODE_HOME || join(homedir
   return '';
 }
 
+// A hand command may lack the agent's session id (observed in Kimi's VS Code tools): use the newest session of THIS project,
+// never a newer-looking record of the other agent system. The output names this fallback; simultaneous chats remain ambiguous.
+export function latestKimiSession(root, home = process.env.KIMI_CODE_HOME || join(homedir(), '.kimi-code')) {
+  const base = join(home, 'sessions'), same = (a, b) => {
+    const x = resolve(a), y = resolve(b);
+    return process.platform === 'win32' ? x.toLowerCase() === y.toLowerCase() : x === y;
+  };
+  let found = null;
+  try {
+    for (const workdir of readdirSync(base)) {
+      for (const id of readdirSync(join(base, workdir))) {
+        const dir = join(base, workdir, id), wire = join(dir, 'agents', 'main', 'wire.jsonl'), state = readJson(join(dir, 'state.json'));
+        if (!state || !state.cwd || !same(state.cwd, root) || !existsSync(wire)) continue;
+        const mtimeMs = statSync(wire).mtimeMs;
+        if (!found || mtimeMs > found.mtimeMs || (mtimeMs === found.mtimeMs && id > found.id)) found = { id, path: wire, mtimeMs };
+      }
+    }
+  } catch { /* no Kimi session store */ }
+  return found;
+}
+function kimiFallbackId(root, home) {
+  const marker = readJson(join(root, DEPLOYMENT)) || {};
+  if (!Array.isArray(marker.agents) || !marker.agents.includes('kimi-code')) return '';
+  const k = latestKimiSession(root, home);
+  if (!k) return '';
+  const t = transcriptOf(root);
+  return !t || k.mtimeMs >= statSync(t.path).mtimeMs ? k.id : '';
+}
+// With no system id, a newer Claude transcript must not become evidence for an existing Kimi session. Claude-only projects keep their route.
+function kimiFallbackConflict(root, home) {
+  const marker = readJson(join(root, DEPLOYMENT)) || {};
+  if (!Array.isArray(marker.agents) || !marker.agents.includes('kimi-code')) return null;
+  const k = latestKimiSession(root, home), t = transcriptOf(root);
+  return k && t && k.mtimeMs < statSync(t.path).mtimeMs ? { kimi: k.id, claude: t.id } : null;
+}
+
 // The newest main-thread assistant record with usage, from the transcript's tail.
 export function lastUsage(text) {
   const lines = String(text).split('\n');
@@ -20892,8 +20962,9 @@ if (process.argv[2] === '--selftest') {
   process.exit(bad ? 1 : 0);
 }
 
-// Kimi (plans/143 KA4 of the origin): the agent's own commands run with KIMI_CODE_SESSION_ID (Kimi's Bash tool sets it); Kimi's hooks are
-// wired in the user-level ~/.kimi-code/config.toml, never in .claude/settings.json — `--alive` and `--measure` judge Kimi by Kimi's files.
+// Kimi (plans/143 KA4 of the origin): use KIMI_CODE_SESSION_ID where the command environment carries it; the VS Code tool environment was
+// observed without it, so the newest session of this project is the named fallback (bugs/147). Kimi's hooks are wired in the user-level
+// ~/.kimi-code/config.toml, never in .claude/settings.json — `--alive` and `--measure` judge Kimi by Kimi's files.
 // Pure: (config text) → { wired, star } — is the window hook wired, and how many KAIF entries carry the matcher Kimi never fires (bugs/145).
 // [TESTED: 2026-11-21 · selftest case «Kimi wiring (KA4)»; functional — `--alive` / `--measure` with KIMI_CODE_SESSION_ID of two REAL Kimi
 //  sessions of the origin on the owner's machine: the recorded one exit 0, the unrecorded one exit 1 with Kimi's action; --measure read the
@@ -20905,9 +20976,19 @@ export function kimiWiring(configText) {
     star: ours.filter((e) => /^\s*matcher\s*=\s*"\*"/m.test(e)).length };
 }
 const kimiIds = (sid) => [...new Set([sid, sid.startsWith('session_') ? sid.slice(8) : `session_${sid}`])];
-if (process.env.KIMI_CODE_SESSION_ID && (process.argv[2] === '--alive' || process.argv[2] === '--measure')) {
-  const sid = process.env.KIMI_CODE_SESSION_ID, root = projectRoot(process.cwd());
-  const home = process.env.KIMI_CODE_HOME || join(homedir(), '.kimi-code');
+const handRoot = process.env.CLAUDE_PROJECT_DIR || projectRoot(process.cwd());
+const handKimiHome = process.env.KIMI_CODE_HOME || join(homedir(), '.kimi-code');
+const handKimiId = process.env.KIMI_CODE_SESSION_ID || (!process.env.CLAUDE_CODE_SESSION_ID && ['--alive', '--measure'].includes(process.argv[2]) ? kimiFallbackId(handRoot, handKimiHome) : '');
+const handKimiBy = process.env.KIMI_CODE_SESSION_ID ? 'session id' : 'the newest Kimi session of the project';
+const handConflict = !process.env.KIMI_CODE_SESSION_ID && !process.env.CLAUDE_CODE_SESSION_ID && !handKimiId && ['--alive', '--measure'].includes(process.argv[2])
+  ? kimiFallbackConflict(handRoot, handKimiHome) : null;
+if (handConflict) {
+  console.log(`KAIF session: ambiguous without an agent session id — Kimi ${handConflict.kimi} is older than Claude ${handConflict.claude}; ` +
+    'neither is evidence for the current session. Set KIMI_CODE_SESSION_ID (Kimi) or CLAUDE_CODE_SESSION_ID (Claude), or use the newest session.');
+  process.exit(2);
+}
+if (handKimiId && (process.argv[2] === '--alive' || process.argv[2] === '--measure')) {
+  const sid = handKimiId, root = handRoot, home = handKimiHome;
   let configText = '';
   try { configText = readFileSync(join(home, 'config.toml'), 'utf8'); } catch { /* no Kimi config */ }
   const marker = readJson(join(root, DEPLOYMENT)) || {};
@@ -20918,8 +20999,8 @@ if (process.env.KIMI_CODE_SESSION_ID && (process.argv[2] === '--alive' || proces
     if (!w.wired) { console.log(`KAIF hooks: the context-window hook is not wired in ${join(home, 'config.toml')} (Kimi) — nothing to judge.`); process.exit(2); }
     if (w.star) console.log(`KAIF hooks: ${w.star} KAIF hook entr${w.star === 1 ? 'y' : 'ies'} in Kimi's config carr${w.star === 1 ? 'ies' : 'y'} matcher "*" — Kimi never fires ${w.star === 1 ? 'it' : 'them'} (bugs/145); remove the matcher line.`);
     const st = readJson(join(root, STATE)) || {}, id = kimiIds(sid).find((k) => st[k]);
-    if (id) { console.log(`KAIF hooks: running in this Kimi session (${id}) — the context-window hook recorded it at ${st[id].at}.`); process.exit(0); }
-    console.log(`KAIF hooks: NOT running in this Kimi session (${sid}) — wired in ${join(home, 'config.toml')}, yet no hook recorded the session. ` +
+    if (id) { console.log(`KAIF hooks: running in this Kimi session (${id}) — the context-window hook recorded it at ${st[id].at} (session by ${handKimiBy}).`); process.exit(0); }
+    console.log(`KAIF hooks: NOT running in this Kimi session (${sid}) — wired in ${join(home, 'config.toml')}, yet no hook recorded the session (session by ${handKimiBy}). ` +
       'Kimi reads hooks when a session starts: run /reload or start a new session; `kimi doctor config` names an entry that drops the whole hooks section.');
     process.exit(1);
   }
@@ -20930,7 +21011,7 @@ if (process.env.KIMI_CODE_SESSION_ID && (process.argv[2] === '--alive' || proces
   const full = windowOf({ tokens: cw.tokens || kimiConfiguredWindow(st.model || lu.model || kimiDefaultModel(configText), configText), seen: lu.used });
   const point = kimiCompactionPoint(full, configText);
   const m = measureLine(lu.used, point, cw);
-  console.log(`${m.line.replace('the window is', `the room before Kimi's own compaction (it compacts at ${point} of ${full} tokens) is`)} (Kimi wire: ${tp})`);
+  console.log(`${m.line.replace('the window is', `the room before Kimi's own compaction (it compacts at ${point} of ${full} tokens) is`)} (Kimi wire: ${tp}; session by ${handKimiBy})`);
   process.exit(m.may ? 0 : 1);
 }
 
@@ -26490,7 +26571,7 @@ homework с ясными минимальными пронумерованным
 > **FILE: `templates/languages/ru/KAIF_FRAMEWORK.md`** — language pack — data for KAIF-CORE, applied only for the chosen --lang
 
 ``````md
-# KAIF в <PROJECT_NAME> — фреймворк, развёрнутый здесь
+# KAIF в <PROJECT_NAME> — развёрнутый фреймворк
 
 > **Что это за документ.** Высокоуровневое описание **фреймворка KAIF, развёрнутого и используемого в этом
 > проекте** — как страница «технологии и фреймворки» проекта, на которой KAIF теперь одна из технологий.
@@ -26512,14 +26593,14 @@ KAIF (Krinik AI Framework) — **устойчивый к потере конте
 знания вместо того, чтобы терять их. Это не код; это *процесс, запечатлённый в файлах, которые читает
 агент*.
 
-## Зачем он здесь — что он даёт проекту
+## Что KAIF даёт проекту
 
 - **Нет холодных стартов.** Новая сессия читает `AGENT_GUIDE.md` + `STATUS.md` и сразу продуктивна.
 - **Знания выживают.** Баги, решения, исследования и идеи становятся долговечными документами, а не потерянным чатом.
 - **Ограниченная автономия.** Агент сам гриндит беклог и эскалирует только решения уровня владельца.
 - **Общий метод.** Человек = визионер (`GOAL.md`), агент = исполнитель; KAIF — интерфейс между ними.
 
-## Как это работает здесь — движущиеся части
+## Устройство KAIF в этом проекте
 
 | Часть | Роль в этом проекте |
 |-------|---------------------|

@@ -2,6 +2,8 @@
 name: fable-loop
 description: >-
   End-to-end orchestrated workflow that runs a task the way Fable ran sessions - parallel evidence subagents, one committed plan, surgical execution with an intent gate, adversarial verification agents, honest outcome-first report. Use for non-trivial multi-step tasks when the user says "/skill:fable-loop", "run the fable loop", or "do this the way Fable would". For the rules alone without orchestration, use fable-method; inside the project's own cycles (KAIF /skill:autoloop, /skill:dayloop, /skill:nightloop) apply this per backlog item.
+whenToUse: >-
+  End-to-end orchestrated workflow that runs a task the way Fable ran sessions - parallel evidence subagents, one committed plan, surgical execution with an intent gate, adversarial verification agents, honest outcome-first report. Use for non-trivial multi-step tasks when the user says "/skill:fable-loop", "run the fable loop", or "do this the way Fable would". For the rules alone without orchestration, use fable-method; inside the project's own cycles (KAIF /skill:autoloop, /skill:dayloop, /skill:nightloop) apply this per backlog item.
 ---
 
 > **Vendored into KAIF from [fable-method](https://github.com/Sahir619/fable-method) v1.4.0 — © Sahir619, MIT.**

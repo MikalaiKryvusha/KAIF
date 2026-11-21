@@ -942,10 +942,13 @@ function writeIfNew(path, content) {
 
 // Kimi reads the Agent Skills layout, but its invocation and resource placeholders differ.
 // Folded descriptions also keep localized alias tails and ordinary "word: value" prose valid YAML.
+// The model sees only the first 250 description characters, but all of whenToUse: carry the full trigger text there (KA5).
 function kimiSkillText(path, content, names) {
   const name = skillName(path);
   let out = content.replace(/^description:[ \t]*(.+)$/m, (line, value) =>
     value === '>-' || value === '>' ? line : `description: >-\n  ${value.trim()}`);
+  const description = out.match(/^description:[ \t]*>-\r?\n  ([^\r\n]+)$/m);
+  if (description && !/^whenToUse:/m.test(out)) out = out.replace(description[0], `${description[0]}\nwhenToUse: >-\n  ${description[1]}`);
   out = out.replace(/^trigger:[^\r\n]*\r?\n/m, '').replace(/^Co-Authored-By: Claude[^\r\n]*\r?\n?/m, '');
   for (const n of names) out = out.replace(new RegExp(`(?<![\\w:./-])/${n}(?![\\w-])`, 'g'), `/skill:${n}`);
   out = out.replaceAll('.claude/skills/', '.kimi-code/skills/').replaceAll('CLAUDE.md', 'AGENTS.md');
@@ -3849,7 +3852,7 @@ async function cmdInstall() {
   // which reads as "the install failed". Saying it HERE costs one line and prevents that diagnosis.
   // #143 §2.1 (2.9): a greenfield folder without git — the deploy ends with a commit, and nothing said what to do; the agent ran `git init`
   // on its own. The thin KAIF.md does not grow (decision #8), so the machinery says it where the agent reads the outcome.
-  if (!inGitWorkTree()) log(`⚠ this folder is not a git repository, and the deploy ends with a commit — run \`git init\` now; commit the owner's own files first, exactly as they are (his originals are committed before any edit), then the deploy commit.`);
+  if (!inGitWorkTree()) log(`⚠ this folder is not a git repository, and the deploy ends with a commit — run \`git init\` now; commit the owner's own files first, exactly as they are (his originals are committed before any edit), then the deploy commit. Kimi Code discovers project skills only under the nearest .git ancestor: without it the delivered .kimi-code/skills/ copies stay invisible (KA5).`);
   if (skillFiles && skillFiles.length) log(`➡ Restart your agent client so the ${skillFiles.length} skills appear in its command list (clients read that list at startup — until then a new skill answers "no such command", which is a stale list, not a failed install).`);
   if (legacyOld) log(`➡ ONE cognitive step remains — open ${UPDATE_TASK} and work it, then run: node .kaif/kaif-core.mjs update-verify`);
   else log(`➡ ONE cognitive step remains — open ${TASK_FILE} and work it, then run: node .kaif/kaif-core.mjs verify-final`);
@@ -4015,6 +4018,7 @@ function cmdCheck() {
     }
     if (drifted) console.error(`⚠ ${drifted} mirror copies lag the canon${drifted > 3 ? ` (${drifted - 3} more not listed)` : ''} — normal until re-sync; run \`node .kaif/kaif-core.mjs sync\` (update-verify re-syncs automatically)`);
   }
+  if (AGENTS.includes('kimi-code') && !inGitWorkTree()) console.error('⚠ Kimi Code discovers project skills only under the nearest .git ancestor; this deployment has none — run `git init` before expecting .kimi-code/skills/ in the catalog (KA5).');
   // Language mix (2.5, epic US; field #32 R-C: a ru deployment's own skill directory was already
   // bilingual — 18 of 45 skills English — and no gate said a word). Skills are agent-read and stay
   // English by policy; the count is HONESTY about the tree, not a defect: a warning, never a failure.
@@ -4591,6 +4595,21 @@ function cmdCheckpoint() {
   //                  line is correct", so remaining hits warn, never refuse);
   //   judge        — requires a verdict with evidence (file or one-liner; recorded next to
   //                  the tick, and into the committable receipt — decision #42).
+  //   maps         — the two project maps are filled from inspection, not ticked with their template slots standing (KA8, #195).
+  if (id === 'maps') {
+    const slot = /<(?:project root|dir|file|what lives here|role|path|one-line role|other paths it links to \/ relies on|name|what concept it represents|what it owns \/ does|A|B|C)>|<(?:The |Where |Describe |Why )[^>\n]*>/i;
+    const openGuidance = /<(?:The |Where |Describe |Why )[^>\n]*$/i;
+    const flow = /^<A>\s+──produces──▶\s+<B>\s+──consumed by──▶\s+<C>$/;
+    const isSlot = (line) => (slot.test(line) || openGuidance.test(line)) && (flow.test(line.trim())
+      || line.replace(/<[^>\n]+>/g, '').replace(openGuidance, '').replace(/[\s\\_/#`|├└│▶-]+/g, '').length === 0);
+    const empty = [];
+    for (const p of ['PROJECT_STRUCTURE_EXTERNAL_MAP.md', 'PROJECT_ARCHITECTURE_INTERNAL_MAP.md']) {
+      if (!okOnDisk(p)) { empty.push(`${p} (missing)`); continue; }
+      readFileSync(p, 'utf8').split(/\r?\n/).forEach((line, i) => { if (isSlot(line)) empty.push(`${p}:${i + 1}`); });
+    }
+    if (empty.length) die(`checkpoint maps REFUSED: template slots remain at ${empty.join(' · ')} — fill both maps from the real project first`);
+    log('✔ both project maps are filled: no template slot lines remain (executed by the checkpoint itself)');
+  }
   if (id === 'recheck') {
     // The mirror re-sync used to live only in update-verify, leaving five agent systems on
     // contradicting skills for the whole merge window (bug 34, field report Г11) — close it here.
