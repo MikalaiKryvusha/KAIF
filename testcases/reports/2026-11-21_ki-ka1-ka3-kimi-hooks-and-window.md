@@ -60,7 +60,9 @@ owner's 5-hour Kimi quota (429 at 16:24); the stand step next: a `kimi -p` run i
 ## 6. Traces
 
 `tools/sandbox/probes/bugs145-matcher-red.mjs` · `tools/sandbox/probes/kimi-window-mutants.mjs` · the owner's backup
-`~/.kimi-code/config.toml.20261121-171626.bak` · session logs in the scratchpad (not kept).
+`~/.kimi-code/config.toml.20261121-171626.bak` · session logs in the scratchpad (not kept). The live runs' own records stay in Kimi's
+store `~/.kimi-code/sessions/wd_project_*/` — run 1 `session_b50a20b7-afd0-45e0-be23-bb49464c5b99`, run 2
+`session_0e5fbca7-2b80-4228-9507-75300e13dbf8`, run 3 `session_fa56d6ed-52ee-4985-9fd0-efebd5004655` (the temp projects removed).
 
 ## 7. Verdict
 
