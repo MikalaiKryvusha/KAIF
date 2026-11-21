@@ -158,5 +158,11 @@
       "at": "2026-11-07T12:46:23+03:00",
       "where": "e9ee8f7"
     }
+  },
+  "interviews/interview_050_kaif_2.10_three_small_field_fixes.md": {
+    "Q1": {
+      "at": "2026-11-21T15:57:21+03:00",
+      "where": "ideas/33_kaif_2.11_scope.md"
+    }
   }
 }

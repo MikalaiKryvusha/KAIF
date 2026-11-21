@@ -39,6 +39,7 @@ live 127927 tokens and correctly stayed silent below the threshold.
 | 85 % during PostToolUse | pass | soft closure emitted once |
 | Compaction + fresh 80 % | pass | old records ignored; cut rearmed |
 | Kimi config wiring | pass | UserPromptSubmit + PostToolUse present |
+| Поправка 2026-11-21 16:53 +03:00 | — | «present» ≠ «Kimi запускает»: `PostToolUse` с `matcher = "*"` Kimi не запускает никогда (`bugs/145`); строки выше — прямой вызов скрипта |
 | Canonical payload regenerated | pass | 194 blocks, 59 embedded files, fresh hashes |
 | Full core suite | blocked | preflight s14 lines 994/1006/1010/1018; no tests ran |
 

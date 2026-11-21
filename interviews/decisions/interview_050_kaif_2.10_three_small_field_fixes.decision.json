@@ -1,0 +1,17 @@
+{
+  "kind": "interview",
+  "document": "interviews/interview_050_kaif_2.10_three_small_field_fixes.md",
+  "by": "Mikalai Kryvusha (KOT KRINIK)",
+  "at": "2026-11-21T12:07:49.504Z",
+  "atHuman": "21 ноября 2026, 15:07 (+03:00)",
+  "comment": "",
+  "answers": {
+    "Q1": {
+      "choice": "A",
+      "text": "",
+      "comment": ""
+    }
+  },
+  "rev": "f2731fe41aab4e425deb93e3188f35ae0e0280285d4fa66b0ba599325f861dd6",
+  "revAfter": "9768bedb10c77ef750e1640210d71d443b344c18656b8c58ba6cc6ea8e70e924"
+}

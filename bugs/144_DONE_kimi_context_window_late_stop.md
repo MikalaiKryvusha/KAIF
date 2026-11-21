@@ -32,6 +32,9 @@ Kimi автоматически сжал длинный ход при отобр
 [TESTED: 2026-11-21 15:22 +03:00 · настоящий hook executable на Kimi-событиях и живом wire поля ·
 отчёт `testcases/reports/2026-11-21_kimi_context_window.md`]
 
+> **Поправка 2026-11-21 16:53 +03:00 (сессия 104):** событие подавалось скрипту напрямую; сам Kimi этот `PostToolUse` не запускает — у записи фрагмента
+> `matcher = "*"`, недопустимая регулярка Kimi (`bugs/145`). DONE держится за скрипт; живой путь «85 % во время хода» закрыт `bugs/145`.
+
 - Hygiene: `node framework/hooks/context-window.mjs --selftest` — all ok;
   `node tools/build-framework.mjs` — поставка и 59 embedded files OK; mutant без чтения wire красный
   на обоих новых сценариях.
