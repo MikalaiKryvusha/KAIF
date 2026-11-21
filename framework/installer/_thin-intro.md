@@ -28,8 +28,8 @@
    Add, if you wish:
    - **Working language** (default English): *"Working language: Russian."* — owner-facing docs come
      out in your language; agent-internal docs stay English (LLMs read it best).
-3. The machinery deploys everything (docs, skills for **five agent systems at once** — Claude Code,
-   Codex, Grok Build, Cline, Zoo Code — plus a universal `AGENTS.md`), then your agent performs one
+3. The machinery deploys everything (docs, skills for **six agent systems at once** — Claude Code,
+   Codex, Kimi Code, Grok Build, Cline, Zoo Code — plus a universal `AGENTS.md`), then your agent performs one
    final adaptation pass (understanding your project) and self-cleans the installer.
 
 **`GOAL.md` — write it first if you can**: your one-paragraph vision (what you want, for whom). The

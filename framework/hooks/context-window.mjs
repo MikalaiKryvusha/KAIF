@@ -88,6 +88,17 @@ function bigByDefault(model) {
   return false;
 }
 export const usedOf = (u) => (u ? (Number(u.input_tokens) || 0) + (Number(u.cache_creation_input_tokens) || 0) + (Number(u.cache_read_input_tokens) || 0) : 0);
+export const kimiUsedOf = (u) => (u ? (Number(u.inputOther) || 0) + (Number(u.inputCacheCreation) || 0) + (Number(u.inputCacheRead) || 0) : 0);
+export function kimiConfiguredWindow(model, configText) {
+  const names = new Set([String(model || ''), String(model || '').split('/').pop()].filter(Boolean));
+  for (const section of String(configText).split(/(?=^\[)/m)) {
+    const header = /^\[models\."([^"]+)"\]/.exec(section);
+    if (!header || ![...names].some((name) => header[1] === name || header[1].endsWith('/' + name))) continue;
+    const m = /^\s*max_context_size\s*=\s*(\d+)\s*$/m.exec(section);
+    if (m) return Number(m[1]);
+  }
+  return null;
+}
 
 // The newest main-thread assistant record with usage, from the transcript's tail.
 export function lastUsage(text) {
@@ -231,6 +242,11 @@ if (process.argv[2] === '--selftest') {
   const f = decide(921000, LARGE, cfg, [75, 80, 85]);
   ok(f && f.level === 92 && f.kind === 'force' && /finish it quickly/.test(f.line) && /\/end-chat-force/.test(f.line)
     && decide(950000, LARGE, cfg, [75, 80, 85, 92]) === null, '92 % — finish the soft closure quickly or start /end-chat-force; then silence (№161)');
+  ok(kimiUsedOf({ inputOther: 1243, inputCacheRead: 302080, inputCacheCreation: 0, output: 1542 }) === 303323,
+    'Kimi usage = inputOther + inputCacheCreation + inputCacheRead; output is not counted');
+  ok(kimiConfiguredWindow('kimi-code/k3.1-pro', '[models."kimi-code/k3.1-pro"]\nmax_context_size = 1048576\n') === 1048576
+    && kimiConfiguredWindow('k3', '[models."kimi-code/k3"]\nmax_context_size = 262144\n') === 262144,
+    'Kimi window: max_context_size is read for the full alias or its model name');
   { const j = decide(860000, LARGE, cfg, []), old = decide(860000, LARGE, cfg, [80, 85]);
     ok(j && j.level === 85 && j.kind === 'close' && j.levels.join() === '75,80,85' && old === null,
       'a jump 50 % → 86 % says ONE line, the highest step, and marks the lower said; a state of the 80 / 85 edition says nothing lower'); }
@@ -341,6 +357,49 @@ if (process.argv[2] === '--measure') {
   const m = measureLine(lu.used, windowOf({ model: lu.model, env: process.env, tokens: cw.tokens, seen: lu.used }), cw);
   console.log(`${m.line} (transcript by ${by}: ${tp})`);
   process.exit(m.may ? 0 : 1);
+}
+
+if (process.argv[2] === '--kimi') {
+  try {
+    const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
+    if (typeof ev.session_id !== 'string' || !ev.session_id || fromSubagent(ev)) process.exit(0);
+    const root = projectRoot(ev.cwd || process.cwd());
+    if (!existsSync(join(root, DEPLOYMENT))) process.exit(0);
+    const marker = readJson(join(root, DEPLOYMENT)) || {};
+    const cw = (marker.contextWindow && typeof marker.contextWindow === 'object') ? marker.contextWindow : {};
+    const id = ev.session_id, all = readJson(join(root, STATE)) || {};
+    const st = all[id] || { said: [], seen: 0 };
+    if (typeof ev.model === 'string' && ev.model) st.model = ev.model;
+    if (ev.hook_event_name === 'PostCompact') { st.said = []; st.seen = 0; }
+    const measured = kimiUsedOf(ev.usage);
+    const used = measured || st.seen || 0;
+    let configured = null;
+    try {
+      const configHome = process.env.KIMI_CODE_HOME || join(homedir(), '.kimi-code');
+      configured = kimiConfiguredWindow(st.model, readFileSync(join(configHome, 'config.toml'), 'utf8'));
+    } catch { /* no readable Kimi config — the generic floor applies */ }
+    const win = windowOf({ tokens: cw.tokens || configured, seen: Math.max(st.seen || 0, used) });
+    const gate = closeGate(ev, used, win, cw);
+    if (gate) { process.stdout.write(JSON.stringify(gate)); process.exit(0); }
+    let d = null;
+    if (measured > 0 && ev.hook_event_name === 'Stop') {
+      st.seen = Math.max(st.seen || 0, measured);
+      st.said = keptLevels(measured, win, st.said || []);
+      d = decide(measured, win, cw, st.said);
+      if (d) {
+        d = { ...d, line: d.line.replaceAll('/end-chat-soft', '/skill:end-chat-soft').replaceAll('/end-chat-force', '/skill:end-chat-force') };
+        st.said = [...new Set([...st.said, ...d.levels])];
+      }
+    }
+    all[id] = { ...st, at: new Date().toISOString() };
+    const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
+    const kept = {}; for (const k of ids) kept[k] = all[k];
+    const p = join(root, STATE); mkdirSync(dirname(p), { recursive: true });
+    writeFileSync(p + '.tmp', JSON.stringify(kept)); renameSync(p + '.tmp', p);
+    if (d && (d.kind === 'close' || d.kind === 'force')) { console.error(d.line); process.exit(2); }
+    if (d) process.stdout.write(d.line);
+  } catch { /* a hook never breaks the session */ }
+  process.exit(0);
 }
 
 try {

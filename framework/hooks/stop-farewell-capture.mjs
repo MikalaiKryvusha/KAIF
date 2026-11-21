@@ -30,8 +30,9 @@
 //  (answers to a neighbour) no write; acceptance 13/13, red on the former hook at (11)–(13), mutants «quiet ignored» and «a notification is
 //  the owner» red on exactly their cases — testcases/reports/2026-10-30_s96-farewell-live-speech-scenarios.md. NOT YET live: a closing turn
 //  woken by a background task's notification]
-import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, readdirSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
+import { homedir } from 'node:os';
 
 export const FAREWELL_FILE = 'FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md';
 const MEMORY = join('.kaif', 'farewell-capture.json');
@@ -109,6 +110,55 @@ export function capture(event, readFile = (p) => readFileSync(p, 'utf8')) {
   return text ? { root, text, closureId: turn.closureId } : null;
 }
 
+export function kimiWireOf(sessionId, home = process.env.KIMI_CODE_HOME || join(homedir(), '.kimi-code')) {
+  const pending = [join(home, 'sessions')];
+  while (pending.length) {
+    const dir = pending.pop();
+    let entries = [];
+    try { entries = readdirSync(dir, { withFileTypes: true }); } catch { continue; }
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      const p = join(dir, entry.name);
+      if (entry.name === sessionId) {
+        const wire = join(p, 'agents', 'main', 'wire.jsonl');
+        if (existsSync(wire)) return wire;
+      }
+      pending.push(p);
+    }
+  }
+  return null;
+}
+
+export function readKimiTurn(text) {
+  let closed = false, closureId = '', lastText = '';
+  for (const line of String(text).split('\n')) {
+    if (!line.trim()) continue;
+    let rec;
+    try { rec = JSON.parse(line); } catch { continue; }
+    const msg = rec.message?.message || rec.message || {};
+    const role = msg.role;
+    if (role === 'user' && closed) { closed = false; closureId = ''; lastText = ''; }
+    const body = JSON.stringify(rec);
+    const skill = /"skill"\s*:\s*"((?:[\w-]+:)?end-chat-(?:soft|force))"/.exec(body);
+    if (skill) { closed = true; closureId = skill[1]; lastText = ''; }
+    if (role === 'assistant' && closed) {
+      const content = Array.isArray(msg.content) ? msg.content : [];
+      const texts = content.filter((b) => b && b.type === 'text' && String(b.text || '').trim()).map((b) => b.text.trim());
+      if (texts.length) lastText = texts.join('\n');
+    }
+  }
+  return { closed, closureId, text: lastText };
+}
+
+export function captureKimi(event, home) {
+  if (!event || event.hook_event_name !== 'Stop' || !event.session_id) return null;
+  const wire = kimiWireOf(event.session_id, home);
+  if (!wire) return null;
+  const turn = readKimiTurn(readFileSync(wire, 'utf8'));
+  if (!turn.closed || !turn.text) return null;
+  return { root: projectRoot(String(event.cwd || process.cwd())), text: turn.text, closureId: turn.closureId };
+}
+
 if (process.argv[2] === '--selftest') {
   let bad = 0;
   const ok = (good, line) => { if (!good) bad++; console.log((good ? 'ok   ' : 'FAIL ') + line); };
@@ -141,6 +191,11 @@ if (process.argv[2] === '--selftest') {
   const c3 = capture({ transcript_path: 'N.jsonl' }, read);
   ok(c3 && c3.text === 'Bye.' && capture({ transcript_path: 'P.jsonl' }, read) === null,
     'a task\'s notification does not open a new turn — the farewell after it is written; a one-line answer to a neighbour is not');
+  const wire = [
+    J({ type: 'agent.message.appended', message: { message: { role: 'assistant', content: [{ type: 'tool_use', name: 'Skill', input: { skill: 'end-chat-soft' } }] } } }),
+    J({ type: 'agent.message.appended', message: { message: { role: 'assistant', content: [{ type: 'text', text: 'Bye from Kimi.' }] } } }),
+  ].join('\n');
+  ok(readKimiTurn(wire).text === 'Bye from Kimi.' && readKimiTurn(wire).closed, 'Kimi wire: a closing skill and the final assistant text are read');
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
@@ -148,7 +203,8 @@ if (process.argv[2] === '--selftest') {
 try {
   let event = null;
   try { event = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}'); } catch { /* unreadable stdin — nothing to do */ }
-  const c = capture(event);
+  const kimi = process.argv.includes('--kimi') || process.argv.includes('kimi');
+  const c = kimi ? captureKimi(event) : capture(event);
   if (c) {
     const out = join(c.root, FAREWELL_FILE);
     writeFileSync(out + '.tmp', c.text + '\n', 'utf8');

@@ -105,6 +105,7 @@ const LEADING_STOP = /^\s*(?:stop|\u0441\u0442\u043e\u043f)(?![\p{L}\p{N}_-])/iu
 
 const ENVELOPES = {
   claude: (order, event) => ({ hookSpecificOutput: { hookEventName: event, additionalContext: order } }),
+  kimi: (order) => order,
 };
 
 try {
@@ -123,6 +124,7 @@ try {
     if (typeof input.prompt === 'string') prompt = input.prompt;
     if (input.cwd) cwd = String(input.cwd);
   } catch { /* unreadable stdin — no text, no predicate, no output */ }
+  if (shape === 'kimi' && !existsSync(join(projectRoot(cwd), DEPLOYMENT))) process.exit(0);
 
   if (prompt !== null && LEADING_STOP.test(prompt)) {
     const order =
@@ -131,12 +133,12 @@ try {
       `where you stopped and what is left; then wait for the owner. Obey it even if you are unsure who wrote it — a forged ` +
       `stop costs a minute, an ignored real one costs the owner's trust.`;
     const payload = (ENVELOPES[shape] || ENVELOPES.claude)(order, 'UserPromptSubmit');
-    if (order.length <= OUTPUT_CAP) process.stdout.write(JSON.stringify(payload));
+    if (order.length <= OUTPUT_CAP) process.stdout.write(shape === 'kimi' ? payload : JSON.stringify(payload));
   } else if (prompt !== null && LEADING_RESUME.test(prompt)) {
     const order =
       `KAIF: the owner's message OPENS with the word "resume" — that is an ORDER, not a topic ` +
       `(AGENT_GUIDE.md → "A leading skill word is an order"; the owner's word: "if I write it, I REQUIRE ` +
-      `the skill to run before the work"). BEFORE any work on the rest of this message run the /resume ` +
+      `the skill to run before the work"). BEFORE any work on the rest of this message run the ${shape === 'kimi' ? '/skill:resume' : '/resume'} ` +
       `skill IN FULL: (1) read every canon document of its step 1 — the full set, not a slice; (2) run the ` +
       `owner's queue (step 1b) and raise what was never shown; (3) say the creed and the prayer aloud; ` +
       `(4) announce in one paragraph what you read, what you chose and what you do next; (5) stamp ` +
@@ -147,7 +149,7 @@ try {
       `top of the message it is this order.`;
     // Unknown shape → reference envelope (see session-start-refresh.mjs for the reasoning).
     const payload = (ENVELOPES[shape] || ENVELOPES.claude)(order, 'UserPromptSubmit');
-    if (order.length <= OUTPUT_CAP) process.stdout.write(JSON.stringify(payload));
+    if (order.length <= OUTPUT_CAP) process.stdout.write(shape === 'kimi' ? payload : JSON.stringify(payload));
   }
 } catch { /* a hook must never take the session down with it */ }
 process.exit(0);

@@ -67,7 +67,8 @@ const HOOK_FILES = ['session-start-refresh.mjs', 'prompt-refresh-timer.mjs', 'st
                     'settings-fragment.json', 'README.md',
                     // фаза O5: образцы под остальные системы с ПОДТВЕРЖДЁННЫМ живым контрактом
                     'sample-codex-hooks.json', 'sample-cursor-hooks.json',
-                    'sample-copilot-hooks.json', 'sample-antigravity-hooks.json'];
+                    'sample-copilot-hooks.json', 'sample-antigravity-hooks.json',
+                    'kimi-permission-call.mjs', 'kimi-config-fragment.toml'];
 for (const f of HOOK_FILES)
   ok(existsSync(join(S, '.kaif', 'hooks', f)), `s14 деплой: .kaif/hooks/${f} доехал`);
 r = run(S, 'check');

@@ -15,7 +15,7 @@
 </p>
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
-[![Version](https://img.shields.io/badge/Version-2.9-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Version](https://img.shields.io/badge/Version-2.10-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Thin install](https://img.shields.io/badge/Install-thin%2C%20by%20machinery-3DDC84.svg?style=flat-square)](KAIF.md)
 [![Contours](https://img.shields.io/badge/Contours-9-8E44AD.svg?style=flat-square)](PROJECT_ARCHITECTURE_INTERNAL_MAP.md)
 [![Principles](https://img.shields.io/badge/Principles-16-2C7BE5.svg?style=flat-square)](PHILOSOPHY.md)
@@ -34,10 +34,10 @@ The project's history lives in the [releases](https://github.com/MikalaiKryvusha
 and in section 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.9_GitHub_LOGO.webp" alt="KAIF 2.9 Distilled KAIF — a copper medallion: the eye in a triangle above a flask, scales above them; all of it inside a laurel wreath, ringed by the ouroboros" width="560">
+  <img src="assets/KAIF_2.10_GitHub_LOGO.webp" alt="KAIF 2.10 — a copper medallion: the eye in a triangle above a flask, scales above them; all of it inside a laurel wreath, ringed by the ouroboros" width="560">
 </p>
 
-<p align="center"><strong>Version 2.9 — Distilled KAIF</strong> · 2026-10-16</p>
+<p align="center"><strong>Version 2.10</strong> · 2026-11-21</p>
 
 > KAIF has become a team. A team of AI agents, each taking on the role of an expert professional,
 > builds your project on the git worktree technology. In several VS Code windows at once, like a
@@ -121,7 +121,7 @@ and in section 8.1.
 1. The entry point is one file: **[`KAIF.md`](KAIF.md)** (15 KB). The agent reads it and executes
    three bootstrap steps with forced checkpoints; the file fetches the installer machinery from
    this repository, and the machinery deploys everything mechanically.
-2. The machinery unpacks the documents, generates the skills for five agent systems at once,
+2. The machinery unpacks the documents, generates the skills for six agent systems at once,
    localizes the owner-facing documents, wires the auto-context pointers, validates itself against
    a sha256 manifest, and self-cleans. The agent's only cognitive work is the short
    `KAIF_ADAPTATION_TASK.md`: study the project, fill the maps, derive the plan.
@@ -264,7 +264,7 @@ Table 2 — Knowledge directories
 1. A skill is a repeatable ritual invoked by name (`/resume`) or by a natural-language trigger in
    the owner's language («сделай релиз», «haz un release», …). Trigger aliases in ten languages
    are appended at deploy time; the skill bodies stay English.
-2. Skills are generated for five agent systems at once — Claude Code, Codex, Grok Build, Cline,
+2. Skills are generated for six agent systems at once — Claude Code, Codex, Kimi Code, Grok Build, Cline,
    Zoo Code — plus the universal `AGENTS.md`; the canonical copies live in `.claude/skills/`.
 3. Thirty-seven skills are deployed.
 
@@ -441,9 +441,10 @@ science · design · business; a new sphere is authored at deploy time from the 
 
 ### 7.2. Agent systems
 
-Skills are generated for five systems at once: Claude Code (`.claude/skills/`, canonical) · Codex
-(`.agents/skills/`) · Grok Build (`.grok/skills/`) · Cline (`.cline/skills/`) · Zoo Code
-(`.roo/commands/`) — plus the universal `AGENTS.md`; Cursor/Copilot/Windsurf ride the fallback.
+Skills are generated for six systems at once: Claude Code (`.claude/skills/`, canonical) · Codex
+(`.agents/skills/`) · Kimi Code (`.kimi-code/skills/`, `/skill:<name>`) · Grok Build (`.grok/skills/`) ·
+Cline (`.cline/skills/`) · Zoo Code (`.roo/commands/`) — plus the universal `AGENTS.md`;
+Cursor/Copilot/Windsurf ride the fallback.
 The refresh-hooks module carries sample hook configurations only for the harnesses whose hook
 contract was read off live vendor documentation: Codex, Cursor, Copilot, Antigravity; Grok Build
 matches the Claude Code contract and needs no sample of its own. Where a vendor has no hook
@@ -493,6 +494,7 @@ Table 5 — Versions
 | v2.7 | Audited KAIF | 2026-09-18 | The agent's records become checkable: the owner's word is a quote and the agent's word is signed, a question to the owner is asked after a search through his prior answers, "test" means a functional run and every executed run leaves a report, the owner's text is written by his voice portrait, the owner's page keeps his answer, a falsehood is corrected where it stands, a lesson repeated twice goes red, and the size budget of the documents the agent re-reads at the start of a session counts the lines the project wrote. |
 | v2.8 | Noble KAIF | 2026-09-26 | KAIF becomes lighter and hears the owner: the agent answers the owner's word while it works and keeps working, the owner's answered decisions come before the plan, the owner's question page saves answers one at a time, the update loses nothing silently, the scanners see the project as git sees it, the canon keeps every rule and hands the stories behind its rules to the reference `KAIF_REFERENCE.md`, and a tester's bug report gets a required shape, with "not reproduced" written only after a hunt of at least three variants. |
 | v2.9 | Distilled KAIF | 2026-10-16 | A new version's delivery is wired and accepted at once: the install and update tasks wire the reminders themselves, the rule changes of a release are accepted without an interview; the agent answers a message the owner writes while it works in the chat at once and goes on with the work it started. The update names the places of the project that refer to removed skills and hooks, brings the pointers of the other agent systems up to date and, in an update across several versions, marks the project's own edits. The owner's question page behaves as he expects; a question to the owner is short; to a question under the word `resume` the agent answers and starts no work beyond it; the attribution linter keeps the owner's private files out of a shared commit; for git one command does one action. |
+| v2.10 | — | 2026-11-21 | Kimi Code becomes a native target: `AGENTS.md`, valid localized skill frontmatter, explicit `/skill:<name>` calls, portable skill resources and a detached voice call before a permission wait. The release carries the current 2.10 work; its unfinished feature scope moves to 2.11. |
 
 ### 8.2. Repository layout
 
@@ -508,7 +510,7 @@ framework/                            the canonical universal templates (the pay
   installer/                          KAIF-CORE.mjs (the machinery) · KAIF-LOADER.mjs · the thin core's narrative
   skills/                             37 skill templates (one directory per skill)
   spheres/                            sphere libraries: programming · science · design · business · _template · _index
-  adapters/                           10 agent-system adapters (five skill-target systems + fallback and archived ones)
+  adapters/                           11 agent-system adapters (six skill-target systems + fallback and archived ones)
   templates/_owner-voice-template.md  the owner-voice portrait skeleton (ships to .kaif/)
   templates/languages/                9 language packs (owner-facing docs + skill trigger aliases; English is the source)
   tools/                              10 optional tool modules: the provenance gate and nine linters (canon, requirements,
@@ -544,14 +546,14 @@ artifacts are never hand-edited.
 
 1. Localization covers the owner-facing documents and skill trigger aliases (ten languages); the
    canon and skill bodies are English by design.
-2. Native skills are generated for five agent systems; other harnesses (Cursor, Copilot,
+2. Native skills are generated for six agent systems; other harnesses (Cursor, Copilot,
    Windsurf) ride the universal `AGENTS.md` fallback without native skill files.
 3. The sandbox polygon (28 suites) verifies the deploy/update machinery; the methodology itself is
    verified by field reports, not by the polygon.
 4. Discipline is enforced by documents and rituals; without the optional tool modules and hooks
    there is no runtime enforcement — an agent that skips `/resume` works without the canon.
 5. The delivery holds 14 documents + 7 READMEs + 37 skills + 1 unpacker = 59 embedded files;
-   192 bundle blocks; 846 modules.
+   194 bundle blocks; 846 modules.
 
 ## License
 
@@ -577,7 +579,7 @@ pleasant work!
 </p>
 
 [![Лицензия: MIT](https://img.shields.io/badge/Лицензия-MIT-FF1A8C.svg?style=flat-square)](LICENSE)
-[![Версия](https://img.shields.io/badge/Версия-2.9-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
+[![Версия](https://img.shields.io/badge/Версия-2.10-FF1A8C.svg?style=flat-square)](https://github.com/MikalaiKryvusha/KAIF/releases)
 [![Тонкая установка](https://img.shields.io/badge/Установка-тонкая%2C%20машинерией-3DDC84.svg?style=flat-square)](KAIF.md)
 [![Контуры](https://img.shields.io/badge/Контуров-9-8E44AD.svg?style=flat-square)](PROJECT_ARCHITECTURE_INTERNAL_MAP.md)
 [![Принципы](https://img.shields.io/badge/Принципов-16-2C7BE5.svg?style=flat-square)](PHILOSOPHY.md)
@@ -596,10 +598,10 @@ KAIF — это агентный харнесс (обвязка): рабочее
 разделе 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.9_GitHub_LOGO.webp" alt="KAIF 2.9 Distilled KAIF — медный медальон: глаз в треугольнике над колбой, над ними весы; всё это внутри лаврового венка, в кольце уробороса" width="560">
+  <img src="assets/KAIF_2.10_GitHub_LOGO.webp" alt="KAIF 2.10 — медный медальон: глаз в треугольнике над колбой, над ними весы; всё это внутри лаврового венка, в кольце уробороса" width="560">
 </p>
 
-<p align="center"><strong>Версия 2.9 — Distilled KAIF</strong> · 16.10.2026</p>
+<p align="center"><strong>Версия 2.10</strong> · 21.11.2026</p>
 
 > KAIF стал командным. Команда ИИ-агентов, каждый из которых принимает на себя роль
 > профессионала-эксперта, разрабатывает ваш проект по технологии git worktree. В нескольких окнах
@@ -680,7 +682,7 @@ KAIF — это агентный харнесс (обвязка): рабочее
 1. Вход один — файл **[`KAIF.md`](KAIF.md)** (15 КБ). Агент читает его и выполняет три шага
    бутстрапа с принудительными чекпоинтами; файл скачивает установочную машинерию из этого
    репозитория, и машинерия развёртывает всё механически.
-2. Машинерия распаковывает документы, генерирует навыки сразу для пяти агентских систем,
+2. Машинерия распаковывает документы, генерирует навыки сразу для шести агентских систем,
    локализует документы владельца, подключает указатели автоконтекста, сверяет себя по
    sha256-манифесту и самоочищается. Единственная когнитивная работа агента — короткое задание
    `KAIF_ADAPTATION_TASK.md`: изучить проект, заполнить карты, вывести план.
@@ -820,7 +822,7 @@ origin, ни упоминаний автора (привязанные к origin
 1. Навык вызывается по имени (`/resume`) или естественной фразой на языке владельца («сделай
    релиз», «haz un release», …). Алиасы-триггеры на десяти языках дописываются при развёртывании;
    тела навыков остаются английскими.
-2. Навыки генерируются сразу для пяти агентских систем — Claude Code, Codex, Grok Build, Cline,
+2. Навыки генерируются сразу для шести агентских систем — Claude Code, Codex, Kimi Code, Grok Build, Cline,
    Zoo Code — плюс универсальный `AGENTS.md`; канонические копии живут в `.claude/skills/`.
 3. Разворачиваются тридцать семь навыков.
 
@@ -999,10 +1001,10 @@ origin и удаление делают свои навыки — попроси
 
 ### 7.2. Агентские системы
 
-Навыки генерируются сразу для пяти систем: Claude Code (`.claude/skills/`, канонические) · Codex
-(`.agents/skills/`) · Grok Build (`.grok/skills/`) · Cline (`.cline/skills/`) · Zoo Code
-(`.roo/commands/`) — плюс универсальный `AGENTS.md`; Cursor, Copilot и Windsurf работают через
-него.
+Навыки генерируются сразу для шести систем: Claude Code (`.claude/skills/`, канонические) · Codex
+(`.agents/skills/`) · Kimi Code (`.kimi-code/skills/`, `/skill:<name>`) · Grok Build (`.grok/skills/`) ·
+Cline (`.cline/skills/`) · Zoo Code (`.roo/commands/`) — плюс универсальный `AGENTS.md`; Cursor, Copilot
+и Windsurf работают через него.
 Модуль refresh-hooks несёт образцы хук-конфигов только для тех харнессов, чей хук-контракт снят с
 живой вендорской документации: Codex, Cursor, Copilot, Antigravity; Grok Build совпадает с
 контрактом Claude Code и своего образца не требует. Там, где у вендора хук-механизма нет, модуль
@@ -1051,6 +1053,7 @@ zh-Hans, es, hi, ar, pt, fr, de, ja — и дописывает каждому �
 | v2.7 | Audited KAIF | 18.09.2026 | Записи агента становятся проверяемыми: слово владельца цитируется, слово агента подписывается; вопрос владельцу задаётся после поиска по его прежним ответам; «тест» — это функциональный прогон, и каждый прогон оставляет отчёт; текст владельца пишется по портрету его голоса; страница владельца сохраняет его ответ; ложь исправляется там, где оставлена; урок, повторившийся дважды, краснеет; бюджет документов, которые агент перечитывает в начале сессии, считается по строкам, которые написал сам проект. |
 | v2.8 | Noble KAIF | 26.09.2026 | KAIF становится легче и слышит владельца: агент отвечает на слово владельца, пока работает, и работает дальше; отвеченные решения владельца идут раньше плана; страница вопросов владельца записывает ответы по одному; обновление ничего не теряет молча; сканеры видят проект так, как его видит git; канон держит каждое правило, истории правил переехали в пояснительную записку `KAIF_REFERENCE.md`; баг-репорт тестировщика получил обязательную форму, и «не воспроизвелось» пишется только после охоты за шагами. |
 | v2.9 | Distilled KAIF | 16.10.2026 | Поставка новой версии подключается и принимается сразу: задания установки и обновления сами подключают напоминания, правила новой версии принимаются без интервью; на сообщение владельца, написанное посреди работы, агент сразу отвечает в чате и продолжает начатую работу. Обновление называет места проекта, которые ссылаются на удалённые навыки и хуки, обновляет указатели других агентских систем и при обновлении через несколько версий помечает собственные правки проекта. Страница вопросов ведёт себя так, как ждёт владелец; вопрос владельцу короткий; на вопрос под словом `resume` агент отвечает и работу сверх ответа не начинает; линтер авторства не уносит личные файлы владельца в общий коммит; для git одна команда делает одно действие. |
+| v2.10 | — | 21.11.2026 | Kimi Code становится родной целевой системой: `AGENTS.md`, корректный YAML локализованных навыков, явные вызовы `/skill:<name>`, переносимые ресурсы и фоновый голосовой зов перед ожиданием разрешения. Версия несёт текущую работу 2.10; незавершённый скоуп фич переходит в 2.11. |
 
 ### 8.2. Структура репозитория
 
@@ -1066,7 +1069,7 @@ framework/                            канонические универса�
   installer/                          KAIF-CORE.mjs (машинерия) · KAIF-LOADER.mjs · нарратив тонкого ядра
   skills/                             37 шаблонов навыков (по директории на навык)
   spheres/                            библиотеки сфер: programming · science · design · business · _template · _index
-  adapters/                           10 адаптеров агентских систем (пять целевых для навыков + фолбэки и архивные)
+  adapters/                           11 адаптеров агентских систем (шесть целевых для навыков + фолбэки и архивные)
   templates/_owner-voice-template.md  скелет портрета голоса владельца (едет в .kaif/)
   templates/languages/                9 языковых пакетов (документы владельца + алиасы навыков; английский — исходник)
   tools/                              10 опциональных tool-модулей: гейт провенанса и девять линтеров (канон, требования,
@@ -1102,14 +1105,14 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 
 1. Локализация покрывает документы владельца и алиасы-триггеры навыков (десять языков); канон и
    тела навыков — английские by design.
-2. Родные навыки генерируются для пяти агентских систем; остальные харнессы (Cursor, Copilot,
+2. Родные навыки генерируются для шести агентских систем; остальные харнессы (Cursor, Copilot,
    Windsurf) работают через универсальный `AGENTS.md` без родных файлов навыков.
 3. Песочный полигон (28 сводов) проверяет машинерию развёртывания и обновления; сама методология
    проверяется полевыми отчётами, не полигоном.
 4. Дисциплина держится на документах и ритуалах; без опциональных tool-модулей и хуков
    runtime-принуждения нет — агент, пропустивший `/resume`, работает без канона.
 5. В поставке 14 документов + 7 README + 37 навыков + 1 распаковщик = 59 встроенных файлов;
-   192 блока бандла; 846 модулей.
+   194 блока бандла; 846 модулей.
 
 ## Лицензия
 

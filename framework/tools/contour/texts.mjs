@@ -186,6 +186,7 @@ const EN = {
       (nWait ? ': questions without an answer ' + nWait : '') + '. The page is open.',
     proofread: (o, p, title) => o + ', ' + p + ' asks for proofreading: "' + title + '". The page is open.',
     mockup: (o, p, title) => o + ', ' + p + ' asks you to look at a mockup: "' + title + '". The page is open.',
+    permission: (o, p) => o + ', this is ' + p + '. Your permission is needed.',
     from: (s) => 'this is ' + s, // OW4 (2.8, #98): «<owner>, this is <session>. …»
     parts: { docs: (n) => 'documents ' + n, questions: (n) => 'questions without an answer ' + n, notices: (n) => 'unread notices ' + n },
   },
@@ -359,6 +360,7 @@ const RU = {
       (nWait ? ': вопросов без ответа ' + nWait : '') + '. Страница открыта.',
     proofread: (o, p, title) => o + ', ' + p + ' просит прочитать и оставить замечания: «' + title + '». Страница открыта.',
     mockup: (o, p, title) => o + ', ' + p + ' просит отсмотреть макет: «' + title + '». Страница открыта.',
+    permission: (o, p) => o + ', это ' + p + '. Нужно ваше разрешение.',
     from: (s) => 'это ' + s, // OW4 (2.8, #98): «<владелец>, это <сессия>. …»
     parts: { docs: (n) => 'документов ' + n, questions: (n) => 'вопросов без ответа ' + n, notices: (n) => 'сообщений непрочитанных ' + n },
   },

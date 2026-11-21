@@ -207,11 +207,21 @@ try {
   // judge of session 97, finding 4: a subagent's tool call is not the main agent's moment — silence, the state untouched
   if (fromSubagent(ev)) process.exit(0);
   const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(ev.cwd);
+  const kimi = process.argv.includes('--kimi') || process.argv.includes('kimi');
+  if (kimi && !existsSync(join(root, '.kaif', 'kaif.json'))) process.exit(0);
   const id = String(ev.session_id || 'no-session');
   const all = readState(root);
-  const { line, state } = decide(ev, all[id] || {}, root);
+  let { line, state } = decide(ev, all[id] || {}, root);
+  if (kimi && ev.hook_event_name !== 'UserPromptSubmit' && line) {
+    state.pendingLines = [...(state.pendingLines || []), line];
+    line = null;
+  }
+  if (kimi && ev.hook_event_name === 'UserPromptSubmit' && state.pendingLines?.length) {
+    line = [...state.pendingLines, ...(line ? [line] : [])].join('\n');
+    state.pendingLines = [];
+  }
   all[id] = { ...state, at: new Date().toISOString() };
   writeState(root, all);
-  if (line) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: ev.hook_event_name, additionalContext: line } }));
+  if (line) process.stdout.write(kimi ? line : JSON.stringify({ hookSpecificOutput: { hookEventName: ev.hook_event_name, additionalContext: line } }));
 } catch { /* a hook never breaks the session */ }
 process.exit(0);

@@ -85,11 +85,11 @@ try {
   if (!observed) process.exit(0);
 
   writeFileSync(cooldownPath, new Date().toISOString());
-  process.stdout.write(JSON.stringify({
-    decision: 'block',
-    reason: `KAIF STATUS guard (fires once per session): ${observed}, but ${STATUS_FILE} was last ` +
-      `touched ~${Math.round(statusAgeH)} h ago. Update ${statusPath} with the current state — or state explicitly ` +
-      `in the chat why nothing in it changed — then finish.`,
-  }));
+  const reason = `KAIF STATUS guard (fires once per session): ${observed}, but ${STATUS_FILE} was last ` +
+    `touched ~${Math.round(statusAgeH)} h ago. Update ${statusPath} with the current state — or state explicitly ` +
+    `in the chat why nothing in it changed — then finish.`;
+  const kimi = process.argv.includes('--kimi') || process.argv.includes('kimi');
+  if (kimi) { console.error(reason); process.exit(2); }
+  process.stdout.write(JSON.stringify({ decision: 'block', reason }));
 } catch { /* a hook must never take the session down with it */ }
 process.exit(0);

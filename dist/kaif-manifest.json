@@ -1,17 +1,17 @@
 {
   "framework": "KAIF",
-  "version": "2.9",
-  "released": "2026-10-16",
-  "codename": "Distilled KAIF",
+  "version": "2.10",
+  "released": "2026-11-21",
+  "codename": "",
   "sha256": {
-    "KAIF-CORE.mjs": "9003842661d4dadf86bdc4bae3f28052f95686064d0a3ad51352f91aa8caaef3",
-    "KAIF-CORE-BUNDLE.md": "77e25f3e693dd31864e14429f7125e770d05db0e0ef355c09b7b58e3c6a7defb"
+    "KAIF-CORE.mjs": "d0363dc50ef5e0477be6c795b7aa2f1b4c5de3458fa44423407604622d8cde0a",
+    "KAIF-CORE-BUNDLE.md": "f99a0609773e078d9e5d7b853593397501472f396cdf1a40da872cc1b3538533"
   },
   "sourceTree": {
-    "sha256": "e8d58059071382e496fea4186c3b2803c5db33a183bb94071ddad2d39f1424ae",
-    "files": 216
+    "sha256": "22346c7875b5d09047761effee9116e96153374026d07881bc0e6248690d7e55",
+    "files": 219
   },
-  "prerelease": "2.10",
+  "prerelease": null,
   "assets": {
     "KAIF.md": "thin entry point (bootstrap + embedded loader); transient in the target project",
     "KAIF-CORE.mjs": "installer machinery; lives on as .kaif/kaif-core.mjs",

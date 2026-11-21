@@ -21,6 +21,7 @@ pointing at `AGENT_GUIDE.md` is always generated as a cross-tool fallback.
 | **Zoo Code** ⭐ (priority #1; ex-Roo Code) | `.roo/rules/` + **`AGENTS.md` (native)** | `.roo/commands/<name>.md` (slash commands) |
 | **Claude Code** (reference) | `CLAUDE.md` | `.claude/skills/<name>/SKILL.md` (slash skills) |
 | **OpenAI Codex** | `AGENTS.md` (native) | `.agents/skills/<name>/SKILL.md` (Agent Skills standard) |
+| **Kimi Code** | `AGENTS.md` (native) | `.kimi-code/skills/<name>/SKILL.md`; `.agents/skills/` also supported |
 | **GitHub Copilot** | `.github/copilot-instructions.md` + `AGENTS.md` | `.github/prompts/*.prompt.md` (prompt files) |
 | **Cursor** | `.cursor/rules/*.mdc` + `AGENTS.md` | `.cursor/skills/`, `.agents/skills/` — **reads `.claude/skills/` as-is** |
 | **Windsurf/Cascade** | `.devin/rules/` (legacy `.windsurf/rules/`) + `AGENTS.md` | `.windsurf/workflows/*` (manual `/name`) |
@@ -44,6 +45,7 @@ capability that decides whether rule-enforcement modules can be wired at all.
 | System | Session-start / post-compaction | Per-turn | On-stop |
 |---|---|---|---|
 | Claude Code · OpenAI Codex | ✅ (`hookSpecificOutput.additionalContext`) | ✅ | ✅ / ⚠️ Codex unverified |
+| Kimi Code | ❌ `SessionStart` / compaction events are observation-only | ✅ `UserPromptSubmit` stdout | ⚠️ `Stop` can block and start a continuation turn |
 <!-- Two outcomes only, never three: a contract is either CONFIRMED against a live vendor doc or
      it says "not verified" (epic O5, criterion 5). "Reads the config" is not "honours the output":
      Grok Build runs the same file, and its NATIVE contract calls these events passive ("stdout is

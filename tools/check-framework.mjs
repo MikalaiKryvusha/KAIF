@@ -1758,14 +1758,16 @@ if (existsSync(distDir)) {
     //    right reason; restored → exit 0]
     //    The release asserts its OWN version (bug 10 — six of eight field reports were misled
     //    by 1.6 shipping notes/headers that said "KAIF 1.5 — Tested KAIF"):
-    //    (a) templateNotes in the bundle manifest must name the current version+codename and
-    //        must not name any OTHER version's codename line;
+    //    (a) templateNotes in the bundle manifest must name the current version+codename, or the
+    //        neutral release title when the owner has given no codename (the /release fallback);
+    //        they must not name any OTHER version's codename line;
     //    (b) the machinery sources (CORE/LOADER) must stay version-NEUTRAL — no baked-in
     //        "KAIF X.Y — Codename" header that goes stale the moment a release ships.
     // BOM-tolerant read: Windows tools (PowerShell 5 Out-File) prepend a BOM (EXP-0007).
     const vjson = JSON.parse(readFileSync(join(ROOT, 'version.json'), 'utf8').replace(/^\uFEFF/, ''));
-    const expectCodenameLine = `KAIF ${vjson.major}.${vjson.minor} — ${vjson.codename}`;
-    if (!vjson.codename) errors.push('version.json has no "codename" — the release codename must live there (single source)');
+    const neutralRelease = !vjson.codename;
+    const expectCodenameLine = neutralRelease ? `Release title: KAIF ${vjson.major}.${vjson.minor}`
+      : `KAIF ${vjson.major}.${vjson.minor} — ${vjson.codename}`;
     const metaMatch = bundle.match(/> \*\*FILE: `kaif-bundle-manifest\.json`\*\*[^\n]*\r?\n\r?\n``````json\r?\n([\s\S]*?)\r?\n``````/);
     if (!metaMatch) errors.push('bundle manifest block not found for the template-notes check');
     else {

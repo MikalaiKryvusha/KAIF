@@ -1,0 +1,105 @@
+# Kimi Code user-level config.toml fragment. Merge into ~/.kimi-code/config.toml, then reload/new session.
+# Commands run from Kimi's local project directory; each KAIF deployment carries these scripts.
+
+[[hooks]]
+event = "SessionStart"
+command = "node .kaif/hooks/session-start-refresh.mjs --emit kimi"
+timeout = 5
+
+[[hooks]]
+event = "PostCompact"
+command = "node .kaif/hooks/session-start-refresh.mjs --emit kimi"
+timeout = 5
+
+[[hooks]]
+event = "UserPromptSubmit"
+command = "node .kaif/hooks/session-start-refresh.mjs --emit kimi"
+timeout = 5
+
+[[hooks]]
+event = "UserPromptSubmit"
+command = "node .kaif/hooks/prompt-resume-word.mjs --emit kimi"
+timeout = 5
+
+[[hooks]]
+event = "UserPromptSubmit"
+command = "node .kaif/hooks/prompt-refresh-timer.mjs --emit kimi"
+timeout = 5
+
+[[hooks]]
+event = "UserPromptSubmit"
+command = "node .kaif/hooks/clock-now.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "UserPromptSubmit"
+command = "node .kaif/hooks/knowledge-moment.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "PreToolUse"
+matcher = "Write|Edit|MultiEdit"
+command = "node .kaif/hooks/clock-now.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "PreToolUse"
+matcher = "Agent"
+command = "node .kaif/hooks/subagent-preamble.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "PreToolUse"
+matcher = "Skill"
+command = "node .kaif/hooks/context-window.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "PostToolUse"
+matcher = "*"
+command = "node .kaif/hooks/knowledge-moment.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "PostToolUse"
+matcher = "*"
+command = "node .kaif/hooks/test-after-code.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "PostToolUseFailure"
+matcher = "*"
+command = "node .kaif/hooks/knowledge-moment.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "Stop"
+command = "node .kaif/hooks/stop-status-guard.mjs --kimi"
+timeout = 10
+
+[[hooks]]
+event = "Stop"
+command = "node .kaif/hooks/stop-farewell-capture.mjs --kimi"
+timeout = 10
+
+[[hooks]]
+event = "Stop"
+command = "node .kaif/hooks/test-after-code.mjs --kimi"
+timeout = 10
+
+[[hooks]]
+event = "Stop"
+command = "node .kaif/hooks/context-window.mjs --kimi"
+timeout = 10
+
+[[hooks]]
+event = "PostCompact"
+command = "node .kaif/hooks/context-window.mjs --kimi"
+timeout = 5
+
+# PermissionRequest fires before Kimi waits for approval; the hook starts the voice in the background.
+[[hooks]]
+event = "PermissionRequest"
+matcher = "*"
+command = "node .kaif/hooks/kimi-permission-call.mjs"
+timeout = 5

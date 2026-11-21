@@ -74,6 +74,7 @@ function projectRoot(cwd) {
 const ENVELOPES = {
   claude: (order, event) => ({ hookSpecificOutput: { hookEventName: event, additionalContext: order } }),
   antigravity: (order) => ({ injectSteps: [{ ephemeralMessage: order }] }),
+  kimi: (order) => order,
 };
 
 try {
@@ -91,7 +92,9 @@ try {
     if (input.cwd) cwd = String(input.cwd);
   } catch { /* unreadable stdin — fall back to process.cwd() */ }
 
-  const markerPath = join(projectRoot(cwd), MARKER);
+  const root = projectRoot(cwd);
+  if (shape === 'kimi' && !existsSync(join(root, DEPLOYMENT))) process.exit(0);
+  const markerPath = join(root, MARKER);
   // Age of the last refresh: the marker's own `at` field is the truth; a malformed field falls
   // back to the file mtime; a missing file means "never refreshed" → infinitely stale.
   let ageMin = Infinity;
@@ -115,7 +118,7 @@ try {
       `line from what you re-read, relevant to the task. This reminder repeats until the marker is actually refreshed.`;
     // Unknown shape → reference envelope (see session-start-refresh.mjs for the reasoning).
     const payload = (ENVELOPES[shape] || ENVELOPES.claude)(order, 'UserPromptSubmit');
-    if (order.length <= OUTPUT_CAP) process.stdout.write(JSON.stringify(payload));
+    if (order.length <= OUTPUT_CAP) process.stdout.write(shape === 'kimi' ? payload : JSON.stringify(payload));
   }
 } catch { /* a hook must never take the session down with it */ }
 process.exit(0);

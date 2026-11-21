@@ -38,7 +38,7 @@
 // sample wires no matcher (Cursor, Copilot). The marker is named by its FULL path in the project root.
 // [TESTED: 2026-09-28 · suite s14: startup, resume and an event without `source` - "(re)started" and ritual:session-start, compact
 //  from <root>/src/deep - "compacted", compaction and the root marker by its full path; red on v2.8; mutants M24-M25; report testcases/reports/2026-09-28_hk-hooks-project-root.md (origin repository)]
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 
 const OUTPUT_CAP = 10000; // Claude Code caps hook output strings at 10 000 characters
@@ -72,6 +72,28 @@ try {
   const argv = process.argv.slice(2);
   const ei = argv.indexOf('--emit');
   const shape = ei !== -1 ? String(argv[ei + 1]) : 'claude';
+  if (shape === 'kimi') {
+    // SessionStart and PostCompact are observation-only in Kimi: carry a pending mark to the next prompt,
+    // whose UserPromptSubmit contract can append agent-facing context.
+    const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
+    const root = projectRoot(ev.cwd || process.cwd());
+    if (!existsSync(join(root, DEPLOYMENT))) process.exit(0);
+    const statePath = join(root, '.kaif', 'kimi-refresh.json');
+    if (ev.hook_event_name === 'SessionStart' || ev.hook_event_name === 'PostCompact') {
+      mkdirSync(dirname(statePath), { recursive: true });
+      writeFileSync(statePath, JSON.stringify({ pending: true, source: ev.hook_event_name, at: new Date().toISOString() }));
+      process.exit(0);
+    }
+    if (ev.hook_event_name !== 'UserPromptSubmit') process.exit(0);
+    let pending = null;
+    try { pending = JSON.parse(readFileSync(statePath, 'utf8').replace(/^\uFEFF/, '')); } catch { /* no pending refresh */ }
+    if (!pending || pending.pending !== true) process.exit(0);
+    pending.pending = false;
+    writeFileSync(statePath, JSON.stringify(pending));
+    process.stdout.write(`KAIF context refresh (${pending.source || 'session start'}). Before task work run /skill:resume in full: ` +
+      `read the re-read core, stamp ${join(root, '.kaif', 'refresh-marker.json')} and quote one relevant canon line in the chat.`);
+    process.exit(0);
+  }
 
   let source = '';   // unreadable event or no `source` field → the neutral wording: an unknown event is not a compaction (bug 120)
   let cwd = process.cwd();

@@ -501,7 +501,7 @@ has converged on `AGENTS.md` for auto-context (native in Zoo Code, Codex, Copilo
 the Agent Skills standard (`SKILL.md`) for commands — Cursor, Cline and OpenCode even read `.claude/skills/`
 as-is. Reference: **Claude Code** (`CLAUDE.md` + `.claude/skills/`). Priority system #1: **Zoo Code**
 (successor of Roo Code; `.roo/commands/<name>.md`, translated mechanically by the unpacker's
-`--agent zoo-code` flag — §8); then **OpenAI Codex, GitHub Copilot, Cursor, Windsurf, Cline**; others via
+`--agent zoo-code` flag — §8); then **OpenAI Codex, Kimi Code, GitHub Copilot, Cursor, Windsurf, Cline**; others via
 the `AGENTS.md` fallback or authored from `_template`. Catalog: `framework/adapters/`.
 
 **Optional enforcement (hooks).** KAIF's discipline lives in prose, which a weak — or even a strong — model

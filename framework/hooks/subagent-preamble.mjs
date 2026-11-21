@@ -95,6 +95,11 @@ try {
         appendFileSync(join(root, LOG), JSON.stringify({ at: new Date().toISOString(), tool: input.tool_name,
           subagent: input.tool_input.subagent_type || 'general-purpose', description: String(input.tool_input.description || '') }) + '\n');
       } catch { /* the witness is best-effort; the preamble is what matters */ }
+      if (process.argv.includes('--kimi') || process.argv.includes('kimi')) {
+        // Kimi documents no updatedInput: the main agent must carry the preamble into the next call explicitly.
+        console.error(`KAIF subagent entry: Kimi cannot rewrite this tool input by the documented hook contract. Retry the Agent call with this exact prompt:\n\n${updated.prompt}`);
+        process.exit(2);
+      }
       process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'PreToolUse', updatedInput: updated } }));
     }
   }

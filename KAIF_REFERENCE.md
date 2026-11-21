@@ -221,9 +221,16 @@ gates (§7.5) and self-cleans the installer.
 
 ### 7.3 Agent systems
 
-Declared via `--agents` (default: claude-code, codex, grok-build, cline, zoo-code). The canonical
+Declared via `--agents` (default: claude-code, codex, kimi-code, grok-build, cline, zoo-code). The canonical
 skill set lives in `.claude/skills/`; mirrors derive from it mechanically (`sync` command;
-`update-verify` re-syncs automatically). Cognitive work lands in the canon only — a mirror is
+`update-verify` re-syncs automatically). Kimi Code reads native `AGENTS.md` and receives
+`.kimi-code/skills/<name>/SKILL.md`: descriptions become folded YAML blocks (safe for `: ` and localized
+alias tails), invocations become `/skill:<name>`, resources use `${KIMI_SKILL_DIR}`, and references travel
+beside the skill. The Kimi-specific directory keeps its adapted text separate from Codex's `.agents/skills/`
+copy when both systems are selected. Kimi's optional `kimi-config-fragment.toml` wires
+`kimi-permission-call.mjs` on `PermissionRequest`: the voice starts detached before the wait, from a UTF-8
+phrase file; `KAIF_VOICE_FILE_TOOL` is a JSON command prefix with a `{file}` slot (Silero + Glass, or another
+file-based engine), defaulting to `voice-soft.mjs`. Cognitive work lands in the canon only — a mirror is
 never edited by hand.
 
 ### 7.4 Languages

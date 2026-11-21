@@ -1,5 +1,5 @@
 <!-- GENERATED FILE — do not edit by hand. Built from framework/installer/_thin-intro.md by tools/build-framework.mjs. Edit the source and re-run the tool. -->
-# KAIF — Krinik AI Framework · the entry point · v2.9
+# KAIF — Krinik AI Framework · the entry point · v2.10
 
 > **You are reading an installer bootstrap.** KAIF is a context-resilient, autonomy-disciplined
 > operating framework for the human–AI tandem: externalized memory, accumulated knowledge, bounded
@@ -23,8 +23,8 @@
    Add, if you wish:
    - **Working language** (default English): *"Working language: Russian."* — owner-facing docs come
      out in your language; agent-internal docs stay English (LLMs read it best).
-3. The machinery deploys everything (docs, skills for **five agent systems at once** — Claude Code,
-   Codex, Grok Build, Cline, Zoo Code — plus a universal `AGENTS.md`), then your agent performs one
+3. The machinery deploys everything (docs, skills for **six agent systems at once** — Claude Code,
+   Codex, Kimi Code, Grok Build, Cline, Zoo Code — plus a universal `AGENTS.md`), then your agent performs one
    final adaptation pass (understanding your project) and self-cleans the installer.
 
 **`GOAL.md` — write it first if you can**: your one-paragraph vision (what you want, for whom). The
@@ -244,4 +244,4 @@ The framework then runs on its skills: `/resume`, `/pause`, the autonomous loops
 
 MIT License — © 2026 **Mikalai Kryvusha (KOT KRINIK)**. The execution-discipline skills (`fable-*`) are
 vendored from [fable-method](https://github.com/Sahir619/fable-method) © Sahir619, MIT.
-v2.9 · released 2026-10-16 · origin https://github.com/MikalaiKryvusha/KAIF
+v2.10 · released 2026-11-21 · origin https://github.com/MikalaiKryvusha/KAIF

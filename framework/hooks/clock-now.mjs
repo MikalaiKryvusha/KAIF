@@ -246,6 +246,8 @@ try {
     input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
   } catch { /* unreadable stdin — nothing to answer */ }
   const event = input && input.hook_event_name;
+  const kimi = process.argv.includes('--kimi') || process.argv.includes('kimi');
+  if (kimi && !deploymentRoot(input && input.cwd)) process.exit(0);
   const v = values();
   if (event === 'UserPromptSubmit') {
     try { markPresence(process.env.CLAUDE_PROJECT_DIR || deploymentRoot(input.cwd), input.prompt); } catch { /* the mark never stops the line */ }
@@ -253,13 +255,18 @@ try {
     const line = `clock-now · ${v.NOW} (ISO ${v['NOW-ISO']}) — the machine's clock; write a moment as ${L}NOW${R} — the word NOW between the ` +
       `white square brackets U+27E6 and U+27E7, never ASCII [NOW] (${L}NOW-ISO${R} · ${L}DATE${R} · ${L}TIME${R} likewise); this hook fills it on ` +
       'Write · Edit · MultiEdit, outside code spans and code blocks of a markdown file.';
-    process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: line } }));
+    process.stdout.write(kimi ? line : JSON.stringify({ hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: line } }));
   } else if (event === 'PreToolUse') {
     const tool = String(input.tool_name || '');
     const updated = rewrite(tool, input.tool_input, v);
     const forms = asciiForms(tool, input.tool_input, fileText);
+    if (kimi && updated) {
+      // Kimi's documented PreToolUse contract has no updatedInput: refuse this write with the cure instead of pretending it was rewritten.
+      console.error(`clock-now: this write carries a time placeholder. Run \`date\`, replace the placeholder with the machine's value, then retry. Kimi has no documented updatedInput contract.`);
+      process.exit(2);
+    }
     const answer = { hookEventName: 'PreToolUse', ...(updated ? { updatedInput: updated } : {}), ...(forms.length ? { additionalContext: asciiLine(forms) } : {}) };
-    if (updated || forms.length) process.stdout.write(JSON.stringify({ hookSpecificOutput: answer }));
+    if (updated || forms.length) process.stdout.write(kimi && forms.length ? asciiLine(forms) : JSON.stringify({ hookSpecificOutput: answer }));
   }
 } catch { /* a hook must never take the session down with it */ }
 process.exit(0);

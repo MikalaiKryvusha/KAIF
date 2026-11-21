@@ -280,9 +280,12 @@ try {
   const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
   if (!ev.agent_id) {   // a subagent's events reach the hook under the parent's session (observed, origin session 97) — the main agent's debt only
     const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(ev.cwd);
+    const kimi = process.argv.includes('--kimi') || process.argv.includes('kimi');
+    if (kimi && !existsSync(join(root, DEPLOYMENT))) process.exit(0);
     const r = handle(ev, load(root), root, rulesOf(configOf(root)), new Date().toISOString());
     save(root, r.state);
-    if (r.out) process.stdout.write(JSON.stringify(r.out));
+    if (r.out && kimi && r.out.decision === 'block') { console.error(r.out.reason); process.exit(2); }
+    if (r.out && !kimi) process.stdout.write(JSON.stringify(r.out));
   }
 } catch { /* a hook never breaks the session */ }
 process.exit(0);

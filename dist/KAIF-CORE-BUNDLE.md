@@ -1,34 +1,51 @@
 <!-- GENERATED FILE — the KAIF installer bundle. Built by tools/build-framework.mjs; fetched and parsed by KAIF-CORE.mjs. Never edit or deploy by hand. -->
-# KAIF-CORE-BUNDLE · v2.9 (2026-10-16)
+# KAIF-CORE-BUNDLE · v2.10 (2026-11-21)
 
 > **FILE: `kaif-bundle-manifest.json`** — bundle metadata (data for KAIF-CORE, never written to disk)
 
 ``````json
 {
   "framework": "KAIF",
-  "version": "2.9",
-  "released": "2026-10-16",
+  "version": "2.10",
+  "released": "2026-11-21",
   "build": {
-    "sourceTree": "e8d58059071382e496fea4186c3b2803c5db33a183bb94071ddad2d39f1424ae",
-    "prerelease": "2.10"
+    "sourceTree": "22346c7875b5d09047761effee9116e96153374026d07881bc0e6248690d7e55",
+    "prerelease": null
   },
   "templateNotes": [
-    "NO HOOK STOPS THE AGENT ON THE OWNER'S WORD ANY MORE (2.9; origin ticket #144 — the KAIF owner on a field project, rendered from Russian: \"Remove this! Out of KAIF entirely!\" · \"I don't like that you stop on this!\" — five short remarks of the owner were five stops): the hook `.kaif/hooks/pretool-owner-word.mjs` (2.8; refused the next tool call after a mid-turn word) is RETIRED, and its pre-release `Stop` companion with the `⏩ <next step>` line never ships. The update removes an untouched copy of the script; `node .kaif/kaif-core.mjs wire-hooks` now also REMOVES the entries that run a retired hook from `.claude/settings.json` (the owner's other entries and their order stay, the values are proven before the write) — the update task names the item; `check` names an entry still left (in `.claude/settings.local.json` too, which the machinery never edits). \"The owner's word mid-turn\" now says: answer at once as text, then WORK ON in the same turn — never end the turn just to answer, and the turn's closing message repeats the answer; \"stop\" is still a stop. MIGRATION — agent work: if your own texts (STATUS, house rules, experience) tell the agent to end an answer with `⏩`, drop that rule.",
-    "THE REFRESH TIMER NO LONGER FIRES AT THE OWNER'S FIRST PROMPT AFTER INSTALL (2.9; origin tickets #143 · #145 — two field installs: the timer wired by `wire-hooks` answered the owner's first message with \"no refresh witness found\"; one agent avoided it by re-reading the core during study and stamping the witness): the install task's `study` item now says to re-read the nine re-read-core documents and stamp `.kaif/refresh-marker.json` with the acceptance quote, and its tick EXECUTES the gate — the witness is on disk, names what was re-read and is from this hour; otherwise the tick is refused with the reason (missing · no docs · N min old · stamped in the future).",
-    "THE INSTALL SUMMARY NAMES WHAT YOUR PROJECT'S .gitignore HIDES (2.9; origin ticket #145 — a live project's own pre-KAIF `tools/` line hid the 13 shipped modules under `.kaif/tools/`, and only a later `check` said so): the summary printed at the end of `install` now runs the same `git check-ignore` scan as `check` — one line per deployed file git would leave out of the first commit, with the rule that hides it and the cure (`!<file>` after that line). Nothing changes where git hides nothing. In a folder that is not a git repository yet (origin ticket #143 — a greenfield install) the summary says to run `git init` and to commit the owner's own files first, as they are, then the deploy commit.",
-    "THE UPDATE NAMES THE PLACES THAT STILL BUILD ON WHAT WAS RETIRED (2.9, epic UT; long field jumps left links to a retired skill and orders around a retired hook standing — the task only told the agent to run `git grep`): the withdrawn-phrases item of the update task now LISTS each place of your own texts — `file:line «phrase»`, the successor once per phrase — where a 2.9 core wrote the task; an update FROM an older version gets its task from that older core, which does not list them, and there `node .kaif/kaif-core.mjs checkpoint recheck` (this core) is what names them. On every route `checkpoint recheck` lists the places LEFT after your edits. Not places: the records (PROJECT_HISTORY.md, reports of past updates in reports/KAIF_UPDATES/), `.kaif/`, the installer's task files, and a line the delivered templates carry verbatim; a phrase counts as a whole word (`/end-chat` is not a place inside `/end-chat-soft`). Every retirement now names its phrases — the 2.4 split of `/end-chat` gained them.",
-    "THE CONTEXT POINTERS OF YOUR AGENT SYSTEMS ARE BROUGHT UP TO DATE (2.9, epic UT; origin ticket #120 — a pointer was written once and no update touched it again: a deployment that jumped from 2.1 kept the 1.5 text in AGENTS.md, CLAUDE.md, .clinerules/kaif.md and .roo/rules/kaif.md, and the Zoo Code pointer never carried the rule about the word `resume`): an untouched pointer of an earlier release is replaced with this release's text (by the update, or by `checkpoint recheck` when the previous core ran the update); a pointer you edited is never rewritten — the task names it with the one line it lacks, and `update-verify` refuses until that line is there.",
-    "A LONG UPDATE JUMP IS JUDGED HONESTLY (2.9, epic UT; a field jump 2.1 → 2.8: 236 false «promised upstream line not found» and a refused `update-verify` over the prayer in the owner's language): `update-verify` judges a promised line against the file's text (a paragraph re-wrapped by the merge is the same text); an anchored block (`<!-- KAIF:PRAYER:BEGIN -->` and the like) is found by its anchor, so its heading and lines in your language are not «missing»; `check --gate-budgets` run while an update task is open writes nothing and says to run it LAST, after `update-verify`; an explicit `--rehearsal` receipt also consumes the automatic rehearsal record; a line of a block that carries your values (the creed with your name) and a line of a template instruction slot your project replaced with its own text are not demanded back; a promised line whose words stand on one line of your file is printed as «stands on disk with local edits (line N)» — your wording, read it: an edit that drops meaning is merged by hand; a framework file retold in your language with not one template heading in common (`baseFound 0`) is named with a second road — take this release's render whole and carry your project's facts over; `diff --source .kaif/install` says the install folder is not a source and names the release your marker runs (from your marker's own origin, a fork included); `check` over a deploy manifest broken as JSON names it with the cure instead of a stack trace.",
-    "THE REFERENCE DESCRIBES EVERY LINE `check` PRINTS (2.9, epic UT; in 2.8 the `check` entry of `.kaif/KAIF_REFERENCE.md` §10.7 heard of no change of its own epic until a session added it by hand): the entry now names every axis `check` reports — the failures (a file MISSING or empty, the marker schema, a two-headed document, an unpaired anchor block, an artifact git-ignored by KAIF's own line) and the warnings (git-ignored by your own rule, a hook not wired or retired and still wired, mirror drift, a sphere with no library, the /resume list, the signal and field-report delivery, the constitution, the budgets, the language mix, the entry cost); a line `check` prints that you cannot find there is a defect of KAIF — the origin build now refuses such a line.",
-    "THE AUTHORSHIP LINTER KEEPS YOUR PRIVATE TEXT OUT OF THE COMMIT (2.9, epic PV; origin tickets #111 · #112 — a root file git ignores, the owner's private portrait, was read and its line went into the committed baseline): `kaif-attribution-lint` reads the root `*.md` git sees, so an ignored file is never read; `.kaif/attribution-lint.baseline.json` holds a fingerprint and a count per line, never the text (your 2.8 baseline still reads as the same debt; the next `--write-baseline` drops its text); a write limited to paths keeps the debt of every other file (and drops their 2.8 text too); a third copy of a line recorded twice is a NEW finding.",
-    "FOUR FIELD TICKETS OF 2.9 (the KAIF owner took them into the version — origin tickets #139 · #142 · #133 · #141): the own-answer field of the question page takes several lines (Enter starts a line, a pasted text keeps its lines; the answer is written as lines of the file); a question to the owner is one fork, cut to what he chooses by — the options, their price, what he will see — and the recon stays above the questions (`AGENT_GUIDE.md` and `/interview`); a root `AUTHOR_STYLOMETRY.md` that only POINTS at a private core named in `.kaif/kaif.json` → `voicePortrait` is left alone by the update, no snapshot is demanded under it; `check` names a step of `/end-chat-soft`, `/end-chat-force` or `/release` that is still the template's instruction slot («`<Run the project build …>`») — write your project's command there.",
-    "ONE TOOL CALL — ONE ACTION FOR GIT (2.9; origin ticket #146 — an auto-mode permission classifier refused `git add`, `git commit` and `git push` joined into one command and passed each step alone): the Git workflow section of AGENT_GUIDE.md carries the rule — each git step is its own tool call, the message goes in `-m` and text the shell would mangle in a file (`-F`), a refused single action is neither retried nor bypassed but told to the owner; `/end-chat-soft`, `/end-chat-force` and `/release` name the steps one by one, and the default commit flow of a fresh install is the three steps. A commit command your skills already carry from an earlier install keeps its text — run it as its steps.",
-    "THE VOICE PORTRAIT LOADS INTO A FILE WHEN YOUR CLIENT CUTS LONG OUTPUT (2.9; origin tickets #143 · #145 — a ~60 KB `load` cut by bytes ended inside a UTF-8 character): `node .kaif/tools/kaif-voice-lint.mjs load --out <file>` writes the same selection to a UTF-8 file and leaves the same witness; read that file whole before the first word. Inside the project's git work tree the path must be one git ignores — otherwise the load is refused before anything is written (the copy may be of a private portrait and would ride the next commit).",
-    "THE REFRESH HOOKS JUDGE YOUR PROJECT, NOT THE FOLDER THE AGENT WENT INTO (2.9, epic HK; origin ticket #94 — two fields on two systems: after one `cd assets/logo` the hourly timer answered the owner's next prompt with \"no refresh witness found\" while the root marker was 12 minutes old, and the STATUS guard fell silent): the hooks now find the project root — the nearest folder above the event's `cwd` that holds `.kaif/kaif.json` — and read the refresh marker, STATUS.md and git there; every order names the marker by its FULL path, so the agent stamps it where the hook reads it. If your deployment carries a LOCAL FIX of this in `.kaif/hooks/prompt-refresh-timer.mjs` and `.kaif/hooks/stop-status-guard.mjs` (a root taken from `$CLAUDE_PROJECT_DIR`, then from the nearest ancestor with `.kaif/kaif.json`), this update keeps your edited copies and lists them under merge-diverged: take the delivered files whole, your fix is no longer needed. Also: a marker `at` stamped in the future is no witness any more (a zone slip used to silence the timer for hours); the session-start order says \"the session just (re)started\" and asks for trigger `ritual:session-start` on a start or resume — \"compacted\" only after a compaction; the STATUS guard names what it saw (uncommitted changes, or a commit within 3 h) instead of claiming the session's work. Every JSON a shipped tool reads — `.kaif/kaif.json`, markers, baselines, a fetched manifest — drops a leading byte-order mark (Windows PowerShell 5.1 and `Set-Content -Encoding UTF8` write one; on 2.8 `node .kaif/kaif-core.mjs version` crashed on such a `.kaif/kaif.json`).",
-    "THE OWNER'S QUESTION PAGE DOES WHAT HIS HAND AND HIS DOCUMENTS EXPECT (2.9, epic CP; origin tickets #128 · #123 · #124 · #125 · #127 · #109 · #121 R3 — the owner on #128, rendered from Russian: a chosen option does not clear on a second tap, a bug in KAIF and in this project too): a second press or tap on a chosen option clears it (the keyboard stays native); a hard-wrapped paragraph renders as ONE paragraph — bold across a line break is bold, not raw `**` — and the owner's answer is the whole paragraph under the label (an HTML comment under an empty label is not an answer); a live question that sends the owner elsewhere for its content (\"see above\", \"as listed above\", \"in the section\", \"§3\") is refused by `--check` with exit 3 and the line named — `<!-- ref-ok: reason -->` makes one legal, and a comparison (\"above 80%\"), a forward \"see the table below\" and a \"see also\" next to the content stay legal; a document whose Status OPENS with an explicit closing word (CLOSED · WITHDRAWN · MOVED and their Russian forms) no longer waits in the owner's queue, whatever the explanation after it says — unless the same line marks something still waiting (\"closed Q1; Q2 awaits an answer\"); options are read in the table's vocabulary — `- **A)**`, `- **A:**`, `- **A.**`, `- **A (note):**`, a bold letter alone — and a letter the page does not read — an unknown list form or a paragraph `**C.** …` beside list options — is NAMED by the door (\"letters authored N, recognised M\") instead of vanishing; a question title shows the owner's markup rendered, not raw `**`; \"**Agent's recommendation:** B\" is read after a closed bold label; a follow-up answer is labelled in the document's language and lands below the implemented line; the waiter `--wait` ends with exit 2 and \"the page's server is gone … run --queue --list\" when the page's server was killed (its lock stays on purpose, I29); a status that does not fit two lines of the pill under the Save button rides the bar above the page (green for good news, red for trouble) and the pill carries a short label — a six-line pill used to cover the document's title; each bar is cleared only by its own owner, so a refused save keeps its reason in view through the page's pulse, and after the last answer is recorded a dead server is no alarm; `KAIF_BROWSER` names a browser off the standard paths for the window and the recovery; Linux is not supported by the contour window: there no window is raised, the page is served and its address printed (the KAIF owner's word, 2.9). Nothing to merge by hand: the contour files are replaced whole. Interviews written with the newly read option forms now show those options — run `node .kaif/tools/contour/review.mjs --queue --list` once after the update to see what now waits for the owner.",
-    "WHAT KAIF DELIVERS IS WIRED AND ACCEPTED AT ONCE (2.9, epic SW; origin tickets #115 · #114 · #113 · #130 · #126 — the KAIF owner's word in his field projects, rendered from Russian: what KAIF delivers with an update is accepted without questions; everything KAIF brings in the delivery is wired, and agents should not ask about it): (1) NEW command `node .kaif/kaif-core.mjs wire-hooks` merges `.kaif/hooks/settings-fragment.json` into `.claude/settings.json` additively — the owner's entries and their order stay, a script already wired for its event (there or in `.claude/settings.local.json`) is left alone, a repeat run changes nothing, the file keeps its indent, line ends, byte-order mark and the arrays written on one line (the shipped sample writes them so — your diff shows only the added entries), an unparseable file is left untouched (exit 1); the install and update tasks carry the item `wire-hooks` — the agent runs it WITHOUT asking the owner, the write is open to its harness and a refusal is recorded by `checkpoint wire-hooks --verdict`, never worked around; `\"hooks\": \"off\"` in `.kaif/kaif.json` opts out, and `check` names a delivered hook that is not wired (a warning — `checkpoint recheck` prints it too: a green recheck used to print only check's stdout and drop every warning); the samples of the other systems are merged by the agent by hand, no question. (2) The update task's `policy-changes` item no longer puts the rules of a release to the owner: they are ACCEPTED with the version and NAMED in the field report and the farewell; a question is legal only where a rule collides with a decision he recorded himself. (3) The decision-attribution lint that arrives with no baseline gets the item `lint-baselines`: the project's inherited debt is recorded once with `check --write-baseline`, no question, and the closing stops on a NEW finding only (the lesson journal gets no such step — its baseline never silences a repeated class). (4) The overflow address of the size budgets names `HOUSE_RULES.md` without «cp … HOUSE_RULES.md» when the file exists — an obeyed hint no longer overwrites a filled house-rules file with the empty skeleton. (5) Ignore-first anchors the root transients (`/KAIF.md`, `/KAIF-LOADER.mjs`, the task files): a bare line an older core wrote is rewritten IN PLACE (your own lines and negations keep their order, the file keeps its line ends) — on a case-insensitive git the bare `KAIF.md` hid `.clinerules/kaif.md` and `.roo/rules/kaif.md`; the contour's renders and call phrase (`.kaif/.contour-tmp/`) and its window locks (`<decisionsDir>/*.lock`) join the set; `check` names a deployed artifact that git ignores — KAIF's own line is a failure the next update cures, your own rule a warning with the `!<file>` line that lets it travel.",
-    "THE OWNER'S MESSAGE UNDER `resume` SETS THE SCOPE (2.9; decision #143 — the KAIF owner, rendered from Russian: 'the entry skill tells you wrong' — a session answered 'how much is left?' and then started the plan's next item by itself, and the `⏩` line it ended with made the end-of-turn hook resume work nobody asked for): /resume Step 2 now reads what the owner wrote under the word — a QUESTION is answered and the turn ends with the picked direction OFFERED, never taken, and no `⏩` line; a TASK is done; only a bare `resume` starts the direction the skill picked, as before. The order of `.kaif/hooks/prompt-resume-word.mjs` says the same; /refresh-context called by the owner with a question or a task keeps that scope. What to do: nothing to merge where /resume and /refresh-context are the delivered ones — the update replaces them; if your project edited or translated /resume, carry Step 2's three cases into your copy by meaning.",
-    "Release codename for this version: KAIF 2.9 — Distilled KAIF"
+    "Release title: KAIF 2.10 (neutral, no codename — the owner has not named this version).",
+    "KIMI CODE IS A NATIVE TARGET (2.10, criterion 37; the KAIF owner: \"adapt KAIF 2.10 to KIMI and release it as it is\"): `--agents kimi-code` writes native `AGENTS.md` and `.kimi-code/skills/<name>/SKILL.md` with references; descriptions become folded YAML so `: ` and localized alias tails parse, skill calls use `/skill:<name>`, resources use `${KIMI_SKILL_DIR}`, and `check`/`sync`/`update-verify` apply the same transform. The Kimi-specific directory does not collide with Codex's `.agents/skills/` copy. Refresh hooks stay unwired: Kimi reads user `config.toml` or plugin hooks, not `.claude/settings.json`. A separate `PermissionRequest` sample starts the configured file-based voice detached before the permission wait; `KAIF_VOICE_FILE_TOOL` carries the machine's engine and `{file}` receives the UTF-8 phrase. MIGRATION — agent work: add `kimi-code` to the deployment's agents and run `node .kaif/kaif-core.mjs sync`; invoke the KAIF entry skill as `/skill:resume`, not Kimi's built-in `/resume`.",
+    "THE ANSWER TO THE OWNER'S WORD HAS NO PRESCRIBED OPENING (2.10, epic TK; origin ticket #156 — the KAIF owner on a field project, rendered from Russian: \"do not say where the AI agent should start, let it decide itself\"): \"The owner's word mid-turn\" says only: answer at once, as text, by its kind, then work on with what you were doing. MIGRATION — agent work: if your own texts (STATUS, house rules, experience, local skills) prescribe how your answer to the owner opens, delete that line.",
+    "A TURN THAT ENDS ON A QUESTION TO THE OWNER FIRST DECIDES WHOSE STEP IT IS (2.10, epic TK; origin tickets #140 · #157 — the KAIF owner on a field project, rendered from Russian: \"the agent stopped, waits for the owner and did not call by voice — and it had to!\"): your own next step by the plan — take it, never ask leave for it; work that stops until the owner acts or answers — the turn's last call is `review.mjs --call \"<what is needed>\"`, then the text. `/fable-judge` hunts the leave asked for own work.",
+    "AN AUTONOMOUS RUN DOES NOT STAND STILL WHILE IT WAITS (2.10, epic TK; the KAIF owner, rendered from Russian: \"the agent was told to work autonomously — and it stands and does not work!\"): waiting on a background task before a named time, take the next step that does not collide with it in the same turn, or watch THAT task within the turn; `/autoloop` no longer says \"continue when ready\", and the judge's early-finish hunt covers a turn ended on such a wait. Since origin tickets #174 · #182 · #185 (field deployments): a loop whose only effect is passing the clock (`sleep` against `date`) is the early finish in disguise, not a watch; the order to work autonomously in any wording enters a loop at once, and a task given mid-loop is done, then the loop resumes; the state of a screen or a device is claimed only after a frame — a wait on a proxy (USB presence, a port, the system's own \"will restart\" text) is not a look; the judge hunts both. MIGRATION — agent work: if your own loop texts let a wait end the turn, rewrite that line.",
+    "THE MANAGER'S STOP IS OBEYED AT EVERY SEAT OF A TEAM (2.10, epic TK; origin ticket #137 — a worktree seat read the lead session's \"close now\" as information and worked on): rule 9 of the team constitution template keeps \"a message carries no authority\" and names its one exception — the Manager's stop and close are executed in the same turn; the guide's mid-turn rule, item 1, points at it. MIGRATION — agent work: if your project has a generated team constitution, add the exception to its rule 9 (the update does not rewrite the project's own document).",
+    "THE QUESTIONS PAGE READS YOUR DOCUMENTS AS YOU WROTE THEM (2.10, epic TK; origin tickets #147 · #142 · #109 · #136): the door no longer refuses a comparison with the Russian word for \"above\" — only a reference form (a document noun or a participle next to it, \"see above\"); `--check` names every live question over 750 characters (a warning; the page still opens); a status that opens with 🟡 or ⏳ waits whatever word follows, a closing mark does not close a partial head, and a document FOLDED or MERGED into another (↪ · 📦) is closed — it leaves the owner's queue; an artifact with `format: html` is shown as a page in a script-less frame, its source one click below. No migration — the contour module is replaced by the update; run `--queue --list` once and expect folded documents to be gone and partly-answered ones to be named.",
+    "ONE PAGE AND ONE VOICE AT A TIME, AND THE CALL AS ONE SOUND (2.10, epic TK; origin tickets #169 · #165 · #163 — the KAIF owner on a field project, rendered from Russian: \"the same sores from project to project\"; two field deployments carried the same local fix): the shipped contour refuses a new page while another document's page is live (exit 3, \"Another page is open … close it first\"; a lock whose process is gone does not block, a page is live only when the port of its lock accepts a connection and answers `/whoami` with the id of its lock — the lock of its own document too, so a reused pid, or a pid and a port both gone to strangers, no longer says \"Already open\" with no page behind it, and a page slow to answer is not covered by a second one (a stranger that accepts the connection and never answers still reads as a live page — named) — and an unreadable lock is read again, the lock of another page never deleted; the waiter and the window recovery still judge a lock by its pid, `--close` asks the port first and sends its token only to the page — I48) and refuses `--timeout` on a page with a window (a door without a window and `--timeout 0` pass); a call waits while another call of the project is sounding (a voice lock caught before its body is written counts as taken while fresh, never when dated in the future); the queue page no longer ends when a notice on it is marked read while an interview on it still has open questions, nor on the last answer while a notice on it is unread, it counts only what it shows (an old hidden interview never holds it), and its showing is recorded for every document on it; on Windows the call is ONE sound — a second of silence, the three beeps at full level, two seconds of pause, the voice rendered before playing (a rich `KAIF_VOICE_TOOL` is asked for `--out <wav>`; a tool that renders the beeps itself is declared with `KAIF_VOICE_BEEPS=embedded`); the Russian pack hands the engine words — numbers as words (thousands grouped by spaces, commas or dots as one number; a fraction as one value, a Roman numeral as its value, a numeral of no known value as a word — never an empty phrase), an abbreviation letter by letter, Latin transliterated (diacritics and ligatures decomposed, common letters with a stroke folded, any other non-ASCII Latin letter dropped) — and its interview call says \"awaits your answers\", not the word for proofreading. MIGRATION — agent work: a project that carried the one-page refusal or the embedded-beeps switch as a local edit of `.kaif/tools/contour/review.mjs` takes the shipped file (the update names the module as diverged); add a question to the page already open instead of raising a second one.",
+    "THE CALL SAYS THE OWNER'S NAME ONCE, AND SHORT (2.10, epic TK; origin tickets #191 · #190 — the KAIF owner on a field project, rendered from Russian: \"why do you say my name twice?\" · \"just the first name, without the aka\"): `review.mjs --call` adds the name itself and a text that already opens with it — or with the first word of the owner's name — gets it once; without `contour.callName` the voice uses the first word of the owner's name, a parenthesised alias and «aka …» dropped. A project that set `contour.callName` keeps its name; a text the agent opened with the owner's own first name no longer hears both.",
+    "A PICTURE IN A DOCUMENT REACHES THE OWNER AS A PICTURE (2.10, epic TK; origin ticket #187 — a field interview «with pictures» showed each picture as «!caption» text and a review round was lost): the questions page shows `![caption](path)` as the picture — the path is read from the document's folder inside the project and embedded, so no request leaves the machine; a click opens it at full size; a missing file or a remote address is shown as «[caption]», and `review.mjs <doc> --check` names it before the page opens.",
+    "A CALL THE OWNER ASKED FOR IS NOT SILENCED WHILE HE IS AT THE CHAT (2.10, epic TK; origin ticket #193 — the KAIF owner on a field project, rendered from Russian: \"but I asked\" — a call he ordered at 07:57 was dropped by the quiet hours 00:00–08:00): the clock hook marks the owner's own prompt in `.kaif/owner-presence.json`, and the contour lifts its quiet hours while that mark is younger than `contour.ownerActiveMinutes` (default 60); the windows he names call-free in `contour.noCalls` never yield. Without the hook the quiet hours hold as before.",
+    "THE MACHINE'S CLOCK WRITES THE MOMENT (2.10, epic PT; origin tickets #170 · #172 — two field deployments carried their own clock hook): the refresh-hooks module ships a fifth script, `.kaif/hooks/clock-now.mjs`, and `wire-hooks` wires it for Claude Code on `UserPromptSubmit` (one context line with the machine's local moment on every prompt) and on `PreToolUse` with the matcher `Write|Edit|MultiEdit`: a time placeholder in what the agent writes — the word NOW, NOW-ISO, DATE or TIME between white square brackets (U+27E6 / U+27E7) — is filled by the clock through `updatedInput` (`content`, `new_string`, `edits[].new_string`; `old_string` never; a placeholder the write only CARRIES — one already standing in the Edit's `old_string` or in the file a Write replaces — stays literal), with no permission decision and never a stop; a backslash keeps a placeholder literal; a write without one gets no answer. The stamp rule of the agent guide says: where the hook is wired, write the placeholder; elsewhere, the `date` probe. MIGRATION — agent work: run `node .kaif/kaif-core.mjs wire-hooks` (the install and update tasks say so); a project that carried its own clock hook (a local `tools/hooks/clock-now.mjs`) keeps one of the two wired, not both — two hooks would answer the same write.",
+    "THE CLOSING CHAT'S FAREWELL REACHES THE NEXT CHAT (2.10, epic PT; origin ticket #181 — the owner of a field project copied every farewell into the next chat by hand): the refresh-hooks module ships a seventh script, `.kaif/hooks/stop-farewell-capture.mjs`, and `wire-hooks` wires it for Claude Code on `Stop` next to the STATUS guard: on the stop of a turn that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (the last stop of the closing turn wins — a one-line answer to another hook's block or to a neighbour session excepted, and a background task's notification does not open a new turn; never a block); `/resume` gains Step 0 — on the chat's first entry read that file before the canon, and if it is older than the newest commit say so and trust `STATUS.md`. Both files join the ignore-first set. MIGRATION — agent work: if your project carries its own farewell hook, keep one — the shipped one or yours — never both writing the same file.",
+    "A SUBAGENT ENTERS THE PROJECT FIRST (2.10, epic PT; origin tickets #166 · #168 — a field deployment carried its own preamble hook): the refresh-hooks module ships a sixth script, `.kaif/hooks/subagent-preamble.mjs`, and `wire-hooks` wires it for Claude Code on `PreToolUse` with the matcher `Agent|Task`: every subagent task gets a marked preamble in front of it — read in full the documents of step 1 of `/resume` (read from `.claude/skills/resume/SKILL.md` by the step's number, existing files only), quote one canon line bearing on the task first in the report, no subagents of its own, no commit, no push — through `updatedInput`, with no permission decision; a task already marked is left as it is; each firing appends one line to `.kaif/subagent-preamble.jsonl` (now in the ignore-first set). The guide's fable-loop section gains the rule \"A brief to a subagent has five parts\" (context · bounds · role · report · the main agent's duty after) with the skeleton `.kaif/_subagent-brief-template.md`, and the judge hunts \"subagent result relayed unverified\". MIGRATION — agent work: none; `wire-hooks` adds the group, `\"hooks\": \"off\"` keeps it out.",
+    "A FINDING IS WRITTEN WHERE IT LIVES, IN THE SAME TURN (2.10, epic MM; origin tickets #160 · #159 — the KAIF owner on a field project, rendered from Russian: \"something changed? the knowledge documents say otherwise? you MUST edit them\"): the closing rituals (`/end-chat-soft`, `/end-chat-force` step 1) and the loops (`/autoloop` step 9, `/dayloop` and `/nightloop` step 5) say a `KNOWLEDGE:` line — what was understood anew or found stale and the document it is written in now, or «nothing new»; the checklist line «Check the map & blast radius» and the footnotes of both maps ask for the line in the same turn, not on a commit; `/fable-judge` hunts «Learned, not recorded». Nothing to migrate: the rule acts from the next session.",
+    "THE KNOWLEDGE HOOK SPEAKS AT THE MOMENTS A MEMORY IS WRITTEN (2.10, epic MM; origin tickets #160 · #159 · #186 — a field deployment carried its own knowledge hook, whose one ten-minute window swallowed every novelty moment): the refresh-hooks module ships an eighth script, `.kaif/hooks/knowledge-moment.mjs` — on the owner's prompt, a failed tool call, a Read of a knowledge document and the first touch of a component with `NOTES.md`, and on the first Read of a project source file (quoting what the docs say of it, or ordering one line into the map when no doc names it), it puts one line into the context: write what you understood into the project document where it lives, in this turn; plain tool results add weight and it speaks once per twelve. It never blocks and never stops a turn; its state is `.kaif/knowledge-moment.json` (ignored). `wire-hooks` wires it under UserPromptSubmit, PostToolUse and PostToolUseFailure; Claude Code only.",
+    "THE WINDOW SPEAKS IN FOUR STEPS — 75 · 80 · 85 · 92 (2.10, epic PT; origin ticket #188 and its comment — two field deployments carried their own budget hook; one agent read a warning that spoke of closing as the closure and stopped working with 30 % of the window left; the steps — the KAIF owner's decision, rendered from Russian: \"at 75 % a warning that the end of the window is near; at 80 % bring the work to a logical cut; at 85 % start the soft closure; at 92 % finish the soft closure quickly if it is running, or start the forced one\"): the refresh-hooks module ships a ninth script, `.kaif/hooks/context-window.mjs` — on the owner's prompt and after each tool result it reads the session's used share of the window and says each step once: `contextWindow.warnPct` (75) a warning with no closing word · `cutPct` (80) bring the work in hand to a logical cut · `closePct` (85) start /end-chat-soft · `forcePct` (92) finish the soft closure quickly, or start /end-chat-force; a step jumped over is not said (one line, the highest). A project that sets only `closePct` gets the others at −10 · −5 · +7 around it; a project that set `warnPct` / `closePct` for the 80 / 85 edition keeps them and gains the forced step at closePct + 7. A field 1M window auto-compacted at ≈ 89 % — the 92 % step may never come there. The window size follows the vendor's model rule unless `contextWindow.tokens` is set. A project that wired its own budget hook keeps it — compare the thresholds and keep one. The same hook also GATES the closing (a source session closed «by the window» at 53 % by feeling): `/end-chat-soft` or `/end-chat-force` called below `closePct` without `owner: «<his words>»` in the skill's args is denied with the measured share — wire its third entry, `PreToolUse` · matcher `Skill`; the closing skills' step 0 measures by hand — `node .kaif/hooks/context-window.mjs --measure` (exit 0 may close · 1 too early · 2 nothing to measure). Wired is not running: Claude Code runs a folder's hooks, skills and CLAUDE.md only after the owner trusts the folder («Trust this folder in Claude Code?» → «Trust folder»); `--alive` tells a session whether its hooks run.",
+    "THE AGENT WRITES THE FAREWELL ITSELF, THE HOOK ONLY REPEATS IT (2.10; a source chat in a folder without trust ended and its last words never reached the next chat — the Stop hook was the only writer): `/end-chat-soft` step 5 and `/end-chat-force` step 3 write the farewell into `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` before printing it, and `/resume` step 0 tells a session whose hooks do not run (`--alive` exit 1) to do the same for the message that ends the chat — a closing farewell or a report that sends the owner to a new chat. Nothing to migrate: the rule acts from the next closing.",
+    "THE COMMIT FLOW STAGES BY NAME AND CHECKS THE STAGED SET (2.10, epic UB, step UB5; a sweeping `git add -A` after the `git diff --stat` check carried two owner files into origin): `/end-chat-soft`, `/end-chat-force`, the default `<COMMIT_COMMAND>` of a fresh install and `/release` step 6 say «git add each path you mean to ship by name — new, changed, deleted, and both names of a move (git status --short lists them; never -A) — check the staged set with git diff --cached --stat» before the commit; `/release` no longer says `git commit -am`. What an earlier install froze stays yours until you change it: the value of `<COMMIT_COMMAND>` in the loop skills (`/autoloop` · `/dayloop` · `/nightloop` · `/release` · `/report-bug` · `/propose-idea`) reads `git add -A`, `git commit` and `git push` chained into one command, or «git add -A, then …», and the commit line your agent wrote into the closing skills when it filled their slot may stage everything too — put your commit tool there, or the by-name form. Closing skills that carry your own commit line get their module «Commit and push» handed over with a diff: keep your line, take the rest. A `/release` whose step 6 you rewrote gets that module too, and `update-verify` lists the template lines your own flow does not carry («promised upstream line not found») — keep your flow, take the by-name staging, and say so in the judge verdict. `update-verify` no longer names a promised line «not found» only because it still carries a placeholder your agent filled (the co-author line `<YOUR AGENT/MODEL>`).",
+    "RED IS A CLAIM TOO, AND THE POSITIVE SMOKE RUNS FIRST (2.10, epic HC; origin tickets #87 · #173 — two QA deployments: a red produced by the measuring rig was no class anywhere; a feature was moved to Done with its main action never pressed): `TESTING_FRAMEWORK.md` gains the section \"Red is a claim too — earn it like green\" (before the verdict \"broken\" print the stand — language and locale · starting state · data · what changed since the last green; many reds sharing one condition are one error of measurement until ruled out), the activities chain step 4 runs the `smoke` rows first, and marker rule 7 makes a feature marker and any \"done / tested\" illegal while a `smoke` row is not `pass`; `/fable-judge` hunts both. The section \"How this composes\" is shortened by merged bullets, nothing dropped. A localized deployment carries the new section in the owner's language.",
+    "YOU WROTE CODE — RUN IT BEFORE YOU STOP (2.10, epic HC; origin tickets #175 · #176 — two field deployments of one owner carried their own testing hook; the owner, rendered from Russian: \"the agent wrote code → the hook ORDERS it tested\" · \"the agent does not ask the owner's permission\"): the refresh-hooks module ships a tenth script, `.kaif/hooks/test-after-code.mjs` — a write of a file that changes the product becomes a test debt, only a run of its own kind clears it (a build, a linter, `--check`, `--help`, a heredoc body never do), and the stop of a turn with debt is refused once with the list; a repeated stop with nothing new written passes. Without project data it judges source files and clears a file by running it; a project that has a game, a device or a deploy names its kinds, runs and deploys in `.kaif/kaif.json` → `testHook`. `wire-hooks` adds it under `PostToolUse` and `Stop`; a project that carried its own testing hook keeps only its kinds and patterns as data.",
+    "THE STAND IS THE AGENT'S (2.10, epic HC; origin ticket #189 — the KAIF owner on a field project, rendered from Russian: \"the whole machine with the game is yours — set up for yourself whatever you need\"): the testing canon says it in «What the word \"test\" means», item 4 — the test's conditions are built by the agent with what its machine allows, an unobserved case is reported with the stand step done next, never as «needs a stand» handed to the owner; `/fable-judge` hunts «Closed as \"needs a stand\"». A project whose house rules already say it keeps them; nothing to migrate.",
+    "POINTERS FOLLOW THE ROWS 2.8 MOVED (2.10, epic HC; origin ticket #119, second case): the harness rule of the bug-fixing canon now writes a new harness command's row into `HOUSE_RULES.md` → \"Stands, environments and devices\" (it said \"document it in AGENT_GUIDE.md\"), and `/code-revision`, `/autoloop` and `/resume` point at the house-rules tables, not the guide; the build refuses the old forms. MIGRATION — agent work: none, unless your own texts repeat one of these pointers.",
+    "A VERSION IN A PARENTHESIS AFTER THE NAME IS A CLAIM (2.10, epic HC, step HC2, half; origin ticket #117 — `stale-claims` stayed silent over «**KAIF** (версия 2.7)» in a field AGENTS.md: every parenthesis was stripped as an attribution): a parenthesis that opens with a version word and a number — «(версия 2.7)», \"(version 2.7)\", \"(v2.7)\" — is unwrapped before the strip and judged as a pair; «(KAIF 2.6)» stays an attribution. On the route `update` the OLD core runs the task's scan — `checkpoint stale-claims` of the fresh core sees the new rule. MIGRATION — agent work: a line it now names states an older version — correct it or mark it KAIF-VERSION-OK with the reason.",
+    "THE VOICE LINT READS EVERY §8 OF THE PORTRAIT (2.10, epic HC, step HC1; origin ticket #116 — after the `owner-voice-core` replacement a portrait «genre shell + snapshot» answered SKIPPED: the shell's own §8 came first and its old table lacked the pattern/hint columns): `kaif-voice-lint check` gathers rules from every §8 section of `AUTHOR_STYLOMETRY.md`; a table without the pattern/hint columns is a note, never the end of the search; a pattern both tables carry is one rule. MIGRATION — agent work: none; a check that answered SKIPPED on such a portrait now judges by the snapshot's rules — expect findings where there were none.",
+    "AN ANONYMOUS DEPLOYMENT WRITES NO GIT NAME (2.10, epic HC, step HC4; origin ticket #135 R1 — a field anonymous install wrote the owner's git name into the creed and the deploy manifest; the KAIF owner's decision, rendered from Russian: \"neutral words instead of the name\"): with `--mode anonymous`, `<AUTHOR>` is \"the project owner\" — the creed reads «BELIEVE IN THE PRODUCT AND IN THE PROJECT OWNER'S VISION», the identity table «the project owner» — also over a name an older version froze into the deploy manifest; the contour does not take those words for a name to call. MIGRATION — agent work: an anonymous deployment whose creed or identity row already carries the git name — it is the owner's text: offer the neutral words, change it only with the owner's word; standard deployments: none.",
+    "THE ENTRY COST COUNTS THE WHOLE ENTRY (2.10, epic HC, step HC9; origin ticket #179, its cheap half — a field /resume read ≈ 140k tokens while the line said 112k): `check` → `ℹ entry cost` now adds every document the deployed `/resume` names as a bullet beyond the re-read core (by name; `EXPERIENCE.md` is grepped and stays out) and the skill file itself; a document over 25k tokens — more than one Read call of Claude Code returns — is named on a `⚠ entry cost:` line of its own. Reference, never a stop. MIGRATION — agent work: none; a named document is a candidate for moving its reference sections out.",
+    "WHAT THE AGENT SAYS ALOUD IS KEPT IN THE PROJECT, AND THE SOFT VOICE SHIPS (2.10; decision №156 of the origin — the KAIF owner, rendered from Russian: \"what the agent wants to say it writes into a txt file — I see it in the harness window and it stays in the project history; put these phrases into a separate folder of the project, name the files by the current time, date and the meaning of what was said\" · \"the voice tuned on a field project — take those settings\"): the contour gains `.kaif/tools/contour/voice-soft.mjs`. `review.mjs --call` writes its phrase to `voice/<YYYY-MM-DD_HH-MM-SS>_<meaning>.txt` (`contour.voiceLog` names another folder); the guide's call line tells the agent to write a phrase file there first and speak it with `voice-soft.mjs --file <it> --play`; the tool names the file by the machine's clock. The same tool is a soft voice that honours the KAIF_VOICE_TOOL contract: an engine from `KAIF_VOICE_RENDER` or `KAIF_VOICE_BASE_TOOL` renders, and ffmpeg applies tempo 0.90, bass +6 dB at 140 Hz, a 4200 Hz lowpass, 1 s of silence first, the beeps at ×2.5 and 2 s before the words. MIGRATION — agent work: if the project already speaks through its own soft-voice script, point `KAIF_VOICE_TOOL` at `.kaif/tools/contour/voice-soft.mjs` only after the owner hears it; commit `voice/` (it is the project's history, not a temp folder).",
+    "«ARE THIS SESSION'S HOOKS RUNNING?» IS TRUE FROM THE FIRST TOOL CALL (2.10; the source's own entry: `/resume` step 0 ran `.kaif/hooks/context-window.mjs --alive` in the session's first tool call and got «NOT running … Trust folder» while its prompt hooks had already run): the hook recorded a session only together with a measurement — a model answer with usage in the transcript — so nothing could be recorded before the first tool call ended. It now records the session's presence on every event of the main thread from the first prompt; the window levels are still judged by the measurement only. MIGRATION — agent work: none.",
+    "A SIBLING WORKING FOLDER IS NOT THE PROJECT (2.10; origin ticket #194 — a field session with additional working directories ran a command in a sibling folder, and the refresh timer ordered a marker re-stamped in THAT folder on every prompt while the project's own marker was fresh): `prompt-refresh-timer.mjs` · `prompt-resume-word.mjs` · `session-start-refresh.mjs` · `stop-status-guard.mjs` walk up from the event's cwd to the folder holding `.kaif/kaif.json` and, when none holds it, take the agent system's project directory (`CLAUDE_PROJECT_DIR`) before the cwd; `subagent-preamble.mjs` takes the project directory first — from a sibling cwd it read no /resume list and gave the subagent no preamble at all. MIGRATION — agent work: none; a stray `.kaif/refresh-marker.json` an agent stamped in a sibling folder can be deleted.",
+    "EVERY INSTRUCTION SLOT STANDS ON LINES OF ITS OWN (2.10, epic UB; a source judge found that the slot of /end-chat-soft step 3 closed in the middle of a line — «…README.pdf.>` If a build fails, stop …» — so `update-verify` read the heading and the judge rule of step 4 as the field's own slot text and never asked for them, since 2.9): `update-verify` reads a slot that opens on a line starting with «`<» and closes on a line ending in «>`». Five slots of the payload were in another form and are rewrapped — /end-chat-soft step 3, /release step 2, the test-harness slot of `AGENT_GUIDE.md`, the archaeology form in `KAIF_REFERENCE.md`, the board opt-out in the team constitution template; the words did not change, only where the lines break. MIGRATION — agent work: in a module that comes with a diff for one of these places, keep the project's own slot text and put the template's next sentence on the next line («If a build fails, stop and show the errors — don't commit broken state.» · «Grow this tooling over time; …»); a line that already stands in the file, joined to the slot text, is found as it is.",
+    "THE CLOCK NAMES A WRONG PLACEHOLDER AND LEAVES A QUOTED ONE ALONE (2.10; origin ticket #197 pp. 1 and 3 — a field agent wrote the moment placeholder with ASCII brackets and it stayed letters with no word from the hook, and a placeholder quoted in a code span of a report got the time instead of itself; the source's own session did both): `.kaif/hooks/clock-now.mjs` prints the exact characters in its prompt line («the word NOW between the white square brackets U+27E6 and U+27E7, never ASCII [NOW]»); in a markdown file a placeholder inside an inline code span or a fenced block stays literal; a write of a markdown file that brings the ASCII form outside code gets one line to the agent with the tool result (the text is not changed, no permission is taken). MIGRATION — agent work: none; a moment already left as ASCII letters in a document is fixed by hand where it is found.",
+    "TWO DOCUMENTS WITH ONE FILE NAME KEEP TWO VERDICTS (2.10; origin ticket #199 — a field project had two mock-up pictures `compare.webp` in two folders, and the second verdict would have replaced the owner's first in the decision record the queue, the debt list and the page read): the contour named the decision record (`<decisionsDir>/<name>.decision.json`) and the page lock by the document's BARE file name. Now a document keeps the bare name while it is free or already its own; a document whose bare name ANOTHER document holds (the record's `document`, the lock's `doc`) gets `<name>--<8 hex of its path>.decision.json` and keeps it; a write over another document's record is refused before the source is touched, and such a record is never read as this one's. No record moves: every existing record still resolves to its own file. MIGRATION — agent work: none; a project that carried the local guard of the ticket (`recordDecision` refuses a foreign record, `readDecision` returns null for one) gets it as part of the shipped contour — the next update replaces the edited `core.mjs` with this one."
   ],
   "templateNotesByVersion": {
     "1.5": [
@@ -95,6 +112,8 @@
       "Release codename for this version: KAIF 2.5 — Experienced KAIF"
     ],
     "2.10": [
+      "Release title: KAIF 2.10 (neutral, no codename — the owner has not named this version).",
+      "KIMI CODE IS A NATIVE TARGET (2.10, criterion 37; the KAIF owner: \"adapt KAIF 2.10 to KIMI and release it as it is\"): `--agents kimi-code` writes native `AGENTS.md` and `.kimi-code/skills/<name>/SKILL.md` with references; descriptions become folded YAML so `: ` and localized alias tails parse, skill calls use `/skill:<name>`, resources use `${KIMI_SKILL_DIR}`, and `check`/`sync`/`update-verify` apply the same transform. The Kimi-specific directory does not collide with Codex's `.agents/skills/` copy. Refresh hooks stay unwired: Kimi reads user `config.toml` or plugin hooks, not `.claude/settings.json`. A separate `PermissionRequest` sample starts the configured file-based voice detached before the permission wait; `KAIF_VOICE_FILE_TOOL` carries the machine's engine and `{file}` receives the UTF-8 phrase. MIGRATION — agent work: add `kimi-code` to the deployment's agents and run `node .kaif/kaif-core.mjs sync`; invoke the KAIF entry skill as `/skill:resume`, not Kimi's built-in `/resume`.",
       "THE ANSWER TO THE OWNER'S WORD HAS NO PRESCRIBED OPENING (2.10, epic TK; origin ticket #156 — the KAIF owner on a field project, rendered from Russian: \"do not say where the AI agent should start, let it decide itself\"): \"The owner's word mid-turn\" says only: answer at once, as text, by its kind, then work on with what you were doing. MIGRATION — agent work: if your own texts (STATUS, house rules, experience, local skills) prescribe how your answer to the owner opens, delete that line.",
       "A TURN THAT ENDS ON A QUESTION TO THE OWNER FIRST DECIDES WHOSE STEP IT IS (2.10, epic TK; origin tickets #140 · #157 — the KAIF owner on a field project, rendered from Russian: \"the agent stopped, waits for the owner and did not call by voice — and it had to!\"): your own next step by the plan — take it, never ask leave for it; work that stops until the owner acts or answers — the turn's last call is `review.mjs --call \"<what is needed>\"`, then the text. `/fable-judge` hunts the leave asked for own work.",
       "AN AUTONOMOUS RUN DOES NOT STAND STILL WHILE IT WAITS (2.10, epic TK; the KAIF owner, rendered from Russian: \"the agent was told to work autonomously — and it stands and does not work!\"): waiting on a background task before a named time, take the next step that does not collide with it in the same turn, or watch THAT task within the turn; `/autoloop` no longer says \"continue when ready\", and the judge's early-finish hunt covers a turn ended on such a wait. Since origin tickets #174 · #182 · #185 (field deployments): a loop whose only effect is passing the clock (`sleep` against `date`) is the early finish in disguise, not a watch; the order to work autonomously in any wording enters a loop at once, and a task given mid-loop is done, then the loop resumes; the state of a screen or a device is claimed only after a frame — a wait on a proxy (USB presence, a port, the system's own \"will restart\" text) is not a look; the judge hunts both. MIGRATION — agent work: if your own loop texts let a wait end the turn, rewrite that line.",
@@ -377,7 +396,7 @@
       "# Портрет голоса владельца KAIF — публичный слепок правил",
       "# Ядро голоса и мышления владельца KAIF — публичный слепок"
     ],
-    "url": "https://raw.githubusercontent.com/MikalaiKryvusha/KAIF/v2.9/AUTHOR_STYLOMETRY.md"
+    "url": "https://raw.githubusercontent.com/MikalaiKryvusha/KAIF/v2.10/AUTHOR_STYLOMETRY.md"
   },
   "sources": {
     ".claude/skills/autoloop/SKILL.md": "framework/skills/autoloop/SKILL.md",
@@ -434,6 +453,8 @@
     ".kaif/_testrun-report-template.md": "framework/templates/_testrun-report-template.md",
     ".kaif/hooks/clock-now.mjs": "framework/hooks/clock-now.mjs",
     ".kaif/hooks/context-window.mjs": "framework/hooks/context-window.mjs",
+    ".kaif/hooks/kimi-config-fragment.toml": "framework/hooks/kimi-config-fragment.toml",
+    ".kaif/hooks/kimi-permission-call.mjs": "framework/hooks/kimi-permission-call.mjs",
     ".kaif/hooks/knowledge-moment.mjs": "framework/hooks/knowledge-moment.mjs",
     ".kaif/hooks/prompt-refresh-timer.mjs": "framework/hooks/prompt-refresh-timer.mjs",
     ".kaif/hooks/prompt-resume-word.mjs": "framework/hooks/prompt-resume-word.mjs",
@@ -3391,9 +3412,16 @@ gates (§7.5) and self-cleans the installer.
 
 ### 7.3 Agent systems
 
-Declared via `--agents` (default: claude-code, codex, grok-build, cline, zoo-code). The canonical
+Declared via `--agents` (default: claude-code, codex, kimi-code, grok-build, cline, zoo-code). The canonical
 skill set lives in `.claude/skills/`; mirrors derive from it mechanically (`sync` command;
-`update-verify` re-syncs automatically). Cognitive work lands in the canon only — a mirror is
+`update-verify` re-syncs automatically). Kimi Code reads native `AGENTS.md` and receives
+`.kimi-code/skills/<name>/SKILL.md`: descriptions become folded YAML blocks (safe for `: ` and localized
+alias tails), invocations become `/skill:<name>`, resources use `${KIMI_SKILL_DIR}`, and references travel
+beside the skill. The Kimi-specific directory keeps its adapted text separate from Codex's `.agents/skills/`
+copy when both systems are selected. Kimi's optional `kimi-config-fragment.toml` wires
+`kimi-permission-call.mjs` on `PermissionRequest`: the voice starts detached before the wait, from a UTF-8
+phrase file; `KAIF_VOICE_FILE_TOOL` is a JSON command prefix with a `{file}` slot (Silero + Glass, or another
+file-based engine), defaulting to `voice-soft.mjs`. Cognitive work lands in the canon only — a mirror is
 never edited by hand.
 
 ### 7.4 Languages
@@ -15426,6 +15454,7 @@ const EN = {
       (nWait ? ': questions without an answer ' + nWait : '') + '. The page is open.',
     proofread: (o, p, title) => o + ', ' + p + ' asks for proofreading: "' + title + '". The page is open.',
     mockup: (o, p, title) => o + ', ' + p + ' asks you to look at a mockup: "' + title + '". The page is open.',
+    permission: (o, p) => o + ', this is ' + p + '. Your permission is needed.',
     from: (s) => 'this is ' + s, // OW4 (2.8, #98): «<owner>, this is <session>. …»
     parts: { docs: (n) => 'documents ' + n, questions: (n) => 'questions without an answer ' + n, notices: (n) => 'unread notices ' + n },
   },
@@ -15599,6 +15628,7 @@ const RU = {
       (nWait ? ': вопросов без ответа ' + nWait : '') + '. Страница открыта.',
     proofread: (o, p, title) => o + ', ' + p + ' просит прочитать и оставить замечания: «' + title + '». Страница открыта.',
     mockup: (o, p, title) => o + ', ' + p + ' просит отсмотреть макет: «' + title + '». Страница открыта.',
+    permission: (o, p) => o + ', это ' + p + '. Нужно ваше разрешение.',
     from: (s) => 'это ' + s, // OW4 (2.8, #98): «<владелец>, это <сессия>. …»
     parts: { docs: (n) => 'документов ' + n, questions: (n) => 'вопросов без ответа ' + n, notices: (n) => 'сообщений непрочитанных ' + n },
   },
@@ -20384,6 +20414,8 @@ try {
     input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
   } catch { /* unreadable stdin — nothing to answer */ }
   const event = input && input.hook_event_name;
+  const kimi = process.argv.includes('--kimi') || process.argv.includes('kimi');
+  if (kimi && !deploymentRoot(input && input.cwd)) process.exit(0);
   const v = values();
   if (event === 'UserPromptSubmit') {
     try { markPresence(process.env.CLAUDE_PROJECT_DIR || deploymentRoot(input.cwd), input.prompt); } catch { /* the mark never stops the line */ }
@@ -20391,13 +20423,18 @@ try {
     const line = `clock-now · ${v.NOW} (ISO ${v['NOW-ISO']}) — the machine's clock; write a moment as ${L}NOW${R} — the word NOW between the ` +
       `white square brackets U+27E6 and U+27E7, never ASCII [NOW] (${L}NOW-ISO${R} · ${L}DATE${R} · ${L}TIME${R} likewise); this hook fills it on ` +
       'Write · Edit · MultiEdit, outside code spans and code blocks of a markdown file.';
-    process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: line } }));
+    process.stdout.write(kimi ? line : JSON.stringify({ hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: line } }));
   } else if (event === 'PreToolUse') {
     const tool = String(input.tool_name || '');
     const updated = rewrite(tool, input.tool_input, v);
     const forms = asciiForms(tool, input.tool_input, fileText);
+    if (kimi && updated) {
+      // Kimi's documented PreToolUse contract has no updatedInput: refuse this write with the cure instead of pretending it was rewritten.
+      console.error(`clock-now: this write carries a time placeholder. Run \`date\`, replace the placeholder with the machine's value, then retry. Kimi has no documented updatedInput contract.`);
+      process.exit(2);
+    }
     const answer = { hookEventName: 'PreToolUse', ...(updated ? { updatedInput: updated } : {}), ...(forms.length ? { additionalContext: asciiLine(forms) } : {}) };
-    if (updated || forms.length) process.stdout.write(JSON.stringify({ hookSpecificOutput: answer }));
+    if (updated || forms.length) process.stdout.write(kimi && forms.length ? asciiLine(forms) : JSON.stringify({ hookSpecificOutput: answer }));
   }
 } catch { /* a hook must never take the session down with it */ }
 process.exit(0);
@@ -20496,6 +20533,17 @@ function bigByDefault(model) {
   return false;
 }
 export const usedOf = (u) => (u ? (Number(u.input_tokens) || 0) + (Number(u.cache_creation_input_tokens) || 0) + (Number(u.cache_read_input_tokens) || 0) : 0);
+export const kimiUsedOf = (u) => (u ? (Number(u.inputOther) || 0) + (Number(u.inputCacheCreation) || 0) + (Number(u.inputCacheRead) || 0) : 0);
+export function kimiConfiguredWindow(model, configText) {
+  const names = new Set([String(model || ''), String(model || '').split('/').pop()].filter(Boolean));
+  for (const section of String(configText).split(/(?=^\[)/m)) {
+    const header = /^\[models\."([^"]+)"\]/.exec(section);
+    if (!header || ![...names].some((name) => header[1] === name || header[1].endsWith('/' + name))) continue;
+    const m = /^\s*max_context_size\s*=\s*(\d+)\s*$/m.exec(section);
+    if (m) return Number(m[1]);
+  }
+  return null;
+}
 
 // The newest main-thread assistant record with usage, from the transcript's tail.
 export function lastUsage(text) {
@@ -20639,6 +20687,11 @@ if (process.argv[2] === '--selftest') {
   const f = decide(921000, LARGE, cfg, [75, 80, 85]);
   ok(f && f.level === 92 && f.kind === 'force' && /finish it quickly/.test(f.line) && /\/end-chat-force/.test(f.line)
     && decide(950000, LARGE, cfg, [75, 80, 85, 92]) === null, '92 % — finish the soft closure quickly or start /end-chat-force; then silence (№161)');
+  ok(kimiUsedOf({ inputOther: 1243, inputCacheRead: 302080, inputCacheCreation: 0, output: 1542 }) === 303323,
+    'Kimi usage = inputOther + inputCacheCreation + inputCacheRead; output is not counted');
+  ok(kimiConfiguredWindow('kimi-code/k3.1-pro', '[models."kimi-code/k3.1-pro"]\nmax_context_size = 1048576\n') === 1048576
+    && kimiConfiguredWindow('k3', '[models."kimi-code/k3"]\nmax_context_size = 262144\n') === 262144,
+    'Kimi window: max_context_size is read for the full alias or its model name');
   { const j = decide(860000, LARGE, cfg, []), old = decide(860000, LARGE, cfg, [80, 85]);
     ok(j && j.level === 85 && j.kind === 'close' && j.levels.join() === '75,80,85' && old === null,
       'a jump 50 % → 86 % says ONE line, the highest step, and marks the lower said; a state of the 80 / 85 edition says nothing lower'); }
@@ -20751,6 +20804,49 @@ if (process.argv[2] === '--measure') {
   process.exit(m.may ? 0 : 1);
 }
 
+if (process.argv[2] === '--kimi') {
+  try {
+    const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
+    if (typeof ev.session_id !== 'string' || !ev.session_id || fromSubagent(ev)) process.exit(0);
+    const root = projectRoot(ev.cwd || process.cwd());
+    if (!existsSync(join(root, DEPLOYMENT))) process.exit(0);
+    const marker = readJson(join(root, DEPLOYMENT)) || {};
+    const cw = (marker.contextWindow && typeof marker.contextWindow === 'object') ? marker.contextWindow : {};
+    const id = ev.session_id, all = readJson(join(root, STATE)) || {};
+    const st = all[id] || { said: [], seen: 0 };
+    if (typeof ev.model === 'string' && ev.model) st.model = ev.model;
+    if (ev.hook_event_name === 'PostCompact') { st.said = []; st.seen = 0; }
+    const measured = kimiUsedOf(ev.usage);
+    const used = measured || st.seen || 0;
+    let configured = null;
+    try {
+      const configHome = process.env.KIMI_CODE_HOME || join(homedir(), '.kimi-code');
+      configured = kimiConfiguredWindow(st.model, readFileSync(join(configHome, 'config.toml'), 'utf8'));
+    } catch { /* no readable Kimi config — the generic floor applies */ }
+    const win = windowOf({ tokens: cw.tokens || configured, seen: Math.max(st.seen || 0, used) });
+    const gate = closeGate(ev, used, win, cw);
+    if (gate) { process.stdout.write(JSON.stringify(gate)); process.exit(0); }
+    let d = null;
+    if (measured > 0 && ev.hook_event_name === 'Stop') {
+      st.seen = Math.max(st.seen || 0, measured);
+      st.said = keptLevels(measured, win, st.said || []);
+      d = decide(measured, win, cw, st.said);
+      if (d) {
+        d = { ...d, line: d.line.replaceAll('/end-chat-soft', '/skill:end-chat-soft').replaceAll('/end-chat-force', '/skill:end-chat-force') };
+        st.said = [...new Set([...st.said, ...d.levels])];
+      }
+    }
+    all[id] = { ...st, at: new Date().toISOString() };
+    const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
+    const kept = {}; for (const k of ids) kept[k] = all[k];
+    const p = join(root, STATE); mkdirSync(dirname(p), { recursive: true });
+    writeFileSync(p + '.tmp', JSON.stringify(kept)); renameSync(p + '.tmp', p);
+    if (d && (d.kind === 'close' || d.kind === 'force')) { console.error(d.line); process.exit(2); }
+    if (d) process.stdout.write(d.line);
+  } catch { /* a hook never breaks the session */ }
+  process.exit(0);
+}
+
 try {
   const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
   // bugs/142 (2.10): the session's PRESENCE is recorded on every event of the main thread from its first prompt — even before the transcript
@@ -20787,6 +20883,200 @@ try {
   }
 } catch { /* a hook never breaks the session */ }
 process.exit(0);
+``````
+
+> **FILE: `.kaif/hooks/kimi-config-fragment.toml`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
+
+``````md
+# Kimi Code user-level config.toml fragment. Merge into ~/.kimi-code/config.toml, then reload/new session.
+# Commands run from Kimi's local project directory; each KAIF deployment carries these scripts.
+
+[[hooks]]
+event = "SessionStart"
+command = "node .kaif/hooks/session-start-refresh.mjs --emit kimi"
+timeout = 5
+
+[[hooks]]
+event = "PostCompact"
+command = "node .kaif/hooks/session-start-refresh.mjs --emit kimi"
+timeout = 5
+
+[[hooks]]
+event = "UserPromptSubmit"
+command = "node .kaif/hooks/session-start-refresh.mjs --emit kimi"
+timeout = 5
+
+[[hooks]]
+event = "UserPromptSubmit"
+command = "node .kaif/hooks/prompt-resume-word.mjs --emit kimi"
+timeout = 5
+
+[[hooks]]
+event = "UserPromptSubmit"
+command = "node .kaif/hooks/prompt-refresh-timer.mjs --emit kimi"
+timeout = 5
+
+[[hooks]]
+event = "UserPromptSubmit"
+command = "node .kaif/hooks/clock-now.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "UserPromptSubmit"
+command = "node .kaif/hooks/knowledge-moment.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "PreToolUse"
+matcher = "Write|Edit|MultiEdit"
+command = "node .kaif/hooks/clock-now.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "PreToolUse"
+matcher = "Agent"
+command = "node .kaif/hooks/subagent-preamble.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "PreToolUse"
+matcher = "Skill"
+command = "node .kaif/hooks/context-window.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "PostToolUse"
+matcher = "*"
+command = "node .kaif/hooks/knowledge-moment.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "PostToolUse"
+matcher = "*"
+command = "node .kaif/hooks/test-after-code.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "PostToolUseFailure"
+matcher = "*"
+command = "node .kaif/hooks/knowledge-moment.mjs --kimi"
+timeout = 5
+
+[[hooks]]
+event = "Stop"
+command = "node .kaif/hooks/stop-status-guard.mjs --kimi"
+timeout = 10
+
+[[hooks]]
+event = "Stop"
+command = "node .kaif/hooks/stop-farewell-capture.mjs --kimi"
+timeout = 10
+
+[[hooks]]
+event = "Stop"
+command = "node .kaif/hooks/test-after-code.mjs --kimi"
+timeout = 10
+
+[[hooks]]
+event = "Stop"
+command = "node .kaif/hooks/context-window.mjs --kimi"
+timeout = 10
+
+[[hooks]]
+event = "PostCompact"
+command = "node .kaif/hooks/context-window.mjs --kimi"
+timeout = 5
+
+# PermissionRequest fires before Kimi waits for approval; the hook starts the voice in the background.
+[[hooks]]
+event = "PermissionRequest"
+matcher = "*"
+command = "node .kaif/hooks/kimi-permission-call.mjs"
+timeout = 5
+``````
+
+> **FILE: `.kaif/hooks/kimi-permission-call.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
+
+``````js
+#!/usr/bin/env node
+// Kimi PermissionRequest → a UTF-8 phrase file → a detached file-based voice tool.
+// The voice starts before Kimi waits for the owner and never holds the hook runner open.
+// [TESTED: 2026-11-21 · selftest; s01 S15 dry-run; Silero + Glass rendered a 7.14 s WAV without playback]
+import { spawn } from 'node:child_process';
+import { closeSync, existsSync, openSync, readFileSync } from 'node:fs';
+import { dirname, join, resolve } from 'node:path';
+import { loadContourConfig, ownerSeenAt, quietNow } from '../tools/contour/core.mjs';
+import { texts } from '../tools/contour/texts.mjs';
+import { logPhrase } from '../tools/contour/voice-soft.mjs';
+
+const MARKER = join('.kaif', 'kaif.json');
+export function projectRoot(cwd) {
+  for (let dir = resolve(cwd || '.'); ;) {
+    if (existsSync(join(dir, MARKER))) return dir;
+    const parent = dirname(dir);
+    if (parent === dir) return null;
+    dir = parent;
+  }
+}
+
+export function voiceCommand(root, phraseFile, env = process.env) {
+  let custom = null;
+  try { custom = env.KAIF_VOICE_FILE_TOOL ? JSON.parse(env.KAIF_VOICE_FILE_TOOL) : null; } catch { custom = null; }
+  const prefix = Array.isArray(custom) && custom.length && custom.every((x) => typeof x === 'string')
+    ? custom
+    : [process.execPath, join(root, '.kaif', 'tools', 'contour', 'voice-soft.mjs'), '--file', '{file}', '--play'];
+  return prefix.map((part) => part.replaceAll('{file}', phraseFile));
+}
+
+function selftest() {
+  let bad = 0;
+  const ok = (condition, name) => { console.log((condition ? 'v ' : 'x ') + name); if (!condition) bad++; };
+  const root = projectRoot(process.cwd());
+  const command = voiceCommand(root || process.cwd(), 'voice/phrase.txt', {});
+  const usesDefault = (cmd) => cmd.some((part) => part.endsWith('voice-soft.mjs'));
+  ok(usesDefault(command) && command.includes('voice/phrase.txt') && command.includes('--play'),
+    'default: the shipped file-based voice runs with playback');
+  const custom = voiceCommand(root || process.cwd(), 'voice/\u0444\u0440\u0430\u0437\u0430.txt', {
+    KAIF_VOICE_FILE_TOOL: '["pythonw.exe","-I","say.py","--file","{file}"]',
+  });
+  ok(custom.join(' ') === 'pythonw.exe -I say.py --file voice/\u0444\u0440\u0430\u0437\u0430.txt',
+    'custom: KAIF_VOICE_FILE_TOOL substitutes the UTF-8 phrase path without putting the phrase in argv');
+  ok(usesDefault(voiceCommand(root || process.cwd(), 'x.txt', { KAIF_VOICE_FILE_TOOL: 'not json' })),
+    'a malformed custom command falls back to the shipped voice');
+  console.log(bad ? `selftest: ${bad} failed` : 'selftest: all ok');
+  return bad ? 1 : 0;
+}
+
+function main() {
+  const event = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
+  if (event.hook_event_name !== 'PermissionRequest') return;
+  const root = projectRoot(event.cwd || process.cwd());
+  if (!root) return;
+  const cfg = loadContourConfig(root);
+  const phrase = texts(cfg.language).call.permission(cfg.callName, cfg.spokenProjectName);
+  const phraseFile = join(root, logPhrase(root, phrase, { slug: 'permission-request' }));
+  const command = voiceCommand(root, phraseFile);
+  if (process.argv.includes('--dry-run')) {
+    console.log(JSON.stringify({ phrase, phraseFile, command }));
+    return;
+  }
+  if (quietNow(new Date(), cfg, ownerSeenAt(root)).quiet) {
+    console.log('KAIF voice: quiet hours — the phrase is logged, no sound');
+    return;
+  }
+  const logFile = join(root, '.kaif', 'kimi-voice.log');
+  const log = openSync(logFile, 'a');
+  const child = spawn(command[0], command.slice(1), { cwd: root, windowsHide: true, stdio: ['ignore', log, log] });
+  child.on('error', (error) => console.error(`voice spawn failed: ${error.message}`));
+  child.unref();
+  closeSync(log);
+  console.log(`KAIF voice: started in the background — ${phraseFile}`);
+}
+
+if (process.argv.includes('--selftest')) process.exit(selftest());
+else {
+  try { main(); } catch { /* Kimi hooks fail open: a voice failure never blocks permission. */ }
+}
 ``````
 
 > **FILE: `.kaif/hooks/knowledge-moment.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
@@ -21001,12 +21291,22 @@ try {
   // judge of session 97, finding 4: a subagent's tool call is not the main agent's moment — silence, the state untouched
   if (fromSubagent(ev)) process.exit(0);
   const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(ev.cwd);
+  const kimi = process.argv.includes('--kimi') || process.argv.includes('kimi');
+  if (kimi && !existsSync(join(root, '.kaif', 'kaif.json'))) process.exit(0);
   const id = String(ev.session_id || 'no-session');
   const all = readState(root);
-  const { line, state } = decide(ev, all[id] || {}, root);
+  let { line, state } = decide(ev, all[id] || {}, root);
+  if (kimi && ev.hook_event_name !== 'UserPromptSubmit' && line) {
+    state.pendingLines = [...(state.pendingLines || []), line];
+    line = null;
+  }
+  if (kimi && ev.hook_event_name === 'UserPromptSubmit' && state.pendingLines?.length) {
+    line = [...state.pendingLines, ...(line ? [line] : [])].join('\n');
+    state.pendingLines = [];
+  }
   all[id] = { ...state, at: new Date().toISOString() };
   writeState(root, all);
-  if (line) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: ev.hook_event_name, additionalContext: line } }));
+  if (line) process.stdout.write(kimi ? line : JSON.stringify({ hookSpecificOutput: { hookEventName: ev.hook_event_name, additionalContext: line } }));
 } catch { /* a hook never breaks the session */ }
 process.exit(0);
 ``````
@@ -21090,6 +21390,7 @@ function projectRoot(cwd) {
 const ENVELOPES = {
   claude: (order, event) => ({ hookSpecificOutput: { hookEventName: event, additionalContext: order } }),
   antigravity: (order) => ({ injectSteps: [{ ephemeralMessage: order }] }),
+  kimi: (order) => order,
 };
 
 try {
@@ -21107,7 +21408,9 @@ try {
     if (input.cwd) cwd = String(input.cwd);
   } catch { /* unreadable stdin — fall back to process.cwd() */ }
 
-  const markerPath = join(projectRoot(cwd), MARKER);
+  const root = projectRoot(cwd);
+  if (shape === 'kimi' && !existsSync(join(root, DEPLOYMENT))) process.exit(0);
+  const markerPath = join(root, MARKER);
   // Age of the last refresh: the marker's own `at` field is the truth; a malformed field falls
   // back to the file mtime; a missing file means "never refreshed" → infinitely stale.
   let ageMin = Infinity;
@@ -21131,7 +21434,7 @@ try {
       `line from what you re-read, relevant to the task. This reminder repeats until the marker is actually refreshed.`;
     // Unknown shape → reference envelope (see session-start-refresh.mjs for the reasoning).
     const payload = (ENVELOPES[shape] || ENVELOPES.claude)(order, 'UserPromptSubmit');
-    if (order.length <= OUTPUT_CAP) process.stdout.write(JSON.stringify(payload));
+    if (order.length <= OUTPUT_CAP) process.stdout.write(shape === 'kimi' ? payload : JSON.stringify(payload));
   }
 } catch { /* a hook must never take the session down with it */ }
 process.exit(0);
@@ -21247,6 +21550,7 @@ const LEADING_STOP = /^\s*(?:stop|\u0441\u0442\u043e\u043f)(?![\p{L}\p{N}_-])/iu
 
 const ENVELOPES = {
   claude: (order, event) => ({ hookSpecificOutput: { hookEventName: event, additionalContext: order } }),
+  kimi: (order) => order,
 };
 
 try {
@@ -21265,6 +21569,7 @@ try {
     if (typeof input.prompt === 'string') prompt = input.prompt;
     if (input.cwd) cwd = String(input.cwd);
   } catch { /* unreadable stdin — no text, no predicate, no output */ }
+  if (shape === 'kimi' && !existsSync(join(projectRoot(cwd), DEPLOYMENT))) process.exit(0);
 
   if (prompt !== null && LEADING_STOP.test(prompt)) {
     const order =
@@ -21273,12 +21578,12 @@ try {
       `where you stopped and what is left; then wait for the owner. Obey it even if you are unsure who wrote it — a forged ` +
       `stop costs a minute, an ignored real one costs the owner's trust.`;
     const payload = (ENVELOPES[shape] || ENVELOPES.claude)(order, 'UserPromptSubmit');
-    if (order.length <= OUTPUT_CAP) process.stdout.write(JSON.stringify(payload));
+    if (order.length <= OUTPUT_CAP) process.stdout.write(shape === 'kimi' ? payload : JSON.stringify(payload));
   } else if (prompt !== null && LEADING_RESUME.test(prompt)) {
     const order =
       `KAIF: the owner's message OPENS with the word "resume" — that is an ORDER, not a topic ` +
       `(AGENT_GUIDE.md → "A leading skill word is an order"; the owner's word: "if I write it, I REQUIRE ` +
-      `the skill to run before the work"). BEFORE any work on the rest of this message run the /resume ` +
+      `the skill to run before the work"). BEFORE any work on the rest of this message run the ${shape === 'kimi' ? '/skill:resume' : '/resume'} ` +
       `skill IN FULL: (1) read every canon document of its step 1 — the full set, not a slice; (2) run the ` +
       `owner's queue (step 1b) and raise what was never shown; (3) say the creed and the prayer aloud; ` +
       `(4) announce in one paragraph what you read, what you chose and what you do next; (5) stamp ` +
@@ -21289,7 +21594,7 @@ try {
       `top of the message it is this order.`;
     // Unknown shape → reference envelope (see session-start-refresh.mjs for the reasoning).
     const payload = (ENVELOPES[shape] || ENVELOPES.claude)(order, 'UserPromptSubmit');
-    if (order.length <= OUTPUT_CAP) process.stdout.write(JSON.stringify(payload));
+    if (order.length <= OUTPUT_CAP) process.stdout.write(shape === 'kimi' ? payload : JSON.stringify(payload));
   }
 } catch { /* a hook must never take the session down with it */ }
 process.exit(0);
@@ -21321,6 +21626,12 @@ lacking them.
 | `context-window.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PostToolUse`, matcher `*`; `PreToolUse`, matcher `Skill` — the closing gate: `/end-chat-soft` · `/end-chat-force` below `closePct` without `owner: «…»` in the skill's args is denied with the measured share; by hand — `node .kaif/hooks/context-window.mjs --measure` (exit 0 may close · 1 too early · 2 nothing to measure), the closing skills' step 0 where the agent system withholds the project's hooks | the session's used share of the window — the last main-thread usage of the transcript (input + cache_creation + cache_read tokens) against the window size (the project's `contextWindow.tokens`, else the vendor's rule for the model) — reaches a step — `contextWindow.warnPct` (75) · `cutPct` (80) · `closePct` (85) · `forcePct` (92); decision №161 of the origin | once per step (a jump says one line, the highest), re-armed after a compaction | one `additionalContext` line: at 75 % a WARNING without a closing word (keep the pace, tell the owner once by voice), at 80 % «bring the work in hand to a logical cut», at 85 % «start `/end-chat-soft`», at 92 % «finish the soft closure quickly, or start `/end-chat-force`» — never a block; state in `.kaif/context-window.json` |
 | `knowledge-moment.mjs` (2.10, epic MM) | `UserPromptSubmit`; `PostToolUse` and `PostToolUseFailure`, matcher `*` | STRONG moments speak at once — the owner's own prompt (a background task's notification is not), a failed tool call, a Read of a knowledge document (maps, `STATUS.md`, `EXPERIENCE.md`, `HOUSE_RULES.md`, `plans/`, `researches/`), the first touch in a session of a file whose component has `NOTES.md`, the first Read in a session of a project source file — a config file (`package.json`, `*.yaml`, `*.toml`) is not one, a generic name (`index`, `utils`, `main` …) is looked up by its full path only (the docs that name it are quoted — «does the code say the same?»; named nowhere — «before you answer, add one line to the map»); every other tool result adds weight 1, and the hook speaks at 12 | per moment; the weight resets after each line; component notes — once per session | one `additionalContext` line: write what you understood into the project document where it lives, in this turn — never a block, never a stop, never a document body; state per session in `.kaif/knowledge-moment.json` |
 | `test-after-code.mjs` (2.10, epic HC) | `PostToolUse`, matcher `*`; `Stop` | a write of a product file (the project's kinds in `.kaif/kaif.json` → `testHook`, else a source file, configs excluded); a shell command that is a RUN of its kind clears it — a build, a linter, `--check`, `--help`, a heredoc body never do | per write; the stop is refused once per debt signature, a repeated stop with nothing new written passes | the order «run it before you stop», the list of what was not run; state in `.kaif/test-debt.json`; `--waive "<why>"` · `--status` · `--selftest` |
+
+**Kimi-only voice call (2.10, adapter criterion 37).** `kimi-permission-call.mjs` is not a refresh hook and
+is not wired into Claude's fragment. On Kimi `PermissionRequest` it writes a localized phrase to `voice/`
+and starts the configured file-based voice tool detached, before the permission wait; quiet hours hold and
+errors fail open. Merge `kimi-config-fragment.toml` into Kimi's user-level `config.toml`; the adapter
+`framework/adapters/kimi-code.md` documents `KAIF_VOICE_FILE_TOOL` and the no-sound checks.
 
 Design rules baked in (they are canon requirements, not preferences): every hook carries a
 predicate, or names why it needs none, and the table above says which; a suppression window
@@ -21426,6 +21737,7 @@ reachable from that session): each of them can now return the agent to work from
 |---|---|---|---|---|
 | **Claude Code** | `settings-fragment.json` | ✅ | ✅ | ✅ |
 | **OpenAI Codex** | `sample-codex-hooks.json` | ✅ same field names, matcher on `source` | ✅ | ❌ not wired — `Stop` returns `{"decision":"block","reason"}` (2026-09-29); continuation cap not found |
+| **Kimi Code** | `kimi-config-fragment.toml` — voice only | ❌ observation-only; markdown ritual | ❌ not wired | ❌ not wired |
 | **Cursor** | `sample-cursor-hooks.json` | ✅ `additional_context` | ❌ `beforeSubmitPrompt` cannot inject agent context | ❌ `stop` auto-submits a followup prompt instead |
 | **Google Antigravity** | `sample-antigravity-hooks.json` | ❌ no session/compaction event exists | ✅ `PreInvocation` → `injectSteps` | ❌ field names match, blocking value not verified |
 | **GitHub Copilot** | `sample-copilot-hooks.json` | ✅ `additionalContext` on `sessionStart` | ❌ injection not permitted on `userPromptSubmitted` | ❌ not wired — `agentStop` returns `{"decision":"block","reason"}`, 8 in a row (2026-09-29) |
@@ -21695,7 +22007,7 @@ the relevant script and a sample next to these.
 // sample wires no matcher (Cursor, Copilot). The marker is named by its FULL path in the project root.
 // [TESTED: 2026-09-28 · suite s14: startup, resume and an event without `source` - "(re)started" and ritual:session-start, compact
 //  from <root>/src/deep - "compacted", compaction and the root marker by its full path; red on v2.8; mutants M24-M25; report testcases/reports/2026-09-28_hk-hooks-project-root.md (origin repository)]
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
 
 const OUTPUT_CAP = 10000; // Claude Code caps hook output strings at 10 000 characters
@@ -21729,6 +22041,28 @@ try {
   const argv = process.argv.slice(2);
   const ei = argv.indexOf('--emit');
   const shape = ei !== -1 ? String(argv[ei + 1]) : 'claude';
+  if (shape === 'kimi') {
+    // SessionStart and PostCompact are observation-only in Kimi: carry a pending mark to the next prompt,
+    // whose UserPromptSubmit contract can append agent-facing context.
+    const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
+    const root = projectRoot(ev.cwd || process.cwd());
+    if (!existsSync(join(root, DEPLOYMENT))) process.exit(0);
+    const statePath = join(root, '.kaif', 'kimi-refresh.json');
+    if (ev.hook_event_name === 'SessionStart' || ev.hook_event_name === 'PostCompact') {
+      mkdirSync(dirname(statePath), { recursive: true });
+      writeFileSync(statePath, JSON.stringify({ pending: true, source: ev.hook_event_name, at: new Date().toISOString() }));
+      process.exit(0);
+    }
+    if (ev.hook_event_name !== 'UserPromptSubmit') process.exit(0);
+    let pending = null;
+    try { pending = JSON.parse(readFileSync(statePath, 'utf8').replace(/^\uFEFF/, '')); } catch { /* no pending refresh */ }
+    if (!pending || pending.pending !== true) process.exit(0);
+    pending.pending = false;
+    writeFileSync(statePath, JSON.stringify(pending));
+    process.stdout.write(`KAIF context refresh (${pending.source || 'session start'}). Before task work run /skill:resume in full: ` +
+      `read the re-read core, stamp ${join(root, '.kaif', 'refresh-marker.json')} and quote one relevant canon line in the chat.`);
+    process.exit(0);
+  }
 
   let source = '';   // unreadable event or no `source` field → the neutral wording: an unknown event is not a compaction (bug 120)
   let cwd = process.cwd();
@@ -21952,8 +22286,9 @@ process.exit(0);
 //  (answers to a neighbour) no write; acceptance 13/13, red on the former hook at (11)–(13), mutants «quiet ignored» and «a notification is
 //  the owner» red on exactly their cases — testcases/reports/2026-10-30_s96-farewell-live-speech-scenarios.md. NOT YET live: a closing turn
 //  woken by a background task's notification]
-import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, readdirSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
+import { homedir } from 'node:os';
 
 export const FAREWELL_FILE = 'FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md';
 const MEMORY = join('.kaif', 'farewell-capture.json');
@@ -22031,6 +22366,55 @@ export function capture(event, readFile = (p) => readFileSync(p, 'utf8')) {
   return text ? { root, text, closureId: turn.closureId } : null;
 }
 
+export function kimiWireOf(sessionId, home = process.env.KIMI_CODE_HOME || join(homedir(), '.kimi-code')) {
+  const pending = [join(home, 'sessions')];
+  while (pending.length) {
+    const dir = pending.pop();
+    let entries = [];
+    try { entries = readdirSync(dir, { withFileTypes: true }); } catch { continue; }
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      const p = join(dir, entry.name);
+      if (entry.name === sessionId) {
+        const wire = join(p, 'agents', 'main', 'wire.jsonl');
+        if (existsSync(wire)) return wire;
+      }
+      pending.push(p);
+    }
+  }
+  return null;
+}
+
+export function readKimiTurn(text) {
+  let closed = false, closureId = '', lastText = '';
+  for (const line of String(text).split('\n')) {
+    if (!line.trim()) continue;
+    let rec;
+    try { rec = JSON.parse(line); } catch { continue; }
+    const msg = rec.message?.message || rec.message || {};
+    const role = msg.role;
+    if (role === 'user' && closed) { closed = false; closureId = ''; lastText = ''; }
+    const body = JSON.stringify(rec);
+    const skill = /"skill"\s*:\s*"((?:[\w-]+:)?end-chat-(?:soft|force))"/.exec(body);
+    if (skill) { closed = true; closureId = skill[1]; lastText = ''; }
+    if (role === 'assistant' && closed) {
+      const content = Array.isArray(msg.content) ? msg.content : [];
+      const texts = content.filter((b) => b && b.type === 'text' && String(b.text || '').trim()).map((b) => b.text.trim());
+      if (texts.length) lastText = texts.join('\n');
+    }
+  }
+  return { closed, closureId, text: lastText };
+}
+
+export function captureKimi(event, home) {
+  if (!event || event.hook_event_name !== 'Stop' || !event.session_id) return null;
+  const wire = kimiWireOf(event.session_id, home);
+  if (!wire) return null;
+  const turn = readKimiTurn(readFileSync(wire, 'utf8'));
+  if (!turn.closed || !turn.text) return null;
+  return { root: projectRoot(String(event.cwd || process.cwd())), text: turn.text, closureId: turn.closureId };
+}
+
 if (process.argv[2] === '--selftest') {
   let bad = 0;
   const ok = (good, line) => { if (!good) bad++; console.log((good ? 'ok   ' : 'FAIL ') + line); };
@@ -22063,6 +22447,11 @@ if (process.argv[2] === '--selftest') {
   const c3 = capture({ transcript_path: 'N.jsonl' }, read);
   ok(c3 && c3.text === 'Bye.' && capture({ transcript_path: 'P.jsonl' }, read) === null,
     'a task\'s notification does not open a new turn — the farewell after it is written; a one-line answer to a neighbour is not');
+  const wire = [
+    J({ type: 'agent.message.appended', message: { message: { role: 'assistant', content: [{ type: 'tool_use', name: 'Skill', input: { skill: 'end-chat-soft' } }] } } }),
+    J({ type: 'agent.message.appended', message: { message: { role: 'assistant', content: [{ type: 'text', text: 'Bye from Kimi.' }] } } }),
+  ].join('\n');
+  ok(readKimiTurn(wire).text === 'Bye from Kimi.' && readKimiTurn(wire).closed, 'Kimi wire: a closing skill and the final assistant text are read');
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
@@ -22070,7 +22459,8 @@ if (process.argv[2] === '--selftest') {
 try {
   let event = null;
   try { event = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}'); } catch { /* unreadable stdin — nothing to do */ }
-  const c = capture(event);
+  const kimi = process.argv.includes('--kimi') || process.argv.includes('kimi');
+  const c = kimi ? captureKimi(event) : capture(event);
   if (c) {
     const out = join(c.root, FAREWELL_FILE);
     writeFileSync(out + '.tmp', c.text + '\n', 'utf8');
@@ -22172,12 +22562,12 @@ try {
   if (!observed) process.exit(0);
 
   writeFileSync(cooldownPath, new Date().toISOString());
-  process.stdout.write(JSON.stringify({
-    decision: 'block',
-    reason: `KAIF STATUS guard (fires once per session): ${observed}, but ${STATUS_FILE} was last ` +
-      `touched ~${Math.round(statusAgeH)} h ago. Update ${statusPath} with the current state — or state explicitly ` +
-      `in the chat why nothing in it changed — then finish.`,
-  }));
+  const reason = `KAIF STATUS guard (fires once per session): ${observed}, but ${STATUS_FILE} was last ` +
+    `touched ~${Math.round(statusAgeH)} h ago. Update ${statusPath} with the current state — or state explicitly ` +
+    `in the chat why nothing in it changed — then finish.`;
+  const kimi = process.argv.includes('--kimi') || process.argv.includes('kimi');
+  if (kimi) { console.error(reason); process.exit(2); }
+  process.stdout.write(JSON.stringify({ decision: 'block', reason }));
 } catch { /* a hook must never take the session down with it */ }
 process.exit(0);
 ``````
@@ -22282,6 +22672,11 @@ try {
         appendFileSync(join(root, LOG), JSON.stringify({ at: new Date().toISOString(), tool: input.tool_name,
           subagent: input.tool_input.subagent_type || 'general-purpose', description: String(input.tool_input.description || '') }) + '\n');
       } catch { /* the witness is best-effort; the preamble is what matters */ }
+      if (process.argv.includes('--kimi') || process.argv.includes('kimi')) {
+        // Kimi documents no updatedInput: the main agent must carry the preamble into the next call explicitly.
+        console.error(`KAIF subagent entry: Kimi cannot rewrite this tool input by the documented hook contract. Retry the Agent call with this exact prompt:\n\n${updated.prompt}`);
+        process.exit(2);
+      }
       process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'PreToolUse', updatedInput: updated } }));
     }
   }
@@ -22574,9 +22969,12 @@ try {
   const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
   if (!ev.agent_id) {   // a subagent's events reach the hook under the parent's session (observed, origin session 97) — the main agent's debt only
     const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(ev.cwd);
+    const kimi = process.argv.includes('--kimi') || process.argv.includes('kimi');
+    if (kimi && !existsSync(join(root, DEPLOYMENT))) process.exit(0);
     const r = handle(ev, load(root), root, rulesOf(configOf(root)), new Date().toISOString());
     save(root, r.state);
-    if (r.out) process.stdout.write(JSON.stringify(r.out));
+    if (r.out && kimi && r.out.decision === 'block') { console.error(r.out.reason); process.exit(2); }
+    if (r.out && !kimi) process.stdout.write(JSON.stringify(r.out));
   }
 } catch { /* a hook never breaks the session */ }
 process.exit(0);

@@ -1,5 +1,5 @@
 <!-- GENERATED FILE — do not edit by hand. Built from framework/_intro.md + framework/* by tools/build-framework.mjs. Edit the sources and re-run the tool. -->
-# KAIF — Krinik AI Framework · the self-extracting core · v2.9
+# KAIF — Krinik AI Framework · the self-extracting core · v2.10
 
 > **You are reading an installer.** This document describes the KAIF framework **and** unpacks it into a
 > project. If you are an AI agent asked to *"unpack KAIF"* — your job is in **§8**. Read this document,
@@ -2952,9 +2952,16 @@ gates (§7.5) and self-cleans the installer.
 
 ### 7.3 Agent systems
 
-Declared via `--agents` (default: claude-code, codex, grok-build, cline, zoo-code). The canonical
+Declared via `--agents` (default: claude-code, codex, kimi-code, grok-build, cline, zoo-code). The canonical
 skill set lives in `.claude/skills/`; mirrors derive from it mechanically (`sync` command;
-`update-verify` re-syncs automatically). Cognitive work lands in the canon only — a mirror is
+`update-verify` re-syncs automatically). Kimi Code reads native `AGENTS.md` and receives
+`.kimi-code/skills/<name>/SKILL.md`: descriptions become folded YAML blocks (safe for `: ` and localized
+alias tails), invocations become `/skill:<name>`, resources use `${KIMI_SKILL_DIR}`, and references travel
+beside the skill. The Kimi-specific directory keeps its adapted text separate from Codex's `.agents/skills/`
+copy when both systems are selected. Kimi's optional `kimi-config-fragment.toml` wires
+`kimi-permission-call.mjs` on `PermissionRequest`: the voice starts detached before the wait, from a UTF-8
+phrase file; `KAIF_VOICE_FILE_TOOL` is a JSON command prefix with a `{file}` slot (Silero + Glass, or another
+file-based engine), defaulting to `voice-soft.mjs`. Cognitive work lands in the canon only — a mirror is
 never edited by hand.
 
 ### 7.4 Languages
@@ -9056,7 +9063,7 @@ document that states the current version writes only `MAJOR.MINOR`. On deploy th
 `.kaif/kaif.json`:
 
 ```json
-{ "framework": "KAIF", "version": "2.9", "released": "2026-10-16",
+{ "framework": "KAIF", "version": "2.10", "released": "2026-11-21",
   "origin": "https://github.com/MikalaiKryvusha/KAIF", "tracking": "origin",
   "sphere": "programming", "agent": "claude-code" }
 ```
@@ -9102,7 +9109,7 @@ has converged on `AGENTS.md` for auto-context (native in Zoo Code, Codex, Copilo
 the Agent Skills standard (`SKILL.md`) for commands — Cursor, Cline and OpenCode even read `.claude/skills/`
 as-is. Reference: **Claude Code** (`CLAUDE.md` + `.claude/skills/`). Priority system #1: **Zoo Code**
 (successor of Roo Code; `.roo/commands/<name>.md`, translated mechanically by the unpacker's
-`--agent zoo-code` flag — §8); then **OpenAI Codex, GitHub Copilot, Cursor, Windsurf, Cline**; others via
+`--agent zoo-code` flag — §8); then **OpenAI Codex, Kimi Code, GitHub Copilot, Cursor, Windsurf, Cline**; others via
 the `AGENTS.md` fallback or authored from `_template`. Catalog: `framework/adapters/`.
 
 **Optional enforcement (hooks).** KAIF's discipline lives in prose, which a weak — or even a strong — model

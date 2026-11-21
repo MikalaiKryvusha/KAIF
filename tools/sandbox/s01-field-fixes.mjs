@@ -521,5 +521,78 @@ r = runAll9(S9, 'check');
 ok(r.code === 0 && /⚠ deployed artifact is git-ignored by \.gitignore:\d+ «\.roo\/»: \.roo\/rules\/kaif\.md — [^\n]*add `!\.roo\/rules\/kaif\.md`/.test(r.out),
    'S9 SW5: правило владельца прячет развёрнутое → ⚠ с отрицанием-лекарством, выход 0', r.out.slice(-500));
 
+// ---------------------------------------------------------------- S15: KAIF 2.10, критерий 37 — Kimi Code
+// [TESTED: 2026-11-21 · s01 S15, install/check/sync/voice dry-run] Новый контур: узкая установка с ru-алиасами, валидная folded-YAML преамбула,
+// явные /skill:<name>, ресурсы ${KIMI_SKILL_DIR}, затем sync изменённого канонического навыка.
+console.log('\n=== S15: Kimi Code — нативные навыки, YAML и sync (2.10, критерий 37) ===');
+const KI = join(ROOT, 's15-kimi-code'); mkdirSync(KI); seedBundle(KI);
+r = runDist(KI, 'install --lang ru --agents kimi-code');
+ok(r.code === 0, 'S15 install --lang ru --agents kimi-code — exit 0', r.out.slice(-600));
+const kiMarker = JSON.parse(readFileSync(join(KI, '.kaif', 'kaif.json'), 'utf8'));
+ok(JSON.stringify(kiMarker.agents) === '["kimi-code"]', 'S15 маркер содержит ровно kimi-code', JSON.stringify(kiMarker.agents));
+const kiPointer = readFileSync(join(KI, 'AGENTS.md'), 'utf8');
+ok(kiPointer.includes('AGENT_GUIDE.md') && kiPointer.includes('/skill:resume')
+   && kiPointer.includes('/skill:fable-method') && !kiPointer.includes('`/fable-method`'),
+   'S15 нативный AGENTS.md указывает на канон и использует явные Kimi-команды');
+ok(!existsSync(join(KI, 'CLAUDE.md')) && !existsSync(join(KI, '.grok')) && !existsSync(join(KI, '.cline'))
+   && !existsSync(join(KI, '.roo')) && !existsSync(join(KI, '.agents')),
+   'S15 узкая Kimi-установка не создаёт копии других систем');
+const kiCanonRoot = join(KI, '.claude', 'skills'), kiRoot = join(KI, '.kimi-code', 'skills');
+const kiCanonNames = readdirSync(kiCanonRoot).filter((n) => existsSync(join(kiCanonRoot, n, 'SKILL.md'))).sort();
+const kiNames = existsSync(kiRoot) ? readdirSync(kiRoot).filter((n) => existsSync(join(kiRoot, n, 'SKILL.md'))).sort() : [];
+ok(kiCanonNames.length > 30 && JSON.stringify(kiNames) === JSON.stringify(kiCanonNames),
+   `S15 все ${kiCanonNames.length} канонических навыков развёрнуты для Kimi`, kiNames.join(','));
+let kiBadYaml = [], kiBare = [];
+for (const n of kiNames) {
+  const text = readFileSync(join(kiRoot, n, 'SKILL.md'), 'utf8');
+  const fm = text.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
+  if (!fm || !new RegExp(`^name: ${n}$`, 'm').test(fm[1]) || !/^description: >-\r?\n  \S/m.test(fm[1])) kiBadYaml.push(n);
+  for (const skill of kiNames) if (new RegExp(`(?<![\\w:./-])/${skill}(?![\\w-])`).test(text)) { kiBare.push(`${n} → ${skill}`); break; }
+}
+ok(kiBadYaml.length === 0, 'S15 каждый Kimi frontmatter несёт name и folded description (безопасен для `: ` и ru-алиасов)', kiBadYaml.join(','));
+ok(kiBare.length === 0, 'S15 все вызовы навыков используют явный /skill:<name>', kiBare.slice(0, 8).join(','));
+ok(!readFileSync(join(kiRoot, 'fable-method', 'SKILL.md'), 'utf8').match(/^trigger:/m),
+   'S15 legacy trigger поле не уезжает в Kimi');
+const kiFable = readFileSync(join(kiRoot, 'fable-method', 'SKILL.md'), 'utf8');
+const kiReview = readFileSync(join(kiRoot, 'code-revision', 'SKILL.md'), 'utf8');
+ok(kiFable.includes('${KIMI_SKILL_DIR}/references/failure-modes.md')
+   && kiReview.includes('${KIMI_SKILL_DIR}/references/audit-report-template.md'),
+   'S15 ресурсы навыков адресуются через ${KIMI_SKILL_DIR}');
+let kiRefTotal = 0, kiRefBad = [];
+for (const n of kiCanonNames) {
+  const rd = join(kiCanonRoot, n, 'references');
+  if (!existsSync(rd)) continue;
+  for (const f of readdirSync(rd).filter((x) => x.endsWith('.md'))) {
+    kiRefTotal++;
+    const target = join(kiRoot, n, 'references', f);
+    if (!existsSync(target) || readFileSync(target, 'utf8') !== readFileSync(join(rd, f), 'utf8')) kiRefBad.push(`${n}/${f}`);
+  }
+}
+ok(kiRefTotal > 0 && kiRefBad.length === 0, `S15 все ${kiRefTotal} reference-файла лежат рядом с Kimi-навыками`, kiRefBad.join(','));
+r = run(KI, 'check');
+ok(r.code === 0, 'S15 check Kimi-установки зелёный', r.out.slice(-600));
+appendFileSync(join(kiCanonRoot, 'resume', 'SKILL.md'), '\nKimi sync probe: this line must travel.\n');
+r = run(KI, 'sync');
+ok(r.code === 0 && readFileSync(join(kiRoot, 'resume', 'SKILL.md'), 'utf8').includes('Kimi sync probe: this line must travel.'),
+   'S15 sync доставляет правку канонического навыка в Kimi-копию', r.out.slice(-400));
+r = run(KI, 'check');
+ok(r.code === 0 && !/mirror drifted/.test(r.out), 'S15 check после sync не видит ложного дрейфа Kimi-копии', r.out.slice(-400));
+const kiVoiceHook = join(KI, '.kaif', 'hooks', 'kimi-permission-call.mjs');
+const kiVoiceSelf = spawnSync(process.execPath, [kiVoiceHook, '--selftest'], { cwd: KI, encoding: 'utf8' });
+ok(kiVoiceSelf.status === 0 && /selftest: all ok/.test(kiVoiceSelf.stdout),
+   'S15 Kimi permission voice: файловый движок и подстановка {file} — selftest зелёный', kiVoiceSelf.stderr || kiVoiceSelf.stdout);
+const kiVoiceDry = spawnSync(process.execPath, [kiVoiceHook, '--dry-run'], {
+  cwd: KI, input: JSON.stringify({ hook_event_name: 'PermissionRequest', cwd: KI }), encoding: 'utf8',
+  env: { ...process.env, KAIF_VOICE_FILE_TOOL: '["pythonw.exe","-I","say.py","--file","{file}"]' },
+});
+const kiVoiceEvent = kiVoiceDry.status === 0 ? JSON.parse(kiVoiceDry.stdout) : {};
+ok(kiVoiceDry.status === 0 && kiVoiceEvent.phrase?.includes('Нужно ваше разрешение')
+   && kiVoiceEvent.command?.join(' ') === 'pythonw.exe -I say.py --file ' + kiVoiceEvent.phraseFile
+   && existsSync(kiVoiceEvent.phraseFile),
+   'S15 PermissionRequest заранее пишет UTF-8 фразу и готовит фоновый Silero/Glass-вызов без звука', kiVoiceDry.stderr || kiVoiceDry.stdout);
+ok(readFileSync(join(KI, '.kaif', 'hooks', 'kimi-config-fragment.toml'), 'utf8').includes('event = "PermissionRequest"')
+   && readFileSync(join(KI, '.gitignore'), 'utf8').includes('.kaif/kimi-voice.log'),
+   'S15 Kimi voice sample и ignore-first журнала поставлены');
+
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ все песочницы зелёные'}`);
 process.exit(failures ? 1 : 0);

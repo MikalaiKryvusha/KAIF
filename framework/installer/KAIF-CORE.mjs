@@ -28,8 +28,8 @@
 //                       item in the adaptation task.
 //   --mode <m>          standard (default) | anonymous — anonymous skips origin-tied skills and
 //                       writes no origin field (anonymity by design; no prose scrubbing needed).
-//   --agents <list>     comma list to narrow the target systems (default: all five:
-//                       claude-code,codex,grok-build,cline,zoo-code). AGENTS.md is always written.
+//   --agents <list>     comma list to narrow the target systems (default: all six:
+//                       claude-code,codex,kimi-code,grok-build,cline,zoo-code). AGENTS.md is always written.
 //   --force             overwrite existing non-empty files.
 //
 // Exit code 0 = the step is 100% satisfied; non-zero = incomplete (fix and re-run).
@@ -74,7 +74,7 @@ let LANG = (val('--lang') || 'en').toLowerCase();
 let MODE = (val('--mode') || 'standard').toLowerCase();
 let ANON = MODE === 'anonymous';
 const FORCE = has('--force');
-const ALL_AGENTS = ['claude-code', 'codex', 'grok-build', 'cline', 'zoo-code'];
+const ALL_AGENTS = ['claude-code', 'codex', 'kimi-code', 'grok-build', 'cline', 'zoo-code'];
 let AGENTS = (val('--agents') || ALL_AGENTS.join(',')).split(',').map((s) => s.trim()).filter(Boolean);
 
 const ORIGIN = 'https://github.com/MikalaiKryvusha/KAIF';
@@ -513,6 +513,7 @@ function ignoreFirstWanted() {
     '.kaif/owner-presence.json',   // the moment of the owner's last own prompt — the contour lifts its quiet hours while fresh (2.10, #193)
     '.kaif/context-window.json',   // the context-window hook's levels already said per session (2.10, #188) — session state
     '.kaif/test-debt.json',        // the testing hook's debt and waivers (2.10, epic HC, #175 · #176) — runtime state, not history
+    '.kaif/kimi-voice.log',        // the detached Kimi permission voice's process log (2.10, criterion 37) — runtime state
     '.kaif/contour-window/',      // the owner page's own browser profile IN THE PROJECT (2.7, epic LP, origin issue #66)
     '.kaif/.contour-tmp/',        // the contour's renders and the call phrase (2.9, #126) — a sweeping commit took a page of questions along
     contourDecisionsDir() + '/*.lock', // the contour's window locks (2.9, #126) — a killed server's lock stays on purpose (I29)
@@ -863,6 +864,7 @@ function anonymize(content) {
 // Verified conventions (adapters catalog; Grok Build web-verified 2026-07-16):
 //   claude-code: .claude/skills/<n>/SKILL.md (canonical layout) + CLAUDE.md context file
 //   codex:       .agents/skills/<n>/SKILL.md (Agent Skills standard, copy as-is) + native AGENTS.md
+//   kimi-code:   .kimi-code/skills/<n>/SKILL.md (Kimi transform) + native AGENTS.md; docs verified 2026-11-21
 //   grok-build:  .grok/skills/<n>/SKILL.md (SKILL.md standard; also auto-reads .claude/ + AGENTS.md)
 //   cline:       .cline/skills/<n>/SKILL.md (≥3.48; also reads .claude/skills/) + .clinerules/kaif.md
 //   zoo-code:    .roo/commands/<n>.md (drop `name:`; filename = command) + .roo/rules/kaif.md
@@ -875,6 +877,10 @@ const CONTEXT_POINTER =
   '`STATUS.md` (current state); think per `PHILOSOPHY.md`; write requirements per `REQUIREMENTS_FRAMEWORK.md`; ' +
   'test per `TESTING_FRAMEWORK.md`; debug per `BUG_FIXING_FRAMEWORK.md`; execute ' +
   'tasks per the fable loop (`/fable-method`, `/fable-judge`).\n\n' + RESUME_RULE;
+const KIMI_POINTER = CONTEXT_POINTER.replaceAll('/fable-method', '/skill:fable-method')
+  .replaceAll('/fable-judge', '/skill:fable-judge').replace('the /resume alias', 'the resume alias')
+  .replace('/resume in full', '/skill:resume in full');
+const contextPointer = () => AGENTS.length === 1 && AGENTS[0] === 'kimi-code' ? KIMI_POINTER : CONTEXT_POINTER;
 // Zoo Code's own pointer gained the rule in 2.9 (epic UT2, origin ticket #120: it never carried it, and its text never changed)
 const ZOO_POINTER = '# KAIF\n\nRead `AGENT_GUIDE.md` before every task; keep `STATUS.md` current. ' +
   'Skills live in `.roo/commands/` (one `/command` per KAIF skill).\n\n' + RESUME_RULE;
@@ -894,7 +900,7 @@ const POINTER_PAST_SHAS = new Set([
   '2a24ad9c5d7aff455a68ff7e7078339fd0bf5801c81837d6b61c77b8d8a23f7f',   // the Zoo Code pointer of v1.5–v2.8
 ]);
 // The pointers this deployment's agent systems expect → [[path, this release's text]]
-const pointerTexts = () => [['AGENTS.md', CONTEXT_POINTER], ...(AGENTS.includes('claude-code') ? [['CLAUDE.md', CONTEXT_POINTER]] : []),
+const pointerTexts = () => [['AGENTS.md', contextPointer()], ...(AGENTS.includes('claude-code') ? [['CLAUDE.md', CONTEXT_POINTER]] : []),
   ...(AGENTS.includes('cline') ? [['.clinerules/kaif.md', CONTEXT_POINTER]] : []), ...(AGENTS.includes('zoo-code') ? [['.roo/rules/kaif.md', ZOO_POINTER]] : [])];
 // Bring the pointers on disk up to this release: an untouched earlier text is REPLACED (its own line ends kept); an edited one without
 // the resume rule is returned for the task to name — the machinery never rewrites the owner's text. `write=false` only reports.
@@ -926,11 +932,33 @@ function writeIfNew(path, content) {
   return true;
 }
 
+// Kimi reads the Agent Skills layout, but its invocation and resource placeholders differ.
+// Folded descriptions also keep localized alias tails and ordinary "word: value" prose valid YAML.
+function kimiSkillText(path, content, names) {
+  const name = skillName(path);
+  let out = content.replace(/^description:[ \t]*(.+)$/m, (line, value) =>
+    value === '>-' || value === '>' ? line : `description: >-\n  ${value.trim()}`);
+  out = out.replace(/^trigger:[^\r\n]*\r?\n/m, '').replace(/^Co-Authored-By: Claude[^\r\n]*\r?\n?/m, '');
+  for (const n of names) out = out.replace(new RegExp(`(?<![\\w:./-])/${n}(?![\\w-])`, 'g'), `/skill:${n}`);
+  out = out.replaceAll('.claude/skills/', '.kimi-code/skills/').replaceAll('CLAUDE.md', 'AGENTS.md');
+  out = out.split('\n').map((line) => {
+    const cross = name !== 'fable-method' && (line.includes('fable-method') || (name === 'fable-domain' && line.includes("this method's own")));
+    const base = cross ? '${KIMI_SKILL_DIR}/../fable-method/references/' : '${KIMI_SKILL_DIR}/references/';
+    return line.replace(/`references\/(?!domains\/)/g, '`' + base);
+  }).join('\n');
+  if (name === 'fable-loop') out = out.replace('read its SKILL.md first;', 'read `${KIMI_SKILL_DIR}/../fable-method/SKILL.md` first;');
+  return out;
+}
+function systemSkillText(sys, path, content, names) {
+  return sys === 'kimi-code' ? kimiSkillText(path, content, names) : content;
+}
+
 function deployAgentSystems(skillFiles, refFiles) {
-  const copies = { codex: '.agents/skills', 'grok-build': '.grok/skills', cline: '.cline/skills' };
+  const names = skillFiles.map((f) => skillName(f.path));
+  const copies = { codex: '.agents/skills', 'kimi-code': '.kimi-code/skills', 'grok-build': '.grok/skills', cline: '.cline/skills' };
   for (const [sys, base] of Object.entries(copies)) {
     if (!AGENTS.includes(sys)) continue;
-    for (const { path, content } of skillFiles) writeIfNew(`${base}/${skillName(path)}/SKILL.md`, content);
+    for (const { path, content } of skillFiles) writeIfNew(`${base}/${skillName(path)}/SKILL.md`, systemSkillText(sys, path, content, names));
     // skill reference files (e.g. fable-method/references/*) travel with their skill
     for (const { path, content } of refFiles) writeIfNew(path.replace('.claude/skills', base), content);
   }
@@ -941,14 +969,15 @@ function deployAgentSystems(skillFiles, refFiles) {
   }
   if (AGENTS.includes('cline')) writeIfNew('.clinerules/kaif.md', CONTEXT_POINTER);
   if (AGENTS.includes('claude-code')) writeIfNew('CLAUDE.md', CONTEXT_POINTER);
-  writeIfNew('AGENTS.md', CONTEXT_POINTER); // universal fallback, always
+  writeIfNew('AGENTS.md', contextPointer()); // universal fallback, with Kimi's explicit skill syntax on a Kimi-only install
 }
 
 // Expected per-system artifact list for validation (mirrors deployAgentSystems).
 function expectedAgentArtifacts(skillNames) {
   const want = ['AGENTS.md'];
-  const per = { codex: (n) => `.agents/skills/${n}/SKILL.md`, 'grok-build': (n) => `.grok/skills/${n}/SKILL.md`,
-                cline: (n) => `.cline/skills/${n}/SKILL.md`, 'zoo-code': (n) => `.roo/commands/${n}.md` };
+  const per = { codex: (n) => `.agents/skills/${n}/SKILL.md`, 'kimi-code': (n) => `.kimi-code/skills/${n}/SKILL.md`,
+                'grok-build': (n) => `.grok/skills/${n}/SKILL.md`, cline: (n) => `.cline/skills/${n}/SKILL.md`,
+                'zoo-code': (n) => `.roo/commands/${n}.md` };
   for (const sys of AGENTS) if (per[sys]) for (const n of skillNames) want.push(per[sys](n));
   if (AGENTS.includes('zoo-code')) want.push('.roo/rules/kaif.md');
   if (AGENTS.includes('cline')) want.push('.clinerules/kaif.md');
@@ -2979,12 +3008,13 @@ function resyncCopies() {
     if (existsSync(rd)) for (const r of readdirSync(rd).filter((f) => f.endsWith('.md')))
       canon.push({ path: `${rd}/${r}`, content: readFileSync(`${rd}/${r}`, 'utf8') });
   }
-  const copies = { codex: '.agents/skills', 'grok-build': '.grok/skills', cline: '.cline/skills' };
+  const copies = { codex: '.agents/skills', 'kimi-code': '.kimi-code/skills', 'grok-build': '.grok/skills', cline: '.cline/skills' };
+  const names = canon.map((f) => skillName(f.path)).filter(Boolean);
   let synced = 0;
   const failed = [];
   for (const [sys, base] of Object.entries(copies)) {
     if (!agents.includes(sys)) continue;
-    for (const f of canon) if (writeMirror(f.path.replace('.claude/skills', base), f.content, failed)) synced++;
+    for (const f of canon) if (writeMirror(f.path.replace('.claude/skills', base), systemSkillText(sys, f.path, f.content, names), failed)) synced++;
   }
   if (agents.includes('zoo-code')) for (const f of canon) {
     const n = skillName(f.path);
@@ -3470,7 +3500,7 @@ async function cmdInstall() {
     die(`--mode anonymous contradicts the deployed marker (tracking: ${legacyOld.tracking || 'origin'}) — a tracked deployment cannot be anonymized by install: its origin-tied skills are already on disk, and no command performs tracked → anonymous. Re-run without --mode to keep the deployment as it is; anonymity is a fresh-deployment choice.`);
   }
   if (legacyOld) refuseOnJournal();   // a crashed previous update/bootstrap stays LOUD until resumed
-  // A legacy bootstrap must not silently WIDEN the deployment: the old default (all five
+  // A legacy bootstrap must not silently WIDEN the deployment: the old default (all six
   // systems) handed a two-system project ~80 unrequested files (bug 14, a field project). Inherit the
   // marker's agents — the 1.4-era singular `agent` included — and always say what was chosen.
   if (legacyOld && !val('--agents')) {
@@ -3861,7 +3891,7 @@ function validate(deploy, skillFiles, taskFile = TASK_FILE) {
 function cmdCheck() {
   // Prefer the live bundle (pre-cleanup); after verify-final fall back to the persisted manifest.
   // Expected agent systems come from the DEPLOYED marker, not the CLI default — a narrowed
-  // install (--agents a,b) must not be judged against all five systems.
+  // install (--agents a,b) must not be judged against all six systems.
   if (!val('--agents') && okOnDisk(KAIF_JSON)) {
     try { const j = readJson(KAIF_JSON); if (Array.isArray(j.agents) && j.agents.length) AGENTS = j.agents; } catch { /* marker unreadable — CLI default stands */ }
   }
@@ -3955,11 +3985,13 @@ function cmdCheck() {
   // the mirrors legitimately lag the canon until the re-sync runs.
   let drifted = 0;
   if (existsSync('.claude/skills')) {
+    const skillNames = readdirSync('.claude/skills');
     const mirrors = { codex: (n) => [`.agents/skills/${n}/SKILL.md`, (t) => t],
+                      'kimi-code': (n) => [`.kimi-code/skills/${n}/SKILL.md`, (t) => systemSkillText('kimi-code', `.claude/skills/${n}/SKILL.md`, t, skillNames)],
                       'grok-build': (n) => [`.grok/skills/${n}/SKILL.md`, (t) => t],
                       cline: (n) => [`.cline/skills/${n}/SKILL.md`, (t) => t],
                       'zoo-code': (n) => [`.roo/commands/${n}.md`, (t) => t.replace(/^name:[^\n]*\n/m, '')] };
-    for (const n of readdirSync('.claude/skills')) {
+    for (const n of skillNames) {
       const canonPath = `.claude/skills/${n}/SKILL.md`;
       if (!okOnDisk(canonPath)) continue;
       const canonText = readFileSync(canonPath, 'utf8');
