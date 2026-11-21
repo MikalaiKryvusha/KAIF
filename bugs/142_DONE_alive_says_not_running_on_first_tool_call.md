@@ -1,6 +1,6 @@
 # Bug 142 — `--alive` говорит «хуки НЕ запускаются» в первом вызове сессии, когда хуки работают
 
-**Status:** 🔧 fix pending verification — починено сессией 103 (отчёт `testcases/reports/2026-11-18_bugs141-142-decision-name-and-alive.md`);
+**Status:** ✅ DONE — сессия 105, первый вызов нового чата дал код 0 (раздел в конце); починено сессией 103 (отчёт `testcases/reports/2026-11-18_bugs141-142-decision-name-and-alive.md`);
 DONE — после первого вызова НОВОГО чата истока, где `--alive` дал код 0
 **Version/build:** исток KAIF, сборка 842 · расширение Claude Code для VS Code, Windows 11, папка с доверием · **When/context:** ≈ 2026-11-18 01:05 +03:00,
 сессия 103 — шаг 0 `/resume`: первый же вызов сессии (чтение прощания + `node framework/hooks/context-window.mjs --alive`) получил код 1
@@ -55,3 +55,11 @@ sites: --alive судит только по записи хука окна`
 ## Links
 
 - `bugs/138` (папка без доверия — хуки не запускаются; та же проверка `--alive`), `EXPERIENCE.md` EXP-0210
+
+## ✅ STATUS: DONE (2026-11-21 18:24 +03:00)
+
+Условие исполнено на настоящем пути: новый чат истока (сессия 105, Claude Opus 5.5, расширение Claude Code в VS Code, id
+`abca6a3c-d220-44ef-80b7-8c77af70792e`) — ПЕРВЫЙ вызов инструмента чата нёс `node framework/hooks/context-window.mjs --alive`, вывод «KAIF
+hooks: running in this session (abca6a3c-…) — the context-window hook recorded it at 2026-11-21T15:16:09.816Z», `alive-exit=0`.
+Гигиена: самопроверка хука и мутанты G7 · G8 (сессия 103). Функциональный прогон: первый вызов нового чата — код 0, прочитан.
+Решения, принятые агентом без владельца: нет новых.

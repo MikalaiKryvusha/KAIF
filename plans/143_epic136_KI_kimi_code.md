@@ -14,6 +14,10 @@
 > «69178 of 891289»), `--alive` exit 0; found and fixed `bugs/146` (Kimi's `Write {path}`); NOT observed — a Stop block opening a
 > continuation turn in `kimi -p`, `PostToolUseFailure`, `PermissionRequest`, `PostCompact`/`StopFailure` live (`StopFailure` proven on real
 > records); next — one TUI session for the Stop path. KA4 ✅ · KA5 (bare `/resume` hint for a Kimi + Codex install) ✅ in part.
+> **Stop path by Kimi's code 2026-11-21 18:25 +03:00 (session 105):** the block does open a continuation turn in a session that stays alive (TUI · ACP ·
+> web: `runStop` → `loop.notify` → `releaseIntake` → `schedule`), and `kimi -p` drops it — print mode waits for its own turn only, then
+> `cleanup → quiesceSessionAgents` cancels the loop while the asynchronous Stop hook is still running (`researches/50` §14). The adapter
+> says so. Live proof in a live session — batched into KA9 with KA2 (one ACP-driven run, not a TUI at the owner's keyboard).
 > **Вовне:** four owner decisions (interview, scenario form) · one write permission for the owner's `~/.kimi-code/config.toml`.
 
 ## Goal vector (Achieve)
@@ -42,10 +46,10 @@ owner's questions and mid-turn words reaching the agent, and a chat that dies of
 
 ## Steps
 
-- [ ] **KA0 — Commit the recon and the parked fix.** Anchor: `plans/136` → KI 37–40. `researches/50`, `bugs/145`, the standing-lie corrections
+- [x] **KA0 — Commit the recon and the parked fix.** Anchor: `plans/136` → KI 37–40. `researches/50`, `bugs/145`, the standing-lie corrections
   (STATUS · `researches/48` · EXPERIENCE · `bugs/144` · report · `KAIF_FRAMEWORK.md`), the prior session's `s14` assertions (s14 green,
   mute guard green, session 104). ≈ 0.25 h.
-- [ ] **KA1 — Fix the matchers (`bugs/145`).** Anchor: criterion 38. In `framework/hooks/kimi-config-fragment.toml` drop the five
+- [x] **KA1 — Fix the matchers (`bugs/145`).** Anchor: criterion 38. In `framework/hooks/kimi-config-fragment.toml` drop the five
   `matcher = "*"` lines (omitted = all, `researches/50` §6), anchor the rest: `^(Write|Edit)$` · `^Agent$` · `^Skill$`. New build guard:
   every Kimi matcher compiles with `new RegExp`, and every `[[hooks]]` entry has only `event · matcher · command · timeout` with a known
   event (one bad entry drops the whole section — §6). Prove red on `9263794`. Fix the `[TESTED]` line of `context-window.mjs:103`.
@@ -59,13 +63,13 @@ owner's questions and mid-turn words reaching the agent, and a chat that dies of
   its own hook scripts. `wire-hooks` learns `--agents kimi-code`: prints the exact `[[hooks]]` diff, writes only on the owner's explicit
   word (global file — `plans/143` rule since rev. 1), backs up, validates with `kimi doctor config`. Plugin (C) → `ideas/33` for 2.11.
   ≈ 2–3 h.
-- [ ] **KA3 — Window stages before Kimi's compaction.** Anchor: criterion 38, owner decision №161. Kimi compacts at
+- [x] **KA3 — Window stages before Kimi's compaction.** Anchor: criterion 38, owner decision №161. Kimi compacts at
   `min(0.85·W, W − 50 000)` checked before every step, counting each Cyrillic character as a token (§9) — KAIF's 85 % and 92 % stages never
   arrive. The hook reads `loop_control.compaction_trigger_ratio` / `reserved_context_size` from Kimi's config and places the stages below the
   trigger by the margin of decision D1. Delivery mid-turn: only `UserPromptSubmit` injects text and `PreToolUse` / `Stop` can block (§6) —
   the order goes through a one-time `PreToolUse` block (its reason is written back into the context) and `Stop`, never through
   `PostToolUse`. ≈ 1.5–2.5 h.
-- [ ] **KA4 — `--alive` and `check` for Kimi.** Anchor: criterion 38. `--alive` today reads only `.claude/settings.json`
+- [x] **KA4 — `--alive` and `check` for Kimi.** Anchor: criterion 38. `--alive` today reads only `.claude/settings.json`
   (`context-window.mjs:397-401`) and always answers «nothing to judge» under Kimi (`researches/50` §12.6). Under Kimi it reads the
   `[[hooks]]` of `~/.kimi-code/config.toml` (and flags invalid matchers) plus the session record; `check` on a Kimi-only install reports Kimi
   wiring instead of Claude's. ≈ 1–1.5 h.
@@ -74,10 +78,10 @@ owner's questions and mid-turn words reaching the agent, and a chat that dies of
   `whenToUse`. (b) Project skills are found only under the nearest `.git` ancestor (§4) — `install` / `check` say so when there is none.
   (c) Live: the `Skill` tool calls a KAIF skill with an argument and a `${KIMI_SKILL_DIR}` reference (doc says inline-only — §13.4).
   ≈ 1–2 h.
-- [ ] **KA6 — Quota death leaves a handoff.** Anchor: criterion 39. The prior Kimi chat died on the 5-hour quota (429, not retried) with
+- [x] **KA6 — Quota death leaves a handoff.** Anchor: criterion 39. The prior Kimi chat died on the 5-hour quota (429, not retried) with
   `[object Object]` and no farewell (§12.5). Wire `stop-farewell-capture.mjs` also on `StopFailure`: on a quota error it writes the farewell
   file and a `PARKED:` line naming the reason. ≈ 0.5–1 h.
-- [ ] **KA7 — Owner conversation under Kimi.** Anchor: criterion 39. Interview with decisions D1–D3 (below), then the adapter and
+- [x] **KA7 — Owner conversation under Kimi.** (D1–D4 answered in chat, №164; the adapter names steer · Never Ask · the window steps) Anchor: criterion 39. Interview with decisions D1–D3 (below), then the adapter and
   `framework/adapters/kimi-code.md` say what each chosen setting does. ≈ 0.5–1 h plus the owner's answers.
 - [ ] **KA8 — Install findings (criterion 40, interview №050 Q1 = A).** Unchanged from rev. 1: one red case each for empty maps, two
   standard headings and the `sync` hint; fix; green; functional install in a fresh project. ≈ 1–1.5 h.

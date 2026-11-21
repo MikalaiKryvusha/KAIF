@@ -64,6 +64,10 @@ session. The fragment wires the full KAIF set, with these adaptations:
   context; every other event is observation-only. `SessionStart` and `PostCompact` leave a pending refresh
   mark for the next prompt.
 - `Stop` blocks through exit 2 + stderr; this covers STATUS, test debt and context-window closure levels.
+  Kimi runs `Stop` asynchronously after the turn ends and opens the continuation turn only in a session that
+  stays alive — the TUI, an editor over ACP, `kimi web`. **`kimi -p` drops the continuation:** print mode
+  waits for its own turn only, then cancels the loop on exit (Kimi Code 2.7.2 source). Run work that relies
+  on the Stop gates in a live session.
 - **The window steps count against Kimi's own compaction point**, not the whole window: Kimi compacts the context
   by itself once used ≥ `compaction_trigger_ratio` (default 0.85) of the window or used + `reserved_context_size`
   (default 50 000) ≥ the window, both under `[loop_control]` of its config. The KAIF steps (75 · 80 · 85 · 92 %

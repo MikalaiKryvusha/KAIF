@@ -5,10 +5,10 @@
   "codename": "Confronted KAIF",
   "sha256": {
     "KAIF-CORE.mjs": "f8a3ec6e6eec0fc68c08a2cbd250b419b0ff6eb7f5573801a47803c707f342db",
-    "KAIF-CORE-BUNDLE.md": "203b5c91a432ab9b2770702e3c87efd9aade4e87092850d7310a449ba385d692"
+    "KAIF-CORE-BUNDLE.md": "02f2fe6e8148904aa681d1078cb2564dcf3ee03375e402a90dea61b795e13a89"
   },
   "sourceTree": {
-    "sha256": "af636019b001c082348132c34e514349521f9844db5d2676a4cb419742bf74a5",
+    "sha256": "12a4cad6884cbfbcd6c30fd200683082e93996371cdff4dd2e4d8e9314b36121",
     "files": 219
   },
   "prerelease": null,
