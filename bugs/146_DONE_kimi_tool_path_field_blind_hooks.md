@@ -1,10 +1,8 @@
 # Bug 146 — Kimi: хуки KAIF не видят файл записи — Kimi называет его `path`, а не `file_path`
 
-**Status:** 🔧 fix in the tree (2026-11-21 17:50 +03:00); half of the DONE condition observed LIVE 2026-11-21 17:57 +03:00 — a real `kimi -p` (run 3 of KA9)
-wrote `src/app.mjs` and `.kaif/test-debt.json` holds it; the stop asking for the run — not observed (the Stop block of `kimi -p` opened no
-continuation turn, `researches/50` §14); DONE — after that half is seen (a TUI session) · **Severity:** S2 (потерян прогон: проверка «написал код — запусти его» под Kimi молча не работала) ·
-**Version/build:** KAIF 2.10 WIP `8ef671e`, Kimi Code CLI 2.7.2 · **When/context:** 2026-11-21 17:50 +03:00, живой прогон KA9 (сессия 104)
-**Fixing:** эта сессия.
+**Status:** ✅ DONE 2026-11-22 09:53 +03:00 — в новой Kimi VS Code сессии `session_6d66c1d4…` запись `.mjs` создала долг, `Stop` открыл продолжение (`system_trigger / stop_hook`), файл запущен, `test debt: none`; отчёт `testcases/reports/2026-11-22_kimi-stop-alive.md` · **Severity:** S2 (потерян прогон: проверка «написал код — запусти его» под Kimi молча не работала) ·
+**Version/build:** KAIF 2.10 WIP `8ef671e` + фикс; приёмка на `1c2001c`, Kimi Code VS Code 0.9.0 · **When/context:** дефект 2026-11-21 17:50 +03:00, живой прогон KA9 (сессия 104); закрытие 2026-11-22 09:53 +03:00
+**Fixing:** исполнено и проверено живьём.
 
 ## Goal vector / done when
 
@@ -37,9 +35,17 @@ continuation turn, `researches/50` §14); DONE — after that half is seen (a TU
 TWINS: searched `tool_input.*file_path` и `\.file_path` в `framework/hooks/` — found 2 hooks reading the file name (`test-after-code`,
 `clock-now`); `knowledge-moment` и `subagent-preamble` пути не читают (`prompt`, общий текст входа).
 
+## ✅ STATUS: DONE (2026-11-22 09:53 +03:00)
+
+Гигиена: `bugs146-kimi-path-red` A–E зелёные, контроль `8ef671e` красный в B и D.
+Функциональный прогон: новая Kimi VS Code сессия `session_6d66c1d4…`; запись `.mjs` → долг → `Stop` с `origin: system_trigger / stop_hook` в 09:40 → запуск в продолжении → `test debt: none`.
+[TESTED: 2026-11-22 · `testcases/reports/2026-11-22_kimi-stop-alive.md`]
+
+Уточнение по простою: агент ошибочно завершил ход второй раз вместо запуска файла в продолжении 09:40. Второй `Stop` в том же agent turn не открывает ещё одно продолжение по контракту Kimi; это не оправдание простоя и не отменяет первую успешную приёмку. Урок — EXP-0221.
+
 ## Decisions made without the owner
 
-_(заполняется при закрытии)_
+- none.
 
 ## Links
 
