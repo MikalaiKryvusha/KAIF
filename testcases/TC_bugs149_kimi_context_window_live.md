@@ -35,10 +35,10 @@ before Kimi applies compaction. A fixture, a direct hook invocation or a written
 | C1 smoke | start new VS Code session → `--alive` records its own id | state / smoke | pass — `session_6d66c1d4-2a8f-4f04-9eae-0d922a4428ea`, exit 0, `testcases/reports/2026-11-22_kimi-stop-alive.md` |
 | C2 | write new `.mjs`, end turn → debt and a Stop continuation | transition | pass — 09:40 `origin: system_trigger / stop_hook`, file ran, debt cleared |
 | C3 | real work fills window to 75 % → warning only, normal work continues | boundary | pass — 2026-11-22 13:11 +03:00, live PreToolUse block at 670984/891289, `said:[75]`, `A WARNING only`; voice `voice/2026-11-22_13-11-08_okno-75-procentov.txt`; work continued |
-| C4 | real work fills window to 80 % → logical-cut order, current item lands green | boundary / transition | [NOT-TESTED] |
-| C5 | real work fills window to 85 % → soft-close order delivered | boundary / transition | [NOT-TESTED] |
-| C6 | after C5 call `/skill:end-chat-soft` → actual skill invocation precedes compaction | sequence / user path | [NOT-TESTED] |
-| C7 | inspect fresh global hook log for this session → no continuing old `node .kaif/hooks/…` errors | error guessing | [NOT-TESTED] |
+| C4 | real work fills window to 80 % → logical-cut order, current item lands green | boundary / transition | pass — live PreToolUse block at 717456/891289, `logical cut`, `soft closure comes at 85 %`, `said:[75,80]`; current item committed green as `94edfae`; no new heavy task |
+| C5 | real work fills window to 85 % → soft-close order delivered | boundary / transition | pass — live PreToolUse block at 757784/891289, exact `/skill:end-chat-soft` order, `said:[75,80,85]`; hand `--measure` then returned 0 |
+| C6 | after C5 call `/skill:end-chat-soft` → actual skill invocation precedes compaction | sequence / user path | pass — Skill(end-chat-soft) invoked immediately after C5; exact compaction record absent before and at the invocation checkpoint |
+| C7 | inspect fresh global hook log for this session → no continuing old `node .kaif/hooks/…` errors | error guessing | pass — current session id has no error lines in `kimi-code.log`; exact `"type":"context.apply_compaction"` absent from its wire at this checkpoint |
 
 ## 5. Control cases — MUST
 
@@ -49,4 +49,4 @@ before Kimi applies compaction. A fixture, a direct hook invocation or a written
 
 ## 6. Verdict
 
-In progress. `[TESTED]` and `bugs/149` DONE are illegal until C3–C7 carry live observations and the final event order is read from the wire.
+[TESTED: 2026-11-22 · all C1–C7 and K1–K2 passed on the real Kimi VS Code path; testcases/reports/2026-11-22_bugs149-context-window-live.md]. The live 85 % delivery and the actual `/skill:end-chat-soft` invocation precede the first compaction record.
