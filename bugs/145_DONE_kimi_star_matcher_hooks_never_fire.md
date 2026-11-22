@@ -1,12 +1,8 @@
 # Bug 145 — Kimi: хуки KAIF с `matcher = "*"` никогда не запускаются
 
-**Status:** 🔧 fix in the tree, live check pending (2026-11-21 17:19 +03:00: fragment fixed, guard 5zb red on `9263794` exactly 5, the owner's config rewritten
-with a backup and `kimi doctor` OK; LIVE 2026-11-21 17:57 +03:00 — real `kimi -p` runs 1 and 3 of KA9: `PostToolUse` without a matcher fired (knowledge-moment
-weighed the calls, test-after-code wrote the debt — on the 15:20 config with «*» the same trace was 0), `PreToolUse` without a matcher fired
-(the closing gate); `PostToolUseFailure` and `PermissionRequest` not exercised (`kimi -p` runs Never Ask, no tool failed); DONE — after those
-two are seen) · **Severity:** S1 (голос до ожидания разрешения — слово владельца — молча перестал звучать; заявления о живых хуках
-неверны) · **Version/build:** KAIF 2.10 WIP (`9263794`), Kimi Code CLI 2.7.2 · **When/context:** 2026-11-21 16:52 +03:00, разведка `researches/50` (сессия 104)
-**Fixing:** `plans/143`, первый шаг адаптации после разведки — до живой приёмки критериев 37–39.
+**Status:** ✅ DONE 2026-11-22 10:54 +03:00 — все пять прежних молчавших хуков имеют живые следы Kimi: `PostToolUse` ×3, `PostToolUseFailure` и `PermissionRequest` (ACP `session_476e0bc5…`, автоматическое одобрение и голосовой файл); отчёт `testcases/reports/2026-11-22_ki-ka9-live-hooks.md` · **Severity:** S1 (голос до ожидания разрешения — слово владельца — молча перестал звучать; заявления о живых хуках
+неверны) · **Version/build:** KAIF 2.10 WIP (`9263794` + фикс), приёмка `483612c`, Kimi Code CLI 2.7.2 и VS Code 0.9.0 · **When/context:** дефект 2026-11-21 16:52 +03:00, разведка `researches/50` (сессия 104); закрытие 2026-11-22 10:54 +03:00
+**Fixing:** исполнено и проверено живьём.
 
 ## Goal vector / done when
 
@@ -55,9 +51,15 @@ omitted, matches all»).
 TWINS: searched `matcher *= *"\*"` и `"matcher": "*"` в `framework/` и `tools/` — found 5 sites in `framework/hooks/kimi-config-fragment.toml`
 (:58 · :70 · :76 · :82 · :114); `settings-fragment.json` :90 · :115 — Claude Code, там `"*"` законен, не близнец.
 
+## ✅ STATUS: DONE (2026-11-22 10:54 +03:00)
+
+Гигиена: `bugs145-matcher-red` A–C зелёные, `9263794` красный ровно пятью `*`; `kimi-hook --selftest` зелёный; полный полигон — 28/28.
+Функциональный прогон: `PostToolUse` ×3 и `PostToolUseFailure` видны в реальной VS Code сессии; ACP `session_476e0bc5…` дал `PermissionRequest`, автоматическое одобрение и голосовой файл.
+[TESTED: 2026-11-22 · `testcases/reports/2026-11-22_ki-ka9-live-hooks.md`]
+
 ## Decisions made without the owner
 
-_(заполняется при закрытии)_
+- `[ИИ]` Живой `PermissionRequest` получен через ACP plan mode с автоматическим одобрением драйвера: обычный `auto` подавляет request, а ожидание человека недопустимо в автономной приёмке.
 
 ## Links
 

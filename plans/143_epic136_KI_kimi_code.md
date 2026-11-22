@@ -18,7 +18,7 @@
 > web: `runStop` → `loop.notify` → `releaseIntake` → `schedule`), and `kimi -p` usually drops it — print mode follows further turns only while a turn, a goal, a cron fire or a background
 > task is pending, otherwise `cleanup → quiesceSessionAgents` cancels the loop while the asynchronous Stop hook still runs; a turn ending
 > with a queued request runs no Stop at all (`researches/50` §14; narrowed by the judge of session 105 — it said «waits for its own turn
-> only»). The adapter says so. Live proof in a live session — batched into KA9 with KA2 (one ACP-driven run, not a TUI at the owner's keyboard).
+> only»). The adapter says so. **Live VS Code 2026-11-22 09:40 +03:00:** the continuation arrived with `origin: system_trigger / stop_hook`; the new file ran and the debt cleared. **Live all five former silent hooks 2026-11-22 10:54 +03:00:** `PostToolUseFailure` produced the knowledge reminder and ACP `session_476e0bc5…` produced `PermissionRequest` with an automatic approval and the voice file; `bugs/145` · `146` · `147` DONE. Reports `testcases/reports/2026-11-22_kimi-stop-alive.md` and `…_ki-ka9-live-hooks.md`. `bugs/149` remains the only live KA9 blocker.
 > **Вовне:** four owner decisions (interview, scenario form) · one write permission for the owner's `~/.kimi-code/config.toml`.
 
 ## Goal vector (Achieve)

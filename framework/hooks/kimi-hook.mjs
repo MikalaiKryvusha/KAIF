@@ -9,7 +9,7 @@
 //   3. runs that project's own .kaif/hooks/<script.mjs> (in the KAIF origin's source tree — framework/hooks/) with the same stdin, from
 //      the project root, and returns its stdout, stderr and exit code (2 = block, as Kimi reads it); no such script → exit 0, silent.
 // It carries no hook logic and no version: the project's scripts decide, so one copy serves every KAIF project of the machine.
-// [NOT-TESTED: the selftest cases below run the dispatcher as a child process; a live Kimi session through it — plans/143 KA9]
+// [TESTED: 2026-11-22 · selftest plus a live Kimi Stop continuation; testcases/reports/2026-11-22_kimi-stop-alive.md]
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
