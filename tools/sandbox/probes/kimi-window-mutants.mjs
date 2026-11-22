@@ -1,10 +1,12 @@
 // kimi-window-mutants.mjs — mutants of the Kimi branch of framework/hooks/context-window.mjs (plans/143 KA3; decision №164, D1).
 //   node tools/sandbox/probes/kimi-window-mutants.mjs
 // Each mutant is a copy of the hook in a temp folder with ONE change; its selftest must go red on exactly the cases named here, before the run:
-//   K1 «the steps count against the whole window again» (win = full)       → all five Kimi closure/compaction cases
+//   K1 «the steps count against the whole window again» (win = full)       → closure/compaction and escalation cases
 //   K3 «a pending step is not said on the next prompt»                       → «after a compaction … next prompt»
-//   K4 «the closing demand is one-time again»                                → closure latch at 85 % · new owner prompt · closure latch at 92 %
+//   K4 «the closing demand is one-time again»                                → closure latch · new owner prompt · force escalation
 //   K5 «a new owner prompt does not re-arm the closure»                      → «a new owner prompt re-arms»
+//   K6 «soft satisfies force again»                                          → soft-to-force escalation only
+//   K7 «force entry opens ordinary work again»                               → post-force contour only
 // A mutation that does not apply, or a selftest that dies, is BAD (EXP-0158). Exit 0 — every mutant red on exactly its cases.
 import { readFileSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
@@ -16,11 +18,14 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const SRC = readFileSync(join(ROOT, 'framework', 'hooks', 'context-window.mjs'), 'utf8');
 const C1 = 'Kimi closure latch at 85 %', C2 = 'Kimi after a compaction', C3 = 'Kimi Stop at 85 % of the point';
 const C4 = 'Kimi closure latch: a new owner prompt re-arms', C5 = 'Kimi closure latch at 92 %';
+const C6 = 'Kimi soft-to-force escalation', C7 = 'Kimi post-force contour';
 const MUTANTS = [
-  ['K1', 'const win = kimiCompactionPoint(full, configText);', 'const win = full;', [C1, C2, C3, C4, C5]],
+  ['K1', 'const win = kimiCompactionPoint(full, configText);', 'const win = full;', [C1, C2, C3, C4, C5, C6, C7]],
   ['K3', "if (!d && !demand && st.pending && evn === 'UserPromptSubmit')", 'if (false)', [C2]],
-  ['K4', "if (demand && evn === 'PreToolUse') block = demand;", 'if (false) {}', [C1, C4, C5]],
+  ['K4', "else if (demand && evn === 'PreToolUse') block = demand;", 'else if (false) {}', [C1, C4, C5, C6]],
   ['K5', "if (evn === 'UserPromptSubmit') delete st.closing;", '', [C4]],
+  ['K6', 'const demand = required && !closureSatisfied(required, st.closing)', 'const demand = required && !st.closing', [C6]],
+  ['K7', "const forceRestriction = st.closing === 'force' && evn === 'PreToolUse' && !closing && !forceClosureTool(ev);", 'const forceRestriction = false;', [C7]],
 ];
 let bad = 0;
 const run = (text) => {

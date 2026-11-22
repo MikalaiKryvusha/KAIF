@@ -1,7 +1,7 @@
 # Bug 150 — Kimi продолжает обычную работу после уже доставленного приказа закрытия
 
-**Status:** 🔴 OPEN — REOPENED 2026-11-23 00:27 +03:00: после раннего DONE та же живая сессия выполнила `context.apply_compaction` (wire 2474) уже после входа в soft и force; прежняя приёмка доказала только отказы до входа, но не весь путь закрытия
-**Version/build:** исток KAIF 2.10, рабочее дерево после `29c94f7` · Kimi Code 2.7.2, VS Code, Windows 11 · **When/context:** 2026-11-22 21:41 +03:00, повторное автосжатие живой сессии
+**Status:** 🔧 FIX PENDING FULL LIVE ACCEPTANCE — Kimi steps 70/75/80/90, soft→force escalation и post-force contour реализованы; selftest/мутанты/s14 зелёные. Engine `auto_compact=false` запушен в fork `b42e17e46`; bugs/150 остаётся открытым до полного живого закрытия и VSIX
+**Version/build:** исток KAIF 2.10 после build 868 · Kimi fork branch `kaif/no-auto-compaction` на официальном 2.7.2 · **When/context:** рецидив 2026-11-23 00:27 +03:00, фикс и приёмка того же чата
 **Severity:** S1 — владелец снова наблюдал автоматическое сжатие после того, как прямо спросил о закрытии чата
 **Fixing:** эта сессия
 

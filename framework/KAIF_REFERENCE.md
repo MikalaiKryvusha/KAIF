@@ -643,8 +643,11 @@ against the window size by the vendor's model rule or the project's `contextWind
 `closePct` (85) «start `/end-chat-soft`», at `forcePct` (92) «finish the soft closure quickly, or start `/end-chat-force`»; a project that
 sets only `closePct` gets the others at −10 · −5 · +7; once per step (a jump says one line, the highest step), the steps re-armed when a
 compaction lowers the share; state in `.kaif/context-window.json`; never a block, a forced closure only at the forced step — Claude Code only.
-Under Kimi, an ordinary `PreToolUse` at or above a closing level is refused REPEATEDLY until the required closing skill is entered; a new
-owner prompt re-arms an unfinished closure and `PostCompact` clears it — bugs/150),
+Under Kimi, the steps are 70 · 75 · 80 · 90 % of Kimi's compaction point (decision №167); an ordinary `PreToolUse` at or above a
+closing level is refused REPEATEDLY until the required closing skill is entered. A soft entry never satisfies force; after force only
+STATUS/FAREWELL, date and git/commit handover commands pass. A new owner prompt re-arms an unfinished closure and `PostCompact` only
+rearms measurement — it is not acceptance. A hard auto-compaction prohibition requires the engine's `auto_compact = false`, because
+PreCompact cannot veto — bugs/150),
 `test-after-code.mjs` (2.10, epic HC; origin tickets #175 · #176: a write of a file that changes the product — the project's kinds in
 `.kaif/kaif.json` → `testHook`, else a source file, configs excluded — is a test debt; only a run of its own kind clears it (for a source
 file — an interpreter with the file as its script; its name elsewhere in a command is not a run), a build, a linter, `--check`, `--help`

@@ -19,8 +19,9 @@
 // spacing around it (−10 · −5 · +7); a derived step that does not climb above the step before it is dropped. A field session saw a 1M
 // window auto-compact at ≈ 89 % (887 621 tokens, origin #188) — the 92 % step may never come there; a project whose sessions compact
 // earlier sets its own steps. After a compaction the steps re-arm (keptLevels).
-// Kimi addition (bugs/150, decision №166): above close/force, EVERY ordinary PreToolUse is refused until the required closing skill is entered;
-// a new owner prompt re-arms an unfinished closure, PostCompact clears it. A one-time notice let a real session work into compaction.
+// Kimi addition (bugs/150, decisions №166–167): Kimi steps are 70 · 75 · 80 · 90 % of the compaction point. A soft entry never
+// satisfies force; after force only STATUS/FAREWELL, date and git/commit handover commands pass. PostCompact rearms measurement,
+// but compaction is an incident, not acceptance. A hard auto-compaction prohibition belongs to the engine (`auto_compact = false`).
 // The window size: no hook event carries it (vendor hooks reference); the rule — the project's `.kaif/kaif.json` → `contextWindow.tokens`
 // wins; else `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` → 200 000; else the model of the record: a `[1m]` suffix, or a family the vendor runs
 // with 1M by default (Fable 5 and later, Sonnet 5 and later, Haiku 5.5, Opus 4.7 and later — code.claude.com/docs/en/model-config) →
@@ -58,6 +59,8 @@ const DEPLOYMENT = join('.kaif', 'kaif.json');
 const TAIL_BYTES = 4 * 1024 * 1024;    // the last records of the transcript — the usage of the newest main-thread answer lives there
 const SESSIONS_KEPT = 20;
 export const DEFAULTS = { warnPct: 75, cutPct: 80, closePct: 85, forcePct: 92 };   // decision №161 of the origin
+export const KIMI_DEFAULTS = { warnPct: 70, cutPct: 75, closePct: 80, forcePct: 90 };   // decision №167 of the origin
+export const kimiThresholds = (cfg = {}) => ({ ...KIMI_DEFAULTS, ...cfg });
 const KINDS = ['warn', 'cut', 'close', 'force'];
 // The steps of a project — pure: (thresholds) → [{ kind, at }] climbing. A number the project set is kept as set; a missing one is derived
 // from closePct at the owner's spacing; a derived step at or below the step before it is dropped (a project 70 / 75 — warning 70, closing
@@ -113,8 +116,8 @@ export function kimiConfiguredWindow(model, configText) {
 // Kimi compacts the context BY ITSELF before every step once used ≥ ratio · window OR used + reserved ≥ window (agent-core-v2
 // fullCompaction/strategy.ts:18-28, 118-134; the same code in the installed 2.7.2 bundle): ratio = [loop_control] compaction_trigger_ratio
 // (0.5..0.99, default 0.85), reserved = [loop_control] reserved_context_size (default 50 000). The KAIF steps under Kimi are counted against
-// that point, not the whole window — the cut and the soft closure come before Kimi's own compaction; Kimi's trigger is never changed
-// (the KAIF owner, decision №164 of the origin, D1). Pure: (window, Kimi config text) → the token count where Kimi compacts.
+// that point, not the whole window — the cut and the soft closure come before stock Kimi's compaction. This hook only reads the
+// trigger; the later hard prohibition (decision №168) belongs to the engine's `auto_compact = false`, not to observation-only PreCompact. Pure: (window, Kimi config text) → the token count where Kimi compacts.
 export const KIMI_COMPACTION = { ratio: 0.85, reserved: 50000 };
 export function kimiCompactionPoint(win, configText = '') {
   const lc = String(configText).split(/(?=^\[)/m).find((s) => /^\[loop_control\]\s*$/m.test(s.split('\n')[0])) || '';
@@ -274,6 +277,20 @@ export function closureRequirement(used, win, cfg = {}) {
   if (pct >= atOf(L, 'close')) return 'soft';
   return null;
 }
+export const closureSatisfied = (required, closing) => required === 'force' ? closing === 'force' : required === 'soft' ? Boolean(closing) : true;
+const FORCE_FILES = new Set(['status.md', 'farewell_message_from_the_previous_chat.md']);
+export function forceClosureTool(ev) {
+  if (!ev || ev.hook_event_name !== 'PreToolUse') return false;
+  const input = ev.tool_input || {};
+  if (['Read', 'Write', 'Edit'].includes(ev.tool_name)) {
+    return FORCE_FILES.has(basename(String(input.path || '').replaceAll('\\', '/')).toLowerCase());
+  }
+  if (ev.tool_name !== 'Bash') return false;
+  const command = String(input.command || '').trim();
+  if (!command || /[;&|]/.test(command)) return false;
+  return /^(?:git\s+(?:status|diff|log|add|commit|push)(?:\s|$)|node\s+tools\/commit\.mjs(?:\s|$)|date(?:\s|$))/.test(command);
+}
+export const FORCE_WORK_REFUSAL = 'KAIF force closure: only STATUS.md, FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md, date and the git/commit commands of the handover are allowed. Ordinary work is refused; finish /skill:end-chat-force now.';
 export function closureDemand(kind, used, win, cfg = {}) {
   const L = levelsOf(cfg), pct = Math.floor((used / win) * 100), lineKind = kind === 'soft' ? 'close' : kind;
   return LINES[lineKind](pct, used, win, L).replaceAll('/end-chat-soft', '/skill:end-chat-soft').replaceAll('/end-chat-force', '/skill:end-chat-force') +
@@ -476,13 +493,21 @@ if (process.argv[2] === '--selftest') {
       const run = (event, extra = {}) => spawnSync(process.execPath, [fileURLToPath(import.meta.url), '--kimi'], {
         input: JSON.stringify({ hook_event_name: event, session_id: 'session_live', cwd: root, ...extra }),
         env: { ...process.env, KIMI_CODE_HOME: home }, encoding: 'utf8', timeout: 20000 });
-      ok(closureRequirement(757000, 891289, {}) === null && closureRequirement(760000, 891289, {}) === 'soft'
-        && closureRequirement(825330, 891289, {}) === 'force' && closureRequirement(0, 891289, {}) === null,
-        'Kimi closure requirement: below 85 % — none; at 85 % — soft; at 92 % — force; nothing measured — none');
+      const kThresholds = kimiThresholds();
+      ok(levelsOf(kThresholds).map((l) => l.at).join() === '70,75,80,90'
+        && decide(623902, 891289, kThresholds) === null && decide(623903, 891289, kThresholds).kind === 'warn'
+        && decide(668466, 891289, kThresholds, [70]) === null && decide(668467, 891289, kThresholds, [70]).kind === 'cut'
+        && decide(713031, 891289, kThresholds, [70, 75]) === null && decide(713032, 891289, kThresholds, [70, 75]).kind === 'close'
+        && decide(802160, 891289, kThresholds, [70, 75, 80]) === null && decide(802161, 891289, kThresholds, [70, 75, 80]).kind === 'force',
+        'Kimi steps (№167): 70 / 75 / 80 / 90 %; minimum tokens 623903 / 668467 / 713032 / 802161, one token below stays below');
+      ok(closureRequirement(713031, 891289, kThresholds) === null && closureRequirement(713032, 891289, kThresholds) === 'soft'
+        && closureRequirement(802160, 891289, kThresholds) === 'soft' && closureRequirement(802161, 891289, kThresholds) === 'force'
+        && closureSatisfied('soft', 'soft') && closureSatisfied('soft', 'force') && !closureSatisfied('force', 'soft') && closureSatisfied('force', 'force'),
+        'Kimi closure requirement: close 80 %, force 90 %; a soft entry never satisfies force');
       // 760 000 of Kimi's point 891 289 = 85 % — the soft closure, found on PostToolUse (whose text reaches nobody in Kimi)
       const post = run('PostToolUse'), pre = run('PreToolUse', { tool_name: 'Read' }), again = run('PreToolUse', { tool_name: 'Read' });
       ok(post.status === 0 && post.stdout === '' && pre.status === 2 && /\/skill:end-chat-soft/.test(pre.stderr)
-        && /85 % full \(760000 of 891289 tokens\)/.test(pre.stderr)
+        && /85 % full \(760000 of 891289 tokens\)/.test(pre.stderr) && /The step of 80 %/.test(pre.stderr)
         && again.status === 2 && /Ordinary work is refused/.test(again.stderr),
       `Kimi closure latch at 85 %: every ordinary PreToolUse is refused until the soft closure is entered — ${JSON.stringify({ post: post.stdout, pre: pre.stderr.slice(0, 200), again: again.stderr.slice(0, 200) })}`);
       const enter = run('PreToolUse', { tool_name: 'Skill', tool_input: { skill: 'end-chat-soft' } });
@@ -496,21 +521,36 @@ if (process.argv[2] === '--selftest') {
       run('PreToolUse', { tool_name: 'Skill', tool_input: { skill: 'end-chat-soft' } });
       writeFileSync(tp, usage + '\n' + at(760000) + '\n' + compacted + '\n');
       const pc = run('PostCompact'), stale = run('PostToolUse'), quiet = run('PreToolUse', { tool_name: 'Read' });
-      writeFileSync(tp, usage + '\n' + at(760000) + '\n' + compacted + '\n' + at(715000) + '\n');
+      writeFileSync(tp, usage + '\n' + at(760000) + '\n' + compacted + '\n' + at(670000) + '\n');
       const refill = run('PostToolUse'), prompt = run('UserPromptSubmit', { prompt: 'go on' });
       ok(pc.stdout === '' && stale.stdout === '' && quiet.status === 0 && refill.stdout === ''
-        && /80 % full \(715000 of 891289 tokens\)/.test(prompt.stdout) && /logical cut/.test(prompt.stdout),
-        `Kimi after a compaction: old counts and the closure latch stay cleared; a fresh 80 % of the point waits and is said on the next prompt — ${JSON.stringify({ pc: pc.stdout, stale: stale.stdout, prompt: prompt.stdout.slice(0, 200) })}`);
+        && /75 % full \(670000 of 891289 tokens\)/.test(prompt.stdout) && /logical cut/.test(prompt.stdout) && /soft closure comes at 80 %/.test(prompt.stdout),
+        `Kimi after a compaction: old counts and the closure latch stay cleared; a fresh 75 % of the point waits and is said on the next prompt — ${JSON.stringify({ pc: pc.stdout, stale: stale.stdout, prompt: prompt.stdout.slice(0, 200) })}`);
       const stop = spawnSync(process.execPath, [fileURLToPath(import.meta.url), '--kimi'], {
         input: JSON.stringify({ hook_event_name: 'Stop', session_id: 'session_stop', cwd: root, usage: { inputOther: 760000, inputCacheRead: 0, inputCacheCreation: 0 } }),
         env: { ...process.env, KIMI_CODE_HOME: home }, encoding: 'utf8', timeout: 20000 });
       ok(stop.status === 2 && /\/skill:end-chat-soft/.test(stop.stderr), 'Kimi Stop at 85 % of the point: exit 2 — a continuation turn with the soft closure');
       const forceUsage = { inputOther: 825330, inputCacheRead: 0, inputCacheCreation: 0 };
+      const softUsage = { inputOther: 760000, inputCacheRead: 0, inputCacheCreation: 0 };
+      const softEscalation = run('PreToolUse', { tool_name: 'Skill', tool_input: { skill: 'end-chat-soft' }, usage: softUsage, session_id: 'session_escalate' });
+      const escalation = run('PreToolUse', { tool_name: 'Read', usage: forceUsage, session_id: 'session_escalate' });
+      const wrongSoft = run('PreToolUse', { tool_name: 'Skill', tool_input: { skill: 'end-chat-soft' }, usage: forceUsage, session_id: 'session_escalate' });
+      const forceEscalation = run('PreToolUse', { tool_name: 'Skill', tool_input: { skill: 'end-chat-force' }, usage: forceUsage, session_id: 'session_escalate' });
+      ok(softEscalation.status === 0 && escalation.status === 2 && /\/skill:end-chat-force/.test(escalation.stderr)
+        && wrongSoft.status === 2 && forceEscalation.status === 0,
+        'Kimi soft-to-force escalation: a prior soft entry and another soft call do not open ordinary work at 92 %');
       const forceStop = run('Stop', { session_id: 'session_force', usage: forceUsage });
       const forcePre = run('PreToolUse', { tool_name: 'Read', usage: forceUsage, session_id: 'session_force' });
       const forceEnter = run('PreToolUse', { tool_name: 'Skill', tool_input: { skill: 'end-chat-force' }, usage: forceUsage, session_id: 'session_force' });
+      const statusRead = run('PreToolUse', { tool_name: 'Read', tool_input: { path: 'STATUS.md' }, usage: forceUsage, session_id: 'session_force' });
+      const ordinaryRead = run('PreToolUse', { tool_name: 'Read', tool_input: { path: 'README.md' }, usage: forceUsage, session_id: 'session_force' });
+      const gitStatus = run('PreToolUse', { tool_name: 'Bash', tool_input: { command: 'git status --short' }, usage: forceUsage, session_id: 'session_force' });
+      const build = run('PreToolUse', { tool_name: 'Bash', tool_input: { command: 'node tools/build-framework.mjs' }, usage: forceUsage, session_id: 'session_force' });
       ok(forceStop.status === 2 && /\/skill:end-chat-force/.test(forceStop.stderr) && forcePre.status === 2 && forceEnter.status === 0,
         'Kimi closure latch at 92 %: Stop and ordinary work require end-chat-force; entering it passes');
+      ok(statusRead.status === 0 && gitStatus.status === 0 && ordinaryRead.status === 2 && build.status === 2
+        && /only STATUS\.md/.test(ordinaryRead.stderr) && /Ordinary work is refused/.test(build.stderr),
+        'Kimi post-force contour: STATUS and git handover pass; README and build are refused');
     } finally { rmSync(dir, { recursive: true, force: true }); }
   }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
@@ -565,7 +605,7 @@ if (handKimiId && (process.argv[2] === '--alive' || process.argv[2] === '--measu
   const st = (readJson(join(root, STATE)) || {})[kimiIds(sid).find((k) => (readJson(join(root, STATE)) || {})[k]) || ''] || {};
   const full = windowOf({ tokens: cw.tokens || kimiConfiguredWindow(st.model || lu.model || kimiDefaultModel(configText), configText), seen: lu.used });
   const point = kimiCompactionPoint(full, configText);
-  const m = measureLine(lu.used, point, cw);
+  const m = measureLine(lu.used, point, kimiThresholds(cw));
   console.log(`${m.line.replace('the window is', `the room before Kimi's own compaction (it compacts at ${point} of ${full} tokens) is`)} (Kimi wire: ${tp}; session by ${handKimiBy})`);
   process.exit(m.may ? 0 : 1);
 }
@@ -608,6 +648,7 @@ if (process.argv[2] === '--kimi') {
     if (!existsSync(join(root, DEPLOYMENT))) process.exit(0);
     const marker = readJson(join(root, DEPLOYMENT)) || {};
     const cw = (marker.contextWindow && typeof marker.contextWindow === 'object') ? marker.contextWindow : {};
+    const cfg = kimiThresholds(cw);
     const id = ev.session_id, all = readJson(join(root, STATE)) || {};
     const st = all[id] || { said: [], seen: 0 };
     if (typeof ev.model === 'string' && ev.model) st.model = ev.model;
@@ -627,22 +668,23 @@ if (process.argv[2] === '--kimi') {
     } catch { /* no readable Kimi config — the generic floor and Kimi's default trigger apply */ }
     const full = windowOf({ tokens: cw.tokens || configured, seen: Math.max(st.seen || 0, used) });
     const win = kimiCompactionPoint(full, configText);   // the steps count up to Kimi's own compaction (№164, D1)
-    const gate = closeGate(ev, used, win, cw);
+    const gate = closeGate(ev, used, win, cfg);
     if (gate) { process.stdout.write(JSON.stringify(gate)); process.exit(0); }
     let d = null;
     if (measured > 0 && evn !== 'PreToolUse') {
       st.seen = Math.max(st.seen || 0, measured);
       st.said = keptLevels(measured, win, st.said || []);
-      d = decide(measured, win, cw, st.said);
+      d = decide(measured, win, cfg, st.said);
       if (d) {
         d = { ...d, line: d.line.replaceAll('/end-chat-soft', '/skill:end-chat-soft').replaceAll('/end-chat-force', '/skill:end-chat-force')
           .replace('the window is', `the room before Kimi's own compaction (it compacts at ${win} of ${full} tokens) is`) };
         st.said = [...new Set([...st.said, ...d.levels])];
       }
     }
-    const required = closureRequirement(used, win, cw), closing = closingCall(ev);
-    if (required && closing) { st.closing = closing.kind; delete st.pending; }
-    const demand = required && !st.closing ? closureDemand(required, used, win, cw) : '';
+    const required = closureRequirement(used, win, cfg), closing = closingCall(ev);
+    if (closing && (!required || closureSatisfied(required, closing.kind))) { st.closing = closing.kind; delete st.pending; }
+    const demand = required && !closureSatisfied(required, st.closing) ? closureDemand(required, used, win, cfg) : '';
+    const forceRestriction = st.closing === 'force' && evn === 'PreToolUse' && !closing && !forceClosureTool(ev);
     // Delivery (researches/50 §6): Kimi gives the model a hook's text on UserPromptSubmit only, and a PreToolUse or Stop block carries its
     // reason into the context; PostToolUse, PostCompact and a Stop that does not block reach nobody. A step found there waits as `pending`.
     // Above a closing level the refusal is NOT one-time (bugs/150): every ordinary call gets it until the closing skill is entered.
@@ -652,7 +694,8 @@ if (process.argv[2] === '--kimi') {
     let say = evn === 'UserPromptSubmit' ? demand || (d ? d.line : '') : '';
     let block = evn === 'Stop' ? demand || (stopBlocks ? d.line : '') : '';
     if (!d && !demand && st.pending && evn === 'UserPromptSubmit') { say = st.pending; delete st.pending; }
-    if (demand && evn === 'PreToolUse') block = demand;
+    if (forceRestriction) block = FORCE_WORK_REFUSAL;
+    else if (demand && evn === 'PreToolUse') block = demand;
     else if (!d && st.pending && evn === 'PreToolUse') { block = `${st.pending} (KAIF delivered this before your tool call; the call was not run — repeat it after you have read this.)`; delete st.pending; }
     all[id] = { ...st, at: new Date().toISOString() };
     const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);

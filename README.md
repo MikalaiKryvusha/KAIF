@@ -258,10 +258,9 @@ Table 2 — Knowledge directories
    The agent stops when the owner asks it to.
 5. The module also writes time from the machine clock, enters subagents through the project canon,
    records knowledge and test debt, captures the closing farewell, and watches four context-window
-   stages: 75 % warning · 80 % logical cut · 85 % soft closure · 92 % forced closure. Kimi Code uses
-   one user-level dispatcher and counts these stages against its own compaction point, so the soft
-   closure starts before Kimi compacts the session. Above a closing threshold, ordinary work remains
-   refused until the agent enters the required closing skill.
+   stages. The general defaults are 75 % warning · 80 % logical cut · 85 % soft closure · 92 % forced
+   closure. Kimi Code uses 70/75/80/90 % of its own compaction point. A soft entry never satisfies
+   the forced stage; after forced closure starts, only the handover files and git commands pass.
 
 ## 4. The skills
 
@@ -825,10 +824,10 @@ origin, ни упоминаний автора (привязанные к origin
    владельца.
 5. Модуль также записывает время по часам машины, вводит субагентов через канон проекта, ведёт
    знания и тестовый долг, сохраняет прощание закрывающего чата и следит за четырьмя ступенями
-   контекстного окна: 75 % — предупреждение · 80 % — логический срез · 85 % — мягкое закрытие ·
-   92 % — срочное закрытие. Kimi Code использует один пользовательский диспетчер и считает ступени
-   от точки собственного сжатия. Мягкое закрытие сессии начинается до точки сжатия Kimi. Выше порога
-   закрытия обычная работа отклоняется до входа агента в нужный навык закрытия.
+   контекстного окна. Общие значения по умолчанию: 75 % — предупреждение · 80 % — логический срез ·
+   85 % — мягкое закрытие · 92 % — срочное закрытие. Kimi Code использует 70/75/80/90 % от точки
+   собственного сжатия. Вход в мягкое закрытие не засчитывается как вход в срочное. После входа
+   в срочное закрытие проходят только файлы эстафеты и git-команды.
 
 ## 4. Навыки
 

@@ -1555,10 +1555,10 @@
       {
         "signature": "## 14. Optional tool modules",
         "class": "static",
-        "sha256": "d231f437abce20fd93a55f0bd72ba778988a78428df754546a988f6ef393cd76",
+        "sha256": "4912a539bb16852dd72d6aeb14eb25433e5c02b44a6ff4222b135feedca77575",
         "lines": [
           590,
-          677
+          680
         ]
       },
       {
@@ -1566,8 +1566,8 @@
         "class": "static",
         "sha256": "d4990bba1bd53d7098c73e44628e981f8aad762d63658dc92be9de8675251ea1",
         "lines": [
-          678,
-          690
+          681,
+          693
         ]
       },
       {
@@ -1575,8 +1575,8 @@
         "class": "static",
         "sha256": "32adc9f3090268592dc72d360ac755c5f0c324830be4bdccdb03dd845b6323f0",
         "lines": [
-          691,
-          699
+          694,
+          702
         ]
       },
       {
@@ -1584,8 +1584,8 @@
         "class": "static",
         "sha256": "e02e472145f7b7ed7a2f50c53ae73153a828aeec2a2d10b322ca5d5d4f3f9c90",
         "lines": [
-          700,
-          709
+          703,
+          712
         ]
       },
       {
@@ -1593,8 +1593,8 @@
         "class": "static",
         "sha256": "ccae91808afe9d34c7f973a2aa277261ccabc3f3719f3edd8c7abf7befed68d3",
         "lines": [
-          710,
-          720
+          713,
+          723
         ]
       },
       {
@@ -1602,8 +1602,8 @@
         "class": "static",
         "sha256": "1612157c91aec3d625dcfd4dbfefefaeb4f25456a3098e6cd773affa55c070cd",
         "lines": [
-          721,
-          726
+          724,
+          729
         ]
       },
       {
@@ -1611,8 +1611,8 @@
         "class": "static",
         "sha256": "e8d18b25f1903d2591db789e71d65a3c492e61499ba70de3ed06a0dcc8c87e6f",
         "lines": [
-          727,
-          733
+          730,
+          736
         ]
       },
       {
@@ -1620,8 +1620,8 @@
         "class": "static",
         "sha256": "4ea74ff13ff4bf7be4d99944266790a9007da65691fb793101c90a8b2e57524c",
         "lines": [
-          734,
-          742
+          737,
+          745
         ]
       },
       {
@@ -1629,8 +1629,8 @@
         "class": "static",
         "sha256": "5628af9f9f9b91cc5fd9315ae553830d2d661f28191eb3006afd2408ba66b743",
         "lines": [
-          743,
-          749
+          746,
+          752
         ]
       },
       {
@@ -1638,8 +1638,8 @@
         "class": "static",
         "sha256": "f72d4db874c50f6139cf6ba4173a868ed48c33f933bc5692a5f5b495b94953bc",
         "lines": [
-          750,
-          759
+          753,
+          762
         ]
       },
       {
@@ -1647,8 +1647,8 @@
         "class": "static",
         "sha256": "2b681b6c64836963e93dce4e6e93a20d0ba1b54b6b165b9d734f82725f558e28",
         "lines": [
-          760,
-          768
+          763,
+          771
         ]
       },
       {
@@ -1656,8 +1656,8 @@
         "class": "static",
         "sha256": "826946b97cc4b1cfe8b0436ef94df455e5f4fd36a1a47631942879c479647aaf",
         "lines": [
-          769,
-          774
+          772,
+          777
         ]
       },
       {
@@ -1665,8 +1665,8 @@
         "class": "static",
         "sha256": "978a252ba4a8e44c79b42a7690f1137152355d50489cab33544504ac67429dfe",
         "lines": [
-          775,
-          802
+          778,
+          805
         ]
       },
       {
@@ -1674,8 +1674,8 @@
         "class": "static",
         "sha256": "fef4a9cd8b9166636f67870d0b6b3d29651a72afda1a2c921083073ee9877f5f",
         "lines": [
-          803,
-          841
+          806,
+          844
         ]
       },
       {
@@ -1683,8 +1683,8 @@
         "class": "static",
         "sha256": "1d6c9d864f839f77a25d160c64894f35bc8d0301f32360b99dce13f54cc1d287",
         "lines": [
-          842,
-          846
+          845,
+          849
         ]
       },
       {
@@ -1692,8 +1692,8 @@
         "class": "static",
         "sha256": "c1515f210fed3042b01d558d2e8c80b9b697a3f267b2e2bb4bbb1c22394e7a64",
         "lines": [
-          847,
-          851
+          850,
+          854
         ]
       },
       {
@@ -1701,8 +1701,8 @@
         "class": "static",
         "sha256": "7af7735e7828f03a80677aeb4da3b1b00e561dcc78be863fcbdfa48054175514",
         "lines": [
-          852,
-          862
+          855,
+          865
         ]
       },
       {
@@ -1710,8 +1710,8 @@
         "class": "static",
         "sha256": "6623e80c05377f674c5de22ca1dce0ecf413fd3a33f455e1581302aee8022622",
         "lines": [
-          863,
-          867
+          866,
+          870
         ]
       },
       {
@@ -1719,8 +1719,8 @@
         "class": "static",
         "sha256": "15b64e071993fe1280a6ed93d597b4d71fc45a3e86552aec746f5c3b71b95f35",
         "lines": [
-          868,
-          874
+          871,
+          877
         ]
       },
       {
@@ -1728,8 +1728,8 @@
         "class": "static",
         "sha256": "bbec52047f81840075f57f1bc71267543b664b776ea3c7dbf59b28774f3760d1",
         "lines": [
-          875,
-          900
+          878,
+          903
         ]
       },
       {
@@ -1737,8 +1737,8 @@
         "class": "static",
         "sha256": "780561c508848fd6231edb22a7c2b6af355bac3ee5042d1a5a4bdfed68dfc78c",
         "lines": [
-          901,
-          914
+          904,
+          917
         ]
       },
       {
@@ -1746,8 +1746,8 @@
         "class": "static",
         "sha256": "37270bdb49877ebc54fb99fbe8468b16bddd65c83b0d5c03ab93afd9eab883ef",
         "lines": [
-          915,
-          923
+          918,
+          926
         ]
       },
       {
@@ -1755,8 +1755,8 @@
         "class": "static",
         "sha256": "9811ab96edcfd4a192ac5af1654029b54a29e6f971a66d8c56af275a0acbf91d",
         "lines": [
-          924,
-          934
+          927,
+          937
         ]
       },
       {
@@ -1764,8 +1764,8 @@
         "class": "static",
         "sha256": "5639bdfbaca5ee8c80f4d969046e0c29592c2090cb463d21e7eb9179439703cd",
         "lines": [
-          935,
-          941
+          938,
+          944
         ]
       },
       {
@@ -1773,8 +1773,8 @@
         "class": "static",
         "sha256": "886030ff7772213a7eecbb2d5c708e9129b98b65af4a26cd4c2565f8fdeab406",
         "lines": [
-          942,
-          947
+          945,
+          950
         ]
       },
       {
@@ -1782,8 +1782,8 @@
         "class": "static",
         "sha256": "edc770e5d3fc57562a917bba949792b7f7632f740769440ab6a2bd6250f597d3",
         "lines": [
-          948,
-          952
+          951,
+          955
         ]
       },
       {
@@ -1791,8 +1791,8 @@
         "class": "static",
         "sha256": "c008f51946a3babc7d769a80a6bcc91691d316c3e29d795d3c9c9ba72f87172c",
         "lines": [
-          953,
-          958
+          956,
+          961
         ]
       },
       {
@@ -1800,8 +1800,8 @@
         "class": "static",
         "sha256": "c6bcce46ea3dcfecf55938dbb3dc74ba4ca762d696e75ecf8b8286e9af18cc47",
         "lines": [
-          959,
-          965
+          962,
+          968
         ]
       },
       {
@@ -1809,8 +1809,8 @@
         "class": "static",
         "sha256": "f3b1b877673c263545adbc32cda0cc3e3bc0e9459f9bbfbc97a84df8658924b9",
         "lines": [
-          966,
-          971
+          969,
+          974
         ]
       },
       {
@@ -1818,8 +1818,8 @@
         "class": "static",
         "sha256": "0d503ab49ceb631eaee2884db612d0745a553a31f70328764a928c6a49263555",
         "lines": [
-          972,
-          976
+          975,
+          979
         ]
       }
     ],
@@ -2413,7 +2413,7 @@
       {
         "signature": "# /end-chat-force — the urgent closure: save what must not be lost, and go",
         "class": "static",
-        "sha256": "b6b414c5ea7f39de3db83ee79fb0c7d49a5e8666679ff84c1f64972b1e72cece",
+        "sha256": "83b6382e4a949990f2feb12cebd52154415f196237ab22946580a3bc9f3cd5ec",
         "lines": [
           6,
           16
@@ -2487,7 +2487,7 @@
       {
         "signature": "## Step 0. Who closes — the owner's word or a MEASURED window",
         "class": "static",
-        "sha256": "cd3de0995a61b59706bf5faf346e9ed20354515d81492f03f7fad5f9f496ee5e",
+        "sha256": "2a084b5c460eadae45b9900682c312a0feca57d869c853b973eb6e81646de8b2",
         "lines": [
           12,
           22
@@ -5734,7 +5734,7 @@
       {
         "signature": "## What ships here",
         "class": "static",
-        "sha256": "1814b51e5b55cffbbca818bb28a53e855ca8a4dd8e9ab86f803dd671de5e09e3",
+        "sha256": "8e3f767fa21864d6c9d16483cadd31ff904441ab24039f6fd3fa4b669cac36f3",
         "lines": [
           10,
           67

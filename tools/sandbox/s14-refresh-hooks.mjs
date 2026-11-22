@@ -1014,14 +1014,14 @@ const runKimi = (script, input, args = [], env = process.env) => spawnSync(proce
   ok(x.status === 0, 's14 Kimi test debt: PostToolUse принял изменение и записал долг', `${x.status} ${x.stderr}`.slice(0, 300));
   x = runKimi('test-after-code.mjs', { hook_event_name: 'Stop', session_id: sidK, cwd: S }, ['--kimi']);
   ok(x.status === 2 && x.stderr.includes('src/app.mjs'), 's14 Kimi test debt: Stop блокируется через exit 2 со списком', `${x.status} ${x.stderr}`.slice(0, 300));
-  // Окно Kimi (№164, D1): ступени KAIF считаются от точки собственного сжатия Kimi — min(0,85 · окна, окно − 50 000); окно песочницы 200 000
-  // (пол без конфига) → точка 150 000. Дом Kimi — песочный: настоящий ~/.kimi-code/config.toml машины свод не читает.
+  // Окно Kimi (№164, D1; №167): ступени KAIF считаются от точки собственного сжатия Kimi — min(0,85 · окна, окно − 50 000); окно песочницы 200 000
+  // (пол без конфига) → точка 150 000; Kimi-ступени 70 / 75 / 80 / 90 % = 105 000 / 112 500 / 120 000 / 135 000. Дом Kimi — песочный.
   const envKW = { ...process.env, KIMI_CODE_HOME: join(ROOT, 'kimi-home-window') };
-  x = runKimi('context-window.mjs', { hook_event_name: 'Stop', session_id: sidK, cwd: S, usage: { inputOther: 110000, inputCacheRead: 10000, inputCacheCreation: 0 } }, ['--kimi'], envKW);
-  ok(x.status === 0 && x.stdout === '', 's14 Kimi window: Stop 120 000 из точки 150 000 (80 %) — ступень ждёт: текст Stop модели не доходит', `${x.status} ${x.stdout} ${x.stderr}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'Stop', session_id: sidK, cwd: S, usage: { inputOther: 102500, inputCacheRead: 10000, inputCacheCreation: 0 } }, ['--kimi'], envKW);
+  ok(x.status === 0 && x.stdout === '', 's14 Kimi window: Stop 112 500 из точки 150 000 (75 %) — ступень ждёт: текст Stop модели не доходит', `${x.status} ${x.stdout} ${x.stderr}`.slice(0, 300));
   x = runKimi('context-window.mjs', { hook_event_name: 'UserPromptSubmit', session_id: sidK, cwd: S, prompt: 'go on' }, ['--kimi'], envKW);
-  ok(x.status === 0 && x.stdout.includes('80 % full (120000 of 150000 tokens)') && x.stdout.includes('logical cut'),
-    's14 Kimi window: ждущая ступень 80 % сказана на следующем сообщении', `${x.status} ${x.stdout} ${x.stderr}`.slice(0, 300));
+  ok(x.status === 0 && x.stdout.includes('75 % full (112500 of 150000 tokens)') && x.stdout.includes('logical cut') && x.stdout.includes('soft closure comes at 80 %'),
+    's14 Kimi window: ждущая ступень 75 % сказана на следующем сообщении', `${x.status} ${x.stdout} ${x.stderr}`.slice(0, 300));
   x = runKimi('context-window.mjs', { hook_event_name: 'Stop', session_id: sidK, cwd: S, usage: { inputOther: 128000, inputCacheRead: 0, inputCacheCreation: 0 } }, ['--kimi'], envKW);
   ok(x.status === 2 && x.stderr.includes('/skill:end-chat-soft'), 's14 Kimi window: 85 % точки — exit 2 и Kimi-навык закрытия', `${x.status} ${x.stderr}`.slice(0, 300));
   x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Read' }, ['--kimi'], envKW);
@@ -1033,7 +1033,7 @@ const runKimi = (script, input, args = [], env = process.env) => spawnSync(proce
   x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Skill', tool_input: { skill: 'end-chat-soft' } }, ['--kimi'], envKW);
   ok(x.status === 0, 's14 Kimi closure latch: вызов /skill:end-chat-soft проходит', `${x.status} ${x.stderr}`.slice(0, 300));
   x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Read' }, ['--kimi'], envKW);
-  ok(x.status === 0, 's14 Kimi closure latch: вход в закрытие открывает инструменты его работы', `${x.status} ${x.stderr}`.slice(0, 300));
+  ok(x.status === 0, 's14 Kimi closure latch: вход в закрытие открывает инструменты его работы до force-порога', `${x.status} ${x.stderr}`.slice(0, 300));
   x = runKimi('context-window.mjs', { hook_event_name: 'UserPromptSubmit', session_id: sidK, cwd: S, prompt: 'resume\nnew work' }, ['--kimi'], envKW);
   ok(x.status === 0 && x.stdout.includes('/skill:end-chat-soft'),
     's14 Kimi closure latch: новый промпт снова печатает требование закрытия', `${x.status} ${x.stdout}`.slice(0, 300));
@@ -1042,12 +1042,29 @@ const runKimi = (script, input, args = [], env = process.env) => spawnSync(proce
     's14 Kimi closure latch: новый промпт на том же окне взводит незавершённое закрытие заново', `${x.status} ${x.stderr}`.slice(0, 300));
   x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Skill', tool_input: { skill: 'end-chat-soft' } }, ['--kimi'], envKW);
   ok(x.status === 0, 's14 Kimi closure latch: повторный вход в закрытие проходит перед PostCompact', `${x.status} ${x.stderr}`.slice(0, 300));
+  const forceK = { inputOther: 135000, inputCacheRead: 0, inputCacheCreation: 0 };
+  x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Read', usage: forceK }, ['--kimi'], envKW);
+  ok(x.status === 2 && x.stderr.includes('/skill:end-chat-force'),
+    's14 Kimi soft-to-force: прежний вход в soft не открывает работу на 90 %', `${x.status} ${x.stderr}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Skill', tool_input: { skill: 'end-chat-soft' }, usage: forceK }, ['--kimi'], envKW);
+  ok(x.status === 2 && x.stderr.includes('/skill:end-chat-force'),
+    's14 Kimi soft-to-force: повторный soft на force-пороге отклонён', `${x.status} ${x.stderr}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Skill', tool_input: { skill: 'end-chat-force' }, usage: forceK }, ['--kimi'], envKW);
+  ok(x.status === 0, 's14 Kimi soft-to-force: вход в force проходит', `${x.status} ${x.stderr}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Read', tool_input: { path: 'STATUS.md' }, usage: forceK }, ['--kimi'], envKW);
+  ok(x.status === 0, 's14 Kimi post-force: STATUS разрешён', `${x.status} ${x.stderr}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Bash', tool_input: { command: 'git status --short' }, usage: forceK }, ['--kimi'], envKW);
+  ok(x.status === 0, 's14 Kimi post-force: git handover разрешён', `${x.status} ${x.stderr}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Read', tool_input: { path: 'README.md' }, usage: forceK }, ['--kimi'], envKW);
+  ok(x.status === 2 && x.stderr.includes('only STATUS.md'), 's14 Kimi post-force: обычный README отклонён', `${x.status} ${x.stderr}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Bash', tool_input: { command: 'node tools/build-framework.mjs' }, usage: forceK }, ['--kimi'], envKW);
+  ok(x.status === 2 && x.stderr.includes('Ordinary work is refused'), 's14 Kimi post-force: сборка отклонена', `${x.status} ${x.stderr}`.slice(0, 300));
   x = runKimi('context-window.mjs', { hook_event_name: 'PostCompact', session_id: sidK, cwd: S }, ['--kimi'], envKW);
   ok(x.status === 0, 's14 Kimi PostCompact: observation-only событие выполнено', `${x.status} ${x.stderr}`.slice(0, 300));
-  x = runKimi('context-window.mjs', { hook_event_name: 'Stop', session_id: sidK, cwd: S, usage: { inputOther: 120000, inputCacheRead: 0, inputCacheCreation: 0 } }, ['--kimi'], envKW);
-  ok(x.status === 0 && x.stdout === '', 's14 Kimi PostCompact: после сжатия 80 % точки снова найдено и ждёт', `${x.status} ${x.stdout} ${x.stderr}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'Stop', session_id: sidK, cwd: S, usage: { inputOther: 112500, inputCacheRead: 0, inputCacheCreation: 0 } }, ['--kimi'], envKW);
+  ok(x.status === 0 && x.stdout === '', 's14 Kimi PostCompact: после сжатия 75 % точки снова найдено и ждёт', `${x.status} ${x.stdout} ${x.stderr}`.slice(0, 300));
   x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Read' }, ['--kimi'], envKW);
-  ok(x.status === 2 && x.stderr.includes('80 % full'), 's14 Kimi PostCompact: ступени взводятся повторно — 80 % уходит блоком ближайшего вызова', `${x.status} ${x.stderr}`.slice(0, 300));
+  ok(x.status === 2 && x.stderr.includes('75 % full'), 's14 Kimi PostCompact: ступени взводятся повторно — 75 % уходит блоком ближайшего вызова', `${x.status} ${x.stderr}`.slice(0, 300));
   const fragK = readFileSync(join(S, '.kaif', 'hooks', 'kimi-config-fragment.toml'), 'utf8');
   ok(!/matcher\s*=\s*"\*"/.test(fragK) && /event = "PreToolUse"\ncommand = "node \.kaif\/hooks\/context-window\.mjs --kimi"/.test(fragK.replace(/\r\n/g, '\n')),
     's14 Kimi config: нет матчера «*» (Kimi его не запускает, bugs/145); окно слушает PreToolUse каждого инструмента');

@@ -12,7 +12,7 @@ closure that loses the essentials is not fast, it is destructive. Three steps, m
 — `node .kaif/hooks/context-window.mjs --measure` exits 0 (1 — too early, keep working · 2 — nothing to measure: then only the owner's word
 closes) — never «the window feels full»; with hooks running, the context-window gate measures at the skill's call too.
 At the measured forced level, enter this skill instead of continuing ordinary work. A new owner message does not clear an unfinished
-closure while the window remains above the level; only a completed compaction reopens ordinary work in the same chat.
+closure while the window remains above the level. Compaction is a closure incident, not permission for ordinary work: record it and finish this forced handover. After entering this skill, run only the handover — never a new task, build, test suite or judge.
 
 ## Step 1. The handover — only what must not be lost
 

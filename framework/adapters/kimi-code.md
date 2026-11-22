@@ -72,15 +72,16 @@ start a new session. The fragment `.kaif/hooks/kimi-config-fragment.toml` is the
   turns only while a turn, a goal, a cron fire or a background task is pending, otherwise it exits and cancels the
   loop before the Stop hook returns. And Kimi skips `Stop` for a turn that ends with a queued request (an owner's
   message waiting in the queue). Kimi Code 2.7.2 source; run work that relies on the Stop gates in a live session.
-- **The window steps count against Kimi's own compaction point**, not the whole window: Kimi compacts the context
+- **The window steps count against Kimi's own compaction point**, not the whole window: stock Kimi compacts the context
   by itself once used ≥ `compaction_trigger_ratio` (default 0.85) of the window or used + `reserved_context_size`
-  (default 50 000) ≥ the window, both under `[loop_control]` of its config. The KAIF steps (75 · 80 · 85 · 92 %
-  by default) are taken of that point, so the cut and the soft closure come before the compaction; Kimi's trigger
-  is never changed. A step found on an observation-only event waits and goes out on the next prompt or as a
-  one-time block of the next tool call (the agent repeats that call). **At and above a closing level the refusal is
-  persistent, not one-time:** every ordinary `PreToolUse` is refused until the required closing skill is entered;
-  a new owner prompt re-arms an unfinished closure, and only `PostCompact` clears the requirement in the same chat.
-  Entering the closing skill opens the tools its own handover needs (bugs/150).
+  (default 50 000) ≥ the window, both under `[loop_control]` of its config. The Kimi KAIF steps (70 · 75 · 80 · 90 %
+  by default, decision №167) are taken of that point; other agent systems keep their own defaults. A step found on an
+  observation-only event waits and goes out on the next prompt or as a one-time block of the next tool call. **At and
+  above a closing level the refusal is persistent:** a soft entry never satisfies a force requirement; a new owner
+  prompt re-arms an unfinished closure. After force is entered, only STATUS/FAREWELL, date and the git/commit handover
+  commands pass; README, builds and ordinary work are refused (bugs/150). `PostCompact` rearms measurements, but a
+  compaction is a closure incident, not acceptance. A hard prohibition needs an engine with `[loop_control]
+  auto_compact = false`: Kimi's `PreCompact` hook is observation-only and cannot veto it.
 - Kimi usage is `inputOther + inputCacheRead + inputCacheCreation`; the model's `max_context_size` comes
   from Kimi's config, with `.kaif/kaif.json` → `contextWindow.tokens` as the explicit override.
 - **The owner's word during a turn:** Kimi queues a message typed while the agent works until the turn ends.

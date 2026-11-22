@@ -2,7 +2,7 @@
 
 > **Создан:** 2026-11-23 00:34 +03:00.
 > **Родитель:** `bugs/150` рецидив · `researches/51_kimi_no_auto_compaction.md` · `plans/136` критерии 18–19, 38 · `plans/143` KA9 · решения №161, №164, №166–168.
-> **Статус:** 🔵 F1 IN PROGRESS — разведка и планы записаны, bugs/150 переоткрыт; начата синхронизация перед официальным baseline.
+> **Статус:** 🟡 F2 FIX PENDING FULL LIVE ACCEPTANCE — engine `auto_compact=false` запушен в fork `b42e17e46`; KAIF steps/latch реализованы, selftest/мутанты/s14 зелёные. F1 baseline caveats: 2 Windows tests и VSIX bare `uuid`; F3/F4, changeset и Release впереди.
 > **Вовне:** владелец разрешил публичный репозиторий в своём GitHub, установку нашей сборки в VS Code и GitHub Release VSIX с принятыми фичами (№172). README/релиз — EN + RU в стиле репозиториев владельца после вывода стайлгайда. Marketplace/upstream PR и публикация KAIF 2.10 отдельно не разрешены.
 
 **Вектор цели:** **Avoid + Achieve.** Исключить автоматическую подмену живого контекста сводкой Kimi; до исчерпания окна завершать чат через `/skill:end-chat-soft`, а при затягивании — через `/skill:end-chat-force`. Поставить в VS Code расширение из нашего форка со свежим движком и отображением пятичасового и длительного окон квоты.
