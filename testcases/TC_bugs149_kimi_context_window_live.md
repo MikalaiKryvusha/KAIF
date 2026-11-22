@@ -34,7 +34,7 @@ before Kimi applies compaction. A fixture, a direct hook invocation or a written
 |---|---|---|---|
 | C1 smoke | start new VS Code session → `--alive` records its own id | state / smoke | pass — `session_6d66c1d4-2a8f-4f04-9eae-0d922a4428ea`, exit 0, `testcases/reports/2026-11-22_kimi-stop-alive.md` |
 | C2 | write new `.mjs`, end turn → debt and a Stop continuation | transition | pass — 09:40 `origin: system_trigger / stop_hook`, file ran, debt cleared |
-| C3 | real work fills window to 75 % → warning only, normal work continues | boundary | [NOT-TESTED] |
+| C3 | real work fills window to 75 % → warning only, normal work continues | boundary | pass — 2026-11-22 13:11 +03:00, live PreToolUse block at 670984/891289, `said:[75]`, `A WARNING only`; voice `voice/2026-11-22_13-11-08_okno-75-procentov.txt`; work continued |
 | C4 | real work fills window to 80 % → logical-cut order, current item lands green | boundary / transition | [NOT-TESTED] |
 | C5 | real work fills window to 85 % → soft-close order delivered | boundary / transition | [NOT-TESTED] |
 | C6 | after C5 call `/skill:end-chat-soft` → actual skill invocation precedes compaction | sequence / user path | [NOT-TESTED] |

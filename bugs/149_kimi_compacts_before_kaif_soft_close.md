@@ -52,7 +52,9 @@ TWINS: searched `compaction`, `context-window` и `context.apply_compaction` в 
 - Живой `Stop`: запись нового `.mjs` → долг → продолжение `system_trigger / stop_hook` в 09:40 → запуск и `test debt: none`; отчёт `testcases/reports/2026-11-22_kimi-stop-alive.md`.
 - Полный полигон на `82e8127`: 28/28. Все пять прежних молчавших хуков живые, `bugs/145` закрыт; отчёт `testcases/reports/2026-11-22_ki-ka9-live-hooks.md`.
 - Замер 2026-11-22 10:59 +03:00: 605586 из compaction point 891289 (67 %), `too early to close`; реальная работа продолжается.
-- Тестовый базис и статусы — `testcases/TC_bugs149_kimi_context_window_live.md`. Ступени 75/80/85 и вызов мягкого закрытия остаются `[NOT-TESTED]`, DONE не объявляется.
+- **75 % PASS 2026-11-22 13:11 +03:00:** живой `PreToolUse` блок на 670984 из 891289, `A WARNING only`, `said:[75]`; вызов не исполнен и повторён после чтения. Голосовое предупреждение — `voice/2026-11-22_13-11-08_okno-75-procentov.txt`; обычная работа продолжена, закрытие не начато.
+- Владелец услышал 75 % при отображении VS Code 65 %. Подтверждённые разные шкалы: 670984/1048576 = 64,0 % полного окна VS Code против 670984/891289 = 75,3 % KAIF от compaction point; следующий замер 683662 = 65,2 % и 76,7 %. Ранняя шкала KAIF намеренна, запись — `researches/50` §9.
+- Тестовый базис и статусы — `testcases/TC_bugs149_kimi_context_window_live.md`. Ступени 80/85 и вызов мягкого закрытия остаются `[NOT-TESTED]`, DONE не объявляется.
 
 ## Decisions made without the owner
 
