@@ -15,7 +15,7 @@
 //   node kaif-core.mjs check                       # validate the deployed manifest (bundle must still exist) + size budgets of the re-read core (advisory)
 //   node kaif-core.mjs report bugs/KAIF/NN_x.md    # deliver a KAIF-defect ticket to the origin via gh (standing authorization, issue #15) and write the URL back
 //   node kaif-core.mjs verify-final               # checkpoints done? then self-clean the install artifacts
-//   node kaif-core.mjs sync                        # re-sync per-system skill mirrors from .claude/skills/
+//   node kaif-core.mjs sync                        # re-sync per-system skill mirrors from .kaif/skills-canonical/
 //   node kaif-core.mjs diff [--source <x>]         # audit disk vs deployed templates | preview vs another version
 //   node kaif-core.mjs adopt-current               # rebuild the snapshot after a MANUAL migration
 //   node kaif-core.mjs version                     # report the deployed version from .kaif/kaif.json
@@ -33,7 +33,7 @@
 //   --force             overwrite existing non-empty files.
 //
 // Exit code 0 = the step is 100% satisfied; non-zero = incomplete (fix and re-run).
-import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync, readdirSync, rmSync, unlinkSync, mkdtempSync, copyFileSync, renameSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, statSync, readdirSync, rmSync, unlinkSync, mkdtempSync, copyFileSync, cpSync, renameSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { tmpdir, homedir } from 'node:os';
 import { execSync, execFileSync, spawnSync } from 'node:child_process';
@@ -558,7 +558,9 @@ function parseBundle(src, loose = false) {
   return { files: files.filter((f) => f.path !== 'kaif-bundle-manifest.json'), meta };
 }
 
-const skillName = (p) => (p.match(/^\.claude\/skills\/([^/]+)\/SKILL\.md$/) || [])[1] || null;
+const CANONICAL_SKILLS = '.kaif/skills-canonical';
+const LEGACY_CANONICAL_SKILLS = '.claude/skills';
+const skillName = (p) => (p.match(/^(?:\.kaif\/skills-canonical|\.claude\/skills)\/([^/]+)\/SKILL\.md$/) || [])[1] || null;
 const isSkippedAnon = (p) => ANON && ORIGIN_TIED.includes(skillName(p) || '');
 
 // The "N skills trigger-aliased" summary counts what is ON DISK, never what was planned
@@ -570,7 +572,7 @@ const isSkippedAnon = (p) => ANON && ORIGIN_TIED.includes(skillName(p) || '');
 // form that cannot: the property is "the skill carries its alias line", so it is measured
 // where that line either exists or does not.
 const countAliasedOnDisk = () => {
-  const dir = join('.claude', 'skills');
+  const dir = CANONICAL_SKILLS;
   if (!existsSync(dir)) return 0;
   let n = 0;
   for (const name of readdirSync(dir)) {
@@ -862,7 +864,7 @@ function anonymize(content) {
 
 // ---------------------------------------------------------------------------- agent systems wiring
 // Verified conventions (adapters catalog; Grok Build web-verified 2026-07-16):
-//   claude-code: .claude/skills/<n>/SKILL.md (canonical layout) + CLAUDE.md context file
+//   claude-code: .claude/skills/<n>/SKILL.md (mirror layout) + CLAUDE.md context file
 //   codex:       .agents/skills/<n>/SKILL.md (Agent Skills standard, copy as-is) + native AGENTS.md
 //   kimi-code:   .kimi-code/skills/<n>/SKILL.md (Kimi transform) + native AGENTS.md; docs verified 2026-11-21
 //   grok-build:  .grok/skills/<n>/SKILL.md (SKILL.md standard; also auto-reads .claude/ + AGENTS.md)
@@ -951,7 +953,7 @@ function kimiSkillText(path, content, names) {
   if (description && !/^whenToUse:/m.test(out)) out = out.replace(description[0], `${description[0]}\nwhenToUse: >-\n  ${description[1]}`);
   out = out.replace(/^trigger:[^\r\n]*\r?\n/m, '').replace(/^Co-Authored-By: Claude[^\r\n]*\r?\n?/m, '');
   for (const n of names) out = out.replace(new RegExp(`(?<![\\w:./-])/${n}(?![\\w-])`, 'g'), `/skill:${n}`);
-  out = out.replaceAll('.claude/skills/', '.kimi-code/skills/').replaceAll('CLAUDE.md', 'AGENTS.md');
+  out = out.replaceAll('.kaif/skills-canonical/', '.kimi-code/skills/').replaceAll('.claude/skills/', '.kimi-code/skills/').replaceAll('CLAUDE.md', 'AGENTS.md');
   out = out.split('\n').map((line) => {
     const cross = name !== 'fable-method' && (line.includes('fable-method') || (name === 'fable-domain' && line.includes("this method's own")));
     const base = cross ? '${KIMI_SKILL_DIR}/../fable-method/references/' : '${KIMI_SKILL_DIR}/references/';
@@ -966,12 +968,12 @@ function systemSkillText(sys, path, content, names) {
 
 function deployAgentSystems(skillFiles, refFiles) {
   const names = skillFiles.map((f) => skillName(f.path));
-  const copies = { codex: '.agents/skills', 'kimi-code': '.kimi-code/skills', 'grok-build': '.grok/skills', cline: '.cline/skills' };
+  const copies = { 'claude-code': '.claude/skills', codex: '.agents/skills', 'kimi-code': '.kimi-code/skills', 'grok-build': '.grok/skills', cline: '.cline/skills' };
   for (const [sys, base] of Object.entries(copies)) {
     if (!AGENTS.includes(sys)) continue;
     for (const { path, content } of skillFiles) writeIfNew(`${base}/${skillName(path)}/SKILL.md`, systemSkillText(sys, path, content, names));
     // skill reference files (e.g. fable-method/references/*) travel with their skill
-    for (const { path, content } of refFiles) writeIfNew(path.replace('.claude/skills', base), content);
+    for (const { path, content } of refFiles) writeIfNew(path.replace(CANONICAL_SKILLS, base), content);
   }
   if (AGENTS.includes('zoo-code')) {
     for (const { path, content } of skillFiles)
@@ -986,7 +988,7 @@ function deployAgentSystems(skillFiles, refFiles) {
 // Expected per-system artifact list for validation (mirrors deployAgentSystems).
 function expectedAgentArtifacts(skillNames) {
   const want = ['AGENTS.md'];
-  const per = { codex: (n) => `.agents/skills/${n}/SKILL.md`, 'kimi-code': (n) => `.kimi-code/skills/${n}/SKILL.md`,
+  const per = { 'claude-code': (n) => `.claude/skills/${n}/SKILL.md`, codex: (n) => `.agents/skills/${n}/SKILL.md`, 'kimi-code': (n) => `.kimi-code/skills/${n}/SKILL.md`,
                 'grok-build': (n) => `.grok/skills/${n}/SKILL.md`, cline: (n) => `.cline/skills/${n}/SKILL.md`,
                 'zoo-code': (n) => `.roo/commands/${n}.md` };
   for (const sys of AGENTS) if (per[sys]) for (const n of skillNames) want.push(per[sys](n));
@@ -1008,7 +1010,7 @@ function expectedAgentArtifacts(skillNames) {
 function unresolvedOnDisk(unresolved, deploy) {
   let declared = null;
   try { const s = readJson(KAIF_JSON).sphere; if (s && s !== 'TODO') declared = `.kaif/spheres/${s}.md`; } catch { /* no marker yet */ }
-  const surfaces = [...placeholderSurfaces()].filter((p) => !/^\.(agents|grok|cline|roo)\//.test(p));
+  const surfaces = [...placeholderSurfaces()].filter((p) => !/^\.(agents|grok|cline|roo|claude)\//.test(p));
   return [...unresolved].map((ph) => {
     const paths = surfaces.filter((p) => okOnDisk(p) && readFileSync(p, 'utf8').includes(ph));
     // Issue #3 (gate-scope-wider-than-instruction): before the sphere is declared, the libraries
@@ -1069,7 +1071,114 @@ function backupTree(deploy, fromVer, toVer) {
       copied++;
     }
     if (copied) log(`+ pre-update backup: ${copied} file(s) → ${dir}/ (rollback material; git-ignored, replaced next interval)`);
+    if (existsSync(LEGACY_CANONICAL_SKILLS)) {
+      cpSync(LEGACY_CANONICAL_SKILLS, join(dir, LEGACY_CANONICAL_SKILLS), { recursive: true });
+      log(`+ pre-update backup: legacy canonical skills → ${join(dir, LEGACY_CANONICAL_SKILLS)}/`);
+    }
   } catch (e) { log(`⚠ pre-update backup skipped: ${e.message}`); }
+}
+
+function remapCanonicalPath(p) {
+  return typeof p === 'string' && p.startsWith(LEGACY_CANONICAL_SKILLS + '/') ? CANONICAL_SKILLS + p.slice(LEGACY_CANONICAL_SKILLS.length) : p;
+}
+
+// Move the old canonical source without losing its provenance: the same disk and template shas
+// continue under the neutral path, so the normal update classifier still protects local edits.
+function remapCanonicalManifest(manifest) {
+  if (!manifest) return manifest;
+  for (const key of ['paths', 'agents', 'kept']) {
+    if (Array.isArray(manifest[key])) manifest[key] = manifest[key].map(remapCanonicalPath);
+  }
+  for (const key of ['shas', 'templateShas', 'moduleShas', 'templateLines', 'templateTexts']) {
+    if (!manifest[key] || typeof manifest[key] !== 'object') continue;
+    manifest[key] = Object.fromEntries(Object.entries(manifest[key]).map(([p, v]) => [remapCanonicalPath(p), v]));
+  }
+  manifest.canonicalSkills = CANONICAL_SKILLS;
+  return manifest;
+}
+
+function canonicalMigrationPending() {
+  if (!existsSync(LEGACY_CANONICAL_SKILLS)) return false;
+  try { return !okOnDisk(DEPLOY_MANIFEST) || readJson(DEPLOY_MANIFEST).canonicalSkills !== CANONICAL_SKILLS; }
+  catch { return true; }
+}
+
+function legacyCanonicalFiles() {
+  const out = [];
+  const walk = (dir, prefix = '') => {
+    for (const e of readdirSync(dir, { withFileTypes: true })) {
+      const rel = prefix ? `${prefix}/${e.name}` : e.name;
+      if (e.isDirectory()) walk(join(dir, e.name), rel); else out.push(rel);
+    }
+  };
+  walk(LEGACY_CANONICAL_SKILLS);
+  return out.sort();
+}
+
+// Move the old canonical source without losing its provenance. When an old core already wrote
+// the incoming templates to the neutral path, the old release's baseline drives the usual modular
+// merge: untouched modules advance, local modules survive, and custom skills cross unchanged.
+// [TESTED: 2026-11-22 · s01 S16 — sync, new-core update and update-verify after v2.9; red with migration disabled;
+//  testcases/reports/2026-11-22_canonical-skills-migration.md]
+function migrateLegacyCanonical(manifest, baseline = null) {
+  if (!existsSync(LEGACY_CANONICAL_SKILLS)) return remapCanonicalManifest(manifest);
+  let copied = 0, merged = 0;
+  const kept = manifest ? new Set(manifest.kept || []) : new Set();
+  for (const rel of legacyCanonicalFiles()) {
+    const from = `${LEGACY_CANONICAL_SKILLS}/${rel}`, to = `${CANONICAL_SKILLS}/${rel}`;
+    let content = readFileSync(from);
+    if (existsSync(to)) {
+      if (!baseline) continue;
+      const oldTpl = (baseline.templateShas || {})[from];
+      if (oldTpl && fileShaNorm(from) === oldTpl) continue;
+      if (from.endsWith('.md') && (baseline.moduleShas || {})[from]) {
+        const oldText = (baseline.templateTexts || {})[from];
+        const oldTexts = oldText == null ? null : new Map(splitModules(normEol(oldText)).map((m) => [m.signature, modText(m)]));
+        const res = mergeModules(from, readFileSync(to, 'utf8'), baseline.moduleShas[from], false, oldTexts,
+          manifest && manifest.fills && Object.keys(manifest.fills).length ? manifest.fills : null);
+        if (res && !res.translatedWholesale) { content = Buffer.from(res.merged); merged++; }
+        if (!res || res.translatedWholesale || res.divergedList.length) kept.add(to);
+      } else {
+        kept.add(to);
+        log(`⟳ ${from}: local content crosses as-is (no modular baseline for this file)`);
+      }
+    } else copied++;
+    mkdirSync(dirname(to), { recursive: true });
+    writeFileSync(to, content);
+  }
+  if (manifest) manifest.kept = [...kept].sort();
+  remapCanonicalManifest(manifest);
+  if (!AGENTS.includes('claude-code')) rmSync(LEGACY_CANONICAL_SKILLS, { recursive: true, force: true });
+  log(`↻ canonical skills moved to ${CANONICAL_SKILLS}/ (${copied} file(s) copied, ${merged} file(s) merged; local content and provenance kept)`);
+  return manifest;
+}
+
+async function ensureCanonicalSkills() {
+  if (!canonicalMigrationPending()) return;
+  const manifest = okOnDisk(DEPLOY_MANIFEST) ? readJson(DEPLOY_MANIFEST) : { paths: [], shas: {} };
+  if (okOnDisk(KAIF_JSON)) {
+    const marker = readJson(KAIF_JSON);
+    if (Array.isArray(marker.agents) && marker.agents.length) AGENTS = marker.agents;
+    if (marker.language) LANG = checkedLang(marker.language, 'the deploy marker');
+  }
+  let baseline = null;
+  if (existsSync(CANONICAL_SKILLS)) {
+    const receipt = okOnDisk(LAST_UPDATE) ? readJson(LAST_UPDATE) : null;
+    const from = receipt && receipt.from;
+    if (!from) die(`canonical skill migration needs the previous release's templates, but ${LAST_UPDATE} does not name that release; restore the old manifest or pass --baseline <dir|url>`);
+    const backup = `.kaif/backup-${from}-${(receipt && receipt.to) || 'migration'}/${LEGACY_CANONICAL_SKILLS}`;
+    if (!existsSync(backup)) {
+      mkdirSync(dirname(backup), { recursive: true });
+      cpSync(LEGACY_CANONICAL_SKILLS, backup, { recursive: true });
+      log(`+ canonical migration backup: ${backup}/`);
+    }
+    baseline = await buildSyntheticBaseline({ version: from });
+    if (!baseline) die(`canonical skill migration cannot tell local edits from upstream changes without the ${from} templates — the legacy canon is still intact; re-run with --baseline <dir|url> containing that release's artifacts`);
+  }
+  migrateLegacyCanonical(manifest, baseline);
+  manifest.shas = manifest.shas || {};
+  for (const p of [...(manifest.paths || []), ...(manifest.agents || [])]) if (okOnDisk(p)) manifest.shas[p] = fileSha(p);
+  writeFileSync(DEPLOY_MANIFEST, JSON.stringify(manifest, null, 2) + '\n');
 }
 
 // ---------------------------------------------------------------------------- crash journal (plan 77 U′2, field ask п. 2)
@@ -1578,19 +1687,23 @@ function scanStaleClaims(fromVersion, toVersion, templateShas = null) {
 function handleDeprecations(meta, old, fills = null) {
   const out = { removed: 0, kept: 0, items: [] };
   for (const d of meta.deprecations || []) {
-    if (!d.path || !existsSync(d.path)) continue;
+    if (!d.path) continue;
     const reason = d.reason || 'deprecated upstream';
     const succ = d.successor ? ` → successor: ${d.successor}` : '';
-    const tpl = (old.templateShas || {})[d.path];
-    // untouched MODULO the hand-filled slots retires mechanically too (2.6, UR2; origin #48 R2: a
-    // deprecated skill whose only local difference was its <BUILD_COMMAND> fill went to the hand)
-    if (tpl && (fileShaNorm(d.path) === tpl || (fills && normSha(unfill(readFileSync(d.path, 'utf8'), fills)) === tpl))) {
-      unlinkSync(d.path);
-      out.removed++;
-      log(`- retired ${d.path} (${reason})${succ}`);
-    } else {
-      out.kept++;
-      out.items.push(`${d.path} — ${reason}${succ} (carries local edits: remove it yourself, or keep it consciously — the successor already ships)`);
+    // The neutral canon and a Claude mirror are two instances of the same retired skill.
+    for (const path of [...new Set([d.path, remapCanonicalPath(d.path)])]) {
+      if (!existsSync(path)) continue;
+      const tpl = (old.templateShas || {})[path] || (old.templateShas || {})[remapCanonicalPath(path)] || (old.templateShas || {})[d.path];
+      // untouched MODULO the hand-filled slots retires mechanically too (2.6, UR2; origin #48 R2: a
+      // deprecated skill whose only local difference was its <BUILD_COMMAND> fill went to the hand)
+      if (tpl && (fileShaNorm(path) === tpl || (fills && normSha(unfill(readFileSync(path, 'utf8'), fills)) === tpl))) {
+        unlinkSync(path);
+        out.removed++;
+        log(`- retired ${path} (${reason})${succ}`);
+      } else {
+        out.kept++;
+        out.items.push(`${path} — ${reason}${succ} (carries local edits: remove it yourself, or keep it consciously — the successor already ships)`);
+      }
     }
   }
   if (out.kept) log(`⚠ ${out.kept} deprecated artifact(s) kept — each carries local edits; the task names it with its successor`);
@@ -1636,7 +1749,7 @@ function renameInterval(meta, fromVersion) {
         if (!has(o, n)) out[path].push([o, n]);
         if (prior && !has(prior[0], n)) out[path].push([prior[0], n]);
       }
-  return out;
+  return Object.fromEntries(Object.entries(out).map(([path, pairs]) => [remapCanonicalPath(path), pairs]));
 }
 
 // NEW files that arrived in English on a non-English deployment (2.5, epic US; field #28 R2:
@@ -2584,6 +2697,10 @@ async function cmdUpdate() {
   for (const f of deploy) if (okOnDisk(f.path)) sizeBefore[f.path] = statSync(f.path).size;
   backupTree(deploy, cur.version, man.version);      // rollback material BEFORE anything is written
   writeUpdateJournal(cur.version, man.version, base, 'core-update', deploy);   // crash journal: after the backup, before the first mutation
+  if (canonicalMigrationPending()) {                 // a Claude mirror is NOT a legacy source once the mark exists
+    migrateLegacyCanonical(old, oldBase);            // neutral canon and its remapped provenance BEFORE classification
+    remapCanonicalManifest(oldBase);                 // old template texts follow the same path map
+  }
   const { replaced, added, kept, mergedModules, diverged, divergedModules, ownerConvention, adopted, translatedWholesale, addedPaths, verdicts, verdictMismatches, fills, newModules, translatedFiles } =
     classifyAndApply(deploy, old, values, unresolved, cur, oldBase, rehearsal, renameInterval(meta, cur.version));
   const sizeJumps = deploy
@@ -2594,8 +2711,8 @@ async function cmdUpdate() {
   for (const s of sizeJumps) log(`⚠ size jump: ${s.path} ${s.before} → ${s.after} bytes — eyeball it (a mangled merge is visible here first)`);
   // agent-system artifacts: same classification via the copies' snapshots
   const skillFiles = deploy.filter((f) => skillName(f.path) && !isSkippedAnon(f.path));
-  const refFiles = deploy.filter((f) => /^\.claude\/skills\/[^/]+\/references\//.test(f.path));
-  deployAgentSystems(skillFiles, refFiles); // writeIfNew semantics: new appear; existing kept (their canonical .claude source got classified above)
+  const refFiles = deploy.filter((f) => /^\.kaif\/skills-canonical\/[^/]+\/references\//.test(f.path));
+  deployAgentSystems(skillFiles, refFiles); // writeIfNew semantics: new appear; existing kept (their neutral canon got classified above)
   syncPointers();   // UT2 (2.9, #120): an untouched pointer of an earlier release is replaced; an edited one without the rule — a task item
 
   // swap the core itself + refresh manifests (same shape and guarantees as install's:
@@ -2635,7 +2752,7 @@ async function cmdUpdate() {
     log(`⟳ marker: "i18n": "translated" recorded (${LANG} deployment; ${translatedWholesale.length} translated-wholesale file(s) recognized)`);
   }
   writeFileSync(KAIF_JSON, JSON.stringify(marker, null, 2) + '\n');
-  writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ manifestVersion: 2, paths: deployedPaths,
+  writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ manifestVersion: 2, canonicalSkills: CANONICAL_SKILLS, paths: deployedPaths,
     agents: agentPaths, shas, templateShas, moduleShas, templateLines, kept: adopted,
     values: persistValues(values), fills, marker }, null, 2) + '\n');   // `fills` — the hand-filled slots, derived (2.6, UR2)
 
@@ -2889,7 +3006,7 @@ function splicePackageJson(raw, addName, addScripts) {
 // DECLARED sphere only — foreign sphere libraries carry template slots BY DESIGN (bugs/36).
 function placeholderSurfaces() {
   const scan = new Set(['AGENT_GUIDE.md']);
-  for (const base of ['.claude/skills', '.agents/skills', '.grok/skills', '.cline/skills'])
+  for (const base of [CANONICAL_SKILLS, '.claude/skills', '.agents/skills', '.grok/skills', '.cline/skills'])
     if (existsSync(base)) for (const n of readdirSync(base)) { const p = `${base}/${n}/SKILL.md`; if (existsSync(p)) scan.add(p); }
   if (existsSync('.roo/commands')) for (const n of readdirSync('.roo/commands').filter((f) => f.endsWith('.md'))) scan.add(`.roo/commands/${n}`);
   // Sphere libraries: only the DECLARED sphere is a working surface — the others are reference
@@ -2992,9 +3109,9 @@ function healMarker() {
 // One mirror write — the ONLY way this file writes a per-system copy (bugs/58, family 12
 // "a refusal that does not name the right move"). Two guarantees, both paid for by a live repro:
 //   1. the DIRECTORY is created here, the same way writeIfNew does it (line 407). The canon
-//      instructs every project to author its own skills in .claude/skills/ (KAIF_REFERENCE §7.3);
+//      instructs every project to author its own skills in .kaif/skills-canonical/ (KAIF_REFERENCE §7.3);
 //      for such a skill the mirror directory is created by NOBODY — deployAgentSystems mkdirs
-//      only for skills that came from the bundle, while resyncCopies walks .claude/skills/ whole.
+//      only for skills that came from the bundle, while resyncCopies walks the neutral canon whole.
 //   2. a write that still fails is reported as a NAMED path plus the command that repairs it —
 //      never as a raw ENOENT thrown out of a final gate, which left the install with nothing at
 //      all to close it (`sync`, both checkpoints and BOTH final gates died on one stacktrace).
@@ -3004,30 +3121,30 @@ function writeMirror(to, content, failures) {
   catch (e) { failures.push(`${to} (${e.code || e.message})`); return false; }
 }
 
-// Re-sync the per-system skill copies from the canonical .claude/skills/ — cognitive work
+// Re-sync the per-system skill copies from the canonical .kaif/skills-canonical/ — cognitive work
 // (adaptation fills, update merges, owner customizations) lands in the canon only; machinery
 // propagates it so no copy is ever edited by hand (bug 05 and its empty-project tail).
 function resyncCopies() {
-  if (!existsSync('.claude/skills')) return;
+  if (!existsSync(CANONICAL_SKILLS)) return;
   const agents = okOnDisk(KAIF_JSON) ? (readJson(KAIF_JSON).agents || []) : [];
   const canon = [];
-  for (const n of readdirSync('.claude/skills')) {
+  for (const n of readdirSync(CANONICAL_SKILLS)) {
     // On an anonymous deployment the origin-tied skills were deliberately skipped — the
     // re-sync must not smuggle them back into the mirrors (bug 13 facet, QA field report).
     if (ANON && ORIGIN_TIED.includes(n)) continue;
-    const p = `.claude/skills/${n}/SKILL.md`;
+    const p = `${CANONICAL_SKILLS}/${n}/SKILL.md`;
     if (okOnDisk(p)) canon.push({ path: p, content: readFileSync(p, 'utf8') });
-    const rd = `.claude/skills/${n}/references`;
+    const rd = `${CANONICAL_SKILLS}/${n}/references`;
     if (existsSync(rd)) for (const r of readdirSync(rd).filter((f) => f.endsWith('.md')))
       canon.push({ path: `${rd}/${r}`, content: readFileSync(`${rd}/${r}`, 'utf8') });
   }
-  const copies = { codex: '.agents/skills', 'kimi-code': '.kimi-code/skills', 'grok-build': '.grok/skills', cline: '.cline/skills' };
+  const copies = { 'claude-code': '.claude/skills', codex: '.agents/skills', 'kimi-code': '.kimi-code/skills', 'grok-build': '.grok/skills', cline: '.cline/skills' };
   const names = canon.map((f) => skillName(f.path)).filter(Boolean);
   let synced = 0;
   const failed = [];
   for (const [sys, base] of Object.entries(copies)) {
     if (!agents.includes(sys)) continue;
-    for (const f of canon) if (writeMirror(f.path.replace('.claude/skills', base), systemSkillText(sys, f.path, f.content, names), failed)) synced++;
+    for (const f of canon) if (writeMirror(f.path.replace(CANONICAL_SKILLS, base), systemSkillText(sys, f.path, f.content, names), failed)) synced++;
   }
   if (agents.includes('zoo-code')) for (const f of canon) {
     const n = skillName(f.path);
@@ -3035,7 +3152,7 @@ function resyncCopies() {
   }
   if (synced) log(`↻ re-synced ${synced} system skill copies from the canon`);
   // The refusal names the right move (bugs/58): what failed, and the one command that retries it.
-  if (failed.length) log(`⚠ ${failed.length} system skill cop${failed.length === 1 ? 'y' : 'ies'} could not be written — the canonical skills in .claude/skills/ are intact, only these mirrors lag: ${failed.join(' · ')}. Fix the path or permission, then re-run \`node .kaif/kaif-core.mjs sync\`.`);
+  if (failed.length) log(`⚠ ${failed.length} system skill cop${failed.length === 1 ? 'y' : 'ies'} could not be written — the canonical skills in ${CANONICAL_SKILLS}/ are intact, only these mirrors lag: ${failed.join(' · ')}. Fix the path or permission, then re-run \`node .kaif/kaif-core.mjs sync\`.`);
 }
 
 // self-clean: the deployment step is done; the project is driven by the skills from here on.
@@ -3452,11 +3569,13 @@ function templateOf(p) {
   catch { return null; }
 }
 
-function cmdUpdateVerify() {
+async function cmdUpdateVerify() {
   // The update from the previous release is run by the DEPLOYED core, whose ignore list may lack this release's
   // lines (court of 2.7, D-F1: `.kaif/contour-window/` never reached .gitignore on 2.6 -> 2.7); update-verify is
   // run by THIS core on every route, so ignore-first is re-asserted here, before any gate. Idempotent.
   ensureIgnoreFirst();
+  // The previous core did not know the neutral canon: finish that migration before any mirror sync.
+  await ensureCanonicalSkills();
   // UT2 (2.9, criterion 17; origin ticket #120): the same two-author route — an update run by the previous core left its pointers as
   // they were; this core brings the untouched ones up and refuses while an edited one lacks the resume rule, naming file and line
   const ptr = syncPointers();
@@ -3541,7 +3660,7 @@ async function cmdInstall() {
   // that blocked the next update as "died mid-flight" (cmdUpdate has loaded it first since 2.5)
   const earlyRehearsal = legacyOld ? loadRehearsal(legacyOld.version, meta.version) : null;
   if (legacyOld) {
-    if (legacyOld.version !== meta.version) {
+    if (legacyOld.version !== meta.version || canonicalMigrationPending()) {
       backupTree(deploy, legacyOld.version, meta.version); // rollback material BEFORE any write
       writeUpdateJournal(legacyOld.version, meta.version, BUNDLE, 'bootstrap', deploy);   // crash journal: same contract as core-update
     }
@@ -3550,6 +3669,7 @@ async function cmdInstall() {
       try { const mOld = readJson(DEPLOY_MANIFEST); if (mOld.templateShas) baseline = mOld; } catch { /* unreadable — try synthetic */ }
     }
     if (!baseline) baseline = await buildSyntheticBaseline(legacyOld);
+    if (canonicalMigrationPending()) migrateLegacyCanonical(baseline, baseline);
     if (baseline) {
       // 2.6 (UR5; origin #41 wish 3): the surviving manifest holds SHAS, never TEXTS — so a module
       // absent on disk rendered as an all-`+` block on this route while the core-update route
@@ -3558,6 +3678,7 @@ async function cmdInstall() {
       // per path in classifyAndApply); absence degrades to the 2.5 rendering and never blocks.
       // `--baseline <dir|url>` is the same switch as on every other road.
       const texts = baseline.synthetic ? null : await buildSyntheticBaseline(legacyOld, 'texts');
+      remapCanonicalManifest(texts);
       // 2.6 (UR1; origin #42, three field trees in one day): `--rehearsal <receipt>` reaches this
       // route now (the flag is in install's whitelist AND the loader's), and the auto record is
       // CONSUMED below exactly like cmdUpdate's — all three trees found it still on disk after
@@ -3579,9 +3700,9 @@ async function cmdInstall() {
     }
   }
 
-  // 2) skills for all target agent systems (from the canonical .claude/skills/ set)
+  // 2) skills for all target agent systems (from the neutral canonical set)
   const skillFiles = deploy.filter((f) => skillName(f.path) && !isSkippedAnon(f.path));
-  const refFiles = deploy.filter((f) => /^\.claude\/skills\/[^/]+\/references\//.test(f.path));
+  const refFiles = deploy.filter((f) => /^\.kaif\/skills-canonical\/[^/]+\/references\//.test(f.path));
   deployAgentSystems(skillFiles, refFiles);
   if (legacyOld) syncPointers();   // UT2 (2.9, #120): an update by bootstrap brings untouched pointers of an earlier release up too
 
@@ -3716,7 +3837,7 @@ async function cmdInstall() {
   // `marker` — a pristine snapshot of .kaif/kaif.json: weak models sometimes REWRITE the
   // marker instead of adding a key (field-caught, ДЗ-02 run 5), losing version/agents/language;
   // the final gates self-heal from this snapshot.
-  writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ manifestVersion: 2, paths: deployedPaths,
+  writeFileSync(DEPLOY_MANIFEST, JSON.stringify({ manifestVersion: 2, canonicalSkills: CANONICAL_SKILLS, paths: deployedPaths,
     agents: agentPaths, shas, templateShas, moduleShas, templateLines, kept: adopted,
     values: persistValues(values), fills: cls ? cls.fills : {}, marker }, null, 2) + '\n');   // `fills` — hand-filled slots, derived on a classified bootstrap (2.6, UR2)
 
@@ -3997,15 +4118,16 @@ function cmdCheck() {
   // systems on stale skills, a field project). Non-fatal by design: between `update` and `update-verify`
   // the mirrors legitimately lag the canon until the re-sync runs.
   let drifted = 0;
-  if (existsSync('.claude/skills')) {
-    const skillNames = readdirSync('.claude/skills');
-    const mirrors = { codex: (n) => [`.agents/skills/${n}/SKILL.md`, (t) => t],
-                      'kimi-code': (n) => [`.kimi-code/skills/${n}/SKILL.md`, (t) => systemSkillText('kimi-code', `.claude/skills/${n}/SKILL.md`, t, skillNames)],
+  if (existsSync(CANONICAL_SKILLS)) {
+    const skillNames = readdirSync(CANONICAL_SKILLS);
+    const mirrors = { 'claude-code': (n) => [`.claude/skills/${n}/SKILL.md`, (t) => t],
+                      codex: (n) => [`.agents/skills/${n}/SKILL.md`, (t) => t],
+                      'kimi-code': (n) => [`.kimi-code/skills/${n}/SKILL.md`, (t) => systemSkillText('kimi-code', `${CANONICAL_SKILLS}/${n}/SKILL.md`, t, skillNames)],
                       'grok-build': (n) => [`.grok/skills/${n}/SKILL.md`, (t) => t],
                       cline: (n) => [`.cline/skills/${n}/SKILL.md`, (t) => t],
                       'zoo-code': (n) => [`.roo/commands/${n}.md`, (t) => t.replace(/^name:[^\n]*\n/m, '')] };
     for (const n of skillNames) {
-      const canonPath = `.claude/skills/${n}/SKILL.md`;
+      const canonPath = `${CANONICAL_SKILLS}/${n}/SKILL.md`;
       if (!okOnDisk(canonPath)) continue;
       const canonText = readFileSync(canonPath, 'utf8');
       for (const sys of AGENTS) {
@@ -4044,11 +4166,11 @@ function cmdCheck() {
   try {
     const lang = String(readJson(KAIF_JSON).language || 'en').toLowerCase();
     const re = SCRIPTS[lang];
-    if (lang !== 'en' && re && existsSync('.claude/skills')) {
+    if (lang !== 'en' && re && existsSync(CANONICAL_SKILLS)) {
       let total = 0, english = 0;
       const mixed = [];
-      for (const n of readdirSync('.claude/skills')) {
-        const p = `.claude/skills/${n}/SKILL.md`;
+      for (const n of readdirSync(CANONICAL_SKILLS)) {
+        const p = `${CANONICAL_SKILLS}/${n}/SKILL.md`;
         if (!okOnDisk(p)) continue;
         total++;
         const body = splitModules(normEol(readFileSync(p, 'utf8'))).filter((m) => m.signature !== '<preamble>').map(modText).join('\n');
@@ -4085,7 +4207,7 @@ function cmdCheck() {
     return i > 0 && (t.slice(0, i).split('`').length - 1) % 2 === 0 && t.indexOf('`', i + 1) < 0 ? i : -1;
   };
   for (const n of RITUAL_SKILLS) {
-    const p = `.claude/skills/${n}/SKILL.md`;
+    const p = `${CANONICAL_SKILLS}/${n}/SKILL.md`;
     if (!okOnDisk(p)) continue;
     let step = null;
     for (const l of normEol(readFileSync(p, 'utf8')).split('\n')) {
@@ -4152,7 +4274,7 @@ function cmdCheck() {
   // that document is read in parts — and a part is where a resuming session stops reading. Reference, never a stop.
   // [TESTED: 2026-11-07 · s16 section (9) 3/3, red on the previous build; on a clone of the #179 field deployment 99k → 112k with two documents
   //  named and AGENT_GUIDE.md warned — testcases/reports/2026-11-07_hc9-entry-cost-whole-entry.md]
-  const ENTRY_READ_CAP_TOKENS = 25000, ENTRY_GREPPED = new Set(['EXPERIENCE.md']), ENTRY_SKILL = '.claude/skills/resume/SKILL.md';
+  const ENTRY_READ_CAP_TOKENS = 25000, ENTRY_GREPPED = new Set(['EXPERIENCE.md']), ENTRY_SKILL = CANONICAL_SKILLS + '/resume/SKILL.md';
   const entryCore = Object.keys(DOC_BUDGETS).filter((d) => okOnDisk(d));
   const entryHouse = okOnDisk('HOUSE_RULES.md');
   const entryNamed = okOnDisk(ENTRY_SKILL)
@@ -4188,7 +4310,7 @@ function cmdCheck() {
   // GAP:            a document named in the list but skipped by the session is not visible here — the
   //                 refresh-marker witness and the judge's refresh-witness hunt cover the execution half
   // ON-REAL-PATH:   NOT YET — the path is a field deployment's own `check` after the 2.7 update
-  const RESUME_SKILL = '.claude/skills/resume/SKILL.md';
+  const RESUME_SKILL = CANONICAL_SKILLS + '/resume/SKILL.md';
   if (okOnDisk(RESUME_SKILL)) {
     const named = new Set();
     for (const m of readFileSync(RESUME_SKILL, 'utf8').matchAll(/^\s*- `([A-Za-z0-9_./-]+\.md)`/gm)) named.add(m[1]);
@@ -4313,7 +4435,7 @@ function cmdCheck() {
   //                 constitution is not that path)
   try {
     const CONSTITUTION = 'TEAM_CONSTITUTION.md';
-    const tplPath = ['.claude/skills', '.agents/skills', '.grok/skills', '.cline/skills']
+    const tplPath = [CANONICAL_SKILLS, '.claude/skills', '.agents/skills', '.grok/skills', '.cline/skills']
       .map((b) => `${b}/team-deployment/references/team-constitution-template.md`).find((p) => okOnDisk(p));
     if (okOnDisk(CONSTITUTION) && tplPath) {
       const tpl = normEol(readFileSync(tplPath, 'utf8')), doc = normEol(readFileSync(CONSTITUTION, 'utf8'));
@@ -4379,9 +4501,10 @@ function cmdCheck() {
 
 // sync — the standalone handle over resyncCopies(): mirror drift accumulates BETWEEN updates,
 // where the re-sync used to be unreachable (bug 11 facet; asked for by the field report).
-function cmdSync() {
+async function cmdSync() {
+  await ensureCanonicalSkills();
   resyncCopies();
-  log('✅ sync done — the per-system mirrors now equal the canon .claude/skills/');
+  log(`✅ sync done — the per-system mirrors now equal the canon ${CANONICAL_SKILLS}/`);
 }
 
 // sphere <name> — the file-edit-free way to record the project's sphere (field lesson,
@@ -4916,7 +5039,7 @@ async function cmdDiff() {
     const want = renderPath.replace(/\\/g, '/').replace(/^\.\//, '');
     if (isSkippedAnon(want)) die(`--render ${renderPath}: this deployment is anonymous and install never writes this origin-tied skill here`);
     const f = otherDeploy.find((x) => x.path === want);
-    if (!f) die(`--render ${renderPath}: the ${man2.version} bundle does not ship this file (name it by its deployed path — AGENT_GUIDE.md, .claude/skills/<name>/SKILL.md, .kaif/KAIF_REFERENCE.md)`);
+    if (!f) die(`--render ${renderPath}: the ${man2.version} bundle does not ship this file (name it by its deployed path — AGENT_GUIDE.md, .kaif/skills-canonical/<name>/SKILL.md, .kaif/KAIF_REFERENCE.md)`);
     let text = f.path.endsWith('.mjs') ? f.content : fillPlaceholders(f.content, values, new Set());
     // the deployment's HAND fills fold in exactly as the update folds them (`withFills`) — without them the render showed
     // `<BUILD_COMMAND>` where the update writes `npm run build` (court UP6b, C4)
@@ -5380,13 +5503,13 @@ const COMMANDS = {
   install:         { fn: cmdInstall,      mutating: true, desc: 'deploy KAIF from a bundle (the loader calls this explicitly); over an existing deployment it is an update-by-bootstrap — --rehearsal <receipt> binds it to a sandbox copy\'s verdicts', flags: { '--bundle': true, '--lang': true, '--mode': true, '--agents': true, '--baseline': true, '--force': false, '--rehearsal': true }, pos: 0 },
   update:          { fn: cmdUpdate,       mutating: true, desc: 'respectful mechanical update from the origin/release; --rehearsal <receipt> binds the run to a sandbox copy\'s verdicts', flags: { '--source': true, '--channel': true, '--lang': true, '--agents': true, '--baseline': true, '--rehearsal': true }, pos: 0 },
   resume:          { fn: cmdResume,       mutating: true, desc: 'restore the pre-update tree after a crashed update (per .kaif/update-journal.json)', flags: {}, pos: 0 },
-  'update-verify': { fn: cmdUpdateVerify, mutating: true, desc: 'final gates of an update; self-cleans on green', flags: {}, pos: 0 },
+  'update-verify': { fn: cmdUpdateVerify, mutating: true, desc: 'final gates of an update; self-cleans on green; --baseline supplies the previous release when the canon migration runs after an old core', flags: { '--baseline': true }, pos: 0 },
   'verify-final':  { fn: cmdVerifyFinal,  mutating: true, desc: 'final gates of an install; self-cleans on green', flags: {}, pos: 0 },
   checkpoint:      { fn: cmdCheckpoint,   mutating: true, desc: 'record a finished task item (recheck/placeholders/project-name EXECUTE their gates)', flags: { '--verdict': true, '--verdict-file': true }, pos: 1 },
   sphere:          { fn: cmdSphere,       mutating: true, desc: "record the project's sphere in the deploy marker", flags: {}, pos: 1 },
   report:          { fn: cmdReport,       mutating: true, desc: 'deliver a KAIF-defect ticket to the origin via gh (standing authorization, issue #15) and write the URL into it; --dry-run calls nothing', flags: { '--dry-run': false }, pos: 1 },
   'project-name':  { fn: cmdProjectName,  mutating: true, desc: "record the project's CANONICAL name (identity is the owner's; heals the marker and the fill map)", flags: { '--name-file': true }, pos: 1 },
-  sync:            { fn: cmdSync,         mutating: true, desc: 're-sync per-system skill mirrors from .claude/skills/', flags: {}, pos: 0 },
+  sync:            { fn: cmdSync,         mutating: true, desc: `re-sync per-system skill mirrors from ${CANONICAL_SKILLS}/`, flags: { '--baseline': true }, pos: 0 },
   'wire-hooks':    { fn: cmdWireHooks,    mutating: true, desc: 'wire the delivered refresh hooks into .claude/settings.json — additive, the owner\'s entries kept, a repeat run changes nothing; "hooks": "off" in .kaif/kaif.json opts out (2.9, issue #115); --kimi wires Kimi Code\'s user-level config.toml through one dispatcher (backup first, `kimi doctor config` before the swap; 2.10)', flags: { '--kimi': false }, pos: 0 },
   'adopt-current': { fn: cmdAdoptCurrent, mutating: true, desc: 'rebuild the snapshot after a manual migration', flags: {}, pos: 0 },
 };

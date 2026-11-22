@@ -19,6 +19,8 @@
 // spacing around it (−10 · −5 · +7); a derived step that does not climb above the step before it is dropped. A field session saw a 1M
 // window auto-compact at ≈ 89 % (887 621 tokens, origin #188) — the 92 % step may never come there; a project whose sessions compact
 // earlier sets its own steps. After a compaction the steps re-arm (keptLevels).
+// Kimi addition (bugs/150, decision №166): above close/force, EVERY ordinary PreToolUse is refused until the required closing skill is entered;
+// a new owner prompt re-arms an unfinished closure, PostCompact clears it. A one-time notice let a real session work into compaction.
 // The window size: no hook event carries it (vendor hooks reference); the rule — the project's `.kaif/kaif.json` → `contextWindow.tokens`
 // wins; else `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` → 200 000; else the model of the record: a `[1m]` suffix, or a family the vendor runs
 // with 1M by default (Fable 5 and later, Sonnet 5 and later, Haiku 5.5, Opus 4.7 and later — code.claude.com/docs/en/model-config) →
@@ -28,8 +30,10 @@
 // window is below closePct and without the owner's word in the skill's args (`owner: «<his words asking to close>»`) is denied with the
 // measured share; the agent keeps working. Origin: the source's session 100 closed «by the window» at 53 % by feeling, and a field deployment
 // carried the same gate after closing at 68 % «by the feeling of the limit» (its owner: you closed the chat too early again — fix the hook);
-// nothing to measure (no transcript, no usage) — the gate does not block. It never stops a turn otherwise. Any internal error → exit 0
-// silently. Lines are English: the agent reads them.
+// nothing to measure (no transcript, no usage) — the gate does not block. The Claude branch never stops a turn otherwise; Kimi's repeated
+// closure refusal is the named exception above. Any internal error → exit 0 silently. Lines are English: the agent reads them.
+// [TESTED: 2026-11-22 · bugs/150 hygiene only — closureRequirement boundaries, repeated PreToolUse, closure entry, owner-prompt re-arm,
+//  PostCompact reset, forced level; mutants K4/K5 red on exactly their cases; deployed hook green in s14. Live refill after the fix: NOT observed]
 // [TESTED: 2026-11-17 · the gate, `--measure` and `--alive` — hygiene: --selftest all ok, mutants G1–G6 of tools/sandbox/probes/gate-close-mutant.mjs
 //  red on exactly their cases, s14 on the deployed hook; functional: `--measure` and `--alive` LIVE in a session whose hooks the agent system
 //  withheld (54 %, exit 1 · «NOT running … by session id», exit 1); the gate at a live skill call — NOT observed: the origin's folder had no
@@ -240,7 +244,7 @@ export function decide(used, win, cfg, said = []) {
 // The closing gate — pure: (event, used, window, thresholds) → the hook's deny answer or null. A closing skill below closePct passes only
 // with the owner's own words in its args; a subagent never closes the chat, so its calls are not judged.
 export const OWNER_WORD = /owner:\s*[«"“][^»"”]+[»"”]/;
-export function closeGate(ev, used, win, cfg = {}) {
+export function closingCall(ev) {
   if (!ev || ev.hook_event_name !== 'PreToolUse' || ev.tool_name !== 'Skill' || fromSubagent(ev)) return null;
   const ti = ev.tool_input || {};
   // the name as Claude Code runs it (judge of session 101): it trims the name and drops a leading «/», a plugin or folder prefix ends at «:» —
@@ -248,13 +252,32 @@ export function closeGate(ev, used, win, cfg = {}) {
   // up and would not run such a skill (re-judge, N1); the gate still reads them as args — the safe direction, nothing passes by them
   const [name, ...rest] = String(ti.skill || ti.name || '').trim().replace(/^\/+/, '').split(/\s+/);
   const m = /^(?:[^\s:]+:)?end-chat-(soft|force)$/.exec(name || '');
-  if (!m || OWNER_WORD.test(`${ti.args || ''} ${rest.join(' ')}`) || !(used > 0) || !(win > 0)) return null;
+  return m ? { kind: m[1], args: `${ti.args || ''} ${rest.join(' ')}` } : null;
+}
+export function closeGate(ev, used, win, cfg = {}) {
+  const call = closingCall(ev);
+  if (!call || OWNER_WORD.test(call.args) || !(used > 0) || !(win > 0)) return null;
   const closePct = Number(cfg.closePct) > 0 ? Number(cfg.closePct) : DEFAULTS.closePct;
   const pct = Math.floor((used / win) * 100);
   if (pct >= closePct) return null;
   return { hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: 'deny', permissionDecisionReason:
     `KAIF context: the window is ${pct} % full (${used} of ${win} tokens) — below the closing level ${closePct} %: it is too early to close ` +
     `the chat by the window; keep working. Closing at the owner's word — pass his words verbatim in the skill's args: owner: «<his words>».` } };
+}
+
+// bugs/150: a one-time order is not a closure contour. Above the threshold ordinary work is refused on EVERY Kimi PreToolUse until the
+// matching closing skill is entered; a new owner prompt re-arms the requirement, and only PostCompact clears it for the same chat.
+export function closureRequirement(used, win, cfg = {}) {
+  if (!(used > 0) || !(win > 0)) return null;
+  const pct = Math.floor((used / win) * 100), L = levelsOf(cfg);
+  if (pct >= atOf(L, 'force')) return 'force';
+  if (pct >= atOf(L, 'close')) return 'soft';
+  return null;
+}
+export function closureDemand(kind, used, win, cfg = {}) {
+  const L = levelsOf(cfg), pct = Math.floor((used / win) * 100), lineKind = kind === 'soft' ? 'close' : kind;
+  return LINES[lineKind](pct, used, win, L).replaceAll('/end-chat-soft', '/skill:end-chat-soft').replaceAll('/end-chat-force', '/skill:end-chat-force') +
+    ' Ordinary work is refused until this closing skill is entered; after entering it, finish the closure and take no new task.';
 }
 
 // The agent's own measurement (session 101, bugs/138): an agent system may withhold the project's hooks and skills from a session (Claude Code
@@ -453,23 +476,41 @@ if (process.argv[2] === '--selftest') {
       const run = (event, extra = {}) => spawnSync(process.execPath, [fileURLToPath(import.meta.url), '--kimi'], {
         input: JSON.stringify({ hook_event_name: event, session_id: 'session_live', cwd: root, ...extra }),
         env: { ...process.env, KIMI_CODE_HOME: home }, encoding: 'utf8', timeout: 20000 });
+      ok(closureRequirement(757000, 891289, {}) === null && closureRequirement(760000, 891289, {}) === 'soft'
+        && closureRequirement(825330, 891289, {}) === 'force' && closureRequirement(0, 891289, {}) === null,
+        'Kimi closure requirement: below 85 % — none; at 85 % — soft; at 92 % — force; nothing measured — none');
       // 760 000 of Kimi's point 891 289 = 85 % — the soft closure, found on PostToolUse (whose text reaches nobody in Kimi)
       const post = run('PostToolUse'), pre = run('PreToolUse', { tool_name: 'Read' }), again = run('PreToolUse', { tool_name: 'Read' });
       ok(post.status === 0 && post.stdout === '' && pre.status === 2 && /\/skill:end-chat-soft/.test(pre.stderr)
-        && /it compacts at 891289 of 1048576 tokens\) is 85 % full \(760000 of 891289 tokens\)/.test(pre.stderr)
-        && again.status === 0 && again.stderr === '',
-      `Kimi: 85 % of Kimi's own compaction point waits after PostToolUse and goes out once as a PreToolUse block — ${JSON.stringify({ post: post.stdout, pre: pre.stderr.slice(0, 200), again: again.stderr })}`);
+        && /85 % full \(760000 of 891289 tokens\)/.test(pre.stderr)
+        && again.status === 2 && /Ordinary work is refused/.test(again.stderr),
+      `Kimi closure latch at 85 %: every ordinary PreToolUse is refused until the soft closure is entered — ${JSON.stringify({ post: post.stdout, pre: pre.stderr.slice(0, 200), again: again.stderr.slice(0, 200) })}`);
+      const enter = run('PreToolUse', { tool_name: 'Skill', tool_input: { skill: 'end-chat-soft' } });
+      const closureWork = run('PreToolUse', { tool_name: 'Read' });
+      ok(enter.status === 0 && closureWork.status === 0,
+        'Kimi closure latch: entering end-chat-soft opens the tools of the closure itself');
+      const newPrompt = run('UserPromptSubmit', { prompt: 'resume\nnew work' });
+      const rearmed = run('PreToolUse', { tool_name: 'Read' });
+      ok(newPrompt.status === 0 && /\/skill:end-chat-soft/.test(newPrompt.stdout) && rearmed.status === 2,
+        'Kimi closure latch: a new owner prompt re-arms an unfinished closure instead of allowing new work');
+      run('PreToolUse', { tool_name: 'Skill', tool_input: { skill: 'end-chat-soft' } });
       writeFileSync(tp, usage + '\n' + at(760000) + '\n' + compacted + '\n');
       const pc = run('PostCompact'), stale = run('PostToolUse'), quiet = run('PreToolUse', { tool_name: 'Read' });
       writeFileSync(tp, usage + '\n' + at(760000) + '\n' + compacted + '\n' + at(715000) + '\n');
       const refill = run('PostToolUse'), prompt = run('UserPromptSubmit', { prompt: 'go on' });
       ok(pc.stdout === '' && stale.stdout === '' && quiet.status === 0 && refill.stdout === ''
         && /80 % full \(715000 of 891289 tokens\)/.test(prompt.stdout) && /logical cut/.test(prompt.stdout),
-        `Kimi after a compaction: old counts stay silent; a fresh 80 % of the point waits and is said on the next prompt — ${JSON.stringify({ pc: pc.stdout, stale: stale.stdout, prompt: prompt.stdout.slice(0, 200) })}`);
+        `Kimi after a compaction: old counts and the closure latch stay cleared; a fresh 80 % of the point waits and is said on the next prompt — ${JSON.stringify({ pc: pc.stdout, stale: stale.stdout, prompt: prompt.stdout.slice(0, 200) })}`);
       const stop = spawnSync(process.execPath, [fileURLToPath(import.meta.url), '--kimi'], {
         input: JSON.stringify({ hook_event_name: 'Stop', session_id: 'session_stop', cwd: root, usage: { inputOther: 760000, inputCacheRead: 0, inputCacheCreation: 0 } }),
         env: { ...process.env, KIMI_CODE_HOME: home }, encoding: 'utf8', timeout: 20000 });
       ok(stop.status === 2 && /\/skill:end-chat-soft/.test(stop.stderr), 'Kimi Stop at 85 % of the point: exit 2 — a continuation turn with the soft closure');
+      const forceUsage = { inputOther: 825330, inputCacheRead: 0, inputCacheCreation: 0 };
+      const forceStop = run('Stop', { session_id: 'session_force', usage: forceUsage });
+      const forcePre = run('PreToolUse', { tool_name: 'Read', usage: forceUsage, session_id: 'session_force' });
+      const forceEnter = run('PreToolUse', { tool_name: 'Skill', tool_input: { skill: 'end-chat-force' }, usage: forceUsage, session_id: 'session_force' });
+      ok(forceStop.status === 2 && /\/skill:end-chat-force/.test(forceStop.stderr) && forcePre.status === 2 && forceEnter.status === 0,
+        'Kimi closure latch at 92 %: Stop and ordinary work require end-chat-force; entering it passes');
     } finally { rmSync(dir, { recursive: true, force: true }); }
   }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
@@ -571,7 +612,8 @@ if (process.argv[2] === '--kimi') {
     const st = all[id] || { said: [], seen: 0 };
     if (typeof ev.model === 'string' && ev.model) st.model = ev.model;
     const evn = ev.hook_event_name;
-    if (evn === 'PostCompact') { st.said = []; st.seen = 0; delete st.pending; }
+    if (evn === 'PostCompact') { st.said = []; st.seen = 0; delete st.pending; delete st.closing; }
+    if (evn === 'UserPromptSubmit') delete st.closing;
     const direct = kimiUsedOf(ev.usage);
     const tp = kimiWireOf(id);
     const observed = tp ? lastKimiContext(tailOf(tp)) : null;
@@ -598,16 +640,20 @@ if (process.argv[2] === '--kimi') {
         st.said = [...new Set([...st.said, ...d.levels])];
       }
     }
+    const required = closureRequirement(used, win, cw), closing = closingCall(ev);
+    if (required && closing) { st.closing = closing.kind; delete st.pending; }
+    const demand = required && !st.closing ? closureDemand(required, used, win, cw) : '';
     // Delivery (researches/50 §6): Kimi gives the model a hook's text on UserPromptSubmit only, and a PreToolUse or Stop block carries its
-    // reason into the context; PostToolUse, PostCompact and a Stop that does not block reach nobody. A step found there waits as `pending`
-    // and goes out once — on the next prompt as text, or on the next tool call as a one-time block (the agent repeats that call).
-    const stopBlocks = d && (d.kind === 'close' || d.kind === 'force') && evn === 'Stop';
-    if (d && evn !== 'UserPromptSubmit' && !stopBlocks) st.pending = d.line;
-    if (stopBlocks || (d && evn === 'UserPromptSubmit')) delete st.pending;
-    let say = d && evn === 'UserPromptSubmit' ? d.line : '';
-    let block = stopBlocks ? d.line : '';
-    if (!d && st.pending && evn === 'UserPromptSubmit') { say = st.pending; delete st.pending; }
-    if (!d && st.pending && evn === 'PreToolUse') { block = `${st.pending} (KAIF delivered this before your tool call; the call was not run — repeat it after you have read this.)`; delete st.pending; }
+    // reason into the context; PostToolUse, PostCompact and a Stop that does not block reach nobody. A step found there waits as `pending`.
+    // Above a closing level the refusal is NOT one-time (bugs/150): every ordinary call gets it until the closing skill is entered.
+    const stopBlocks = evn === 'Stop' && (demand || (d && (d.kind === 'close' || d.kind === 'force')));
+    if (d && evn !== 'UserPromptSubmit' && !stopBlocks && !demand) st.pending = d.line;
+    if (stopBlocks || (d && evn === 'UserPromptSubmit') || demand) delete st.pending;
+    let say = evn === 'UserPromptSubmit' ? demand || (d ? d.line : '') : '';
+    let block = evn === 'Stop' ? demand || (stopBlocks ? d.line : '') : '';
+    if (!d && !demand && st.pending && evn === 'UserPromptSubmit') { say = st.pending; delete st.pending; }
+    if (demand && evn === 'PreToolUse') block = demand;
+    else if (!d && st.pending && evn === 'PreToolUse') { block = `${st.pending} (KAIF delivered this before your tool call; the call was not run — repeat it after you have read this.)`; delete st.pending; }
     all[id] = { ...st, at: new Date().toISOString() };
     const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
     const kept = {}; for (const k of ids) kept[k] = all[k];

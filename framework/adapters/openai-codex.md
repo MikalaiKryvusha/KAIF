@@ -14,7 +14,7 @@ Codex has **native skills** following the Agent Skills open standard (agentskill
 skill with `SKILL.md` (frontmatter `name` + `description` — both **required**) under **`.agents/skills/`**
 (project) or `~/.agents/skills/` (user). Legacy `~/.codex/prompts/*.md` custom prompts are deprecated.
 
-**Mechanical translation from a KAIF skill:** copy `.claude/skills/<name>/` → `.agents/skills/<name>/`
+**Mechanical translation from a KAIF skill:** copy `.kaif/skills-canonical/<name>/` → `.agents/skills/<name>/`
 unchanged (KAIF skills already carry `name` + `description`).
 
 ## Notes / gotchas

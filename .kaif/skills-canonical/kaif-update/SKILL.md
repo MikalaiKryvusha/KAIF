@@ -1,0 +1,117 @@
+---
+name: kaif-update
+description: Respectfully update & migrate the KAIF framework deployed in this project to a newer version from the origin repository, preserving local customizations and all content artifacts. Use when the human accepts an update offer, or says "update KAIF", "migrate to the new framework version", "respectful update", "обнови KAIF", "проведи миграцию фреймворка".
+---
+
+# /kaif-update — respectful migration update from origin
+
+> ⚙️ **The current mechanical command comes FIRST:** `npm run kaif:update`
+> (`node .kaif/kaif-core.mjs update`). If this file's prose disagrees with the machinery, trust the
+> machinery and the origin release notes: an ADOPTED local copy of this skill freezes at an older
+> version's procedure and silently leads the updater off the mechanical path (field-caught — it cost
+> a project a full manual migration and stale snapshots; lifecycle skills are exactly the class of
+> file whose staleness breaks the update itself).
+
+A newer KAIF version exists upstream (see `/kaif-version`). Since 1.5 the heavy lifting is
+**mechanical**: the machinery (`.kaif/kaif-core.mjs`) knows what was deployed and which files were never
+touched since (content snapshots in `.kaif/deploy-manifest.json`), so it replaces the untouched framework
+files itself, adds the new ones, never enters owner content (`GOAL.md`, `STATUS.md`, the knowledge
+directories, your project files), and hands you a short `KAIF_UPDATE_TASK.md` covering ONLY the genuinely
+diverged places. Your cognitive work is that task, not the migration.
+
+> ⚠️ This changes the framework wrapper. Confirm with the human before applying. Commit first so the
+> update is a clean, revertable diff.
+
+## Procedure
+
+1. **Pre-flight.** Working tree clean (commit/stash first). Read `.kaif/kaif.json`: if `tracking` is
+   `fork`, confirm the human really wants to pull from the official origin.
+
+2. **Predict the pass BEFORE touching the tree** (both moves are cheap; the field proved both).
+   Route note: `update` runs the interval with your CURRENTLY DEPLOYED core (the fresh one is
+   swapped in at the end) — so the NEW version's update-time guarantees (pre-update backup
+   tree, new task scopes, merge rules) apply to the NEXT interval. To get them on THIS pass, update
+   by the thin-`KAIF.md` bootstrap route instead: the fresh core classifies against your surviving
+   deploy manifest and the pass is equally mechanical. **The bootstrap route is MANDATORY, not an
+   option, when the deployed core is older than 2.5 and the canon carries anchored pairs** (the
+   creed and the prayer, `<!-- KAIF:NAME:BEGIN/END -->`, typically localized): the old core's merge
+   can land a new module INSIDE such a pair — a field tree got the severity ladder planted between
+   the prayer's BEGIN and END, and the project's own prayer tool would have deleted the arrival as
+   its "cure". The fresh core places it after the END; only the route decides which happens.
+   - `node .kaif/kaif-core.mjs diff --source <url|dir>` — a per-module preview of what the new
+     version would change *here*. Works even on a v1 manifest: the machinery builds a synthetic
+     baseline of your CURRENT version (`--baseline <dir|url>` points it at saved artifacts when
+     the origin release is unreachable). It also prints the wholesale verdict of every localized
+     candidate WITH its numbers (`baseFound N of M, ceiling K → frozen | merged`) and records them
+     in `.kaif/update-rehearsal.json`: the next `update` over this tree freezes any file whose live
+     verdict differs from what you read here (task item `verdict-mismatch`, both number sets).
+   - The **sandbox copy** — not a model of the pass but the pass itself: export the tree
+     (`git -c core.autocrlf=false archive HEAD | tar -x -C <tmpdir>` — the flag keeps the committed line endings, unless a `.gitattributes` `eol` pins them;
+     on a Windows tree with `core.autocrlf=true` a plain export rewrites them, 2.8, origin issue #81), `git init` there, run the
+     REAL update/bootstrap in the copy and read its diff. A minute and a few MB buy a byte-accurate preview — in the field the
+     live pass matched the sandbox byte for byte, up to line endings on a `core.autocrlf=true` tree (compare there with
+     `git diff --ignore-cr-at-eol`). A rehearsal record binds only the core that wrote it (2.8): the automatic record of another core is named,
+     ignored and removed; a `--rehearsal <receipt>` you name that another core SIGNED is refused (re-run the copy with this core);
+     an unsigned one you name (a pre-2.8 copy) is applied with a warning. Prefer this on the first-ever update and on
+     any deployment with heavy localization. The copy's receipt (`<copy>/.kaif/last-update.json`)
+     carries the verdicts it printed: hand it to the live run — `update --rehearsal
+     <copy>/.kaif/last-update.json` on the core-update route, `node KAIF-LOADER.mjs --lang <code>
+     --rehearsal <copy>/.kaif/last-update.json` on the bootstrap route (since 2.6 the loader knows
+     the flag and refuses an unknown one BEFORE it downloads anything) — and a file the copy froze
+     can never be merged live: a mismatch freezes it and names both number sets in the task. Where
+     the flag cannot be passed (a wrapper runs the loader for you), the equivalent is `cp
+     <copy>/.kaif/last-update.json .kaif/update-rehearsal.json` — the bootstrap picks the default
+     path up by itself and consumes the record. Two field-paid details of the recipe: download the
+     release assets ONCE (`gh release download vX.Y --pattern 'KAIF*' --pattern 'kaif-manifest.json'
+     -D <dir>`) and hand `<dir>` to BOTH runs as `--source <dir>` — the sandbox and the live pass
+     then read the same sha256-verified bytes and their logs differ by the rehearsal line alone;
+     and on Windows run `git config core.longpaths true` in the copy before `git add` (a long
+     archive name under `interviews/` fails the copy otherwise).
+
+3. **Route by what the project has:**
+   - **`.kaif/kaif-core.mjs` exists (KAIF ≥ 1.5):** run `node .kaif/kaif-core.mjs update`
+     (or `npm run kaif:update`). It fetches the latest machinery from origin (sha256-verified),
+     replaces every framework file that is byte-identical to its install snapshot, adds new files,
+     keeps diverged ones untouched, swaps the machinery itself, stamps `.kaif/kaif.json`, and writes
+     `KAIF_UPDATE_TASK.md`.
+   - **No machinery (KAIF ≤ 1.4, or an anonymous install) — and every tree named MANDATORY in
+     step 2:** put the fresh **thin `KAIF.md`** from the origin release in the project root and follow
+     its bootstrap (three `KAIF-BOOT:` steps; `--rehearsal`, `--source` and `--baseline` ride on the
+     loader's line). The installer detects the existing older `.kaif/kaif.json` and runs as an update:
+     existing files are KEPT, new entities added, owner-level fields of the marker preserved, and
+     `KAIF_UPDATE_TASK.md` replaces the usual adaptation task. Since 2.6 this route renders its module
+     diffs with the OLD template's lines too (`−`/`+`, not `+` alone): the machinery fetches the
+     previous release's own artifact for the texts — offline, pass `--baseline <dir>` with that
+     version's assets, or read the incoming template alone.
+
+4. **Work `KAIF_UPDATE_TASK.md`** — the only cognitive part: merge the template news into the files the
+   machinery could not touch (they carry your local edits), review what's new, run
+   `node .kaif/kaif-core.mjs check`, and finish with a `/fable-judge` pass over the update. Tick each
+   item AND append its `KAIF-UPDATE: <id> done` checkpoint.
+
+5. **Field report — MANDATORY** (the framework's feedback loop; written even when the update went
+   smoothly — deviations lead it, smooth is one line in the finale): the task's `field-report` item
+   gives the skeleton — `reports/KAIF_UPDATES/<PROJECT>_KAIF_<to>_UPDATE_REPORT.md`, strictly EN,
+   every number a command's output, every rake with verbatim evidence, the judge verdict quoted
+   verbatim in the final section (decision #46). Its checkpoint EXECUTES the file check — the update
+   does not verify green without the report. A rake that is an explicit framework defect/improvement
+   also gets its own ticket: skill `/report-bug`, templates A/B (delivery upstream follows the
+   deployment's tracking mode — an anonymous deployment never reaches for the origin).
+   **The report itself is a KAIF signal** (2.8, origin issue #78): on tracking: origin deliver it in the same move —
+   `node .kaif/kaif-core.mjs report reports/KAIF_UPDATES/<file>.md` (the KAIF owner's standing authorization, origin issue #15;
+   no owner's approval is awaited). **Re-measure before a public correction:** a correction to an already delivered ticket goes
+   out only after the judge's finding behind it is RE-MEASURED by a command, and the update judge runs in a clean context (a
+   subagent or a fresh pass that has not read the update's reasoning).
+
+6. **Verify & self-clean:** `node .kaif/kaif-core.mjs update-verify` — it greps the checkpoints and
+   removes the transient installer files.
+
+7. **Report & commit.** Summarize in the chat: replaced/added/kept counts, what you merged by hand,
+   anything left for the human (the durable record is the field report from step 5). Commit
+   `chore: update KAIF to X.Y`.
+
+## Notes
+- The guiding word is **respectful**: the project must stay whole and working at every step; owner
+  content is never in the update's scope at all.
+- If the migration is large or risky, do it behind a clean commit so it's easy to revert.
+- A heavily diverged project may be better served by a fork (`/kaif-fork`) than by tracking origin.

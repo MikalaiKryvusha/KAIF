@@ -7,7 +7,7 @@ Kimi Code читает этот файл, а `CLAUDE.md` не читает (`res
   (`AGENT_GUIDE.md` → «Первое слово сообщения владельца — команда»). Голое `/resume` у Kimi — встроенный список сессий, не навык KAIF.
 - Перед каждой задачей: `AGENT_GUIDE.md` (канон), `STATUS.md` (состояние), `PHILOSOPHY.md`; требования — `REQUIREMENTS_FRAMEWORK.md`,
   тесты — `TESTING_FRAMEWORK.md`, баги — `BUG_FIXING_FRAMEWORK.md`; задачи — циклом `/skill:fable-method`, проверка — `/skill:fable-judge`.
-- Навыки Kimi — `.kimi-code/skills/` (копии `.claude/skills/`; правь канонические и запускай `node .kaif/kaif-core.mjs sync` в поле, у
+- Навыки Kimi — `.kimi-code/skills/` (копии `.kaif/skills-canonical/`; правь канонические и запускай `node .kaif/kaif-core.mjs sync` в поле, у
   истока — пересборку); вызов — `/skill:<имя>`.
 - `KAIF.md` генерируется — никогда не правь его руками: правь `framework/` и запускай `node tools/build-framework.mjs`.
 - Режим прав «Never Ask» касается только вызовов инструментов. Развилку уровня видения проекта агент не решает сам: несёт владельцу

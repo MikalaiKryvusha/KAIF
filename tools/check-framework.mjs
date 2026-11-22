@@ -531,6 +531,7 @@ const COMMITTED_KAIF_PATHS = {
   '.kaif/tools/': 'the deployed tool modules',
   '.kaif/hooks/': 'the deployed refresh hooks',
   '.kaif/deploy-manifest.json': 'the deployment record',
+  '.kaif/skills-canonical/': 'the canonical skills read by the deployed machinery and hooks',
   '.kaif/provenance-accepted.json': "the owner's acceptance registry",
   '.kaif/canon-lint-rules.json': "the project's canon rules",
   '.kaif/attribution-lint.baseline.json': 'the recorded attribution debt (it only shrinks)',
@@ -890,7 +891,7 @@ if (markers) errors.push(`unreplaced build markers: ${[...new Set(markers)].join
 
 // 4. every skill embedded
 for (const s of skills) {
-  if (!fw.includes(`.claude/skills/${s}/SKILL.md`)) errors.push(`skill not embedded in KAIF.md: ${s}`);
+  if (!fw.includes(`.kaif/skills-canonical/${s}/SKILL.md`)) errors.push(`skill not embedded in KAIF.md: ${s}`);
 }
 
 // 5. every directory README embedded

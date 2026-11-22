@@ -7,7 +7,7 @@
   "frozen": {
     "ar": {
       "GOAL.md": "28810ebf4515a63b14a9eaa36eefd047cdba4f7ea7c75eec147348db40225a4c",
-      "KAIF_FRAMEWORK.md": "76b39678ca002e5767bbedebcddea216da0f15c95d8a1121fb5459723f6a2baf",
+      "KAIF_FRAMEWORK.md": "835a5af7ef84de497e084c6a4aa2722b7369cefd86b74b14828f88b4f1b241d2",
       "bugs/README.md": "34cb050f7cac7c753f3cd9d1090fda0d37eeaed10d0f0511a9ad3b1f5011a425",
       "homeworks/README.md": "25a75e3ad50f3e6bfb1901b3dfbec761e6d28a5c30de8b0b8f4bc375da0251d6",
       "ideas/README.md": "24ad083335244dfba690541a819da8a5811588f69989e042784659f33ca12e19",
@@ -18,7 +18,7 @@
     },
     "de": {
       "GOAL.md": "2489f177824a434a2cbb7caf34ac80efc6be61b70a57d220e00f6c1151f861eb",
-      "KAIF_FRAMEWORK.md": "aa2b434d3a9a30276f21fd3166dcb5d1fb2106939ad06cf6b911db081e2f07fc",
+      "KAIF_FRAMEWORK.md": "5308744e154517f61a9a5ad668704c07e3b67730f1b8c7d9fc5d4fd3a25921a5",
       "bugs/README.md": "81c728390a604d2c6894060861aee82319acc401f6532d77e7a69bb36314373c",
       "homeworks/README.md": "c473d3f462cd650495a882510c7c9c2b3f447f15cec7ee6cc4c9973978f3449b",
       "ideas/README.md": "fbc87b9203f56b35078332941ce8c5c540e11bf96eaaf2834b0882828061f913",
@@ -29,7 +29,7 @@
     },
     "es": {
       "GOAL.md": "65518e5b0cd82266614ed155041fd5b38220cde9ff3d70e5ac9d6ceedeb6cff8",
-      "KAIF_FRAMEWORK.md": "a848d124c3eba38aea36aeb7e56980ca24ba2c3bda3b4fbe698d78c59af0b82c",
+      "KAIF_FRAMEWORK.md": "7f4296c2f90b81a33e9da351868315ebd1aa1af9743a2dfa54e6af0e4118177e",
       "bugs/README.md": "4c41e79f2484ccef4f555a8218de04b0eda48a33f636a8e072d503de1345e379",
       "homeworks/README.md": "2892824b50b3ea42d31e7ee6556ecb977798b433f2dc0861b52705141324762b",
       "ideas/README.md": "2db58c5c42a61ce7a67c21fc2003bd866ab7d1358100d927d9bda8bc6976ad96",
@@ -40,7 +40,7 @@
     },
     "fr": {
       "GOAL.md": "6a53ee043956b785d8920e08638b510a6b90d1181a3c899e9e647c6543843c27",
-      "KAIF_FRAMEWORK.md": "4d8ff97ddd8bb20c1bc81a61c411cfd83a59b9140d7f2c77d88229831a40e763",
+      "KAIF_FRAMEWORK.md": "f93ec2227ab9480f06a67c7484d30b60a035ed217acb3acac3e1eee2b2cfc71c",
       "bugs/README.md": "2bebd0dab2e97a420b86b6e4811485f18cba53ae6757daecce4df592a2ae5757",
       "homeworks/README.md": "b9eb5fbc819daec1f0e7b8ced54d4fca92a66630a90b15caec553be70ea63828",
       "ideas/README.md": "96b24a5bd6d7f5a248d63b343d2b2d8261421e8a5d887830917ce681e555cab2",
@@ -51,7 +51,7 @@
     },
     "hi": {
       "GOAL.md": "6b5a714c41bc5595802045f7ad7f1cafd3b8c3aa093ead800064969b5531b09f",
-      "KAIF_FRAMEWORK.md": "9304cec613aea2afcfb818a1e5f1a47210a86229e99040cbbdd1b021f85e3d88",
+      "KAIF_FRAMEWORK.md": "2e87a3088c207dee9adc2f101793f7fc670753a366d619be194372c032adcf82",
       "bugs/README.md": "7c30d0772884298e2ea6337c379f88fcf206d7f294d55edf7cc72f34995709af",
       "homeworks/README.md": "b511c16235637aa80a017c51be3a33b1b732a6c92bd9cd7658cd72b03c4c5839",
       "ideas/README.md": "2f51d76e2ba697a264f1f19eff1ce611adb68712aae3e62c1b2eddfb6ec0e85f",
@@ -62,7 +62,7 @@
     },
     "ja": {
       "GOAL.md": "14032cf59a0cb2d71a9107e0b5396d028505944090e6c679b8d0df559a912242",
-      "KAIF_FRAMEWORK.md": "ef10d97227c81f0554957c53d21bc309a5d6a7843897160e55a8688a17e17002",
+      "KAIF_FRAMEWORK.md": "7030d0762a99fc3969c5e0e1829610f2e28a0482b5f7e35f964fe9d3da4f8976",
       "bugs/README.md": "e3eafed10c0b6083d4fda413948987a642bcd0d95af0e30dc22a4af1dc3c8e38",
       "homeworks/README.md": "9e842116550fc529cce4a7eb6729f2f7e858f16aad3a2b42cb169d9df2afa53b",
       "ideas/README.md": "baa869371746640aadcefc83f5262a1114631a80419e4071ea6c31b1cecb97ad",
@@ -73,7 +73,7 @@
     },
     "pt": {
       "GOAL.md": "ed8d80286f93b78a7d54c0e2728c974872833f765658fa3766dd852af1035cbb",
-      "KAIF_FRAMEWORK.md": "7697ceade0045e1d06ecb1383c6b9e6b8f2f0deeb347ef5c09eb99e911198758",
+      "KAIF_FRAMEWORK.md": "3f587de137dc69d0cb6f6394363b3cbfecf9b820bdd7ab9d046872d260ca070e",
       "bugs/README.md": "46ef174582d116917728037ee615e84d60fd92c3179c0534c79e369ac08c017b",
       "homeworks/README.md": "f8912211584fa9db4630eb75ddea13893e1d6c30fd3362c3e354f32e6865daf6",
       "ideas/README.md": "30d03042ca22e0e76e4d7393977f76469938cb087349fcfeb05947c93f3bcb96",
@@ -84,7 +84,7 @@
     },
     "zh-Hans": {
       "GOAL.md": "9938ecbd67d1e3b14292689f1824307b3ab154ffc9a018028a9ff2e8154ffb43",
-      "KAIF_FRAMEWORK.md": "dbe3929f004a92c8f5194f5ff47646ccc9fea8dc4850cce8fd0392f1640bb04f",
+      "KAIF_FRAMEWORK.md": "bec4cf830eff0dcf5d630173478162633d03176299777739e7c77ebe3bbb4411",
       "bugs/README.md": "12cb69c9c2570ea02e3b5b973169d6cd2c59a8fa12e4dba9b64efff59d91a5a7",
       "homeworks/README.md": "7e86bf31b6ea94056dcec08c6a80abd664c6a279ccc1e9240ea1b2af134bd599",
       "ideas/README.md": "163c8bb8cb922fbb0a2c42540f4b4c3942ccb1d57df4f5f6285dcd36d8cde656",

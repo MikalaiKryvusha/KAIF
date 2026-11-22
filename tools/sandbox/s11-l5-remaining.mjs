@@ -11,7 +11,7 @@
 //   T1 КРАСНЫЙ — пункт placeholders задания адаптации не несёт НИ ОДНОГО реального пути
 //      (статический текст «grep each»); после фикса — «слот → реальные файлы на диске»,
 //      каждый названный файл существует и буквально несёт слот; чужие сферы НЕ названы.
-//   T1b КРАСНЫЙ — пункт placeholders задания ОБНОВЛЕНИЯ шлёт «в .claude/skills/ copy», хотя
+//   T1b КРАСНЫЙ — пункт placeholders задания ОБНОВЛЕНИЯ шлёт «в .kaif/skills-canonical/ copy», хотя
 //      единственный живой слот лежит в ОБЪЯВЛЕННОЙ сфере (KCam суд.2: .kaif/spheres/
 //      programming.md); после фикса пункт называет файл сферы.
 //   T2 КРАСНЫЙ — локальная сфера + изменившийся шаблон сферы: пункта sphere-sync нет
@@ -101,8 +101,8 @@ const PH = ['<PROJECT_NAME>', '<SHORT_NAME>', '<AUTHOR>', '<REPO_URL>', '<LOCAL_
 const fill = (p) => { if (!existsSync(p)) return; let t = readFileSync(p, 'utf8'); for (const ph of PH) t = t.split(ph).join('X'); writeFileSync(p, t); };
 const fillCanon = (dir, { spheres = false } = {}) => {
   fill(join(dir, 'AGENT_GUIDE.md'));
-  if (existsSync(join(dir, '.claude', 'skills'))) for (const n of readdirSync(join(dir, '.claude', 'skills')))
-    fill(join(dir, '.claude', 'skills', n, 'SKILL.md'));
+  if (existsSync(join(dir, '.kaif', 'skills-canonical'))) for (const n of readdirSync(join(dir, '.kaif', 'skills-canonical')))
+    fill(join(dir, '.kaif', 'skills-canonical', n, 'SKILL.md'));
   if (spheres && existsSync(join(dir, '.kaif', 'spheres'))) for (const n of readdirSync(join(dir, '.kaif', 'spheres')))
     if (n.endsWith('.md')) fill(join(dir, '.kaif', 'spheres', n));
 };
@@ -123,7 +123,7 @@ ok(r.code === 0, 'T1 install exit 0', r.out);
 const t1item = taskItem(T1, 'KAIF_ADAPTATION_TASK.md', 'placeholders');
 ok(!!t1item, 'T1 пункт placeholders существует (слоты BUILD/TEST/REPO не заполнены — нет package.json/remote)');
 // 🔴 КРАСНЫЙ ДО ФИКСА: пункт не называет ни одного реального пути
-const t1paths = t1item ? [...t1item.matchAll(/(?:\.claude\/skills\/[\w-]+\/SKILL\.md|AGENT_GUIDE\.md|\.kaif\/spheres\/[\w-]+\.md)/g)].map((m) => m[0]) : [];
+const t1paths = t1item ? [...t1item.matchAll(/(?:\.kaif\/skills-canonical\/[\w-]+\/SKILL\.md|AGENT_GUIDE\.md|\.kaif\/spheres\/[\w-]+\.md)/g)].map((m) => m[0]) : [];
 ok(t1paths.length > 0, '🔴 T1 пункт называет РЕАЛЬНЫЕ пути слотов (а не «grep each» без адресов)', t1item || '(нет пункта)');
 let t1real = t1paths.length > 0;
 for (const p of new Set(t1paths)) {
@@ -169,7 +169,7 @@ r = run(U1s, `update --source ${SRC}`);
 ok(r.code === 0, 'U1s update → 9.9 exit 0', r.out);
 const u1sph = taskItem(U1s, 'KAIF_UPDATE_TASK.md', 'placeholders');
 ok(!!u1sph, 'U1s пункт placeholders существует (живой слот, не заполненный нигде)');
-// 🔴 КРАСНЫЙ ДО ФИКСА 2.1: пункт шлёт в .claude/skills/, а слот живёт и в .kaif/spheres/programming.md
+// 🔴 КРАСНЫЙ ДО ФИКСА 2.1: пункт шлёт в .kaif/skills-canonical/, а слот живёт и в .kaif/spheres/programming.md
 ok(!!u1sph && u1sph.includes('.kaif/spheres/programming.md'),
    '🔴 T1b пункт называет РЕАЛЬНЫЙ адрес слота — файл объявленной сферы (KCam суд.2)', u1sph || '(нет пункта)');
 // 🔴 T7: backup-дерево до правок (KLAS D13)
@@ -206,7 +206,7 @@ unlinkSync(join(U2, 'KAIF_ADAPTATION_TASK.md'));
   const m2 = JSON.parse(readFileSync(mp, 'utf8'));
   if (!m2.templateShas['.kaif/spheres/_template.md']) throw new Error('fixture: _template.md not in templateShas');
   m2.templateShas['.kaif/spheres/_template.md'] = '0'.repeat(64);
-  m2.paths = m2.paths.filter((p) => p !== '.claude/skills/experience/SKILL.md');
+  m2.paths = m2.paths.filter((p) => p !== '.kaif/skills-canonical/experience/SKILL.md');
   writeFileSync(mp, JSON.stringify(m2, null, 2) + '\n');
 }
 r = run(U2, `update --source ${SRC}`);

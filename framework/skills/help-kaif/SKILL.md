@@ -21,7 +21,7 @@ well-structured explanation they can read and act on.
   structure, conventions, documents, directories, and skills.
 - Write in the operator's working language. Keep `/command` names and file names canonical.
 - Base it on the deployed reality of *this* project (the reference + `KAIF_FRAMEWORK.md`,
-  `AGENT_GUIDE.md`, the actual `.claude/skills/` inventory — never a hardcoded list) — not a
+  `AGENT_GUIDE.md`, the actual `.kaif/skills-canonical/` inventory — never a hardcoded list) — not a
   generic pitch. Adapt terminology to the project's sphere.
 
 ## What to output (structure the chat message like this)

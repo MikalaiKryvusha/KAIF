@@ -5,7 +5,7 @@
 //
 // What it does: a subagent starts with an empty context and the brief the main agent wrote — and a brief that forgets the project's canon
 // sends it to work blind (the field: subagents edited code against rules they never read). This hook PREPENDS a marked preamble to the
-// subagent's task: read the project's canon in full — exactly the list of step 1 of `/resume`, READ from `.claude/skills/resume/SKILL.md`
+// subagent's task: read the project's canon in full — exactly the list of step 1 of `/resume`, READ from `.kaif/skills-canonical/resume/SKILL.md`
 // (one copy of the fact; the step is found by its number, so a skill in the owner's language works the same) and only files that exist —
 // quote one canon line bearing on the task first in the report, and keep the bounds a brief may lack: no nested subagents, no commit, no
 // push. A task that already carries the marker is left as it is. Each firing appends one JSON line to `.kaif/subagent-preamble.jsonl`
@@ -25,7 +25,7 @@ import { readFileSync, existsSync, mkdirSync, appendFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 export const MARKER = '[KAIF subagent preamble v1]';
-const RESUME_SKILL = join('.claude', 'skills', 'resume', 'SKILL.md');
+const RESUME_SKILL = join('.kaif', 'skills-canonical', 'resume', 'SKILL.md');
 const LOG = join('.kaif', 'subagent-preamble.jsonl');
 const SUBAGENT_TOOLS = new Set(['Agent', 'Task']);
 

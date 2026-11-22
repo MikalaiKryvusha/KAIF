@@ -1,7 +1,7 @@
 {
   "framework": "KAIF",
   "version": "2.10",
-  "released": "2026-11-21",
+  "released": "2026-11-22",
   "moduleCount": 846,
   "files": {
     "AGENT_GUIDE.md": [
@@ -98,7 +98,7 @@
       {
         "signature": "### Task execution discipline — the fable loop",
         "class": "static",
-        "sha256": "26cd284b17c9a36538cd3a542e240f13a494e4c04e2aef1d48e4aa086f7a6e0e",
+        "sha256": "f3b90eb2620f50644e63c3fc6e529a82e004943f25ab3f122f55239118fe7a2e",
         "lines": [
           294,
           408
@@ -1166,7 +1166,7 @@
       {
         "signature": "## How it works here — the moving parts",
         "class": "owner",
-        "sha256": "2c2262c25036c175cfd3c805712ea8bd1d72ea22517975fe4b6f1c4c3ceb92ee",
+        "sha256": "42173a8b761121d85bebf33b6f95a3ffc77b8f7c5fced7a1c1f2eb2550a76f68",
         "lines": [
           29,
           42
@@ -1258,7 +1258,7 @@
       {
         "signature": "## 6. The skill system",
         "class": "static",
-        "sha256": "665d0d99ef87637d6bd3adddcf26ed4a95467366719e15385076394a090be2bb",
+        "sha256": "e5139b9f375d1bc75aad9814838f83086f1239973b1c417399fafe4395ddd2cc",
         "lines": [
           155,
           199
@@ -1294,7 +1294,7 @@
       {
         "signature": "### 7.3 Agent systems",
         "class": "static",
-        "sha256": "c52d5692e0ff22be69de7d81a558f04f60a79692d1a4b018155d3f14c0d87f1a",
+        "sha256": "75bbd35c69c0b234a88e0ae50d3661cef1b095b72dc6b23e6e803c88d64dbaeb",
         "lines": [
           221,
           236
@@ -1555,10 +1555,10 @@
       {
         "signature": "## 14. Optional tool modules",
         "class": "static",
-        "sha256": "9eb5da8c2f512197c7f99cee3e7def99e5cd6205674a6f81989d3de2c9289816",
+        "sha256": "d231f437abce20fd93a55f0bd72ba778988a78428df754546a988f6ef393cd76",
         "lines": [
           590,
-          675
+          677
         ]
       },
       {
@@ -1566,8 +1566,8 @@
         "class": "static",
         "sha256": "d4990bba1bd53d7098c73e44628e981f8aad762d63658dc92be9de8675251ea1",
         "lines": [
-          676,
-          688
+          678,
+          690
         ]
       },
       {
@@ -1575,8 +1575,8 @@
         "class": "static",
         "sha256": "32adc9f3090268592dc72d360ac755c5f0c324830be4bdccdb03dd845b6323f0",
         "lines": [
-          689,
-          697
+          691,
+          699
         ]
       },
       {
@@ -1584,8 +1584,8 @@
         "class": "static",
         "sha256": "e02e472145f7b7ed7a2f50c53ae73153a828aeec2a2d10b322ca5d5d4f3f9c90",
         "lines": [
-          698,
-          707
+          700,
+          709
         ]
       },
       {
@@ -1593,8 +1593,8 @@
         "class": "static",
         "sha256": "ccae91808afe9d34c7f973a2aa277261ccabc3f3719f3edd8c7abf7befed68d3",
         "lines": [
-          708,
-          718
+          710,
+          720
         ]
       },
       {
@@ -1602,8 +1602,8 @@
         "class": "static",
         "sha256": "1612157c91aec3d625dcfd4dbfefefaeb4f25456a3098e6cd773affa55c070cd",
         "lines": [
-          719,
-          724
+          721,
+          726
         ]
       },
       {
@@ -1611,8 +1611,8 @@
         "class": "static",
         "sha256": "e8d18b25f1903d2591db789e71d65a3c492e61499ba70de3ed06a0dcc8c87e6f",
         "lines": [
-          725,
-          731
+          727,
+          733
         ]
       },
       {
@@ -1620,8 +1620,8 @@
         "class": "static",
         "sha256": "4ea74ff13ff4bf7be4d99944266790a9007da65691fb793101c90a8b2e57524c",
         "lines": [
-          732,
-          740
+          734,
+          742
         ]
       },
       {
@@ -1629,8 +1629,8 @@
         "class": "static",
         "sha256": "5628af9f9f9b91cc5fd9315ae553830d2d661f28191eb3006afd2408ba66b743",
         "lines": [
-          741,
-          747
+          743,
+          749
         ]
       },
       {
@@ -1638,8 +1638,8 @@
         "class": "static",
         "sha256": "f72d4db874c50f6139cf6ba4173a868ed48c33f933bc5692a5f5b495b94953bc",
         "lines": [
-          748,
-          757
+          750,
+          759
         ]
       },
       {
@@ -1647,8 +1647,8 @@
         "class": "static",
         "sha256": "2b681b6c64836963e93dce4e6e93a20d0ba1b54b6b165b9d734f82725f558e28",
         "lines": [
-          758,
-          766
+          760,
+          768
         ]
       },
       {
@@ -1656,8 +1656,8 @@
         "class": "static",
         "sha256": "826946b97cc4b1cfe8b0436ef94df455e5f4fd36a1a47631942879c479647aaf",
         "lines": [
-          767,
-          772
+          769,
+          774
         ]
       },
       {
@@ -1665,8 +1665,8 @@
         "class": "static",
         "sha256": "978a252ba4a8e44c79b42a7690f1137152355d50489cab33544504ac67429dfe",
         "lines": [
-          773,
-          800
+          775,
+          802
         ]
       },
       {
@@ -1674,8 +1674,8 @@
         "class": "static",
         "sha256": "fef4a9cd8b9166636f67870d0b6b3d29651a72afda1a2c921083073ee9877f5f",
         "lines": [
-          801,
-          839
+          803,
+          841
         ]
       },
       {
@@ -1683,8 +1683,8 @@
         "class": "static",
         "sha256": "1d6c9d864f839f77a25d160c64894f35bc8d0301f32360b99dce13f54cc1d287",
         "lines": [
-          840,
-          844
+          842,
+          846
         ]
       },
       {
@@ -1692,8 +1692,8 @@
         "class": "static",
         "sha256": "c1515f210fed3042b01d558d2e8c80b9b697a3f267b2e2bb4bbb1c22394e7a64",
         "lines": [
-          845,
-          849
+          847,
+          851
         ]
       },
       {
@@ -1701,8 +1701,8 @@
         "class": "static",
         "sha256": "7af7735e7828f03a80677aeb4da3b1b00e561dcc78be863fcbdfa48054175514",
         "lines": [
-          850,
-          860
+          852,
+          862
         ]
       },
       {
@@ -1710,8 +1710,8 @@
         "class": "static",
         "sha256": "6623e80c05377f674c5de22ca1dce0ecf413fd3a33f455e1581302aee8022622",
         "lines": [
-          861,
-          865
+          863,
+          867
         ]
       },
       {
@@ -1719,8 +1719,8 @@
         "class": "static",
         "sha256": "15b64e071993fe1280a6ed93d597b4d71fc45a3e86552aec746f5c3b71b95f35",
         "lines": [
-          866,
-          872
+          868,
+          874
         ]
       },
       {
@@ -1728,8 +1728,8 @@
         "class": "static",
         "sha256": "bbec52047f81840075f57f1bc71267543b664b776ea3c7dbf59b28774f3760d1",
         "lines": [
-          873,
-          898
+          875,
+          900
         ]
       },
       {
@@ -1737,8 +1737,8 @@
         "class": "static",
         "sha256": "780561c508848fd6231edb22a7c2b6af355bac3ee5042d1a5a4bdfed68dfc78c",
         "lines": [
-          899,
-          912
+          901,
+          914
         ]
       },
       {
@@ -1746,8 +1746,8 @@
         "class": "static",
         "sha256": "37270bdb49877ebc54fb99fbe8468b16bddd65c83b0d5c03ab93afd9eab883ef",
         "lines": [
-          913,
-          921
+          915,
+          923
         ]
       },
       {
@@ -1755,8 +1755,8 @@
         "class": "static",
         "sha256": "9811ab96edcfd4a192ac5af1654029b54a29e6f971a66d8c56af275a0acbf91d",
         "lines": [
-          922,
-          932
+          924,
+          934
         ]
       },
       {
@@ -1764,8 +1764,8 @@
         "class": "static",
         "sha256": "5639bdfbaca5ee8c80f4d969046e0c29592c2090cb463d21e7eb9179439703cd",
         "lines": [
-          933,
-          939
+          935,
+          941
         ]
       },
       {
@@ -1773,8 +1773,8 @@
         "class": "static",
         "sha256": "886030ff7772213a7eecbb2d5c708e9129b98b65af4a26cd4c2565f8fdeab406",
         "lines": [
-          940,
-          945
+          942,
+          947
         ]
       },
       {
@@ -1782,8 +1782,8 @@
         "class": "static",
         "sha256": "edc770e5d3fc57562a917bba949792b7f7632f740769440ab6a2bd6250f597d3",
         "lines": [
-          946,
-          950
+          948,
+          952
         ]
       },
       {
@@ -1791,8 +1791,8 @@
         "class": "static",
         "sha256": "c008f51946a3babc7d769a80a6bcc91691d316c3e29d795d3c9c9ba72f87172c",
         "lines": [
-          951,
-          956
+          953,
+          958
         ]
       },
       {
@@ -1800,8 +1800,8 @@
         "class": "static",
         "sha256": "c6bcce46ea3dcfecf55938dbb3dc74ba4ca762d696e75ecf8b8286e9af18cc47",
         "lines": [
-          957,
-          963
+          959,
+          965
         ]
       },
       {
@@ -1809,8 +1809,8 @@
         "class": "static",
         "sha256": "f3b1b877673c263545adbc32cda0cc3e3bc0e9459f9bbfbc97a84df8658924b9",
         "lines": [
-          964,
-          969
+          966,
+          971
         ]
       },
       {
@@ -1818,8 +1818,8 @@
         "class": "static",
         "sha256": "0d503ab49ceb631eaee2884db612d0745a553a31f70328764a928c6a49263555",
         "lines": [
-          970,
-          974
+          972,
+          976
         ]
       }
     ],
@@ -1900,10 +1900,10 @@
         ]
       }
     ],
-    ".claude/skills/autoloop/SKILL.md": [
+    ".kaif/skills-canonical/autoloop/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "7b576b7cd70095b645daad5471f0c1e5502b44dbf4a6d109315d4b7722cb2369",
         "lines": [
           1,
@@ -1983,10 +1983,10 @@
         ]
       }
     ],
-    ".claude/skills/bug-research/SKILL.md": [
+    ".kaif/skills-canonical/bug-research/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "1051a5fff5d9695deb97db2267068ff3054e7e422834a0a654d3ce11e6c33bef",
         "lines": [
           1,
@@ -2057,10 +2057,10 @@
         ]
       }
     ],
-    ".claude/skills/check-backlog/SKILL.md": [
+    ".kaif/skills-canonical/check-backlog/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "41da81655311393ad5fa297fdc18efeda0477cffc0ef4f2ebafd9b08f4b71a22",
         "lines": [
           1,
@@ -2095,10 +2095,10 @@
         ]
       }
     ],
-    ".claude/skills/code-revision/SKILL.md": [
+    ".kaif/skills-canonical/code-revision/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "bf1df91446caa8c1821bd62a770f3c9541ddbcd5f7c56885d26ad5e39ef1b356",
         "lines": [
           1,
@@ -2178,7 +2178,7 @@
         ]
       }
     ],
-    ".claude/skills/code-revision/references/audit-report-template.md": [
+    ".kaif/skills-canonical/code-revision/references/audit-report-template.md": [
       {
         "signature": "# The audit report — the output contract of `/code-revision`",
         "class": "static",
@@ -2261,10 +2261,10 @@
         ]
       }
     ],
-    ".claude/skills/dayloop/SKILL.md": [
+    ".kaif/skills-canonical/dayloop/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "070aa51b60b9e6a1916277f9949b671a13fc2432e3bb9997fb721946c5c059e6",
         "lines": [
           1,
@@ -2335,10 +2335,10 @@
         ]
       }
     ],
-    ".claude/skills/derive-styleguide/SKILL.md": [
+    ".kaif/skills-canonical/derive-styleguide/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "ba0e02077bf8fe9b7635b61cc5816e3c80d7b28588752dfdf25ba1962a8e1349",
         "lines": [
           1,
@@ -2400,10 +2400,10 @@
         ]
       }
     ],
-    ".claude/skills/end-chat-force/SKILL.md": [
+    ".kaif/skills-canonical/end-chat-force/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "504cda248ff8ffef3481a61f810516c16c3c10f7007feaaf15c636cf05762d73",
         "lines": [
           1,
@@ -2413,10 +2413,10 @@
       {
         "signature": "# /end-chat-force — the urgent closure: save what must not be lost, and go",
         "class": "static",
-        "sha256": "11f8b89fba9f9c9e74f749a784a4bad247a15c3798b70ca84914481bb39e42d9",
+        "sha256": "b6b414c5ea7f39de3db83ee79fb0c7d49a5e8666679ff84c1f64972b1e72cece",
         "lines": [
           6,
-          14
+          16
         ]
       },
       {
@@ -2424,8 +2424,8 @@
         "class": "static",
         "sha256": "aa7e3ab2a1bfa697df581e80afc69c990333ba90934428d47d7024fe6402f5b2",
         "lines": [
-          15,
-          36
+          17,
+          38
         ]
       },
       {
@@ -2433,8 +2433,8 @@
         "class": "static",
         "sha256": "032daa7f91336fde4b29fe55bb591271859d8621143abb217b5e4b6390b06fcc",
         "lines": [
-          37,
-          50
+          39,
+          52
         ]
       },
       {
@@ -2442,8 +2442,8 @@
         "class": "static",
         "sha256": "e993aac9c92eac840556e230fd86d6bc5b713e12a93e65404a62cfc170401175",
         "lines": [
-          51,
-          58
+          53,
+          60
         ]
       },
       {
@@ -2451,8 +2451,8 @@
         "class": "static",
         "sha256": "89d0106b2f868f1034ced6324e7220eda1df9837e067fc79601b16ce83fe7b29",
         "lines": [
-          59,
-          66
+          61,
+          68
         ]
       },
       {
@@ -2460,15 +2460,15 @@
         "class": "static",
         "sha256": "d460cddf3c9477ef17f7b8ecd535bc20de3df7a8c51a226ead43be898506ca8f",
         "lines": [
-          67,
-          73
+          69,
+          75
         ]
       }
     ],
-    ".claude/skills/end-chat-soft/SKILL.md": [
+    ".kaif/skills-canonical/end-chat-soft/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "e58d9a0a4db5ce9619289c02582f5586e094d5174d92d00cc12822f41dd7fa60",
         "lines": [
           1,
@@ -2487,10 +2487,10 @@
       {
         "signature": "## Step 0. Who closes — the owner's word or a MEASURED window",
         "class": "static",
-        "sha256": "8f34eae649891bfe47e0e1726e63bf718f20208a381e93805c5453daed6202a8",
+        "sha256": "cd3de0995a61b59706bf5faf346e9ed20354515d81492f03f7fad5f9f496ee5e",
         "lines": [
           12,
-          20
+          22
         ]
       },
       {
@@ -2498,8 +2498,8 @@
         "class": "static",
         "sha256": "0fe333cdeaa51b45fcbe1cb53241b951e18dd1cd2df67397b67010dc0986797d",
         "lines": [
-          21,
-          34
+          23,
+          36
         ]
       },
       {
@@ -2507,8 +2507,8 @@
         "class": "static",
         "sha256": "fb48d6f4f748e6d0e7eb25248b9f4f479053fd8d56ea38d54f675501ae92b745",
         "lines": [
-          35,
-          39
+          37,
+          41
         ]
       },
       {
@@ -2516,8 +2516,8 @@
         "class": "static",
         "sha256": "8ee32e238267274f87684991c15380ff5ac53afe66f32033173194bad8761234",
         "lines": [
-          40,
-          107
+          42,
+          109
         ]
       },
       {
@@ -2525,8 +2525,8 @@
         "class": "static",
         "sha256": "4e8599aeac84993369d303fdb7c012d1f1891acca2d35e1681076ae1c298d666",
         "lines": [
-          108,
-          112
+          110,
+          114
         ]
       },
       {
@@ -2534,8 +2534,8 @@
         "class": "static",
         "sha256": "d6a4e5b14a166eab1e079a8b651ce7d4d3238dbfaf96c43a3ed0f1d44b6294ef",
         "lines": [
-          113,
-          119
+          115,
+          121
         ]
       },
       {
@@ -2543,8 +2543,8 @@
         "class": "adaptive",
         "sha256": "b10fbfd5b04cc6366c6475bee1fe1f25436ab81eab643ac909ee0dff453145fd",
         "lines": [
-          120,
-          136
+          122,
+          138
         ]
       },
       {
@@ -2552,8 +2552,8 @@
         "class": "static",
         "sha256": "0c804b7621610f2abb78da821377d00b9af5cea4f7dea1319b4fc3054a31f5ca",
         "lines": [
-          137,
-          159
+          139,
+          161
         ]
       },
       {
@@ -2561,15 +2561,15 @@
         "class": "static",
         "sha256": "18b2f1a2f80788a20798895b9080090c3d01bdce0905a7c888de1488e543b437",
         "lines": [
-          160,
-          172
+          162,
+          174
         ]
       }
     ],
-    ".claude/skills/experience/SKILL.md": [
+    ".kaif/skills-canonical/experience/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "3d20b20a452b04825a5143c4b52bf42b9216817aca5c5734793b4ba931c9df6e",
         "lines": [
           1,
@@ -2613,10 +2613,10 @@
         ]
       }
     ],
-    ".claude/skills/fable-domain/SKILL.md": [
+    ".kaif/skills-canonical/fable-domain/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "3d00c74ca6b1515d3c1b3f4830177f915af3d29e0aa02e284010a3e5bc41c0d6",
         "lines": [
           1,
@@ -2687,10 +2687,10 @@
         ]
       }
     ],
-    ".claude/skills/fable-judge/SKILL.md": [
+    ".kaif/skills-canonical/fable-judge/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "3c3fb58306ddf7f980df3560ddaddf702408e0839d37ac0f9ee4bfc308dfa7e1",
         "lines": [
           1,
@@ -2725,11 +2725,11 @@
         ]
       }
     ],
-    ".claude/skills/fable-loop/SKILL.md": [
+    ".kaif/skills-canonical/fable-loop/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
-        "sha256": "0b8c75e0f657fe19e0961ade6be64bb994cfeb6865b4f730474011aca4c9e677",
+        "class": "static",
+        "sha256": "b97881099575d91353c7cc36349ac5b8ff713688826c5d332380fb99b931702a",
         "lines": [
           1,
           11
@@ -2738,7 +2738,7 @@
       {
         "signature": "# The Fable Loop",
         "class": "static",
-        "sha256": "dd847188156c81da7f9aeff171c8ba8ed252178474e297d2b4695c2fb8d35a95",
+        "sha256": "839a9f9ae052706abdf319b15291001bda56afb9fa110d8c13a0f82e1493422d",
         "lines": [
           12,
           17
@@ -2799,10 +2799,10 @@
         ]
       }
     ],
-    ".claude/skills/fable-method/SKILL.md": [
+    ".kaif/skills-canonical/fable-method/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "1a94f43ff5ad598230761b8daa04f4cc2bee7ab79ca145c8864956fde61b88e0",
         "lines": [
           1,
@@ -2909,7 +2909,7 @@
         ]
       }
     ],
-    ".claude/skills/fable-method/references/examples.md": [
+    ".kaif/skills-canonical/fable-method/references/examples.md": [
       {
         "signature": "# Worked examples: one per ask shape",
         "class": "static",
@@ -2956,7 +2956,7 @@
         ]
       }
     ],
-    ".claude/skills/fable-method/references/failure-modes.md": [
+    ".kaif/skills-canonical/fable-method/references/failure-modes.md": [
       {
         "signature": "# Failure modes: symptom → step",
         "class": "static",
@@ -2976,7 +2976,7 @@
         ]
       }
     ],
-    ".claude/skills/fable-method/references/flowcharts.md": [
+    ".kaif/skills-canonical/fable-method/references/flowcharts.md": [
       {
         "signature": "# The workflow, drawn",
         "class": "static",
@@ -3077,10 +3077,10 @@
         ]
       }
     ],
-    ".claude/skills/fix-vision/SKILL.md": [
+    ".kaif/skills-canonical/fix-vision/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "8bccfa516be7bf7bdd02e73e62bc7d3357ade703364cddb39efb8abfb6021d55",
         "lines": [
           1,
@@ -3151,10 +3151,10 @@
         ]
       }
     ],
-    ".claude/skills/guarded-loop/SKILL.md": [
+    ".kaif/skills-canonical/guarded-loop/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "cb8093d1cb457c362d0956d30532f874c4021ae35fb895203473ca52c13a267f",
         "lines": [
           1,
@@ -3234,10 +3234,10 @@
         ]
       }
     ],
-    ".claude/skills/help-kaif/SKILL.md": [
+    ".kaif/skills-canonical/help-kaif/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "b7b5ece162947d14819ebe0bc0805ce2360bd0c5d1b558f039cce36d1ae86364",
         "lines": [
           1,
@@ -3256,7 +3256,7 @@
       {
         "signature": "## Framing (important)",
         "class": "static",
-        "sha256": "741873e83c814e290afa1b481b4f6d7a3a6140153e490f076b0196c48ce54237",
+        "sha256": "56051d33125ba87fd7483f47fb0cdff766c3ae0c5c3572e0c04d9ad5a5c9d8fe",
         "lines": [
           12,
           26
@@ -3281,10 +3281,10 @@
         ]
       }
     ],
-    ".claude/skills/interview/SKILL.md": [
+    ".kaif/skills-canonical/interview/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "dafb81a850bb9ec0891b7af1ee151362b391ea08e7e0164b977ff47290ef13c0",
         "lines": [
           1,
@@ -3409,10 +3409,10 @@
         ]
       }
     ],
-    ".claude/skills/kaif-fork/SKILL.md": [
+    ".kaif/skills-canonical/kaif-fork/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "d5c748cb0be9ed3c15954bd255770e445af372fab2748def1a71aab2ce7dfe1d",
         "lines": [
           1,
@@ -3431,7 +3431,7 @@
       {
         "signature": "## Procedure",
         "class": "static",
-        "sha256": "439ffb60b2939b98885bab9d9527be0b8ac01b1864d98218654a5bfd5dfb2ceb",
+        "sha256": "d4c24717e8e69166d580bba37d30ac639551e4650575367e34f3085710ed82a1",
         "lines": [
           16,
           51
@@ -3447,10 +3447,10 @@
         ]
       }
     ],
-    ".claude/skills/kaif-go/SKILL.md": [
+    ".kaif/skills-canonical/kaif-go/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "c9ff5da747daebb10405139bc11e1b111d67bef40a6318b5738a8176ea250982",
         "lines": [
           1,
@@ -3512,10 +3512,10 @@
         ]
       }
     ],
-    ".claude/skills/kaif-remove/SKILL.md": [
+    ".kaif/skills-canonical/kaif-remove/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "d3a9336fc57766dda8bee755d861a52876722a099edf31d72e0772c99a520bf0",
         "lines": [
           1,
@@ -3543,7 +3543,7 @@
       {
         "signature": "## Procedure",
         "class": "static",
-        "sha256": "610d293e18936a7f72ff2f3a29bdcf5407f1b9f11b54117992b0cc4ff48e40a6",
+        "sha256": "e0b0c8bed98d2b91c9e4f3f6bb7e19da0662bc1cfb461807a3fd3df5465e4ce1",
         "lines": [
           23,
           60
@@ -3559,10 +3559,10 @@
         ]
       }
     ],
-    ".claude/skills/kaif-switch-origin/SKILL.md": [
+    ".kaif/skills-canonical/kaif-switch-origin/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "a44e64ab49634813d7ccd145a089ba37b24e8463a1c9bd1271b518c4b39b2604",
         "lines": [
           1,
@@ -3597,10 +3597,10 @@
         ]
       }
     ],
-    ".claude/skills/kaif-update/SKILL.md": [
+    ".kaif/skills-canonical/kaif-update/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "b5189b379c2cf07bb933c8bf93c0e6377a1c613697dff3c05e87e43903a65819",
         "lines": [
           1,
@@ -3635,10 +3635,10 @@
         ]
       }
     ],
-    ".claude/skills/kaif-version/SKILL.md": [
+    ".kaif/skills-canonical/kaif-version/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "021d4186dd2a401e47ff71d1b610e404ebbd7c4d274092b9b7918f1f75142fe5",
         "lines": [
           1,
@@ -3673,10 +3673,10 @@
         ]
       }
     ],
-    ".claude/skills/nightloop/SKILL.md": [
+    ".kaif/skills-canonical/nightloop/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "d7cfffff1c250d748be566d7c97db0eff0d5f3f1d7e30b29b9ea843f2719b055",
         "lines": [
           1,
@@ -3738,10 +3738,10 @@
         ]
       }
     ],
-    ".claude/skills/owner-reviews/SKILL.md": [
+    ".kaif/skills-canonical/owner-reviews/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "bea42f3fa9156548a30dad20aa9a3b15bbe07b7ee221663cd7be5ed9d7ad85b7",
         "lines": [
           1,
@@ -3866,10 +3866,10 @@
         ]
       }
     ],
-    ".claude/skills/owner-voice/SKILL.md": [
+    ".kaif/skills-canonical/owner-voice/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "241d51a5c9423a2de080f130feb9f0ee9c02feec0e1e4f02048efc0b98003fcd",
         "lines": [
           1,
@@ -3949,10 +3949,10 @@
         ]
       }
     ],
-    ".claude/skills/pause/SKILL.md": [
+    ".kaif/skills-canonical/pause/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "e72072f4a237746d46fb257af9ae600689bf13258e1be6dcb4f9385bd831a3fa",
         "lines": [
           1,
@@ -4005,10 +4005,10 @@
         ]
       }
     ],
-    ".claude/skills/plan-epic/SKILL.md": [
+    ".kaif/skills-canonical/plan-epic/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "518ccb63902e0daa328fc2bc8596e49879aa73b98b0cb451fb55410368fed62a",
         "lines": [
           1,
@@ -4079,10 +4079,10 @@
         ]
       }
     ],
-    ".claude/skills/plan-task/SKILL.md": [
+    ".kaif/skills-canonical/plan-task/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "e463d6276a8dc084e2c36c81076e0bbe7a8f39624bda8e73ce9eadf78aeb90df",
         "lines": [
           1,
@@ -4144,10 +4144,10 @@
         ]
       }
     ],
-    ".claude/skills/propose-idea/SKILL.md": [
+    ".kaif/skills-canonical/propose-idea/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "0ab54c0544c0d345203da6d3d7c986b5e14b865361d52063afb3899ecc9f11cb",
         "lines": [
           1,
@@ -4191,10 +4191,10 @@
         ]
       }
     ],
-    ".claude/skills/refresh-context/SKILL.md": [
+    ".kaif/skills-canonical/refresh-context/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "b324557411d4f24d67b33ed5f5c0df53d4168f798368876999a0363eb73e5a86",
         "lines": [
           1,
@@ -4229,10 +4229,10 @@
         ]
       }
     ],
-    ".claude/skills/release/SKILL.md": [
+    ".kaif/skills-canonical/release/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "dda58fa4c7cf643400a2aaa86102701058e45eaab4e9ec66e1710f2f506d2c5b",
         "lines": [
           1,
@@ -4357,10 +4357,10 @@
         ]
       }
     ],
-    ".claude/skills/report-bug/SKILL.md": [
+    ".kaif/skills-canonical/report-bug/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "09a4b763304b508a320b42a08ac45ca84214bb9b1d4172a001a1f4e61b9d263f",
         "lines": [
           1,
@@ -4440,10 +4440,10 @@
         ]
       }
     ],
-    ".claude/skills/resume/SKILL.md": [
+    ".kaif/skills-canonical/resume/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "13dce098129a0a0d1566d92fefb8fbbabddf075eaa23e9332b14dd6816a309cb",
         "lines": [
           1,
@@ -4514,10 +4514,10 @@
         ]
       }
     ],
-    ".claude/skills/revision/SKILL.md": [
+    ".kaif/skills-canonical/revision/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "64cbd1b0aba0a10e224eda28674739290e9c3ad6ac8f85c8da35029cd92128ba",
         "lines": [
           1,
@@ -4561,10 +4561,10 @@
         ]
       }
     ],
-    ".claude/skills/team-deployment/SKILL.md": [
+    ".kaif/skills-canonical/team-deployment/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "e7df705d05a11a5b82c9e5d5a28f55cfbe6df035f71fd206435879956c2ecd4f",
         "lines": [
           1,
@@ -4653,7 +4653,7 @@
         ]
       }
     ],
-    ".claude/skills/team-deployment/references/team-adopt.md": [
+    ".kaif/skills-canonical/team-deployment/references/team-adopt.md": [
       {
         "signature": "# team-adopt — the adopt path for a team that ALREADY runs",
         "class": "static",
@@ -4727,7 +4727,7 @@
         ]
       }
     ],
-    ".claude/skills/team-deployment/references/team-ci-template.md": [
+    ".kaif/skills-canonical/team-deployment/references/team-ci-template.md": [
       {
         "signature": "# team-ci — the CI workflow that ships with the team",
         "class": "static",
@@ -4765,7 +4765,7 @@
         ]
       }
     ],
-    ".claude/skills/team-deployment/references/team-constitution-template.md": [
+    ".kaif/skills-canonical/team-deployment/references/team-constitution-template.md": [
       {
         "signature": "# TEAM_CONSTITUTION — <team name> operating canon",
         "class": "static",
@@ -4884,7 +4884,7 @@
         ]
       }
     ],
-    ".claude/skills/team-deployment/references/team-roles-library.md": [
+    ".kaif/skills-canonical/team-deployment/references/team-roles-library.md": [
       {
         "signature": "# Team roles library — reusable role contracts and team archetypes",
         "class": "static",
@@ -4976,7 +4976,7 @@
         ]
       }
     ],
-    ".claude/skills/team-deployment/references/team-status-board-template.md": [
+    ".kaif/skills-canonical/team-deployment/references/team-status-board-template.md": [
       {
         "signature": "# TEAM_STATUS — <team name> status board",
         "class": "static",
@@ -5032,10 +5032,10 @@
         ]
       }
     ],
-    ".claude/skills/what-next/SKILL.md": [
+    ".kaif/skills-canonical/what-next/SKILL.md": [
       {
         "signature": "<preamble>",
-        "class": "adaptive",
+        "class": "static",
         "sha256": "13191983c4e84238f63189eddc71846e33014a9b996a88ad4cf99b2271b65461",
         "lines": [
           1,
@@ -5734,7 +5734,7 @@
       {
         "signature": "## What ships here",
         "class": "static",
-        "sha256": "debaf8991ca42a50fa4a07fad4ba2064e00a397ed2df6eae032d1d48124f74ff",
+        "sha256": "1814b51e5b55cffbbca818bb28a53e855ca8a4dd8e9ab86f803dd671de5e09e3",
         "lines": [
           10,
           67
@@ -5752,7 +5752,7 @@
       {
         "signature": "## Other agent systems",
         "class": "static",
-        "sha256": "d739ef22813012ce99c07b74d8b023c0791ae85298348ee4923b83a310736058",
+        "sha256": "6c26fe328a1046efc42d4d73bb6a5a9c3cc143cc3333e61f6515b8acb5dd4c36",
         "lines": [
           133,
           265
@@ -6370,7 +6370,7 @@
       {
         "signature": "## كيف يعمل هنا — الأجزاء المتحركة",
         "class": "owner",
-        "sha256": "9fbafe01cddc768dbbd17ce99758b8ed0974477c587a8f7dfbe4aa10208ebfdc",
+        "sha256": "5fc7bee21b29105f610db6f8d50d0356b5c121eff525429289f367e3194ba8b4",
         "lines": [
           27,
           40
@@ -6557,7 +6557,7 @@
       {
         "signature": "## Wie es hier funktioniert — die beweglichen Teile",
         "class": "owner",
-        "sha256": "adf8b59fa662283faee12d8dcfad66b24cfa3e32e75deb09296e73d4d47d9450",
+        "sha256": "da8eb989d6fc81f1dde6cfd62945b62800e0a8e19385c1c49a4910e2d77c655a",
         "lines": [
           31,
           44
@@ -6744,7 +6744,7 @@
       {
         "signature": "## Cómo funciona aquí — las piezas móviles",
         "class": "owner",
-        "sha256": "547d63ec34ee2cb67b54e06825185205b015971cada562590d74b6aeb45c6162",
+        "sha256": "ea5d540ff902241922307ac770739bc83362186c6d0edee95309526e4500f20f",
         "lines": [
           31,
           44
@@ -6931,7 +6931,7 @@
       {
         "signature": "## Comment ça marche ici — les pièces mobiles",
         "class": "owner",
-        "sha256": "8ccda582673cba2340008ef15ed2d50a7792687072a782e2a497aab99ee83497",
+        "sha256": "6ed3da36bc0e72b0c733fac9ddcb1db49f90196cc67017e9141b846e59dfc5be",
         "lines": [
           31,
           44
@@ -7118,7 +7118,7 @@
       {
         "signature": "## यह यहाँ कैसे काम करता है — चलायमान हिस्से",
         "class": "owner",
-        "sha256": "9f2a2e95037ad85c85c04614a992c2471bcd2cbf9e3f49752c779445c0d2be34",
+        "sha256": "76819127c4e390ba471f8be951ed893598b929138b97f1b6c5850d83e2573c10",
         "lines": [
           29,
           42
@@ -7305,7 +7305,7 @@
       {
         "signature": "## ここでの仕組み — 構成要素",
         "class": "owner",
-        "sha256": "eb38fd88710186ed69e9deadd582fd8128d49019a9b9f941aa82596444f7147a",
+        "sha256": "ecc6f9ae417e8cd5758b2234fe25d66d316eeb448c049493168b34b27e15071e",
         "lines": [
           30,
           43
@@ -7492,7 +7492,7 @@
       {
         "signature": "## Como funciona aqui — as peças móveis",
         "class": "owner",
-        "sha256": "6660dd73db544cf1ea154ec64b770e45a8834abc5f63dcd685a3843ed4806c24",
+        "sha256": "f0098bb584bdbc436d823e876d8cfcfd4b538c0f1931713898abcb81bc6883fc",
         "lines": [
           30,
           43
@@ -7679,7 +7679,7 @@
       {
         "signature": "## Устройство KAIF в этом проекте",
         "class": "owner",
-        "sha256": "097ce5405dc321084e41ee5f4ee7726901e8e495ceca588a910cc58cd46121e1",
+        "sha256": "1280166b8acd97d3a1252651887e8bead7042ad8fb9df38034f4203e74bc7fda",
         "lines": [
           30,
           43
@@ -7866,7 +7866,7 @@
       {
         "signature": "## 在这里如何运作 —— 各个组成部分",
         "class": "owner",
-        "sha256": "e62e983ec7be730e1adf372f5cc4cc7d87c4cd50a44049f82a1ad1f03d9df654",
+        "sha256": "228bcd650545fb1b47be00f25d85861b7ded02f4da0d28dc965361c376088202",
         "lines": [
           26,
           39

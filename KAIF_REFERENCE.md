@@ -155,7 +155,7 @@ project's working language); **OTHER KAIF documents** — the project's local "h
 
 ## 6. The skill system
 
-Thirty-seven skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
+Thirty-seven skills — the verbs of project work — deploy to `.kaif/skills-canonical/` (canonical) and are
 mirrored into every declared agent system (§7.3). Groups:
 
 - **Session:** `resume` (read ALL canon documents, pick one main thing) · `pause` (soft-park the
@@ -222,7 +222,7 @@ gates (§7.5) and self-cleans the installer.
 ### 7.3 Agent systems
 
 Declared via `--agents` (default: claude-code, codex, kimi-code, grok-build, cline, zoo-code). The canonical
-skill set lives in `.claude/skills/`; mirrors derive from it mechanically (`sync` command;
+skill set lives in `.kaif/skills-canonical/`; mirrors derive from it mechanically (`sync` command;
 `update-verify` re-syncs automatically). Kimi Code reads native `AGENTS.md` and receives
 `.kimi-code/skills/<name>/SKILL.md`: descriptions become folded YAML blocks (safe for `: ` and localized
 alias tails), invocations become `/skill:<name>`, resources use `${KIMI_SKILL_DIR}`, and references travel
@@ -643,7 +643,9 @@ against the window size by the vendor's model rule or the project's `contextWind
 `contextWindow.warnPct` (75) one warning line with no closing word, at `cutPct` (80) «bring the work in hand to a logical cut», at
 `closePct` (85) «start `/end-chat-soft`», at `forcePct` (92) «finish the soft closure quickly, or start `/end-chat-force`»; a project that
 sets only `closePct` gets the others at −10 · −5 · +7; once per step (a jump says one line, the highest step), the steps re-armed when a
-compaction lowers the share; state in `.kaif/context-window.json`; never a block, a forced closure only at the forced step — Claude Code only),
+compaction lowers the share; state in `.kaif/context-window.json`; never a block, a forced closure only at the forced step — Claude Code only.
+Under Kimi, an ordinary `PreToolUse` at or above a closing level is refused REPEATEDLY until the required closing skill is entered; a new
+owner prompt re-arms an unfinished closure and `PostCompact` clears it — bugs/150),
 `test-after-code.mjs` (2.10, epic HC; origin tickets #175 · #176: a write of a file that changes the product — the project's kinds in
 `.kaif/kaif.json` → `testHook`, else a source file, configs excluded — is a test debt; only a run of its own kind clears it (for a source
 file — an interpreter with the file as its script; its name elsewhere in a command is not a run), a build, a linter, `--check`, `--help`

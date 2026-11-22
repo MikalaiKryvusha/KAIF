@@ -111,8 +111,8 @@ Unpacking produces this layout (all wrapper docs written in the owner's language
 │
 │  ── WIRING ──
 ├── .kaif/kaif.json     # deploy marker: version · released · origin · tracking · sphere · agents
+├── .kaif/skills-canonical/ # the canonical skills — 37 in all
 ├── package.json        # KAIF adds kaif:* handles here (respectfully; removed on uninstall)
-├── .claude/skills/     # the repeatable rituals (slash-skills) — 37 in all (or the agent's equivalent)
 └── kaif-unpack.mjs     # the mechanical unpacker (transient: deleted after injection, with KAIF.md)
 ```
 
@@ -120,9 +120,9 @@ Plus: the auto-loaded context file (`CLAUDE.md` for Claude Code, `AGENTS.md` for
 `AGENT_GUIDE.md`; and `KAIF.md` itself is **removed after a successful injection** (§10), replaced by
 `KAIF_FRAMEWORK.md`.
 
-> **Skills directory note.** The skills use the Claude Code convention
-> (`.claude/skills/<name>/SKILL.md`, YAML frontmatter `name` + `description`). For another agent, place the
-> same content where that agent discovers commands (§14) — the *content* matters, not the path.
+> **Skills directory note.** The canonical skills live in `.kaif/skills-canonical/<name>/SKILL.md`
+> with YAML frontmatter (`name` + `description`). For each selected agent, place the adapted copy where
+> that agent discovers commands (§14) — the *content* matters, not the mirror's path.
 
 ---
 
@@ -438,7 +438,7 @@ task type ("writing into the owner's artifact"), not by external truth.
 
 ### Task execution discipline — the fable loop
 
-Any non-trivial task is executed by the **fable-method** loop (`.claude/skills/fable-method/`): classify the ask → define done → gather
+Any non-trivial task is executed by the **fable-method** loop (`.kaif/skills-canonical/fable-method/`): classify the ask → define done → gather
 evidence → decide → act surgically → verify by observation → report outcome-first, with its gates and **forced artifacts** (`INTENT:` /
 `AUTH:` / `TWINS:` / `PENDING:` lines at decision points — rules at decision points, not rules in lists, are what weak sessions actually
 follow; and the one carve-out of the `AUTH:` gate stands IN ITS OWN LINE, not in a paragraph elsewhere: a ticket about a defect of KAIF
@@ -2688,7 +2688,7 @@ losing it. It is not code; it is *process captured as files an agent reads*.
 | `STATUS.md` | The living state — updated after every significant task. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | The external & internal maps. |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | The knowledge directories (each has its own README). |
-| `.claude/skills/` (or this agent's equivalent) | The repeatable rituals (`/resume`, `/pause`, loops, …). |
+| `.kaif/skills-canonical/` (or this agent's equivalent) | The repeatable rituals (`/resume`, `/pause`, loops, …). |
 | `.kaif/kaif.json` | The deploy marker: version, sphere, agent, tracking. |
 
 ## Deployment record
@@ -2886,7 +2886,7 @@ project's working language); **OTHER KAIF documents** — the project's local "h
 
 ## 6. The skill system
 
-Thirty-seven skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
+Thirty-seven skills — the verbs of project work — deploy to `.kaif/skills-canonical/` (canonical) and are
 mirrored into every declared agent system (§7.3). Groups:
 
 - **Session:** `resume` (read ALL canon documents, pick one main thing) · `pause` (soft-park the
@@ -2953,7 +2953,7 @@ gates (§7.5) and self-cleans the installer.
 ### 7.3 Agent systems
 
 Declared via `--agents` (default: claude-code, codex, kimi-code, grok-build, cline, zoo-code). The canonical
-skill set lives in `.claude/skills/`; mirrors derive from it mechanically (`sync` command;
+skill set lives in `.kaif/skills-canonical/`; mirrors derive from it mechanically (`sync` command;
 `update-verify` re-syncs automatically). Kimi Code reads native `AGENTS.md` and receives
 `.kimi-code/skills/<name>/SKILL.md`: descriptions become folded YAML blocks (safe for `: ` and localized
 alias tails), invocations become `/skill:<name>`, resources use `${KIMI_SKILL_DIR}`, and references travel
@@ -3374,7 +3374,9 @@ against the window size by the vendor's model rule or the project's `contextWind
 `contextWindow.warnPct` (75) one warning line with no closing word, at `cutPct` (80) «bring the work in hand to a logical cut», at
 `closePct` (85) «start `/end-chat-soft`», at `forcePct` (92) «finish the soft closure quickly, or start `/end-chat-force`»; a project that
 sets only `closePct` gets the others at −10 · −5 · +7; once per step (a jump says one line, the highest step), the steps re-armed when a
-compaction lowers the share; state in `.kaif/context-window.json`; never a block, a forced closure only at the forced step — Claude Code only),
+compaction lowers the share; state in `.kaif/context-window.json`; never a block, a forced closure only at the forced step — Claude Code only.
+Under Kimi, an ordinary `PreToolUse` at or above a closing level is refused REPEATEDLY until the required closing skill is entered; a new
+owner prompt re-arms an unfinished closure and `PostCompact` clears it — bugs/150),
 `test-after-code.mjs` (2.10, epic HC; origin tickets #175 · #176: a write of a file that changes the product — the project's kinds in
 `.kaif/kaif.json` → `testHook`, else a source file, configs excluded — is a test debt; only a run of its own kind clears it (for a source
 file — an interpreter with the file as its script; its name elsewhere in a command is not a run), a build, a linter, `--check`, `--help`
@@ -3919,7 +3921,7 @@ Reports are records — never `DONE`-tagged, never rewritten (append corrections
 ## 6. The skills
 
 The framework's repeatable rituals — the verbs of working on a project. Each is a
-`.claude/skills/<name>/SKILL.md` with YAML frontmatter (`name`, `description`); the `description` is what
+`.kaif/skills-canonical/<name>/SKILL.md` with YAML frontmatter (`name`, `description`); the `description` is what
 the agent matches to trigger the skill — keep the trigger phrases (in the owner's language) intact. During
 unpacking, copy each verbatim, replacing the command placeholders (`<BUILD_COMMAND>`, `<COMMIT_COMMAND>`,
 `<TEST_HARNESS>`) with the project's real commands.
@@ -3949,9 +3951,9 @@ unpacking, copy each verbatim, replacing the command placeholders (`<BUILD_COMMA
 | `kaif-switch-origin` | lifecycle | Return tracking to the official origin (respectful migration). |
 | `kaif-remove` | lifecycle | Respectfully remove KAIF — partial (keep artifacts) or full; **always asks the owner which**. |
 
-### `.claude/skills/resume/SKILL.md`
+### `.kaif/skills-canonical/resume/SKILL.md`
 
-> **FILE: `.claude/skills/resume/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/resume/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -4074,9 +4076,9 @@ Do the work the scope gave — the owner's task, or with a bare `resume` the dir
 - Don't re-derive what the docs already state; trust `STATUS.md` and the plans, then verify by doing.
 ``````
 
-### `.claude/skills/pause/SKILL.md`
+### `.kaif/skills-canonical/pause/SKILL.md`
 
-> **FILE: `.claude/skills/pause/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/pause/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -4126,9 +4128,9 @@ Then stop. No further actions, no background work.
   `git log` as usual.
 ``````
 
-### `.claude/skills/autoloop/SKILL.md`
+### `.kaif/skills-canonical/autoloop/SKILL.md`
 
-> **FILE: `.claude/skills/autoloop/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/autoloop/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -4252,9 +4254,9 @@ and why, what to propose next. The commits along the way guarantee no progress i
 - Read only FRESH logs (verify by timestamp).
 ``````
 
-### `.claude/skills/dayloop/SKILL.md`
+### `.kaif/skills-canonical/dayloop/SKILL.md`
 
-> **FILE: `.claude/skills/dayloop/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/dayloop/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -4376,9 +4378,9 @@ pause and don't wait**, keep working:
 - The global goal and vision live in `STATUS.md`/`plans/`/`AGENT_GUIDE.md`/`PHILOSOPHY.md`. Keep checking against them.
 ``````
 
-### `.claude/skills/nightloop/SKILL.md`
+### `.kaif/skills-canonical/nightloop/SKILL.md`
 
-> **FILE: `.claude/skills/nightloop/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/nightloop/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -4480,9 +4482,9 @@ Until one fires — don't stop, don't wait for confirmations, work.
 - The global goal and vision live in `STATUS.md`/`plans/`/`AGENT_GUIDE.md`/`PHILOSOPHY.md`. Keep checking against them.
 ``````
 
-### `.claude/skills/refresh-context/SKILL.md`
+### `.kaif/skills-canonical/refresh-context/SKILL.md`
 
-> **FILE: `.claude/skills/refresh-context/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/refresh-context/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -4550,9 +4552,9 @@ restores it quickly and forms a current backlog.
 - In autoloops, call this once every few iterations, not every iteration.
 ``````
 
-### `.claude/skills/check-backlog/SKILL.md`
+### `.kaif/skills-canonical/check-backlog/SKILL.md`
 
-> **FILE: `.claude/skills/check-backlog/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/check-backlog/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -4617,9 +4619,9 @@ Relies on the `DONE`-tag-in-filename convention (see `AGENT_GUIDE.md` → "Backl
 - If human-level questions surface — file in `interviews/` + mark `STATUS.md`, don't decide blindly.
 ``````
 
-### `.claude/skills/experience/SKILL.md`
+### `.kaif/skills-canonical/experience/SKILL.md`
 
-> **FILE: `.claude/skills/experience/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/experience/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -4733,9 +4735,9 @@ default** — it's cheap and prevents repeated mistakes.
   and periodically prune stale entries (like grooming a backlog) so the file stays greppable.
 ``````
 
-### `.claude/skills/report-bug/SKILL.md`
+### `.kaif/skills-canonical/report-bug/SKILL.md`
 
-> **FILE: `.claude/skills/report-bug/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/report-bug/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -4971,9 +4973,9 @@ language's headings and labels — `node .kaif/tools/kaif-testrun-lint.mjs bug -
 - If a bug resists (≥3 blind fix attempts) — switch to `/bug-research` (investigation without code) on the same doc.
 ``````
 
-### `.claude/skills/bug-research/SKILL.md`
+### `.kaif/skills-canonical/bug-research/SKILL.md`
 
-> **FILE: `.claude/skills/bug-research/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/bug-research/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -5043,9 +5045,9 @@ coding pass. Do NOT start fixing within this skill — it ends with a ready know
 - The skill's goal: turn "it won't work, I'm poking blindly" into "I understand the cause, I have a plan".
 ``````
 
-### `.claude/skills/propose-idea/SKILL.md`
+### `.kaif/skills-canonical/propose-idea/SKILL.md`
 
-> **FILE: `.claude/skills/propose-idea/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/propose-idea/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -5125,9 +5127,9 @@ status "awaiting approval" and is **NOT implemented until the human approves it*
   ideas (`ls ideas/`) so you don't duplicate.
 ``````
 
-### `.claude/skills/interview/SKILL.md`
+### `.kaif/skills-canonical/interview/SKILL.md`
 
-> **FILE: `.claude/skills/interview/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/interview/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -5417,9 +5419,9 @@ Sequence:
 - The skill's goal — minimize bothering the owner, but do NOT make their fateful decisions for them.
 ``````
 
-### `.claude/skills/revision/SKILL.md`
+### `.kaif/skills-canonical/revision/SKILL.md`
 
-> **FILE: `.claude/skills/revision/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/revision/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -5467,9 +5469,9 @@ to fill it, and pause. The master plan is derived from the goal, never guessed i
   Keep it flowing that way — don't let the plan drift from the goal.
 ``````
 
-### `.claude/skills/fix-vision/SKILL.md`
+### `.kaif/skills-canonical/fix-vision/SKILL.md`
 
-> **FILE: `.claude/skills/fix-vision/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/fix-vision/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -5518,9 +5520,9 @@ open an `/interview` for fateful forks.
 - This is a hygiene skill — cheap to run; prefer running it at `/pause` if the owner wrote a lot.
 ``````
 
-### `.claude/skills/what-next/SKILL.md`
+### `.kaif/skills-canonical/what-next/SKILL.md`
 
-> **FILE: `.claude/skills/what-next/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/what-next/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -5595,9 +5597,9 @@ heaviness test says it's heavy.
 - Be concrete: steps with names and files, not generalities.
 ``````
 
-### `.claude/skills/help-kaif/SKILL.md`
+### `.kaif/skills-canonical/help-kaif/SKILL.md`
 
-> **FILE: `.claude/skills/help-kaif/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/help-kaif/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -5623,7 +5625,7 @@ well-structured explanation they can read and act on.
   structure, conventions, documents, directories, and skills.
 - Write in the operator's working language. Keep `/command` names and file names canonical.
 - Base it on the deployed reality of *this* project (the reference + `KAIF_FRAMEWORK.md`,
-  `AGENT_GUIDE.md`, the actual `.claude/skills/` inventory — never a hardcoded list) — not a
+  `AGENT_GUIDE.md`, the actual `.kaif/skills-canonical/` inventory — never a hardcoded list) — not a
   generic pitch. Adapt terminology to the project's sphere.
 
 ## What to output (structure the chat message like this)
@@ -5672,9 +5674,9 @@ well-structured explanation they can read and act on.
   offer the full manual.
 ``````
 
-### `.claude/skills/release/SKILL.md`
+### `.kaif/skills-canonical/release/SKILL.md`
 
-> **FILE: `.claude/skills/release/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/release/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -5900,9 +5902,9 @@ Report to the human: the version, the release link, what was attached. Done.
 - Don't release in autonomous mode — only on the human's explicit request.
 ``````
 
-### `.claude/skills/code-revision/SKILL.md`
+### `.kaif/skills-canonical/code-revision/SKILL.md`
 
-> **FILE: `.claude/skills/code-revision/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/code-revision/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -6064,9 +6066,9 @@ not work.
   named for the executor, who runs it announced.
 ``````
 
-### `.claude/skills/derive-styleguide/SKILL.md`
+### `.kaif/skills-canonical/derive-styleguide/SKILL.md`
 
-> **FILE: `.claude/skills/derive-styleguide/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/derive-styleguide/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -6133,9 +6135,9 @@ go into the linter the same day (a rule without its guard is a wish, not a rule)
   model's work — that split is the point.
 ``````
 
-### `.claude/skills/end-chat-force/SKILL.md`
+### `.kaif/skills-canonical/end-chat-force/SKILL.md`
 
-> **FILE: `.claude/skills/end-chat-force/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/end-chat-force/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -6151,6 +6153,8 @@ closure that loses the essentials is not fast, it is destructive. Three steps, m
 **Who closes:** the owner's word (his words verbatim in the skill's args, `owner: «…»`) or a window MEASURED at or above the closing level
 — `node .kaif/hooks/context-window.mjs --measure` exits 0 (1 — too early, keep working · 2 — nothing to measure: then only the owner's word
 closes) — never «the window feels full»; with hooks running, the context-window gate measures at the skill's call too.
+At the measured forced level, enter this skill instead of continuing ordinary work. A new owner message does not clear an unfinished
+closure while the window remains above the level; only a completed compaction reopens ordinary work in the same chat.
 
 ## Step 1. The handover — only what must not be lost
 
@@ -6212,9 +6216,9 @@ print it: the Stop hook `stop-farewell-capture.mjs` only repeats the write, and 
   just because the session ran long.
 ``````
 
-### `.claude/skills/end-chat-soft/SKILL.md`
+### `.kaif/skills-canonical/end-chat-soft/SKILL.md`
 
-> **FILE: `.claude/skills/end-chat-soft/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/end-chat-soft/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -6236,6 +6240,8 @@ or above the project's closing level: `node .kaif/hooks/context-window.mjs --mea
 Run the closing as the skill where the agent system knows it — with hooks running, the context-window gate measures at the call and
 denies an early one; an agent system can withhold the project's hooks and skills from a session (a folder it does not trust), and then
 this step IS the gate. «The window feels full» is not a measurement: a session closed «by the window» at 53 % (KAIF 2.10).
+Once the measured window reaches the closing level, do not take another task in this chat: enter this closure and finish it. A new owner
+message does not clear that obligation while the window remains above the level; only a completed compaction reopens ordinary work here.
 
 ## Phase A. The advance order — keep working to a natural cut
 
@@ -6390,9 +6396,9 @@ place and its missing retraction command instead of answering `none`.
 - Generated artifacts that are gitignored (e.g. build outputs) won't be committed — that's fine.
 ``````
 
-### `.claude/skills/fable-domain/SKILL.md`
+### `.kaif/skills-canonical/fable-domain/SKILL.md`
 
-> **FILE: `.claude/skills/fable-domain/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/fable-domain/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -6477,9 +6483,9 @@ flowchart TD
 - **Small-model boundary, measured not guessed.** Generation quality tracks the model (Sonnet 9-10, Haiku 6 on the round-12 bar; a Haiku run also generated a redundant adapter for the coding default before the Stage 1 scope stop existed). Run the maker on a mid-tier model or better, or attended; the refusal gates hold at the weak tier, generation quality does not.
 ``````
 
-### `.claude/skills/fable-judge/SKILL.md`
+### `.kaif/skills-canonical/fable-judge/SKILL.md`
 
-> **FILE: `.claude/skills/fable-judge/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/fable-judge/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -6581,9 +6587,9 @@ Standing rules: judging changes nothing (read and run only; fixes happen only if
 For each scenario in `eval/scenarios/`: create a fresh copy in a scratch directory, run an executor subagent with the target configuration on that scenario's task (tasks and ground truths live in `eval/workflow.js` and `eval/README.md`), then judge the run exactly as the default mode judges work: by diff and execution against the scenario's ground truth, never by the executor's report alone. Deliver per-scenario scores and which traps triggered. One seed per scenario is a smoke test, not a benchmark; multiply seeds for confidence, and say which was done.
 ``````
 
-### `.claude/skills/fable-loop/SKILL.md`
+### `.kaif/skills-canonical/fable-loop/SKILL.md`
 
-> **FILE: `.claude/skills/fable-loop/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/fable-loop/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -6594,12 +6600,12 @@ description: End-to-end orchestrated workflow that runs a task the way Fable ran
 > **Vendored into KAIF from [fable-method](https://github.com/Sahir619/fable-method) v1.4.0 — © Sahir619, MIT.**
 > Kept verbatim except marked KAIF patches: (1) upstream's "GSD workflow" references are mapped to KAIF's
 > own cycles (`/autoloop`/`/dayloop`/`/nightloop`) — the cycle owns picking backlog items, this loop owns
-> executing ONE item; (2) the install-path note reflects KAIF's `.claude/skills/` layout. Sync ritual:
+> executing ONE item; (2) the install-path note reflects KAIF's `.kaif/skills-canonical/` layout. Sync ritual:
 > before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
 
 # The Fable Loop
 
-This skill orchestrates the fable-method: read its SKILL.md first; its rules govern every stage. It is installed alongside this skill (`.claude/skills/fable-method/`). The method says WHAT to check; this loop says WHO does the work: what runs in the main thread, what fans out to subagents, and what gets attacked before delivery.
+This skill orchestrates the fable-method: read its SKILL.md first; its rules govern every stage. It is installed alongside this skill (`.kaif/skills-canonical/fable-method/`). The method says WHAT to check; this loop says WHO does the work: what runs in the main thread, what fans out to subagents, and what gets attacked before delivery.
 
 **Gate first.** Trivial per the method's triviality gate: just do it, verify with the one obvious check, report in two sentences. No stages, no subagents. Everything else runs the four stages below in order.
 
@@ -6645,9 +6651,9 @@ This skill orchestrates the fable-method: read its SKILL.md first; its rules gov
 The loop is model-agnostic. Evidence and attacker subagents are cheap-model-friendly; keep the main thread (deciding, editing) on the strongest model available, and give attackers higher effort than gatherers when a choice exists.
 ``````
 
-### `.claude/skills/fable-method/SKILL.md`
+### `.kaif/skills-canonical/fable-method/SKILL.md`
 
-> **FILE: `.claude/skills/fable-method/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/fable-method/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -6799,9 +6805,9 @@ Step 0: assessment; change nothing. Step 1: done = a cause backed by observation
 **report** - apply the Step 6 checklist to the answer you were about to send: outcome in the first sentence, load-bearing quotes only, caveats present, follow-ups only if they emerged from the work, hostile-reviewer reread done. Rewrite it, do not send the original.
 ``````
 
-### `.claude/skills/guarded-loop/SKILL.md`
+### `.kaif/skills-canonical/guarded-loop/SKILL.md`
 
-> **FILE: `.claude/skills/guarded-loop/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/guarded-loop/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -6921,9 +6927,9 @@ escalated.
   and the clock decides, not the agent's estimate of how long the ceremonies will take.
 ``````
 
-### `.claude/skills/kaif-fork/SKILL.md`
+### `.kaif/skills-canonical/kaif-fork/SKILL.md`
 
-> **FILE: `.claude/skills/kaif-fork/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/kaif-fork/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -6950,7 +6956,7 @@ some point the user wants to **own that evolution**: keep developing and version
 > unworkable origin.)
 
 1. **Gather the current KAIF.** Everything that constitutes the deployed framework in this project
-   (guidance docs, `.claude/skills/` or the agent's equivalent, `.kaif/` machinery and manifests) —
+   (guidance docs, `.kaif/skills-canonical/` and its per-system copies, `.kaif/` machinery and manifests) —
    **not** the user's project files and **not** the content artifacts (those stay in the project).
    The transient `KAIF.md` does NOT exist in a deployed project — the fork's copy of the three
    machinery artifacts comes from the CURRENT origin release (`gh release download` from the
@@ -6986,9 +6992,9 @@ some point the user wants to **own that evolution**: keep developing and version
   from the deployed tree.
 ``````
 
-### `.claude/skills/kaif-go/SKILL.md`
+### `.kaif/skills-canonical/kaif-go/SKILL.md`
 
-> **FILE: `.claude/skills/kaif-go/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/kaif-go/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -7069,9 +7075,9 @@ point and ask there. A kick met with silence on a vision fork is how a guess bec
   observed done (`TESTING_FRAMEWORK.md`), and a task called complete still faces `/fable-judge`.
 ``````
 
-### `.claude/skills/kaif-remove/SKILL.md`
+### `.kaif/skills-canonical/kaif-remove/SKILL.md`
 
-> **FILE: `.claude/skills/kaif-remove/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/kaif-remove/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -7116,7 +7122,7 @@ intact and working — we only remove what KAIF added, surgically.
 2. **Identify KAIF-owned items** from `.kaif/kaif.json` and the known layout:
    - **Core/wrapper (removed in both modes):** the key docs (`AGENT_GUIDE.md`, `PHILOSOPHY.md`,
      `BUG_FIXING_FRAMEWORK.md`, `STATUS.md`, `GOAL.md`, `MASTER_PLAN.md`, the two maps, `KAIF_FRAMEWORK.md`),
-     the deployed skills (`.claude/skills/` or the agent's equivalent), the `kaif` tools,
+     the canonical skills (`.kaif/skills-canonical/`) and their per-system copies, the `kaif` tools,
      `KAIF.md`/`framework/` if present, `.kaif/`, and the KAIF additions to the auto-loaded context file
      (`CLAUDE.md`/`AGENTS.md`).
    - **Content artifacts (kept in partial, removed in full):** the house-rules file `HOUSE_RULES.md` and the voice portrait
@@ -7142,9 +7148,9 @@ intact and working — we only remove what KAIF added, surgically.
   they choose to rewrite it (we don't rewrite history without an explicit request).
 ``````
 
-### `.claude/skills/kaif-switch-origin/SKILL.md`
+### `.kaif/skills-canonical/kaif-switch-origin/SKILL.md`
 
-> **FILE: `.claude/skills/kaif-switch-origin/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/kaif-switch-origin/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -7181,9 +7187,9 @@ official origin (`MikalaiKryvusha/KAIF`), reconciling the two lineages respectfu
 - As always: respectful — the project stays whole and working throughout.
 ``````
 
-### `.claude/skills/kaif-update/SKILL.md`
+### `.kaif/skills-canonical/kaif-update/SKILL.md`
 
-> **FILE: `.claude/skills/kaif-update/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/kaif-update/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -7305,9 +7311,9 @@ diverged places. Your cognitive work is that task, not the migration.
 - A heavily diverged project may be better served by a fork (`/kaif-fork`) than by tracking origin.
 ``````
 
-### `.claude/skills/kaif-version/SKILL.md`
+### `.kaif/skills-canonical/kaif-version/SKILL.md`
 
-> **FILE: `.claude/skills/kaif-version/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/kaif-version/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -7359,9 +7365,9 @@ version is in the project and whether a newer one exists upstream.
   `reports/KAIF_UPDATES/` — mention any unreported ones when reporting the version.
 ``````
 
-### `.claude/skills/owner-reviews/SKILL.md`
+### `.kaif/skills-canonical/owner-reviews/SKILL.md`
 
-> **FILE: `.claude/skills/owner-reviews/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/owner-reviews/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -8124,9 +8130,9 @@ server that outlives the silence threshold → red.
 - Interviews without the contour keep working exactly as before — the sugar never becomes a duty.
 ``````
 
-### `.claude/skills/owner-voice/SKILL.md`
+### `.kaif/skills-canonical/owner-voice/SKILL.md`
 
-> **FILE: `.claude/skills/owner-voice/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/owner-voice/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -8355,9 +8361,9 @@ fix → look again → … → satisfied → report. Green checks are not a hand
   pass strictly by the critic checklist, forbidden to look at its own rationale.
 ``````
 
-### `.claude/skills/plan-epic/SKILL.md`
+### `.kaif/skills-canonical/plan-epic/SKILL.md`
 
-> **FILE: `.claude/skills/plan-epic/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/plan-epic/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -8445,9 +8451,9 @@ directory listing without opening a single document. (`/plan-task` writes these 
 - Swallow owner forks into defaults — vision-level forks go to `/interview`, visibly.
 ``````
 
-### `.claude/skills/plan-task/SKILL.md`
+### `.kaif/skills-canonical/plan-task/SKILL.md`
 
-> **FILE: `.claude/skills/plan-task/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/plan-task/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -8534,9 +8540,9 @@ cannot anchor in the parent is scope drift, caught before the diff.
 - Skip the plan because "the task is clear" — clear to THIS session; the plan is for the next one.
 ``````
 
-### `.claude/skills/team-deployment/SKILL.md`
+### `.kaif/skills-canonical/team-deployment/SKILL.md`
 
-> **FILE: `.claude/skills/team-deployment/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
+> **FILE: `.kaif/skills-canonical/team-deployment/SKILL.md`** — replace the command placeholders (`<BUILD_COMMAND>`/`<COMMIT_COMMAND>`/`<TEST_HARNESS>`) with the project's real commands
 
 ``````md
 ---
@@ -8858,7 +8864,7 @@ const manifest = []; // [{ path, content }]
 for (let m; (m = blockRe.exec(text)); ) manifest.push({ path: m[1], content: m[2].replace(/\r\n/g, '\n') + '\n' });
 if (manifest.length === 0) { console.error('✖ no FILE: blocks found — is this the KAIF.md core?'); process.exit(1); }
 
-const skillName = (p) => (p.match(/^\.claude\/skills\/([^/]+)\/SKILL\.md$/) || [])[1] || null;
+const skillName = (p) => (p.match(/^\.kaif\/skills-canonical\/([^/]+)\/SKILL\.md$/) || [])[1] || null;
 const skipped = (p) => ANON && ORIGIN_TIED.includes(skillName(p) || '');
 const okOnDisk = (p) => existsSync(p) && statSync(p).size > 0;
 
@@ -8873,7 +8879,7 @@ if (!CHECK_ONLY) {
   }
 
   // Zoo Code (ex-Roo Code) — mechanical skill translation, verified 2026-07-03:
-  // .claude/skills/<name>/SKILL.md → .roo/commands/<name>.md (drop `name:`, keep
+  // .kaif/skills-canonical/<name>/SKILL.md → .roo/commands/<name>.md (drop `name:`, keep
   // `description:` + body; the filename carries the command name), plus AGENTS.md
   // and .roo/rules/kaif.md so the key docs are auto-loaded.
   if (AGENT === 'zoo-code' || AGENT === 'roo-code') {
@@ -9065,7 +9071,7 @@ document that states the current version writes only `MAJOR.MINOR`. On deploy th
 `.kaif/kaif.json`:
 
 ```json
-{ "framework": "KAIF", "version": "2.10", "released": "2026-11-21",
+{ "framework": "KAIF", "version": "2.10", "released": "2026-11-22",
   "origin": "https://github.com/MikalaiKryvusha/KAIF", "tracking": "origin",
   "sphere": "programming", "agent": "claude-code" }
 ```

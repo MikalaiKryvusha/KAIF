@@ -29,7 +29,7 @@ at `.agents/` in the workspace (personal: `~/.gemini/config/`).
 
 Agent Skills are documented as preserved from Gemini CLI, and extensions became Antigravity
 plugins. **Not verified as of 2026-08-07:** the exact on-disk skill path and frontmatter. Until it
-is read from the vendor doc, deploy KAIF's skills in the canonical `.claude/skills/` layout, point
+is read from the vendor doc, deploy KAIF's skills in the canonical `.kaif/skills-canonical/` layout, point
 `AGENTS.md` at the canon, and invoke rituals by name — do not machine-translate into a guessed
 path.
 
@@ -62,7 +62,7 @@ value is undocumented, and matching field names are not a matching contract.
 ## Deploy checklist
 
 - [ ] `AGENTS.md` → points at `AGENT_GUIDE.md`
-- [ ] skills kept in canonical `.claude/skills/` (no guessed translation until the path is verified)
+- [ ] skills kept in canonical `.kaif/skills-canonical/` (no guessed translation until the path is verified)
 - [ ] `.agents/hooks.json` from `.kaif/hooks/sample-antigravity-hooks.json` — wired by the agent by hand, no question to the owner (2.9); `"hooks": "off"` in `.kaif/kaif.json` opts out
 - [ ] `.kaif/kaif.json` → `agent: "google-antigravity"`
 - [ ] if migrating from Gemini CLI: confirm nothing still points at the retired CLI

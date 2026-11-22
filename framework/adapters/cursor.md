@@ -16,8 +16,8 @@ Cursor supports **Agent Skills / SKILL.md** (agentskills.io standard): project l
 **Legacy compatibility: Cursor reads `.claude/skills/` directly** — KAIF's skills work **as-is, zero
 translation**. Old `.cursor/commands/*.md` are legacy, folded into skills.
 
-**Mechanical translation from a KAIF skill:** none needed — deploy `.claude/skills/` and Cursor picks
-them up. (For purism, copying to `.cursor/skills/` is equivalent.)
+**Mechanical translation from a KAIF skill:** copy `.kaif/skills-canonical/` to `.cursor/skills/` or
+`.agents/skills/` unchanged. Cursor also reads a `.claude/skills/` mirror directly when one is present.
 
 ## Notes / gotchas
 - Invocation: `/skill-name` in Agent chat, or automatic matching on `description`.
@@ -25,7 +25,7 @@ them up. (For purism, copying to `.cursor/skills/` is equivalent.)
 
 ## Deploy checklist
 - [ ] `AGENTS.md` → points at `AGENT_GUIDE.md`
-- [ ] `.claude/skills/` deployed (read natively by Cursor)
+- [ ] the canonical skills copied to `.cursor/skills/` or `.agents/skills/`
 - [ ] validate: skills visible in the `/` menu == KAIF skill count
 - [ ] `.kaif/kaif.json` → `agent: "cursor"`
 

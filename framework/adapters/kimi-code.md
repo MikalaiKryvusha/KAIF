@@ -20,7 +20,7 @@ Project skills live in `.kimi-code/skills/<name>/SKILL.md` (Kimi-specific) or
 installation can carry Kimi's adapted text next to Codex's verbatim `.agents/skills/` copy without
 one overwriting the other.
 
-The mechanical transformation from each canonical `.claude/skills/<name>/SKILL.md`:
+The mechanical transformation from each canonical `.kaif/skills-canonical/<name>/SKILL.md`:
 
 1. Keep `name` and `description` (both required by Kimi). Write description as a folded YAML block
    (`description: >-` plus an indented body): plain KAIF descriptions can contain `: `, and the
@@ -31,7 +31,7 @@ The mechanical transformation from each canonical `.claude/skills/<name>/SKILL.m
 5. Point canonical skill-path references at `.kimi-code/skills/` and context references at `AGENTS.md`.
 
 The installer, `sync`, `check`, and `update-verify` all apply the same transformation. Edit canonical
-skills in `.claude/skills/`, then run `node .kaif/kaif-core.mjs sync`; do not fork the Kimi copies.
+skills in `.kaif/skills-canonical/`, then run `node .kaif/kaif-core.mjs sync`; do not fork the Kimi copies.
 
 ## Notes / gotchas
 
@@ -77,7 +77,10 @@ start a new session. The fragment `.kaif/hooks/kimi-config-fragment.toml` is the
   (default 50 000) ≥ the window, both under `[loop_control]` of its config. The KAIF steps (75 · 80 · 85 · 92 %
   by default) are taken of that point, so the cut and the soft closure come before the compaction; Kimi's trigger
   is never changed. A step found on an observation-only event waits and goes out on the next prompt or as a
-  one-time block of the next tool call (the agent repeats that call).
+  one-time block of the next tool call (the agent repeats that call). **At and above a closing level the refusal is
+  persistent, not one-time:** every ordinary `PreToolUse` is refused until the required closing skill is entered;
+  a new owner prompt re-arms an unfinished closure, and only `PostCompact` clears the requirement in the same chat.
+  Entering the closing skill opens the tools its own handover needs (bugs/150).
 - Kimi usage is `inputOther + inputCacheRead + inputCacheCreation`; the model's `max_context_size` comes
   from Kimi's config, with `.kaif/kaif.json` → `contextWindow.tokens` as the explicit override.
 - **The owner's word during a turn:** Kimi queues a message typed while the agent works until the turn ends.

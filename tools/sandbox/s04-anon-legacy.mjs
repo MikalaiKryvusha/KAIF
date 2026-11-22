@@ -67,8 +67,8 @@ const PH = ['<PROJECT_NAME>', '<SHORT_NAME>', '<AUTHOR>', '<REPO_URL>', '<LOCAL_
 const fillAll = (dir) => {
   const fill = (p) => { let t = readFileSync(p, 'utf8'); for (const ph of PH) t = t.split(ph).join('X'); writeFileSync(p, t); };
   fill(join(dir, 'AGENT_GUIDE.md'));
-  for (const n of readdirSync(join(dir, '.claude', 'skills'))) {
-    const p = join(dir, '.claude', 'skills', n, 'SKILL.md');
+  for (const n of readdirSync(join(dir, '.kaif', 'skills-canonical'))) {
+    const p = join(dir, '.kaif', 'skills-canonical', n, 'SKILL.md');
     if (existsSync(p)) fill(p);
   }
   if (existsSync(join(dir, '.kaif', 'spheres'))) for (const n of readdirSync(join(dir, '.kaif', 'spheres')))
@@ -138,7 +138,7 @@ mkdirSync(join(S13, 'bugs', 'KAIF'), { recursive: true });
 // отправителя) оставляло оба ассерта зелёными. Классический «страж мерит прокси, а не свойство».
 // СТАЛО: контракт читается из РАЗВЁРНУТОГО навыка, а формат отпечатка ВЫВОДИТСЯ из него же —
 // поэтому потеря контракта в поставке красит ловушку, а смена формата ведёт её за собой.
-const deployedSkill = join(S13, '.claude', 'skills', 'report-bug', 'SKILL.md');
+const deployedSkill = join(S13, '.kaif', 'skills-canonical', 'report-bug', 'SKILL.md');
 ok(existsSync(deployedSkill), 'S13-M5 навык /report-bug развёрнут установкой (носитель процедуры дедупа)');
 const skillText = existsSync(deployedSkill) ? readFileSync(deployedSkill, 'utf8') : '';
 
@@ -178,7 +178,10 @@ writeFileSync(join(S13, 'AGENT_GUIDE.md'),
   readFileSync(join(S13, 'AGENT_GUIDE.md'), 'utf8') + '\nno voice portrait (sandbox owner said none, 2026-08-21)\n');
 must(run, S13, 'wire-hooks');   // 2.9, SW2 (#115): the `wire-hooks` item is done by its command before its tick
 writeFileSync(join(S13, '.kaif', 'refresh-marker.json'), JSON.stringify({ at: new Date().toISOString(), docs: ['STATUS.md'], trigger: 'ritual:install' }) + '\n');   // 2.9 (#143 · #145): the study item stamps the refresh witness before its tick
-for (const id of adaptIds) run(S13, `checkpoint ${id}${id === 'judge' ? ' --verdict "VERIFIED: sandbox"' : ''}`);
+for (const id of adaptIds) {
+  const cp13 = run(S13, `checkpoint ${id}${id === 'judge' ? ' --verdict "VERIFIED: sandbox"' : ''}`);
+  if (cp13.code !== 0) ok(false, `S13 checkpoint ${id} исполнен`, cp13.out);
+}
 r = run(S13, 'verify-final');
 ok(r.code === 0, 'S13 verify-final exit 0 (полный анонимный install)', r.out);
 ok(existsSync(join(S13, '.kaif', 'deploy-manifest.json')), '🔴 S13 обезличенный манифест ПЕРЕЖИЛ самоочистку');
@@ -339,8 +342,8 @@ bundleD = bundleD.replace(depKeyRe, () =>
 // упразднённые файлы не должны ехать в новом бандле (иначе классификация их снова напишет)
 const dropBlock = (text, p) => text.replace(new RegExp('^> \\*\\*FILE: `' + p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') +
   '`\\*\\*[^\\n]*\\n\\n' + FENCE + '\\w*\\n[\\s\\S]*?\\n' + FENCE + '\\n?', 'm'), '');
-bundleD = dropBlock(bundleD, '.claude/skills/what-next/SKILL.md');
-bundleD = dropBlock(bundleD, '.claude/skills/help-kaif/SKILL.md');
+bundleD = dropBlock(bundleD, '.kaif/skills-canonical/what-next/SKILL.md');
+bundleD = dropBlock(bundleD, '.kaif/skills-canonical/help-kaif/SKILL.md');
 writeFileSync(join(SRCD, 'KAIF-CORE-BUNDLE.md'), bundleD);
 cpSync(join(DIST, 'KAIF-CORE.mjs'), join(SRCD, 'KAIF-CORE.mjs'));
 const manD = JSON.parse(readFileSync(join(SRC, 'kaif-manifest.json'), 'utf8'));
@@ -349,7 +352,7 @@ writeFileSync(join(SRCD, 'kaif-manifest.json'), JSON.stringify(manD, null, 2) + 
 const S14d = join(ROOT, 's14d'); mkdirSync(S14d); seed(S14d);
 must(run, S14d, 'install');
 // help-kaif правим локально (должен уцелеть и попасть в задачу), what-next не трогаем (должен удалиться)
-const HK = join(S14d, '.claude/skills/help-kaif/SKILL.md');
+const HK = join(S14d, '.kaif/skills-canonical/help-kaif/SKILL.md');
 writeFileSync(HK, readFileSync(HK, 'utf8') + '\nLOCAL EDIT ON DEPRECATED\n');
 // UT1 2.9 (критерий 16): тексты САМОГО проекта до обновления — два места (строки 1 и 3 плана) и четыре не-места: продолжение фразы
 // дефисом (целое слово), летопись, отчёт прошлого обновления, `.kaif/`
@@ -360,8 +363,9 @@ writeFileSync(join(S14d, 'reports', 'KAIF_UPDATES', 'OLD_UPDATE_REPORT.md'), 'Th
 writeFileSync(join(S14d, '.kaif', 'fixture-notes.md'), 'FIXTURE-RETIRED-PHRASE\n');
 r = run(S14d, `update --source ${SRCD}`);
 ok(r.code === 0, 'S14d update с deprecations exit 0', r.out);
-ok(!existsSync(join(S14d, '.claude/skills/what-next/SKILL.md')) && /retired .*what-next/.test(r.out),
-   '🔴 S14d нетронутый упразднённый артефакт УДАЛЁН механически (T10 мёртв)');
+ok(!existsSync(join(S14d, '.claude/skills/what-next/SKILL.md'))
+   && !existsSync(join(S14d, '.kaif/skills-canonical/what-next/SKILL.md')) && /retired .*what-next/.test(r.out),
+   '🔴 S14d нетронутый упразднённый артефакт УДАЛЁН механически из канона и Claude-копии (T10 мёртв)');
 ok(existsSync(HK) && readFileSync(HK, 'utf8').includes('LOCAL EDIT ON DEPRECATED'),
    'S14d правленный упразднённый — НЕ удалён');
 const task14d = readFileSync(join(S14d, 'KAIF_UPDATE_TASK.md'), 'utf8');
@@ -522,7 +526,7 @@ ok(mk15.tracking === 'origin' && mk15.origin === 'https://github.com/MikalaiKryv
    'S15 маркер: переход anonymous → origin ЗАПИСАН (tracking + адрес origin)',
    `tracking=${mk15.tracking} origin=${mk15.origin || '(нет)'}`);
 ok(/tracking anonymous → origin/.test(r.out), 'S15 переход назван в логе прогона', r.out.slice(-400));
-ok(existsSync(join(S15, '.claude', 'skills', 'kaif-update', 'SKILL.md')),
+ok(existsSync(join(S15, '.kaif', 'skills-canonical', 'kaif-update', 'SKILL.md')),
    'S15 дерево standard: origin-tied навык развёрнут — файлы и маркер говорят одно');
 // контроль: БЕЗ явного флага анонимное легаси остаётся анонимным (наследование — не переход)
 const S15b = join(ROOT, 's15b'); mkdirSync(S15b); seed(S15b);

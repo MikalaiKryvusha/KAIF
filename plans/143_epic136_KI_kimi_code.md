@@ -9,6 +9,10 @@
 > the origin's new `AGENTS.md`); KA6 2026-11-21 17:28 +03:00 — a farewell on `StopFailure`, read right on the two real quota-dead sessions of the day
 > (the `PARKED:` line of the step is dropped: the farewell file alone reaches the next `/resume` first — `[ИИ]`); Kimi firing the hooks live —
 > KA9, after the 5-hour quota resets. KA2 · KA4 · KA5 · KA8 done (KA5 + KA8 — 2026-11-21 21:04 +03:00, report below).
+> **KA9 CLOSED 2026-11-23 00:04 +03:00 (bugs/150 DONE):** после прежнего рецидива новый latch принят живьём — на 87 % два обычных
+> `Read` отклонены (wire 1979–1982), затем вызван `Skill(end-chat-soft)` (1990), повторный замер 88 % код 0, фактических
+> `context.apply_compaction` 0. Самопроверка, мутанты, s14 и полный полигон 28/28 зелёные; отчёт
+> `testcases/reports/2026-11-22_bugs150-closure-latch.md`.
 > **KA9 live 2026-11-21 17:57 +03:00 (three `kimi -p` runs, the owner's new quota window):** Kimi itself fired `UserPromptSubmit`, `SessionStart` →
 > `/skill:resume`, `PostToolUse` and `PreToolUse` without matchers (knowledge weight, the test debt of `src/app.mjs`, the closing gate at
 > «69178 of 891289»), `--alive` exit 0; found and fixed `bugs/146` (Kimi's `Write {path}`); NOT observed — a Stop block opening a
@@ -37,11 +41,13 @@ owner's questions and mid-turn words reaching the agent, and a chat that dies of
    `9263794`, green after KA1).
 3. **Hooks are silent outside KAIF projects and work from a subfolder.** Check: the dispatcher selftest — no `.kaif/kaif.json` up the tree →
    exit 0, no output; started in `<project>/src` → the project's hook runs.
-4. **The soft-close order arrives before Kimi compacts.** Check: `context-window.mjs --selftest` Kimi cases — at the configured compaction
-   trigger (default `min(0.85·W, W − 50 000)`, `researches/50` §9) minus the margin the owner picks (decision D1), the order is emitted once.
+4. **The closing requirement arrives before Kimi compacts and cannot lapse unobeyed.** Check: `context-window.mjs --selftest` Kimi cases —
+   at the configured compaction trigger (default `min(0.85·W, W − 50 000)`, `researches/50` §9) minus the margin the owner picks (decision D1),
+   the order is emitted; above close/force EVERY ordinary PreToolUse is refused until the closing skill is entered, a new owner prompt re-arms
+   the requirement, PostCompact clears it. Mutants K4–K5 remove those two properties and go red on exactly their cases (bugs/150, №166).
 5. **`--alive` and `check` judge Kimi by Kimi's config.** Check: on a Kimi-only install `--alive` reads `~/.kimi-code/config.toml` and
    `check` prints no `.claude/settings.json` line.
-6. **A quota death leaves a handoff.** Check: a `StopFailure` event with a quota error writes the farewell file and a `PARKED:` line.
+6. **A quota death leaves a handoff.** Check: a `StopFailure` event with a quota error writes the farewell file; the next `/resume` reads that file first.
 7. Criteria 37–40 of `plans/136` are ticked only after their scenarios ran on the built `dist` in a live Kimi session; the full
    `npm run test:core` is green; `/fable-judge` reviewed every claim.
 
@@ -88,11 +94,11 @@ owner's questions and mid-turn words reaching the agent, and a chat that dies of
   `.kimi-code/skills/fable-method/references/failure-modes.md`. Report `testcases/reports/2026-11-21_ka5-ka8-kimi-skills-and-install.md`.
 - [x] **KA6 — Quota death leaves a handoff.** Anchor: criterion 39. The prior Kimi chat died on the 5-hour quota (429, not retried) with
   `[object Object]` and no farewell (§12.5). Wire `stop-farewell-capture.mjs` also on `StopFailure`: on a quota error it writes the farewell
-  file and a `PARKED:` line naming the reason. ≈ 0.5–1 h.
+  file; the next `/resume` reads that file first. ≈ 0.5–1 h.
 - [x] **KA7 — Owner conversation under Kimi.** (D1–D4 answered in chat, №164; the adapter names steer · Never Ask · the window steps) Anchor: criterion 39. Interview with decisions D1–D3 (below), then the adapter and
   `framework/adapters/kimi-code.md` say what each chosen setting does. ≈ 0.5–1 h plus the owner's answers.
 - [x] **KA8 — Install findings (criterion 40, interview №050 Q1 = A).** ✅ 2026-11-21 21:40 +03:00 after the judge's refutation: the maps checkpoint refuses shipped template slots, passes after filling, and also passes the origin's real filled maps containing generic `<name>`/`<dir>`/`<DOC>` notation. The Russian KAIF document is clean under the voice lint (H1 + two H2, all declared as renames); the drift warning names `sync`. Each finding has a red control on its exact pre-fix construct in `tools/sandbox/probes/ka8-install-findings.mjs`; fresh install and s01 green. Report `testcases/reports/2026-11-21_ka5-ka8-kimi-skills-and-install.md`; judge `reports/KAIF_AUDIT/2026-11-21_kimi_session_judge.md`.
-- [x] **KA9 — Live acceptance, polygon, judge.** ✅ 2026-11-22 13:23 +03:00: new VS Code session `--alive` 0, Stop continuation, all five former silent hooks, live 75/80/85 and actual `/skill:end-chat-soft` before compaction; `bugs/145`–`147` and `bugs/149` DONE. Full polygon 28/28. Reports `testcases/reports/2026-11-22_kimi-stop-alive.md`, `…_ki-ka9-live-hooks.md`, `…_bugs149-context-window-live.md`; final judge `reports/KAIF_AUDIT/2026-11-22_bugs149-live-judge.md`. Anchor: «Готово, когда» of `plans/136`, criteria 18 and `plans/141` RL1. Fresh `git init`
+- [x] **KA9 — Live acceptance, polygon, judge.** ✅ 2026-11-23 00:04 +03:00: `bugs/150` принят живьём в сессии `session_4dfd62c8…` — на 87 % два обычных `Read` отклонены (wire 1979–1982), затем `Skill(end-chat-soft)` (1990), повторный замер 88 % код 0 и фактических `context.apply_compaction` 0. Прежний срез: `--alive` 0, Stop continuation, пять прежних молчавших хуков, живые 75/80/85 и soft close до compaction; `bugs/145`–`147`, `bugs/149`–`150` DONE. Полный полигон 28/28. Отчёты `testcases/reports/2026-11-22_bugs150-closure-latch.md` и прежние KA9; суд `reports/KAIF_AUDIT/2026-11-22_bugs150-closure-latch-judge.md`. Anchor: «Готово, когда» of `plans/136`, criteria 18 and `plans/141` RL1. Fresh `git init`
   project from the built `dist`, Kimi-only install, wiring by the owner's word; `kimi -p` runs (auto permission — §11) after the quota
   window resets: `/skill:resume`, a skill with an argument and a reference, a voice call before a wait, recovery after `/compact`; run reports
   in `testcases/reports/`; full `npm run test:core` alone; `/fable-judge` on every KI claim; hand over to `plans/141`. The generic live-evidence

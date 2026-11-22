@@ -1,0 +1,17 @@
+{
+  "kind": "interview",
+  "document": "interviews/interview_051_kimi_canonical_claude_skills.md",
+  "by": "Mikalai Kryvusha (KOT KRINIK)",
+  "at": "2026-11-22T14:22:44.219Z",
+  "atHuman": "22 ноября 2026, 17:22 (+03:00)",
+  "comment": ".kaif/skills-canonical/ - сюда переезжает канон набор скилов, из которого они ставятся через адаптер под нужную систему",
+  "answers": {
+    "Q1": {
+      "choice": "B",
+      "text": ".kaif/skills-canonical/ - сюда переезжает канон набор скилов, из которого они ставятся через адаптер под нужную систему",
+      "comment": ".kaif/skills-canonical/ - сюда переезжает канон набор скилов, из которого они ставятся через адаптер под нужную систему"
+    }
+  },
+  "rev": "6d16101d19f1611a22d2637b783338a78d9a3976f54a70a683d64b01ab6d85ac",
+  "revAfter": "ba796d51fae085b11030e3406696132a6ac66cc927e2586ab9756457a95ac999"
+}

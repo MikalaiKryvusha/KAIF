@@ -55,7 +55,7 @@ const ROSTER_TOTAL = LAYERS.reduce((s, [, c]) => s + c, 0);
 
 // ── 1. Dist-секция навыка (payload EN) ─────────────────────────────────────────────────────
 const full = readFileSync(join(ROOT, 'dist', 'KAIF-FULL.md'), 'utf8');
-const MARK = '> **FILE: `.claude/skills/owner-reviews/SKILL.md`**';
+const MARK = '> **FILE: `.kaif/skills-canonical/owner-reviews/SKILL.md`**';
 const start = full.indexOf(MARK);
 check('dist/KAIF-FULL.md несёт FILE-блок навыка owner-reviews', start >= 0);
 const next = full.indexOf('> **FILE: `', start + MARK.length);

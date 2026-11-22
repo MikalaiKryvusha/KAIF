@@ -3,7 +3,7 @@
 // an event JSON on stdin, the project root as cwd — in a temporary project and reads stdout, the exit code and the journal file:
 //   (1) a subagent launch (`Agent`) with a task → `updatedInput` whose `prompt` is the marked preamble FOLLOWED BY the task byte for byte;
 //       every other input field kept; no `permissionDecision` anywhere (the launch keeps the permission it had — researches/41);
-//   (2) the preamble's reading list is step 1 of `/resume` READ from `.claude/skills/resume/SKILL.md` — files that exist only; the chronicle
+//   (2) the preamble's reading list is step 1 of `/resume` READ from `.kaif/skills-canonical/resume/SKILL.md` — files that exist only; the chronicle
 //       and the reference never (the field's lesson: a subagent of eight small tasks read 16 documents first);
 //   (3) the preamble asks for one quoted canon line bearing on the task and names the brief's bounds a task may lack: no nested subagents,
 //       no commit and no push;
@@ -32,8 +32,8 @@ const TASK = 'Count the files in tools/ and report the number.\nSecond line: «�
 
 function project(skillSource) {
   const dir = mkdtempSync(join(tmpdir(), 'kaif-pt2-'));
-  mkdirSync(join(dir, '.claude', 'skills', 'resume'), { recursive: true });
-  writeFileSync(join(dir, '.claude', 'skills', 'resume', 'SKILL.md'), readFileSync(skillSource));
+  mkdirSync(join(dir, '.kaif', 'skills-canonical', 'resume'), { recursive: true });
+  writeFileSync(join(dir, '.kaif', 'skills-canonical', 'resume', 'SKILL.md'), readFileSync(skillSource));
   mkdirSync(join(dir, '.kaif'), { recursive: true });
   for (const n of PRESENT) writeFileSync(join(dir, n), `# ${n}\n`);
   return dir;

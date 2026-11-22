@@ -94,7 +94,8 @@ KAIF/
 ├── CLAUDE.md                              # авто-загружаемый контекст → указывает на AGENT_GUIDE.md
 ├── AGENTS.md                              # вход Kimi Code (Kimi CLAUDE.md не читает): слово resume → /skill:resume, указатель на CLAUDE.md (2.10, №164)
 ├── .kaif/kaif.json                        # маркер развёртывания (схема — Reference §12.1)
-├── .claude/skills/<name>/SKILL.md         # экземпляр навыков этого проекта (плейсхолдеры заполнены)
+├── .kaif/skills-canonical/<name>/SKILL.md # канонические навыки этого проекта (плейсхолдеры заполнены)
+├── .claude/skills/<name>/SKILL.md         # Claude-копия канонических навыков
 ├── plans/       (README + NN_*.md)        # пошаговые планы
 ├── ideas/       (README + NN_*.md)        # идеи/предложения
 ├── bugs/        (README + NN_*.md)        # дефекты (закрытые — с тегом DONE в имени)
@@ -140,7 +141,7 @@ README.md  ──  tools/readme-pdf.mjs  ──▶  README.pdf
 
 1. **Полезная нагрузка** = `framework/` (исходник) → корневой `KAIF.md` + `dist/` (сгенерировано). Именно
    это разворачивается на стороне.
-2. **Обвязка** = корневые ключевые документы + `.claude/skills/` + `plans/`/`ideas/`/`bugs/`/`researches/`/
+2. **Обвязка** = корневые ключевые документы + `.kaif/skills-canonical/` + посистемные копии + `plans/`/`ideas/`/`bugs/`/`researches/`/
    `interviews/`/`homeworks/`/`reports/` + `CLAUDE.md` + `.kaif/kaif.json`. Это фреймворк, применённый к *этому* проекту.
 
 Универсальные файлы (`PHILOSOPHY.md`, `BUG_FIXING_FRAMEWORK.md`, `TESTING_FRAMEWORK.md`,
@@ -164,7 +165,7 @@ README.md  ──  tools/readme-pdf.mjs  ──▶  README.pdf
 | Хук освежения контекста | `framework/hooks/*` | пересобрать + `npm run test:core` (s14) |
 | Языковой пакет | `framework/templates/languages/<lang>/` | пересобрать |
 | Шаблон README директории | `framework/readmes/<dir>.md` | пересобрать |
-| Навык (как шаблон) | `framework/skills/<name>/SKILL.md` (+ копия `.claude/skills/<name>`) | пересобрать |
+| Навык (как шаблон) | `framework/skills/<name>/SKILL.md` (+ канон `.kaif/skills-canonical/<name>` и посистемные копии) | пересобрать |
 | Дорожную карту / решения | `MASTER_PLAN.md` | — |
 | Видение | `GOAL.md` | (при смене — `/revision`) |
 | Текущее состояние проекта | `STATUS.md` | — |

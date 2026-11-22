@@ -13,7 +13,7 @@ in Grok Build as-is.
 1. **Context file:** native `AGENTS.md` (KAIF's universal fallback pointing at `AGENT_GUIDE.md` is
    enough); `CLAUDE.md` is also picked up automatically.
 2. **Skills:** the SKILL.md open standard — project-level `.grok/skills/<name>/SKILL.md` or global
-   `~/.grok/skills/`. Translation from KAIF's canonical `.claude/skills/` is a **verbatim copy**
+   `~/.grok/skills/`. Translation from KAIF's canonical `.kaif/skills-canonical/` is a **verbatim copy**
    (same frontmatter, same body) — mechanized by `KAIF-CORE.mjs` (1.5+); it also reads
    `.claude/skills/` directly, so the copy is belt-and-braces.
 3. Record `agent` in `.kaif/kaif.json`.

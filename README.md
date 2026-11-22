@@ -34,10 +34,10 @@ The project's history lives in the [releases](https://github.com/MikalaiKryvusha
 and in section 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.10_GitHub_LOGO.webp" alt="KAIF 2.10 Confronted KAIF — a copper medallion: the eye in a triangle above a flask, scales above them; all of it inside a laurel wreath, ringed by the ouroboros" width="560">
+  <img src="assets/KAIF_2.10_GitHub_LOGO.webp" alt="KAIF 2.10 Confronted KAIF — a copper ouroboros around an eye in a triangle over radiating waves" width="560">
 </p>
 
-<p align="center"><strong>Version 2.10 — Confronted KAIF</strong> · 2026-11-21</p>
+<p align="center"><strong>Version 2.10 — Confronted KAIF</strong> · 2026-11-22</p>
 
 > KAIF has become a team. A team of AI agents, each taking on the role of an expert professional,
 > builds your project on the git worktree technology. In several VS Code windows at once, like a
@@ -181,8 +181,8 @@ wherever the network exists.
 
 A deployment consists of four layers: commands (the skills the human invokes by name), state and
 knowledge (living documents the agent maintains), rules of work (the canon), and machinery
-(`.kaif/` — checksums, provenance-driven updates, spheres). Every agent harness carries these
-layers: instructions, state and memory, verification, guardrails, context management. In KAIF the
+(`.kaif/` — checksums, provenance-driven updates, spheres). Every agent harness carries five
+functions: instructions, state and memory, verification, guardrails, context management. In KAIF the
 layers are files, and the harness travels with the repository. The layers are shown in the diagram
 below.
 
@@ -190,7 +190,7 @@ below.
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/layers-en-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="assets/layers-en-light.svg">
-    <img src="assets/layers-en-light.svg" width="880" alt="What a deployed KAIF consists of, in four layers: Commands (37 repeatable rituals you invoke by name) — you work here; State and knowledge, and Rules of work (plain markdown, versioned with the project) — the agent maintains these; Machinery (.kaif/, checksum verification, update by file provenance, 5 agent systems, 10 languages) — installed and updated mechanically.">
+    <img src="assets/layers-en-light.svg" width="880" alt="What a deployed KAIF consists of, in four layers: Commands (37 repeatable rituals you invoke by name) — you work here; State and knowledge, and Rules of work (plain markdown, versioned with the project) — the agent maintains these; Machinery (.kaif/, checksum verification, update by file provenance, 6 agent systems, 10 languages) — installed and updated mechanically.">
   </picture>
 </p>
 
@@ -246,7 +246,7 @@ Table 2 — Knowledge directories
    like, disk shas record what the file looks like now. The update machinery (section 6) merges by
    this classification, module by module.
 3. The update closes with `update-verify`: per-system skill copies are re-synced from the
-   canonical `.claude/skills/`, placeholders are re-scanned, the deploy marker self-heals, and a
+   canonical `.kaif/skills-canonical/`, placeholders are re-scanned, the deploy marker self-heals, and a
    receipt is written to `.kaif/last-update.json`.
 4. `.kaif/hooks/` holds the **refresh-hooks** module for harnesses with lifecycle hooks: an order
    to re-read the canon after a context compaction, a timer on the age of the refresh marker, a
@@ -256,6 +256,12 @@ Table 2 — Knowledge directories
    and a deployment without hooks does not redden any gate. When the owner writes a message while
    the agent works, the agent answers it in the chat at once and goes on with the work it started.
    The agent stops when the owner asks it to.
+5. The module also writes time from the machine clock, enters subagents through the project canon,
+   records knowledge and test debt, captures the closing farewell, and watches four context-window
+   stages: 75 % warning · 80 % logical cut · 85 % soft closure · 92 % forced closure. Kimi Code uses
+   one user-level dispatcher and counts these stages against its own compaction point, so the soft
+   closure starts before Kimi compacts the session. Above a closing threshold, ordinary work remains
+   refused until the agent enters the required closing skill.
 
 ## 4. The skills
 
@@ -265,7 +271,7 @@ Table 2 — Knowledge directories
    the owner's language («сделай релиз», «haz un release», …). Trigger aliases in ten languages
    are appended at deploy time; the skill bodies stay English.
 2. Skills are generated for six agent systems at once — Claude Code, Codex, Kimi Code, Grok Build, Cline,
-   Zoo Code — plus the universal `AGENTS.md`; the canonical copies live in `.claude/skills/`.
+   Zoo Code — plus the universal `AGENTS.md`; the canonical copies live in `.kaif/skills-canonical/`.
 3. Thirty-seven skills are deployed.
 
 Table 3 — The skills
@@ -441,10 +447,14 @@ science · design · business; a new sphere is authored at deploy time from the 
 
 ### 7.2. Agent systems
 
-Skills are generated for six systems at once: Claude Code (`.claude/skills/`, canonical) · Codex
-(`.agents/skills/`) · Kimi Code (`.kimi-code/skills/`, `/skill:<name>`) · Grok Build (`.grok/skills/`) ·
-Cline (`.cline/skills/`) · Zoo Code (`.roo/commands/`) — plus the universal `AGENTS.md`;
-Cursor/Copilot/Windsurf ride the fallback.
+The canonical skill set lives in `.kaif/skills-canonical/`. Each selected system receives its copy:
+Claude Code (`.claude/skills/`) · Codex (`.agents/skills/`) · Kimi Code (`.kimi-code/skills/`, `/skill:<name>`) ·
+Grok Build (`.grok/skills/`) · Cline (`.cline/skills/`) · Zoo Code (`.roo/commands/`) — plus the universal
+`AGENTS.md`; Cursor/Copilot/Windsurf ride the fallback.
+Kimi copies carry valid folded YAML descriptions, complete localized trigger text and portable
+`${KIMI_SKILL_DIR}` resources. Their optional hooks are connected by `wire-hooks --kimi` through one
+user-level dispatcher, with a backup and `kimi doctor config` validation; a new or reloaded session
+then runs each project's own hook scripts from any subfolder.
 The refresh-hooks module carries sample hook configurations only for the harnesses whose hook
 contract was read off live vendor documentation: Codex, Cursor, Copilot, Antigravity; Grok Build
 matches the Claude Code contract and needs no sample of its own. Where a vendor has no hook
@@ -494,7 +504,7 @@ Table 5 — Versions
 | v2.7 | Audited KAIF | 2026-09-18 | The agent's records become checkable: the owner's word is a quote and the agent's word is signed, a question to the owner is asked after a search through his prior answers, "test" means a functional run and every executed run leaves a report, the owner's text is written by his voice portrait, the owner's page keeps his answer, a falsehood is corrected where it stands, a lesson repeated twice goes red, and the size budget of the documents the agent re-reads at the start of a session counts the lines the project wrote. |
 | v2.8 | Noble KAIF | 2026-09-26 | KAIF becomes lighter and hears the owner: the agent answers the owner's word while it works and keeps working, the owner's answered decisions come before the plan, the owner's question page saves answers one at a time, the update loses nothing silently, the scanners see the project as git sees it, the canon keeps every rule and hands the stories behind its rules to the reference `KAIF_REFERENCE.md`, and a tester's bug report gets a required shape, with "not reproduced" written only after a hunt of at least three variants. |
 | v2.9 | Distilled KAIF | 2026-10-16 | A new version's delivery is wired and accepted at once: the install and update tasks wire the reminders themselves, the rule changes of a release are accepted without an interview; the agent answers a message the owner writes while it works in the chat at once and goes on with the work it started. The update names the places of the project that refer to removed skills and hooks, brings the pointers of the other agent systems up to date and, in an update across several versions, marks the project's own edits. The owner's question page behaves as he expects; a question to the owner is short; to a question under the word `resume` the agent answers and starts no work beyond it; the attribution linter keeps the owner's private files out of a shared commit; for git one command does one action. |
-| v2.10 | Confronted KAIF | 2026-11-21 | Kimi Code becomes a native target: `AGENTS.md`, valid localized skill frontmatter, explicit `/skill:<name>` calls, portable skill resources and a detached voice call before a permission wait. The release carries the current 2.10 work; its unfinished feature scope moves to 2.11. |
+| v2.10 | Confronted KAIF | 2026-11-22 | Kimi Code becomes a native target: `AGENTS.md`, all 37 adapted skills with references and valid localized YAML, one user-level hook dispatcher, a detached voice call before a permission wait, and live context stages at 75/80/85 % before compaction. The machine writes time, subagents enter through the canon, discoveries and test debt leave durable state, and a closing or quota-dead chat leaves a farewell. Owner pages keep one question path open at a time, preserve separate answers and locks for same-name documents, render images and use the configured soft voice. Unfinished earlier scope moves to 2.11. |
 
 ### 8.2. Repository layout
 
@@ -515,7 +525,7 @@ framework/                            the canonical universal templates (the pay
   templates/languages/                9 language packs (owner-facing docs + skill trigger aliases; English is the source)
   tools/                              10 optional tool modules: the provenance gate and nine linters (canon, requirements,
                                       guards, scenarios, ranking, attribution, run reports, voice, experience) + the contour generator contour/
-  hooks/                              the refresh-hooks module (7 scripts + sample configs → .kaif/hooks/)
+  hooks/                              the refresh-hooks module (10 project scripts + Kimi dispatcher and permission hook + sample configs → .kaif/hooks/)
   readmes/                            7 directory READMEs
   AGENT_GUIDE.md … KAIF_REFERENCE.md  the fourteen key-document templates
 dist/                                 generated distribution (never hand-edited)
@@ -561,8 +571,7 @@ artifacts are never hand-edited.
 The execution-discipline skills (`fable-*`) are vendored from
 [fable-method](https://github.com/Sahir619/fable-method) © Sahir619, MIT.
 
-Use it, copy it, modify it, ship it — including on the framework's own project. Thank you, and
-pleasant work!
+Use it, copy it, modify it, ship it — including on the framework's own project.
 
 ---
 
@@ -598,10 +607,10 @@ KAIF — это агентный харнесс (обвязка): рабочее
 разделе 8.1.
 
 <p align="center">
-  <img src="assets/KAIF_2.10_GitHub_LOGO.webp" alt="KAIF 2.10 Confronted KAIF — медный медальон: глаз в треугольнике над колбой, над ними весы; всё это внутри лаврового венка, в кольце уробороса" width="560">
+  <img src="assets/KAIF_2.10_GitHub_LOGO.webp" alt="KAIF 2.10 Confronted KAIF — медный уроборос вокруг глаза в треугольнике над расходящимися волнами" width="560">
 </p>
 
-<p align="center"><strong>Версия 2.10 — Confronted KAIF</strong> · 21.11.2026</p>
+<p align="center"><strong>Версия 2.10 — Confronted KAIF</strong> · 22.11.2026</p>
 
 > KAIF стал командным. Команда ИИ-агентов, каждый из которых принимает на себя роль
 > профессионала-эксперта, разрабатывает ваш проект по технологии git worktree. В нескольких окнах
@@ -748,7 +757,7 @@ origin, ни упоминаний автора (привязанные к origin
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/layers-ru-dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="assets/layers-ru-light.svg">
-    <img src="assets/layers-ru-light.svg" width="880" alt="Из чего состоит развёрнутый KAIF, четыре слоя: Команды (37 повторяемых ритуалов — вызов по имени) — этим слоем пользуетесь вы; Состояние и знание и Правила работы (обычный markdown, версионируется вместе с проектом) — их ведёт агент; Механика (.kaif/, сверка контрольных сумм, обновление по происхождению файла, 5 систем, 10 языков) — ставится и обновляется механически.">
+    <img src="assets/layers-ru-light.svg" width="880" alt="Из чего состоит развёрнутый KAIF, четыре слоя: Команды (37 повторяемых ритуалов — вызов по имени) — этим слоем пользуетесь вы; Состояние и знание и Правила работы (обычный markdown, версионируется вместе с проектом) — их ведёт агент; Механика (.kaif/, сверка контрольных сумм, обновление по происхождению файла, 6 систем, 10 языков) — ставится и обновляется механически.">
   </picture>
 </p>
 
@@ -804,7 +813,7 @@ origin, ни упоминаний автора (привязанные к origin
    шаблон, disk-sha — каков файл сейчас. По этому разбору обновление (раздел 6) и сливает файлы,
    модуль за модулем.
 3. Обновление завершается проверкой `update-verify`: посистемные копии навыков ресинкаются с
-   канонических `.claude/skills/`, плейсхолдеры пересканируются, маркер развёртывания
+   канонических `.kaif/skills-canonical/`, плейсхолдеры пересканируются, маркер развёртывания
    самовосстанавливается, и рядом остаётся расписка `.kaif/last-update.json`.
 4. В `.kaif/hooks/` лежит модуль **refresh-hooks** для харнессов с lifecycle-хуками: приказ
    перечитать канон после сжатия контекста, таймер возраста маркера освежения, мягкий страж
@@ -814,6 +823,12 @@ origin, ни упоминаний автора (привязанные к origin
    без хуков не краснеет ни на одном гейте. Если владелец пишет сообщение посреди работы агента,
    агент сразу отвечает в чате и продолжает начатую работу. Агент останавливается по просьбе
    владельца.
+5. Модуль также записывает время по часам машины, вводит субагентов через канон проекта, ведёт
+   знания и тестовый долг, сохраняет прощание закрывающего чата и следит за четырьмя ступенями
+   контекстного окна: 75 % — предупреждение · 80 % — логический срез · 85 % — мягкое закрытие ·
+   92 % — срочное закрытие. Kimi Code использует один пользовательский диспетчер и считает ступени
+   от точки собственного сжатия. Мягкое закрытие сессии начинается до точки сжатия Kimi. Выше порога
+   закрытия обычная работа отклоняется до входа агента в нужный навык закрытия.
 
 ## 4. Навыки
 
@@ -823,7 +838,7 @@ origin, ни упоминаний автора (привязанные к origin
    релиз», «haz un release», …). Алиасы-триггеры на десяти языках дописываются при развёртывании;
    тела навыков остаются английскими.
 2. Навыки генерируются сразу для шести агентских систем — Claude Code, Codex, Kimi Code, Grok Build, Cline,
-   Zoo Code — плюс универсальный `AGENTS.md`; канонические копии живут в `.claude/skills/`.
+   Zoo Code — плюс универсальный `AGENTS.md`; канонические копии живут в `.kaif/skills-canonical/`.
 3. Разворачиваются тридцать семь навыков.
 
 Таблица 3 — Навыки
@@ -1001,10 +1016,14 @@ origin и удаление делают свои навыки — попроси
 
 ### 7.2. Агентские системы
 
-Навыки генерируются сразу для шести систем: Claude Code (`.claude/skills/`, канонические) · Codex
-(`.agents/skills/`) · Kimi Code (`.kimi-code/skills/`, `/skill:<name>`) · Grok Build (`.grok/skills/`) ·
-Cline (`.cline/skills/`) · Zoo Code (`.roo/commands/`) — плюс универсальный `AGENTS.md`; Cursor, Copilot
-и Windsurf работают через него.
+Канонический набор навыков живёт в `.kaif/skills-canonical/`. Каждая выбранная система получает свою копию:
+Claude Code (`.claude/skills/`) · Codex (`.agents/skills/`) · Kimi Code (`.kimi-code/skills/`, `/skill:<name>`) ·
+Grok Build (`.grok/skills/`) · Cline (`.cline/skills/`) · Zoo Code (`.roo/commands/`) — плюс универсальный
+`AGENTS.md`; Cursor, Copilot и Windsurf работают через него.
+Копии Kimi несут корректные многострочные YAML-описания, полный текст локализованных триггеров и
+переносимые ресурсы `${KIMI_SKILL_DIR}`. Опциональные хуки подключаются командой `wire-hooks --kimi`
+через один пользовательский диспетчер, с резервной копией и проверкой `kimi doctor config`; новая или
+перезагруженная сессия запускает собственные скрипты каждого проекта из любой подпапки.
 Модуль refresh-hooks несёт образцы хук-конфигов только для тех харнессов, чей хук-контракт снят с
 живой вендорской документации: Codex, Cursor, Copilot, Antigravity; Grok Build совпадает с
 контрактом Claude Code и своего образца не требует. Там, где у вендора хук-механизма нет, модуль
@@ -1017,7 +1036,7 @@ Cline (`.cline/skills/`) · Zoo Code (`.roo/commands/`) — плюс униве�
 Исходники фреймворка английские. При развёртывании машинерия локализует документы владельца
 (`GOAL.md`, `KAIF_FRAMEWORK.md`, README директорий) из готовых пакетов — десять языков: en, ru,
 zh-Hans, es, hi, ar, pt, fr, de, ja — и дописывает каждому навыку алиасы-триггеры на языке
-владельца. Внутренние документы агента остаются английскими by design. Остальные языки деградируют
+владельца. Внутренние документы агента намеренно остаются английскими. Остальные языки деградируют
 честно: английский плюс пункт перевода в задании адаптации.
 
 С версии 2.3 ведутся два пакета: en и ru. Остальные восемь заморожены в полном состоянии 2.2 —
@@ -1053,7 +1072,7 @@ zh-Hans, es, hi, ar, pt, fr, de, ja — и дописывает каждому �
 | v2.7 | Audited KAIF | 18.09.2026 | Записи агента становятся проверяемыми: слово владельца цитируется, слово агента подписывается; вопрос владельцу задаётся после поиска по его прежним ответам; «тест» — это функциональный прогон, и каждый прогон оставляет отчёт; текст владельца пишется по портрету его голоса; страница владельца сохраняет его ответ; ложь исправляется там, где оставлена; урок, повторившийся дважды, краснеет; бюджет документов, которые агент перечитывает в начале сессии, считается по строкам, которые написал сам проект. |
 | v2.8 | Noble KAIF | 26.09.2026 | KAIF становится легче и слышит владельца: агент отвечает на слово владельца, пока работает, и работает дальше; отвеченные решения владельца идут раньше плана; страница вопросов владельца записывает ответы по одному; обновление ничего не теряет молча; сканеры видят проект так, как его видит git; канон держит каждое правило, истории правил переехали в пояснительную записку `KAIF_REFERENCE.md`; баг-репорт тестировщика получил обязательную форму, и «не воспроизвелось» пишется только после охоты за шагами. |
 | v2.9 | Distilled KAIF | 16.10.2026 | Поставка новой версии подключается и принимается сразу: задания установки и обновления сами подключают напоминания, правила новой версии принимаются без интервью; на сообщение владельца, написанное посреди работы, агент сразу отвечает в чате и продолжает начатую работу. Обновление называет места проекта, которые ссылаются на удалённые навыки и хуки, обновляет указатели других агентских систем и при обновлении через несколько версий помечает собственные правки проекта. Страница вопросов ведёт себя так, как ждёт владелец; вопрос владельцу короткий; на вопрос под словом `resume` агент отвечает и работу сверх ответа не начинает; линтер авторства не уносит личные файлы владельца в общий коммит; для git одна команда делает одно действие. |
-| v2.10 | Confronted KAIF | 21.11.2026 | Kimi Code становится родной целевой системой: `AGENTS.md`, корректный YAML локализованных навыков, явные вызовы `/skill:<name>`, переносимые ресурсы и фоновый голосовой зов перед ожиданием разрешения. Версия несёт текущую работу 2.10; незавершённый скоуп фич переходит в 2.11. |
+| v2.10 | Confronted KAIF | 22.11.2026 | Kimi Code становится родной целевой системой: `AGENTS.md`, все 37 адаптированных навыков с reference-файлами и корректным локализованным YAML, один пользовательский диспетчер хуков, фоновый голосовой зов перед ожиданием разрешения и живые ступени 75/80/85 % до сжатия контекста. Время пишут часы машины, субагенты входят через канон, находки и тестовый долг остаются в состоянии проекта, а закрытый или умерший по квоте чат оставляет прощание. Страницы владельца держат один путь вопросов, разделяют ответы и замки одноимённых документов, показывают картинки и используют настроенный мягкий голос. Незавершённый прежний скоуп переходит в 2.11. |
 
 ### 8.2. Структура репозитория
 
@@ -1074,7 +1093,7 @@ framework/                            канонические универса�
   templates/languages/                9 языковых пакетов (документы владельца + алиасы навыков; английский — исходник)
   tools/                              10 опциональных tool-модулей: гейт провенанса и девять линтеров (канон, требования,
                                       стражи, сценарии, ранжирование, авторство, отчёты прогона, голос, опыт) + генератор контура contour/
-  hooks/                              модуль refresh-hooks (7 скриптов + образцы конфигов → .kaif/hooks/)
+  hooks/                              модуль refresh-hooks (10 проектных скриптов + диспетчер и голосовой хук Kimi + образцы конфигов → .kaif/hooks/)
   readmes/                            7 README директорий
   AGENT_GUIDE.md … KAIF_REFERENCE.md  шаблоны четырнадцати ключевых документов
 dist/                                 генерируемая поставка (руками не правится)
@@ -1104,7 +1123,7 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 ### 8.4. Ограничения текущей версии
 
 1. Локализация покрывает документы владельца и алиасы-триггеры навыков (десять языков); канон и
-   тела навыков — английские by design.
+   тела навыков намеренно остаются английскими.
 2. Родные навыки генерируются для шести агентских систем; остальные харнессы (Cursor, Copilot,
    Windsurf) работают через универсальный `AGENTS.md` без родных файлов навыков.
 3. Песочный полигон (28 сводов) проверяет машинерию развёртывания и обновления; сама методология
@@ -1120,5 +1139,4 @@ interviews/ homeworks/ reports/       (в каждой свой README)
 Навыки дисциплины исполнения (`fable-*`) вендорены из
 [fable-method](https://github.com/Sahir619/fable-method) © Sahir619, MIT.
 
-Используйте, копируйте, меняйте, поставляйте — в том числе на проекте самого фреймворка. Спасибо и
-приятной работы!
+Используйте, копируйте, меняйте, поставляйте — в том числе на проекте самого фреймворка.

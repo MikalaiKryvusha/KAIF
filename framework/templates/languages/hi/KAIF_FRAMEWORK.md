@@ -37,7 +37,7 @@ KAIF (Krinik AI Framework) एक **संदर्भ-हानि के प�
 | `STATUS.md` | जीवित स्थिति — हर महत्वपूर्ण कार्य के बाद अपडेट। |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | बाहरी और आंतरिक नक्शे। |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | ज्ञान डायरेक्टरियाँ (हर एक का अपना README)। |
-| `.claude/skills/` (या आपके एजेंट सिस्टम का समकक्ष) | दोहराने योग्य अनुष्ठान (`/resume`, `/pause`, लूप, …)। |
+| `.kaif/skills-canonical/` (या आपके एजेंट सिस्टम का समकक्ष) | दोहराने योग्य अनुष्ठान (`/resume`, `/pause`, लूप, …)। |
 | `.kaif/kaif.json` | डिप्लॉय मार्कर: संस्करण, क्षेत्र, एजेंट, ट्रैकिंग। |
 
 ## डिप्लॉयमेंट रिकॉर्ड

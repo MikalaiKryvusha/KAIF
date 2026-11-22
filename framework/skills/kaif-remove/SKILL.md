@@ -40,7 +40,7 @@ intact and working — we only remove what KAIF added, surgically.
 2. **Identify KAIF-owned items** from `.kaif/kaif.json` and the known layout:
    - **Core/wrapper (removed in both modes):** the key docs (`AGENT_GUIDE.md`, `PHILOSOPHY.md`,
      `BUG_FIXING_FRAMEWORK.md`, `STATUS.md`, `GOAL.md`, `MASTER_PLAN.md`, the two maps, `KAIF_FRAMEWORK.md`),
-     the deployed skills (`.claude/skills/` or the agent's equivalent), the `kaif` tools,
+     the canonical skills (`.kaif/skills-canonical/`) and their per-system copies, the `kaif` tools,
      `KAIF.md`/`framework/` if present, `.kaif/`, and the KAIF additions to the auto-loaded context file
      (`CLAUDE.md`/`AGENTS.md`).
    - **Content artifacts (kept in partial, removed in full):** the house-rules file `HOUSE_RULES.md` and the voice portrait

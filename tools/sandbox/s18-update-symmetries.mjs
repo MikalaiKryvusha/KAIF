@@ -107,12 +107,12 @@ const FROM = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8')).
 // ---------------------------------------------------------------- апстрим v9.9: правки модулей + НОВЫЙ английский навык
 const bundle0 = readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8');
 let bundle99 = bundle0;
-bundle99 = editBundleModule(bundle99, '.claude/skills/check-backlog/SKILL.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (check-backlog)'));
+bundle99 = editBundleModule(bundle99, '.kaif/skills-canonical/check-backlog/SKILL.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (check-backlog)'));
 bundle99 = editBundleModule(bundle99, 'TESTING_FRAMEWORK.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (testing)'));
 bundle99 = editBundleModule(bundle99, 'PHILOSOPHY.md', 2, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (philosophy)'));
 // U3б: апстрим меняет H1-модуль навыка, у которого на диске переведено ТЕЛО одного раздела (заголовки целы → merged)
-bundle99 = editBundleModule(bundle99, '.claude/skills/propose-idea/SKILL.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (propose-idea)'));
-bundle99 += '\n> **FILE: `.claude/skills/new-skill/SKILL.md`** — a NEW skill of 9.9 (English by construction)\n\n' +
+bundle99 = editBundleModule(bundle99, '.kaif/skills-canonical/propose-idea/SKILL.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (propose-idea)'));
+bundle99 += '\n> **FILE: `.kaif/skills-canonical/new-skill/SKILL.md`** — a NEW skill of 9.9 (English by construction)\n\n' +
   FENCE + 'md\n---\nname: new-skill\ndescription: A NEW skill arriving in 9.9 — English by construction.\n---\n\n' +
   '# /new-skill — a new skill\n\n## What it does\n\nEnglish body of the new skill. Run the tests with `<TEST_HARNESS>` first.\n' + FENCE + '\n';   // <TEST_HARNESS>: слот, который машинерия не заполнит без scripts.test — пункт placeholders (U12)
 const SRC99 = join(ROOT, 'src-9.9');
@@ -179,14 +179,14 @@ ok(/^## 🙏 Молитва перед работой$/m.test(ag1bAfter) && !/^#
 console.log('\n=== U2 (P1): вердикт wholesale печатается с числами · U3: детерминизм · U4 (#31): stale-claims безусловный · U8: команда диффа ===');
 const T2 = join(ROOT, 'u2'); mkdirSync(T2); seed(T2);
 must(run, T2, 'install --lang ru');
-const CB = join(T2, '.claude/skills/check-backlog/SKILL.md');
+const CB = join(T2, '.kaif/skills-canonical/check-backlog/SKILL.md');
 const cbOrig = readFileSync(CB, 'utf8');
 const cbPre = cbOrig.slice(0, cbOrig.search(/^# /m));
 writeFileSync(CB, cbPre +
   '# /check-backlog — ревизия беклога\n\nПройтись по bugs/ и plans/, найти всё открытое.\n\n' +
   '## Что делать\n\nШаги ревизии по-русски.\n\n## Заметки\n\nЗаметки по-русски.\n');
 // U3б-фикстура: второй навык переведён ТОЛЬКО телом одного раздела (заголовки целы) — кандидат с вердиктом merged
-const PI = join(T2, '.claude/skills/propose-idea/SKILL.md');
+const PI = join(T2, '.kaif/skills-canonical/propose-idea/SKILL.md');
 const piMods = splitModules(readFileSync(PI, 'utf8').replace(/\r\n/g, '\n'));
 ok(piMods.length > 2 && /^## /.test(piMods[2].signature), 'U3б фикстура: у propose-idea есть H2-раздел для перевода тела', piMods.map((m) => m.signature).join(' | '));
 piMods[2].lines = [piMods[2].signature, '', 'Русский текст владельца вместо английского тела раздела — заголовок оставлен.', ''];
@@ -202,13 +202,13 @@ ok(/check-backlog\/SKILL\.md: baseFound \d+ of \d+, ceiling \d+ → frozen/.test
    'U3б: diff --source печатает вердикт по каждому кандидату (check-backlog → frozen · propose-idea → merged)', d2.out.split('\n').filter((l) => /baseFound/.test(l)).join(' | '));
 ok(existsSync(REH), 'U3б: репетиция записана в .kaif/update-rehearsal.json');
 const reh = existsSync(REH) ? JSON.parse(readFileSync(REH, 'utf8')) : { verdicts: {} };
-ok(reh.from === FROM && reh.to === '9.9' && reh.verdicts['.claude/skills/check-backlog/SKILL.md']?.outcome === 'frozen' && reh.verdicts['.claude/skills/propose-idea/SKILL.md']?.outcome === 'merged',
+ok(reh.from === FROM && reh.to === '9.9' && reh.verdicts['.kaif/skills-canonical/check-backlog/SKILL.md']?.outcome === 'frozen' && reh.verdicts['.kaif/skills-canonical/propose-idea/SKILL.md']?.outcome === 'merged',
    'U3б: запись репетиции несёт from/to и вердикты с исходами', JSON.stringify(reh).slice(0, 300));
 ok(/^[0-9a-f]{64}$/.test(String(reh.core || '')), 'U3б (2.8, N17): запись репетиции подписана отпечатком ядра, которое её сделало', String(reh.core));
 // подмена: «репетиция сказала frozen» для файла, который боевой прогон сольёт — ровно полевой P1 (#27 R1)
 // (на ядре без репетиции запись подделывается целиком — стражи ниже краснеют чисто, а не падают)
 reh.from = FROM; reh.to = '9.9';
-reh.verdicts['.claude/skills/propose-idea/SKILL.md'] = { ...(reh.verdicts['.claude/skills/propose-idea/SKILL.md'] || { baseFound: 0, baseN: 0, ceiling: 0 }), outcome: 'frozen' };
+reh.verdicts['.kaif/skills-canonical/propose-idea/SKILL.md'] = { ...(reh.verdicts['.kaif/skills-canonical/propose-idea/SKILL.md'] || { baseFound: 0, baseN: 0, ceiling: 0 }), outcome: 'frozen' };
 writeFileSync(REH, JSON.stringify(reh, null, 2) + '\n');
 r = run(T2, `update --source ${SRC99}`);
 ok(r.code === 0, 'U2 update →9.9 (ru, переведённый навык) exit 0', r.out);
@@ -218,7 +218,7 @@ ok(!piAfter.includes('UPSTREAM ADDITION 9.9 (propose-idea)') && piAfter.includes
 ok(/\*\*verdict-mismatch\*\*[^\n]*propose-idea\/SKILL\.md \(rehearsal: frozen — baseFound \d+ of \d+, ceiling \d+; this run: merged — baseFound \d+ of \d+/.test(readFileSync(join(T2, 'KAIF_UPDATE_TASK.md'), 'utf8')),
    'U3б: задание несёт пункт verdict-mismatch с обоими наборами чисел');
 const receipt2 = JSON.parse(readFileSync(join(T2, '.kaif', 'last-update.json'), 'utf8'));
-ok(receipt2.verdicts?.['.claude/skills/check-backlog/SKILL.md']?.outcome === 'frozen' && receipt2.verdicts?.['.claude/skills/propose-idea/SKILL.md']?.outcome === 'frozen' && receipt2.verdicts['.claude/skills/propose-idea/SKILL.md'].mismatch,
+ok(receipt2.verdicts?.['.kaif/skills-canonical/check-backlog/SKILL.md']?.outcome === 'frozen' && receipt2.verdicts?.['.kaif/skills-canonical/propose-idea/SKILL.md']?.outcome === 'frozen' && receipt2.verdicts['.kaif/skills-canonical/propose-idea/SKILL.md'].mismatch,
    'U3б: квитанция несёт вердикты с числами; замороженный по расхождению помечен mismatch', JSON.stringify(receipt2.verdicts || {}).slice(0, 300));
 ok(!existsSync(REH), 'U3б: запись репетиции потреблена обновлением (одноразовая)');
 ok(/check-backlog\/SKILL\.md: baseFound \d+ of \d+, ceiling \d+ → frozen/.test(r.out),
@@ -284,7 +284,7 @@ const T4 = join(ROOT, 'u6'); mkdirSync(T4); seed(T4);
 must(run, T4, 'install --lang ru');
 r = run(T4, `update --source ${SRC99}`);
 ok(r.code === 0, 'U6 update →9.9 (ru) exit 0', r.out);
-ok(existsSync(join(T4, '.claude/skills/new-skill/SKILL.md')), 'U6 фикстура: новый навык приехал');
+ok(existsSync(join(T4, '.kaif/skills-canonical/new-skill/SKILL.md')), 'U6 фикстура: новый навык приехал');
 const task4 = readFileSync(join(T4, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(/\*\*language-arrivals\*\*[^\n]*new-skill/.test(task4), 'U6: задание называет пункт `language-arrivals` с новым английским навыком', task4.split('\n').filter((l) => /\*\*[a-z-]+\*\*/.test(l)).map((l) => l.slice(0, 40)).join(' | '));
 r = run(T4, 'check');
@@ -313,20 +313,20 @@ console.log('\n=== U10 (#32 R-D): преемник в deprecation (лог · п�
 const depKeyRe = /"deprecations": \[[\s\S]*?\],/;
 if (!depKeyRe.test(bundle99)) throw new Error('U10 fixture: ключ deprecations не найден в мете бандла');
 let bundleDep = bundle99.replace(depKeyRe,
-  '"deprecations": [{"path": ".claude/skills/what-next/SKILL.md", "reason": "retired in test", "successor": "/next-thing (.claude/skills/next-thing/SKILL.md)"}, ' +
-  '{"path": ".claude/skills/help-kaif/SKILL.md", "reason": "retired in test", "successor": "/help-thing (.claude/skills/help-thing/SKILL.md)"}],');
+  '"deprecations": [{"path": ".kaif/skills-canonical/what-next/SKILL.md", "reason": "retired in test", "successor": "/next-thing (.kaif/skills-canonical/next-thing/SKILL.md)"}, ' +
+  '{"path": ".kaif/skills-canonical/help-kaif/SKILL.md", "reason": "retired in test", "successor": "/help-thing (.kaif/skills-canonical/help-thing/SKILL.md)"}],');
 const dropBlock = (text, p) => text.replace(new RegExp('^> \\*\\*FILE: `' + p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') +
   '`\\*\\*[^\\n]*\\n\\n' + FENCE + '\\w*\\n[\\s\\S]*?\\n' + FENCE + '\\n?', 'm'), '');
-bundleDep = dropBlock(dropBlock(bundleDep, '.claude/skills/what-next/SKILL.md'), '.claude/skills/help-kaif/SKILL.md');
+bundleDep = dropBlock(dropBlock(bundleDep, '.kaif/skills-canonical/what-next/SKILL.md'), '.kaif/skills-canonical/help-kaif/SKILL.md');
 const SRCDEP = join(ROOT, 'src-9.9-dep');
 writeSource(SRCDEP, bundleDep, '9.9');
 const T6 = join(ROOT, 'u10'); mkdirSync(T6); seed(T6);
 must(run, T6, 'install');
-const HK = join(T6, '.claude/skills/help-kaif/SKILL.md');
+const HK = join(T6, '.kaif/skills-canonical/help-kaif/SKILL.md');
 writeFileSync(HK, readFileSync(HK, 'utf8') + '\nLOCAL EDIT ON DEPRECATED\n');   // правленный — остаётся и считается
 r = run(T6, `update --source ${SRCDEP}`);
 ok(r.code === 0, 'U10 update →9.9 с deprecations exit 0', r.out);
-ok(/retired \.claude\/skills\/what-next\/SKILL\.md \([^)]*\) → successor: \/next-thing/.test(r.out), 'U10: лог удаления называет преемника', r.out.split('\n').filter((l) => /retired|deprecated/.test(l)).join(' | ').slice(0, 300));
+ok(/retired \.kaif\/skills-canonical\/what-next\/SKILL\.md \([^)]*\) → successor: \/next-thing/.test(r.out), 'U10: лог удаления называет преемника', r.out.split('\n').filter((l) => /retired|deprecated/.test(l)).join(' | ').slice(0, 300));
 ok(/1 deprecated artifact\(s\) kept/.test(r.out), 'U10: лог считает неубранные (1 kept)', r.out.split('\n').filter((l) => /deprecated/.test(l)).join(' | ').slice(0, 300));
 const task6 = readFileSync(join(T6, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(/\*\*deprecations\*\*[^\n]*help-kaif\/SKILL\.md[^\n]*successor: \/help-thing/.test(task6), 'U10: пункт задания называет преемника у правленного упразднённого');
@@ -341,7 +341,7 @@ must(run, T7, 'install --mode anonymous');
 // файл, чей текст анонимизатор МЕНЯЕТ: сравниваем анонимную установку со стандартной (T5 — u9), берём первый различающийся навык
 const T7std = join(ROOT, 'u13-std'); mkdirSync(T7std); seed(T7std);
 must(run, T7std, 'install');
-const conditioned = ['KAIF_FRAMEWORK.md', '.claude/skills/report-bug/SKILL.md', '.claude/skills/help-kaif/SKILL.md', 'AGENT_GUIDE.md']
+const conditioned = ['KAIF_FRAMEWORK.md', '.kaif/skills-canonical/report-bug/SKILL.md', '.kaif/skills-canonical/help-kaif/SKILL.md', 'AGENT_GUIDE.md']
   .find((p) => existsSync(join(T7, p)) && existsSync(join(T7std, p)) && readFileSync(join(T7, p), 'utf8') !== readFileSync(join(T7std, p), 'utf8'));
 ok(!!conditioned, 'U13 фикстура: найден файл, чей текст зависит от режима (анонимная ≠ стандартная установка)', conditioned || 'none');
 if (conditioned) writeFileSync(join(T7, conditioned), readFileSync(join(T7, conditioned), 'utf8') + '\nLOCAL EDIT UNDER ANONYMOUS MODE\n');
@@ -372,7 +372,7 @@ console.log('\n=== U3в (N17): запись репетиции чужого яд
 const T8 = join(ROOT, 'u3v'); mkdirSync(T8); seed(T8);
 must(run, T8, 'install');
 writeFileSync(join(T8, '.kaif', 'update-rehearsal.json'), JSON.stringify({ from: FROM, to: '9.9', core: '0'.repeat(64),
-  verdicts: { '.claude/skills/check-backlog/SKILL.md': { outcome: 'frozen', baseFound: 0, baseN: 0, ceiling: 0 } } }, null, 2) + '\n');
+  verdicts: { '.kaif/skills-canonical/check-backlog/SKILL.md': { outcome: 'frozen', baseFound: 0, baseN: 0, ceiling: 0 } } }, null, 2) + '\n');
 r = run(T8, `update --source ${SRC99}`);
 ok(r.code === 0 && /rehearsal record [^\n]*written by another core[^\n]*ignored/.test(r.out) && !/rehearsal verdicts loaded/.test(r.out),
    'U3в (N17): запись с чужим отпечатком ядра названа и НЕ привязана', r.out.split('\n').filter((l) => /rehearsal/.test(l)).join(' | ').slice(0, 300));

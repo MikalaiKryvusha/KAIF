@@ -38,7 +38,7 @@ KAIF (Krinik AI Framework) — **устойчивый к потере конте
 | `STATUS.md` | Живое состояние — обновляется после каждой значимой задачи. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Внешняя и внутренняя карты. |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | Директории знаний (в каждой свой README). |
-| `.claude/skills/` (или эквивалент вашей агентской системы) | Повторяемые ритуалы (`/resume`, `/pause`, циклы, …). |
+| `.kaif/skills-canonical/` (или эквивалент вашей агентской системы) | Повторяемые ритуалы (`/resume`, `/pause`, циклы, …). |
 | `.kaif/kaif.json` | Маркер развёртывания: версия, сфера, агент, трекинг. |
 
 ## Запись о развёртывании

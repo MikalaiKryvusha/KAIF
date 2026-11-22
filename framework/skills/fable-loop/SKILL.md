@@ -6,12 +6,12 @@ description: End-to-end orchestrated workflow that runs a task the way Fable ran
 > **Vendored into KAIF from [fable-method](https://github.com/Sahir619/fable-method) v1.4.0 — © Sahir619, MIT.**
 > Kept verbatim except marked KAIF patches: (1) upstream's "GSD workflow" references are mapped to KAIF's
 > own cycles (`/autoloop`/`/dayloop`/`/nightloop`) — the cycle owns picking backlog items, this loop owns
-> executing ONE item; (2) the install-path note reflects KAIF's `.claude/skills/` layout. Sync ritual:
+> executing ONE item; (2) the install-path note reflects KAIF's `.kaif/skills-canonical/` layout. Sync ritual:
 > before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
 
 # The Fable Loop
 
-This skill orchestrates the fable-method: read its SKILL.md first; its rules govern every stage. It is installed alongside this skill (`.claude/skills/fable-method/`). The method says WHAT to check; this loop says WHO does the work: what runs in the main thread, what fans out to subagents, and what gets attacked before delivery.
+This skill orchestrates the fable-method: read its SKILL.md first; its rules govern every stage. It is installed alongside this skill (`.kaif/skills-canonical/fable-method/`). The method says WHAT to check; this loop says WHO does the work: what runs in the main thread, what fans out to subagents, and what gets attacked before delivery.
 
 **Gate first.** Trivial per the method's triviality gate: just do it, verify with the one obvious check, report in two sentences. No stages, no subagents. Everything else runs the four stages below in order.
 

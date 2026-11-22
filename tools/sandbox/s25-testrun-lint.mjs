@@ -174,18 +174,18 @@ ok(r.code === 0, 's25 свежий деплой — check зелёный', r.out
 ok(!/\/resume does not name/.test(r.out) && !/names .* missing on disk/.test(r.out), 's25 свежий деплой — про /resume ни слова (все девять названы)', r.out);
 // NT3 (2.9, тикет #141): шаг навыка закрытия, оставшийся слотом-инструкцией шаблона «`<Run the project build …>`», check называет с файлом и
 // шагом (предупреждение, код 0); вписанная проектом команда — тишина по этому файлу
-ok(/⚠ \.claude\/skills\/end-chat-soft\/SKILL\.md: the step «Step 3\. \(Re\)build \/ regenerate artifacts» is still the template's instruction slot «`<Run the project build/.test(r.out),
+ok(/⚠ \.kaif\/skills-canonical\/end-chat-soft\/SKILL\.md: the step «Step 3\. \(Re\)build \/ regenerate artifacts» is still the template's instruction slot «`<Run the project build/.test(r.out),
    's25 NT3 (#141): свежий деплой — check называет заглушку шага сборки в /end-chat-soft с шагом', (r.out.match(/[^\n]*instruction slot[^\n]*/g) || []).join('\n').slice(0, 600));
 // лёгкий судья NT, F5: слот шаблона /release, открытый ПОСРЕДИ строки (шаг 2, линтер витрины), ось не видела; упоминание «(`<PROJECT> X.Y`)»
 // молчит; вторая форма судьи («`<COMMIT_COMMAND>` with …», шаг 5) до развёртывания не доходит — установка подставляет команду коммита сама
 {
-  const rel0 = readFileSync(join(S, '.claude', 'skills', 'release', 'SKILL.md'), 'utf8');
-  ok(/⚠ \.claude\/skills\/release\/SKILL\.md: the step «Step 2\. Refresh README[^»]*» is still the template's instruction slot «`<If the project has a storefront linter/.test(r.out)
+  const rel0 = readFileSync(join(S, '.kaif', 'skills-canonical', 'release', 'SKILL.md'), 'utf8');
+  ok(/⚠ \.kaif\/skills-canonical\/release\/SKILL\.md: the step «Step 2\. Refresh README[^»]*» is still the template's instruction slot «`<If the project has a storefront linter/.test(r.out)
      && !/instruction slot «`<PROJECT>/.test(r.out) && !rel0.includes('`<COMMIT_COMMAND>`'),
      's25 NT F5: свежий деплой — check называет слот /release посреди строки, упоминание `<PROJECT>` молчит, заглушки команды коммита в навыке нет', (r.out.match(/[^\n]*release\/SKILL\.md[^\n]*/g) || []).join('\n').slice(0, 800));
 }
 {
-  const ECS = join(S, '.claude', 'skills', 'end-chat-soft', 'SKILL.md');
+  const ECS = join(S, '.kaif', 'skills-canonical', 'end-chat-soft', 'SKILL.md');
   const ecs0 = readFileSync(ECS, 'utf8');
   // the project fills its two slots of /end-chat-soft with its own commands — every slot line replaced, nothing else touched
   const lines = ecs0.split(/\r?\n/); const out = []; let open = false;
@@ -196,7 +196,7 @@ ok(/⚠ \.claude\/skills\/end-chat-soft\/SKILL\.md: the step «Step 3\. \(Re\)bu
   writeFileSync(ECS, ecs0);
 }
 // мутация на КОПИИ: из /resume уходит буллет GOAL.md → предупреждение называет его; код остаётся 0
-const RESUME = join(S, '.claude', 'skills', 'resume', 'SKILL.md');
+const RESUME = join(S, '.kaif', 'skills-canonical', 'resume', 'SKILL.md');
 ok(existsSync(RESUME) && /^- `GOAL\.md`/m.test(readFileSync(RESUME, 'utf8')), 's25 фикстура: развёрнутый /resume несёт буллет `GOAL.md`');
 writeFileSync(RESUME, readFileSync(RESUME, 'utf8').split(/\r?\n/).filter((l) => !/^- `GOAL\.md`/.test(l)).join('\n'));
 r = runCore('check');
@@ -240,7 +240,7 @@ const TF_TEXT = existsSync(join(S, 'TESTING_FRAMEWORK.md')) ? readFileSync(join(
 ok(/^6\. \*\*Hunt the reproduction\*\*/m.test(TF_TEXT) && /lists at least\s+three variants tried/.test(TF_TEXT) &&
    /^7\. \*\*File defects in the defined shape\*\*/m.test(TF_TEXT) && /kaif-testrun-lint\.mjs bug <report>/.test(TF_TEXT),
    's25 развёрнутый канон тестирования — шаг 6 «Hunt the reproduction» (не меньше трёх вариантов) и шаг 7 с командой `bug`', TF_TEXT.slice(0, 200));
-const RB_TEXT = existsSync(join(S, '.claude', 'skills', 'report-bug', 'SKILL.md')) ? readFileSync(join(S, '.claude', 'skills', 'report-bug', 'SKILL.md'), 'utf8') : '';
+const RB_TEXT = existsSync(join(S, '.kaif', 'skills-canonical', 'report-bug', 'SKILL.md')) ? readFileSync(join(S, '.kaif', 'skills-canonical', 'report-bug', 'SKILL.md'), 'utf8') : '';
 const TPL_C = (/### Template C[\s\S]*?```markdown\r?\n([\s\S]*?)```/.exec(RB_TEXT) || [])[1] || '';
 ok(/^## Description$/m.test(TPL_C) && /^## Steps to reproduce$/m.test(TPL_C) && /^## Expected result$/m.test(TPL_C) &&
    /^## Actual result$/m.test(TPL_C) && /\*\*Build:\*\*/.test(TPL_C) && /\*\*Evidence:\*\*/.test(TPL_C),
@@ -325,7 +325,7 @@ ok(/template C of `\/report-bug`/.test(TC_TPL) && !/steps to reproduce · expect
 // («не перебивай занятого» · «не молчи о блокере/простое» · «помощь уважительно» · «какофония запрещена»)
 // исчезли при генерации, и ни один гейт не сказал ни слова. Свод судит развёрнутую копию (та же, что выше).
 console.log('\n=== s25: развёрнутая копия — ось «конституция сохранила обязательства шаблона» (FR) ===');
-const CONST_TPL = join(S, '.claude', 'skills', 'team-deployment', 'references', 'team-constitution-template.md');
+const CONST_TPL = join(S, '.kaif', 'skills-canonical', 'team-deployment', 'references', 'team-constitution-template.md');
 const CONST = join(S, 'TEAM_CONSTITUTION.md');
 ok(existsSync(CONST_TPL), 's25 фикстура: шаблон конституции приехал установкой', CONST_TPL);
 const tplText = existsSync(CONST_TPL) ? readFileSync(CONST_TPL, 'utf8') : '';
@@ -357,7 +357,7 @@ ok(r.code === 0, 's25 конституция с потерей — check ост�
 ok(/⚠ TEAM_CONSTITUTION\.md lost 4 obligation\(s\) of the template: /.test(r.out) &&
    FIELD_LOST.every((a) => r.out.includes(`§2 "${a}"`)),
    's25 потеря формы поля — предупреждение называет ПОИМЁННО все четыре правила §2 (#68)', r.out);
-ok(/restore them, or declare the omission beside the item with `<!-- constitution-ok: <why> -->` \(origin issue #68; template: \.claude\/skills\/team-deployment\/references\/team-constitution-template\.md\)/.test(r.out),
+ok(/restore them, or declare the omission beside the item with `<!-- constitution-ok: <why> -->` \(origin issue #68; template: \.kaif\/skills-canonical\/team-deployment\/references\/team-constitution-template\.md\)/.test(r.out),
    's25 потеря — строка называет и лекарство, и объявленное исключение, и найденный шаблон', r.out);
 // (б2) АДРЕСНОСТЬ починки fail-open (судья интеграции 2026-09-18, каверза К4): обязательство считается СОХРАНЁННЫМ,
 // только когда стоит среди нумерованных пунктов §2 — документ, который УПОМИНАЕТ удалённые правила вне §2
@@ -415,8 +415,8 @@ ok(existsSync(HR_TPL), 's25 скелет домашних правил прие�
 ok(readSh('.kaif/_house-rules-template.md').includes('[OWNER] <date and time> · <where the verbatim lives'),
    's25 скелет несёт форму правила владельца со строкой происхождения (раздел 1)');
 ok(readSh('AGENT_GUIDE.md').includes(HR_CP), 's25 развёрнутое руководство (ярус 4) несёт команду копии скелета');
-ok(readSh('.claude/skills/fix-vision/SKILL.md').includes(HR_CP), 's25 развёрнутый /fix-vision (шаг 3) несёт команду копии скелета');
-ok(/^- \*\*If the project has one:\*\* `HOUSE_RULES\.md` — /m.test(readSh('.claude/skills/resume/SKILL.md')),
+ok(readSh('.kaif/skills-canonical/fix-vision/SKILL.md').includes(HR_CP), 's25 развёрнутый /fix-vision (шаг 3) несёт команду копии скелета');
+ok(/^- \*\*If the project has one:\*\* `HOUSE_RULES\.md` — /m.test(readSh('.kaif/skills-canonical/resume/SKILL.md')),
    's25 развёрнутый /resume называет HOUSE_RULES.md условным буллетом шага 1 (условие первым — ось ядра файла не требует)');
 // копия по команде канона + одно правило владельца; затем update с версией выше — копия цела побайтно
 const HR = join(SH, 'HOUSE_RULES.md');

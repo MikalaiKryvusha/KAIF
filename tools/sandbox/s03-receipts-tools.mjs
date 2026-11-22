@@ -178,8 +178,8 @@ const PH = ['<PROJECT_NAME>', '<SHORT_NAME>', '<AUTHOR>', '<REPO_URL>', '<LOCAL_
   "<YOUR AGENT'S noreply EMAIL>", '<OWNER_LANGUAGE>'];   // email-слот виден гейту с bug 28
 const fill = (p) => { let t = readFileSync(p, 'utf8'); for (const ph of PH) t = t.split(ph).join('X'); writeFileSync(p, t); };
 fill(join(S12, 'AGENT_GUIDE.md'));
-for (const n of readdirSync(join(S12, '.claude', 'skills'))) {
-  const p = join(S12, '.claude', 'skills', n, 'SKILL.md');
+for (const n of readdirSync(join(S12, '.kaif', 'skills-canonical'))) {
+  const p = join(S12, '.kaif', 'skills-canonical', n, 'SKILL.md');
   if (existsSync(p)) fill(p);
 }
 if (existsSync(join(S12, '.kaif', 'spheres'))) for (const n of readdirSync(join(S12, '.kaif', 'spheres')))
@@ -253,8 +253,8 @@ const S12b = join(ROOT, 's12b'); mkdirSync(S12b); seed(S12b);
 r = run(S12b, 'install');          // дефолт --agents = все пять систем: профиль многосистемный
 ok(r.code === 0, 'S12b install (все пять систем) exit 0', r.out.slice(-400));
 const OWN = 'my-project-skill';
-mkdirSync(join(S12b, '.claude', 'skills', OWN), { recursive: true });
-writeFileSync(join(S12b, '.claude', 'skills', OWN, 'SKILL.md'),
+mkdirSync(join(S12b, '.kaif', 'skills-canonical', OWN), { recursive: true });
+writeFileSync(join(S12b, '.kaif', 'skills-canonical', OWN, 'SKILL.md'),
   `---\nname: ${OWN}\ndescription: a skill authored by the project itself\n---\n\n# Own skill\n`);
 r = run(S12b, 'sync');
 ok(r.code === 0 && /re-synced \d+ system skill copies/.test(r.out),

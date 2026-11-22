@@ -117,8 +117,8 @@ Unpacking produces this layout (all wrapper docs written in the owner's language
 │
 │  ── WIRING ──
 ├── .kaif/kaif.json     # deploy marker: version · released · origin · tracking · sphere · agents
+├── .kaif/skills-canonical/ # the canonical skills — {{SKILL_COUNT}} in all
 ├── package.json        # KAIF adds kaif:* handles here (respectfully; removed on uninstall)
-├── .claude/skills/     # the repeatable rituals (slash-skills) — {{SKILL_COUNT}} in all (or the agent's equivalent)
 └── kaif-unpack.mjs     # the mechanical unpacker (transient: deleted after injection, with KAIF.md)
 ```
 
@@ -126,9 +126,9 @@ Plus: the auto-loaded context file (`CLAUDE.md` for Claude Code, `AGENTS.md` for
 `AGENT_GUIDE.md`; and `KAIF.md` itself is **removed after a successful injection** (§10), replaced by
 `KAIF_FRAMEWORK.md`.
 
-> **Skills directory note.** The skills use the Claude Code convention
-> (`.claude/skills/<name>/SKILL.md`, YAML frontmatter `name` + `description`). For another agent, place the
-> same content where that agent discovers commands (§14) — the *content* matters, not the path.
+> **Skills directory note.** The canonical skills live in `.kaif/skills-canonical/<name>/SKILL.md`
+> with YAML frontmatter (`name` + `description`). For each selected agent, place the adapted copy where
+> that agent discovers commands (§14) — the *content* matters, not the mirror's path.
 
 ---
 
@@ -209,7 +209,7 @@ README during unpacking.
 ## 6. The skills
 
 The framework's repeatable rituals — the verbs of working on a project. Each is a
-`.claude/skills/<name>/SKILL.md` with YAML frontmatter (`name`, `description`); the `description` is what
+`.kaif/skills-canonical/<name>/SKILL.md` with YAML frontmatter (`name`, `description`); the `description` is what
 the agent matches to trigger the skill — keep the trigger phrases (in the owner's language) intact. During
 unpacking, copy each verbatim, replacing the command placeholders (`<BUILD_COMMAND>`, `<COMMIT_COMMAND>`,
 `<TEST_HARNESS>`) with the project's real commands.

@@ -26,7 +26,7 @@ pointing at `AGENT_GUIDE.md` is always generated as a cross-tool fallback.
 | **Cursor** | `.cursor/rules/*.mdc` + `AGENTS.md` | `.cursor/skills/`, `.agents/skills/` — **reads `.claude/skills/` as-is** |
 | **Windsurf/Cascade** | `.devin/rules/` (legacy `.windsurf/rules/`) + `AGENTS.md` | `.windsurf/workflows/*` (manual `/name`) |
 | **Cline** | `.clinerules/` + `AGENTS.md` | Skills (≥3.48): `.cline/skills/`, also reads `.claude/skills/` |
-| **Google Antigravity CLI** (2026-08) | `AGENTS.md` + `.agents/` customization dir | Agent Skills preserved from Gemini CLI — **exact path unverified**; keep `.claude/skills/` |
+| **Google Antigravity CLI** (2026-08) | `AGENTS.md` + `.agents/` customization dir | Agent Skills preserved from Gemini CLI — **exact path unverified**; keep `.kaif/skills-canonical/` |
 | **Grok Build** (xAI) | `AGENTS.md` · `CLAUDE.md` | `.grok/skills/` — also reads `.claude/` layout as-is |
 | Roo Code (archived) | = Zoo Code (byte-compatible) | = Zoo Code |
 | Devin · OpenCode · Aider · Junie | `AGENTS.md` fallback | Skills standard (Devin/OpenCode) or named docs |

@@ -17,7 +17,7 @@ directory name, kebab-case; `description` ≤ 1024 chars) in `.cline/skills/`, `
 **`.claude/skills/` is read directly** (Claude-compatible). Invoked as `/skill-name` or automatically.
 (Legacy Workflows still exist but Skills are the current mechanism.)
 
-**Mechanical translation from a KAIF skill:** none needed — deploy `.claude/skills/` as-is.
+**Mechanical translation from a KAIF skill:** copy `.kaif/skills-canonical/` to `.cline/skills/` unchanged.
 
 ## Notes / gotchas
 - Global skills (`~/.cline/skills/`) override same-named project skills — avoid name clashes.
@@ -26,7 +26,7 @@ directory name, kebab-case; `description` ≤ 1024 chars) in `.cline/skills/`, `
 ## Deploy checklist
 - [ ] `.clinerules/kaif.md` → points at `AGENT_GUIDE.md`
 - [ ] `AGENTS.md` generated (auto-detected)
-- [ ] `.claude/skills/` deployed (read natively by Cline)
+- [ ] `.cline/skills/` deployed from the neutral canon
 - [ ] validate: skills visible == KAIF skill count
 - [ ] `.kaif/kaif.json` → `agent: "cline"`
 

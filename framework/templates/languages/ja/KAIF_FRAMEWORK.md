@@ -38,7 +38,7 @@ KAIF (Krinik AI Framework) は、**コンテキスト喪失に強く、自律を
 | `STATUS.md` | 生きた状態 — 重要なタスクごとに更新。 |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | 外部マップと内部マップ。 |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | 知識ディレクトリ（各自の README 付き）。 |
-| `.claude/skills/`（またはご使用のエージェントシステムの同等物） | 繰り返し可能な儀式（`/resume`、`/pause`、ループ等）。 |
+| `.kaif/skills-canonical/`（またはご使用のエージェントシステムの同等物） | 繰り返し可能な儀式（`/resume`、`/pause`、ループ等）。 |
 | `.kaif/kaif.json` | デプロイマーカー：バージョン、領域、エージェント、トラッキング。 |
 
 ## デプロイ記録

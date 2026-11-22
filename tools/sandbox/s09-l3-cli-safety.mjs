@@ -165,7 +165,7 @@ r = run(D0, 'sync --dry-run');
 ok(r.code !== 0 && /dry-run/.test(r.out), 'G3 (KCam Г10): неизвестный флаг `--dry-run` у sync — отказ', r.out.slice(-200));
 ok(readFileSync(MIRROR, 'utf8') === 'JUNK MIRROR CONTENT\n', 'G3: отказ означает НОЛЬ действий — зеркало не синхронизировано');
 r = run(D0, 'sync');
-ok(r.code === 0 && readFileSync(MIRROR, 'utf8') === readFileSync(join(D0, '.claude', 'skills', 'resume', 'SKILL.md'), 'utf8'),
+ok(r.code === 0 && readFileSync(MIRROR, 'utf8') === readFileSync(join(D0, '.kaif', 'skills-canonical', 'resume', 'SKILL.md'), 'utf8'),
    'G3-инвариант: голый sync синхронизирует как прежде');
 
 // G6: canon-lint без конфигурации — SKIPPED с кодом 3, не зелёный ноль
@@ -244,7 +244,7 @@ r = run(D10, 'install --lang ru');
 // «счётчик == навыки в бандле» зеленел, пока установка печатала 35 при 31 на диске — bugs/65 №1.
 // Зашивать число тоже нельзя: «34» было ещё одним незамеченным зеркалом счётчика (план 62/T1).
 const aliasedOnDisk = (dir, lang) => {
-  const sk = join(dir, '.claude', 'skills');
+  const sk = join(dir, '.kaif', 'skills-canonical');
   if (!existsSync(sk)) return 0;
   return readdirSync(sk).filter((n) => {
     const p = join(sk, n, 'SKILL.md');
@@ -253,7 +253,7 @@ const aliasedOnDisk = (dir, lang) => {
 };
 const loggedAliased = (out) => { const m = out.match(/(\d+) skills trigger-aliased/); return m ? Number(m[1]) : null; };
 const SKILLS_IN_BUNDLE = (readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8')
-  .match(/^> \*\*FILE: `\.claude\/skills\/[^/]+\/SKILL\.md`/gm) || []).length;
+  .match(/^> \*\*FILE: `\.kaif\/skills-canonical\/[^/]+\/SKILL\.md`/gm) || []).length;
 const disk10 = aliasedOnDisk(D10, 'ru');
 ok(r.code === 0 && disk10 > 0 && loggedAliased(r.out) === disk10,
    `G10: standard — счётчик == ${disk10} навыков С АЛИАСОМ НА ДИСКЕ (2 фантомных ключа пакета в счёт не идут; лог: ${loggedAliased(r.out)})`, r.out.slice(-200));
@@ -265,7 +265,7 @@ const ORIGIN_TIED = ((readFileSync(join(DIST, 'KAIF-CORE.mjs'), 'utf8')
   .match(/^const ORIGIN_TIED = \[([^\]]*)\]/m) || [, ''])[1])
   .split(',').map((s) => s.trim().replace(/^['"]|['"]$/g, '')).filter(Boolean);
 const tiedAliased = ORIGIN_TIED.filter((n) => {
-  const p = join(D10, '.claude', 'skills', n, 'SKILL.md');
+  const p = join(D10, '.kaif', 'skills-canonical', n, 'SKILL.md');
   return existsSync(p) && readFileSync(p, 'utf8').includes('Trigger aliases (ru):');
 }).length;
 const D10a = join(ROOT, 'd10a'); mkdirSync(D10a); seed(D10a);
@@ -382,7 +382,7 @@ ok(r.code !== 0 && /not both/.test(r.out),
 const MIR1 = join(D1, '.agents', 'skills', 'resume', 'SKILL.md');
 writeFileSync(MIR1, 'JUNK MIRROR CONTENT\n');
 r = run(D1, 'checkpoint recheck');
-ok(r.code === 0 && readFileSync(MIR1, 'utf8') === readFileSync(join(D1, '.claude', 'skills', 'resume', 'SKILL.md'), 'utf8'),
+ok(r.code === 0 && readFileSync(MIR1, 'utf8') === readFileSync(join(D1, '.kaif', 'skills-canonical', 'resume', 'SKILL.md'), 'utf8'),
    'G13 (KCam Г11): checkpoint recheck сперва синхронизирует зеркала, потом гоняет check', r.out.slice(-250));
 
 // ── G20: у репозитория ОДИН коммит-маршрут — тот, на котором стоит гейт (круг R2) ──────────
@@ -398,7 +398,7 @@ ok(r.code === 0 && readFileSync(MIR1, 'utf8') === readFileSync(join(D1, '.claude
 // Разговор О правиле законен — канон обязан называть дефектную форму, чтобы её узнавали, —
 // поэтому строки с обратными кавычками вокруг всей команды и строки-запреты не считаются.
 {
-  const skillsDir = join(REPO, '.claude', 'skills');
+  const skillsDir = join(REPO, '.kaif', 'skills-canonical');
   const offenders = [];
   for (const name of readdirSync(skillsDir)) {
     const f = join(skillsDir, name, 'SKILL.md');

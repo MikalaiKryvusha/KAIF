@@ -58,7 +58,7 @@ bundle = editBundleModule(bundle, 'PHILOSOPHY.md', 2, (m) => m.lines.push('', 'U
 // НЕ префиксуется «UPSTREAM ADDITION 9.9 (philosophy» — иначе S6-ассерт отсутствия зеленел бы/краснел
 // бы на чужой подстроке.
 bundle = editBundleModule(bundle, 'PHILOSOPHY.md', 3, (m) => m.lines.push('', 'UPSTREAM TAIL 9.9 (philosophy)'));
-bundle = editBundleModule(bundle, '.claude/skills/pause/SKILL.md', 2, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (pause)'));
+bundle = editBundleModule(bundle, '.kaif/skills-canonical/pause/SKILL.md', 2, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (pause)'));
 bundle = editBundleModule(bundle, 'EXPERIENCE.md', 0, (m) => m.lines.push('', 'TEMPLATE CONVENTION CHANGE 9.9'));
 writeFileSync(join(SRC, 'KAIF-CORE-BUNDLE.md'), bundle);
 cpSync(join(DIST, 'KAIF-CORE.mjs'), join(SRC, 'KAIF-CORE.mjs'));
@@ -89,7 +89,7 @@ const pm = splitModules(phil);
 pm[1].lines = [pm[1].lines[0], '', 'Это переведённый владельцем текст модуля — русская локализация.', ''];
 writeFileSync(PHIL, joinModules(pm));
 // KPOT: локальная правка модуля [1] в pause/SKILL.md (апстрим менял [2])
-const PAUSE = join(S5, '.claude/skills/pause/SKILL.md');
+const PAUSE = join(S5, '.kaif/skills-canonical/pause/SKILL.md');
 const pz = splitModules(readFileSync(PAUSE, 'utf8'));
 pz[1].lines.push('', 'LOCAL PROJECT EDIT (pause module 1)');
 // KAIF ticket 06 (KAGO 2.3, эпик FP 2.4): файл на диске — CRLF, как на autocrlf=true дереве;

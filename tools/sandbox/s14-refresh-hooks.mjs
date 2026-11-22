@@ -1024,6 +1024,24 @@ const runKimi = (script, input, args = [], env = process.env) => spawnSync(proce
     's14 Kimi window: ждущая ступень 80 % сказана на следующем сообщении', `${x.status} ${x.stdout} ${x.stderr}`.slice(0, 300));
   x = runKimi('context-window.mjs', { hook_event_name: 'Stop', session_id: sidK, cwd: S, usage: { inputOther: 128000, inputCacheRead: 0, inputCacheCreation: 0 } }, ['--kimi'], envKW);
   ok(x.status === 2 && x.stderr.includes('/skill:end-chat-soft'), 's14 Kimi window: 85 % точки — exit 2 и Kimi-навык закрытия', `${x.status} ${x.stderr}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Read' }, ['--kimi'], envKW);
+  ok(x.status === 2 && x.stderr.includes('/skill:end-chat-soft'),
+    's14 Kimi closure latch (bugs/150): первый обычный вызов выше 85 % отклонён', `${x.status} ${x.stderr}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Read' }, ['--kimi'], envKW);
+  ok(x.status === 2 && x.stderr.includes('/skill:end-chat-soft'),
+    's14 Kimi closure latch (bugs/150): обычная работа отклоняется ПОВТОРНО, пока закрытие не начато', `${x.status} ${x.stderr}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Skill', tool_input: { skill: 'end-chat-soft' } }, ['--kimi'], envKW);
+  ok(x.status === 0, 's14 Kimi closure latch: вызов /skill:end-chat-soft проходит', `${x.status} ${x.stderr}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Read' }, ['--kimi'], envKW);
+  ok(x.status === 0, 's14 Kimi closure latch: вход в закрытие открывает инструменты его работы', `${x.status} ${x.stderr}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'UserPromptSubmit', session_id: sidK, cwd: S, prompt: 'resume\nnew work' }, ['--kimi'], envKW);
+  ok(x.status === 0 && x.stdout.includes('/skill:end-chat-soft'),
+    's14 Kimi closure latch: новый промпт снова печатает требование закрытия', `${x.status} ${x.stdout}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Read' }, ['--kimi'], envKW);
+  ok(x.status === 2 && x.stderr.includes('/skill:end-chat-soft'),
+    's14 Kimi closure latch: новый промпт на том же окне взводит незавершённое закрытие заново', `${x.status} ${x.stderr}`.slice(0, 300));
+  x = runKimi('context-window.mjs', { hook_event_name: 'PreToolUse', session_id: sidK, cwd: S, tool_name: 'Skill', tool_input: { skill: 'end-chat-soft' } }, ['--kimi'], envKW);
+  ok(x.status === 0, 's14 Kimi closure latch: повторный вход в закрытие проходит перед PostCompact', `${x.status} ${x.stderr}`.slice(0, 300));
   x = runKimi('context-window.mjs', { hook_event_name: 'PostCompact', session_id: sidK, cwd: S }, ['--kimi'], envKW);
   ok(x.status === 0, 's14 Kimi PostCompact: observation-only событие выполнено', `${x.status} ${x.stderr}`.slice(0, 300));
   x = runKimi('context-window.mjs', { hook_event_name: 'Stop', session_id: sidK, cwd: S, usage: { inputOther: 120000, inputCacheRead: 0, inputCacheCreation: 0 } }, ['--kimi'], envKW);

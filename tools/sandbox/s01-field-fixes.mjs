@@ -548,10 +548,10 @@ ok(kiPointer.includes('AGENT_GUIDE.md') && kiPointer.includes('/skill:resume')
    'S15 нативный AGENTS.md указывает на канон и использует явные Kimi-команды');
 ok(kiPointer.includes('Never Ask') && kiPointer.includes('interviews/') && kiPointer.includes('a bare `/resume` is Kimi'),
    'S15 AGENTS.md несёт правило №164 D2 (Never Ask — только инструменты, развилки — интервью) и подсказку /skill:resume', kiPointer.slice(-500));
-ok(!existsSync(join(KI, 'CLAUDE.md')) && !existsSync(join(KI, '.grok')) && !existsSync(join(KI, '.cline'))
+ok(!existsSync(join(KI, 'CLAUDE.md')) && !existsSync(join(KI, '.claude')) && !existsSync(join(KI, '.grok')) && !existsSync(join(KI, '.cline'))
    && !existsSync(join(KI, '.roo')) && !existsSync(join(KI, '.agents')),
    'S15 узкая Kimi-установка не создаёт копии других систем');
-const kiCanonRoot = join(KI, '.claude', 'skills'), kiRoot = join(KI, '.kimi-code', 'skills');
+const kiCanonRoot = join(KI, '.kaif', 'skills-canonical'), kiRoot = join(KI, '.kimi-code', 'skills');
 const kiCanonNames = readdirSync(kiCanonRoot).filter((n) => existsSync(join(kiCanonRoot, n, 'SKILL.md'))).sort();
 const kiNames = existsSync(kiRoot) ? readdirSync(kiRoot).filter((n) => existsSync(join(kiRoot, n, 'SKILL.md'))).sort() : [];
 ok(kiCanonNames.length > 30 && JSON.stringify(kiNames) === JSON.stringify(kiCanonNames),
@@ -621,6 +621,87 @@ ok(kiVoiceDry.status === 0 && kiVoiceEvent.phrase?.includes('Нужно ваше
 ok(readFileSync(join(KI, '.kaif', 'hooks', 'kimi-config-fragment.toml'), 'utf8').includes('event = "PermissionRequest"')
    && readFileSync(join(KI, '.gitignore'), 'utf8').includes('.kaif/kimi-voice.log'),
    'S15 Kimi voice sample и ignore-first журнала поставлены');
+
+// ---------------------------------------------------------------- S16: нейтральный канон навыков — миграция без потери локальных правок
+// [TESTED: 2026-11-22 · sync, update новым ядром и update-verify после v2.9; красный на HEAD и на мутанте без миграции;
+//  отчёт testcases/reports/2026-11-22_canonical-skills-migration.md] Решение владельца — интервью №051 Q1 = B.
+console.log('\n=== S16: .kaif/skills-canonical — миграция накопленного дерева (интервью №051, Q1 = B) ===');
+const CANON16 = join('.kaif', 'skills-canonical'), LEGACY16 = join('.claude', 'skills');
+const marker16 = 'KAIF canonical migration: the owner line survives.';
+const read16 = (root, ...p) => readFileSync(join(root, ...p), 'utf8');
+const manifest16 = (root) => JSON.parse(read16(root, '.kaif', 'deploy-manifest.json'));
+const writeJson16 = (p, value) => writeFileSync(p, JSON.stringify(value, null, 2) + '\n');
+const remap16 = (value) => value.replaceAll('.kaif/skills-canonical', '.claude/skills');
+function makeLegacy16(root) {
+  if (existsSync(join(root, LEGACY16))) rmSync(join(root, LEGACY16), { recursive: true, force: true });
+  cpSync(join(root, CANON16), join(root, LEGACY16), { recursive: true });
+  rmSync(join(root, CANON16), { recursive: true, force: true });
+  const m = manifest16(root);
+  for (const key of ['paths', 'agents', 'kept']) if (Array.isArray(m[key])) m[key] = m[key].map(remap16);
+  for (const key of ['shas', 'templateShas', 'moduleShas', 'templateLines', 'templateTexts'])
+    if (m[key]) m[key] = Object.fromEntries(Object.entries(m[key]).map(([p, v]) => [remap16(p), v]));
+  delete m.canonicalSkills;
+  writeJson16(join(root, '.kaif', 'deploy-manifest.json'), m);
+}
+const S16 = join(ROOT, 's16-canonical-sync'); mkdirSync(S16); seedBundle(S16);
+must(run, S16, 'install');
+appendFileSync(join(S16, CANON16, 'resume', 'SKILL.md'), `\n${marker16}\n`);
+mkdirSync(join(S16, CANON16, 'owner-custom'));
+writeFileSync(join(S16, CANON16, 'owner-custom', 'SKILL.md'), '---\nname: owner-custom\ndescription: Project-local skill.\n---\n');
+makeLegacy16(S16);
+r = run(S16, 'sync');
+ok(r.code === 0 && read16(S16, CANON16, 'resume', 'SKILL.md').includes(marker16)
+   && read16(S16, '.kimi-code', 'skills', 'resume', 'SKILL.md').includes(marker16)
+   && existsSync(join(S16, CANON16, 'owner-custom', 'SKILL.md'))
+   && manifest16(S16).canonicalSkills === '.kaif/skills-canonical',
+   'S16 sync: старый канон переезжает, локальная строка и собственный навык сохранены, manifest отмечен', r.out.slice(-600));
+
+const SRC16 = join(ROOT, 'src-16-9.9'); mkdirSync(SRC16);
+for (const n of ['KAIF-CORE-BUNDLE.md', 'KAIF-CORE.mjs']) cpSync(join(DIST, n), join(SRC16, n));
+const man16 = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8'));
+man16.version = '9.9';
+for (const n of ['KAIF-CORE-BUNDLE.md', 'KAIF-CORE.mjs']) man16.sha256[n] = createHash('sha256').update(readFileSync(join(SRC16, n))).digest('hex');
+writeJson16(join(SRC16, 'kaif-manifest.json'), man16);
+makeLegacy16(S16);
+r = run(S16, `update --source ${SRC16}`);
+ok(r.code === 0 && read16(S16, CANON16, 'resume', 'SKILL.md').includes(marker16)
+   && existsSync(join(S16, CANON16, 'owner-custom', 'SKILL.md'))
+   && manifest16(S16).canonicalSkills === '.kaif/skills-canonical'
+   && !manifest16(S16).paths.some((p) => p.startsWith('.claude/skills/')),
+   'S16 update новым ядром: перенос до классификации сохраняет правку и переводит пути manifest', r.out.slice(-700));
+
+// Полевой порядок: update исполняет прежнее ядро, поэтому новый канон сначала получает шаблоны;
+// новое update-verify обязано слить их со СТАРЫМ диском по шаблону прежнего выпуска.
+const git16 = (p) => {
+  const g = spawnSync('git', ['show', `v2.9:${p}`], { cwd: REPO, encoding: null, maxBuffer: 64 * 1024 * 1024 });
+  return g.status === 0 ? g.stdout : null;
+};
+const oldBundle16 = git16('dist/KAIF-CORE-BUNDLE.md'), oldCore16 = git16('dist/KAIF-CORE.mjs');
+ok(!!oldBundle16 && !!oldCore16, 'S16 фикстура: артефакты v2.9 извлечены из git');
+if (oldBundle16 && oldCore16) {
+  const OLD16 = join(ROOT, 'old-16-2.9'); mkdirSync(OLD16);
+  writeFileSync(join(OLD16, 'KAIF-CORE-BUNDLE.md'), oldBundle16);
+  const T16 = join(ROOT, 's16-old-core'); mkdirSync(join(T16, '.kaif', 'install'), { recursive: true });
+  writeFileSync(join(T16, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'), oldBundle16);
+  writeFileSync(join(T16, '.kaif', 'kaif-core.mjs'), oldCore16);
+  must(run, T16, 'install');
+  appendFileSync(join(T16, LEGACY16, 'resume', 'SKILL.md'), `\n${marker16}\n`);
+  const mk16 = JSON.parse(read16(T16, '.kaif', 'kaif.json'));
+  mk16.agents = ['kimi-code'];
+  writeJson16(join(T16, '.kaif', 'kaif.json'), mk16);
+  r = run(T16, `update --source ${SRC16}`);
+  ok(r.code === 0 && existsSync(join(T16, CANON16, 'resume', 'SKILL.md'))
+     && !read16(T16, CANON16, 'resume', 'SKILL.md').includes(marker16)
+     && read16(T16, LEGACY16, 'resume', 'SKILL.md').includes(marker16),
+     'S16 контроль угрозы: прежнее ядро создало новый шаблонный канон, а локальная строка пока только в старом', r.out.slice(-700));
+  r = run(T16, `update-verify --baseline ${OLD16}`);
+  ok(read16(T16, CANON16, 'resume', 'SKILL.md').includes(marker16)
+     && read16(T16, '.kimi-code', 'skills', 'resume', 'SKILL.md').includes(marker16)
+     && !existsSync(join(T16, LEGACY16))
+     && manifest16(T16).canonicalSkills === '.kaif/skills-canonical'
+     && read16(T16, '.kaif', 'backup-2.9-9.9', LEGACY16, 'resume', 'SKILL.md').includes(marker16),
+     'S16 update-verify после прежнего ядра: локальная правка доехала в канон и Kimi, старый каталог снят после резервной копии', r.out.slice(-1000));
+}
 
 console.log(`\n${failures ? '❌ ПРОВАЛОВ: ' + failures : '✅ все песочницы зелёные'}`);
 process.exit(failures ? 1 : 0);

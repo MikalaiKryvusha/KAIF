@@ -17,6 +17,8 @@ or above the project's closing level: `node .kaif/hooks/context-window.mjs --mea
 Run the closing as the skill where the agent system knows it — with hooks running, the context-window gate measures at the call and
 denies an early one; an agent system can withhold the project's hooks and skills from a session (a folder it does not trust), and then
 this step IS the gate. «The window feels full» is not a measurement: a session closed «by the window» at 53 % (KAIF 2.10).
+Once the measured window reaches the closing level, do not take another task in this chat: enter this closure and finish it. A new owner
+message does not clear that obligation while the window remains above the level; only a completed compaction reopens ordinary work here.
 
 ## Phase A. The advance order — keep working to a natural cut
 

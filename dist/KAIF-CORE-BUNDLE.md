@@ -1,5 +1,5 @@
 <!-- GENERATED FILE — the KAIF installer bundle. Built by tools/build-framework.mjs; fetched and parsed by KAIF-CORE.mjs. Never edit or deploy by hand. -->
-# KAIF-CORE-BUNDLE · v2.10 (2026-11-21)
+# KAIF-CORE-BUNDLE · v2.10 (2026-11-22)
 
 > **FILE: `kaif-bundle-manifest.json`** — bundle metadata (data for KAIF-CORE, never written to disk)
 
@@ -7,9 +7,9 @@
 {
   "framework": "KAIF",
   "version": "2.10",
-  "released": "2026-11-21",
+  "released": "2026-11-22",
   "build": {
-    "sourceTree": "76bedea06082d239e2058c81e072469273d2d6f798eaf459a37256f0503cd486",
+    "sourceTree": "6a6b486dc4db9ff3a80eab7381f62ba75b7af67a725e909764a823da70733e37",
     "prerelease": null
   },
   "templateNotes": [
@@ -26,10 +26,10 @@
     "A CALL THE OWNER ASKED FOR IS NOT SILENCED WHILE HE IS AT THE CHAT (2.10, epic TK; origin ticket #193 — the KAIF owner on a field project, rendered from Russian: \"but I asked\" — a call he ordered at 07:57 was dropped by the quiet hours 00:00–08:00): the clock hook marks the owner's own prompt in `.kaif/owner-presence.json`, and the contour lifts its quiet hours while that mark is younger than `contour.ownerActiveMinutes` (default 60); the windows he names call-free in `contour.noCalls` never yield. Without the hook the quiet hours hold as before.",
     "THE MACHINE'S CLOCK WRITES THE MOMENT (2.10, epic PT; origin tickets #170 · #172 — two field deployments carried their own clock hook): the refresh-hooks module ships a fifth script, `.kaif/hooks/clock-now.mjs`, and `wire-hooks` wires it for Claude Code on `UserPromptSubmit` (one context line with the machine's local moment on every prompt) and on `PreToolUse` with the matcher `Write|Edit|MultiEdit`: a time placeholder in what the agent writes — the word NOW, NOW-ISO, DATE or TIME between white square brackets (U+27E6 / U+27E7) — is filled by the clock through `updatedInput` (`content`, `new_string`, `edits[].new_string`; `old_string` never; a placeholder the write only CARRIES — one already standing in the Edit's `old_string` or in the file a Write replaces — stays literal), with no permission decision and never a stop; a backslash keeps a placeholder literal; a write without one gets no answer. The stamp rule of the agent guide says: where the hook is wired, write the placeholder; elsewhere, the `date` probe. MIGRATION — agent work: run `node .kaif/kaif-core.mjs wire-hooks` (the install and update tasks say so); a project that carried its own clock hook (a local `tools/hooks/clock-now.mjs`) keeps one of the two wired, not both — two hooks would answer the same write.",
     "THE CLOSING CHAT'S FAREWELL REACHES THE NEXT CHAT (2.10, epic PT; origin ticket #181 — the owner of a field project copied every farewell into the next chat by hand): the refresh-hooks module ships a seventh script, `.kaif/hooks/stop-farewell-capture.mjs`, and `wire-hooks` wires it for Claude Code on `Stop` next to the STATUS guard: on the stop of a turn that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (the last stop of the closing turn wins — a one-line answer to another hook's block or to a neighbour session excepted, and a background task's notification does not open a new turn; never a block); `/resume` gains Step 0 — on the chat's first entry read that file before the canon, and if it is older than the newest commit say so and trust `STATUS.md`. Both files join the ignore-first set. MIGRATION — agent work: if your project carries its own farewell hook, keep one — the shipped one or yours — never both writing the same file.",
-    "A SUBAGENT ENTERS THE PROJECT FIRST (2.10, epic PT; origin tickets #166 · #168 — a field deployment carried its own preamble hook): the refresh-hooks module ships a sixth script, `.kaif/hooks/subagent-preamble.mjs`, and `wire-hooks` wires it for Claude Code on `PreToolUse` with the matcher `Agent|Task`: every subagent task gets a marked preamble in front of it — read in full the documents of step 1 of `/resume` (read from `.claude/skills/resume/SKILL.md` by the step's number, existing files only), quote one canon line bearing on the task first in the report, no subagents of its own, no commit, no push — through `updatedInput`, with no permission decision; a task already marked is left as it is; each firing appends one line to `.kaif/subagent-preamble.jsonl` (now in the ignore-first set). The guide's fable-loop section gains the rule \"A brief to a subagent has five parts\" (context · bounds · role · report · the main agent's duty after) with the skeleton `.kaif/_subagent-brief-template.md`, and the judge hunts \"subagent result relayed unverified\". MIGRATION — agent work: none; `wire-hooks` adds the group, `\"hooks\": \"off\"` keeps it out.",
+    "A SUBAGENT ENTERS THE PROJECT FIRST (2.10, epic PT; origin tickets #166 · #168 — a field deployment carried its own preamble hook): the refresh-hooks module ships a sixth script, `.kaif/hooks/subagent-preamble.mjs`, and `wire-hooks` wires it for Claude Code on `PreToolUse` with the matcher `Agent|Task`: every subagent task gets a marked preamble in front of it — read in full the documents of step 1 of `/resume` (read from `.kaif/skills-canonical/resume/SKILL.md` by the step's number, existing files only), quote one canon line bearing on the task first in the report, no subagents of its own, no commit, no push — through `updatedInput`, with no permission decision; a task already marked is left as it is; each firing appends one line to `.kaif/subagent-preamble.jsonl` (now in the ignore-first set). The guide's fable-loop section gains the rule \"A brief to a subagent has five parts\" (context · bounds · role · report · the main agent's duty after) with the skeleton `.kaif/_subagent-brief-template.md`, and the judge hunts \"subagent result relayed unverified\". MIGRATION — agent work: none; `wire-hooks` adds the group, `\"hooks\": \"off\"` keeps it out.",
     "A FINDING IS WRITTEN WHERE IT LIVES, IN THE SAME TURN (2.10, epic MM; origin tickets #160 · #159 — the KAIF owner on a field project, rendered from Russian: \"something changed? the knowledge documents say otherwise? you MUST edit them\"): the closing rituals (`/end-chat-soft`, `/end-chat-force` step 1) and the loops (`/autoloop` step 9, `/dayloop` and `/nightloop` step 5) say a `KNOWLEDGE:` line — what was understood anew or found stale and the document it is written in now, or «nothing new»; the checklist line «Check the map & blast radius» and the footnotes of both maps ask for the line in the same turn, not on a commit; `/fable-judge` hunts «Learned, not recorded». Nothing to migrate: the rule acts from the next session.",
     "THE KNOWLEDGE HOOK SPEAKS AT THE MOMENTS A MEMORY IS WRITTEN (2.10, epic MM; origin tickets #160 · #159 · #186 — a field deployment carried its own knowledge hook, whose one ten-minute window swallowed every novelty moment): the refresh-hooks module ships an eighth script, `.kaif/hooks/knowledge-moment.mjs` — on the owner's prompt, a failed tool call, a Read of a knowledge document and the first touch of a component with `NOTES.md`, and on the first Read of a project source file (quoting what the docs say of it, or ordering one line into the map when no doc names it), it puts one line into the context: write what you understood into the project document where it lives, in this turn; plain tool results add weight and it speaks once per twelve. It never blocks and never stops a turn; its state is `.kaif/knowledge-moment.json` (ignored). `wire-hooks` wires it under UserPromptSubmit, PostToolUse and PostToolUseFailure; Claude Code only.",
-    "THE WINDOW SPEAKS IN FOUR STEPS — 75 · 80 · 85 · 92 (2.10, epic PT; origin ticket #188 and its comment — two field deployments carried their own budget hook; one agent read a warning that spoke of closing as the closure and stopped working with 30 % of the window left; the steps — the KAIF owner's decision, rendered from Russian: \"at 75 % a warning that the end of the window is near; at 80 % bring the work to a logical cut; at 85 % start the soft closure; at 92 % finish the soft closure quickly if it is running, or start the forced one\"): the refresh-hooks module ships a ninth script, `.kaif/hooks/context-window.mjs` — on the owner's prompt and after each tool result it reads the session's used share of the window and says each step once: `contextWindow.warnPct` (75) a warning with no closing word · `cutPct` (80) bring the work in hand to a logical cut · `closePct` (85) start /end-chat-soft · `forcePct` (92) finish the soft closure quickly, or start /end-chat-force; a step jumped over is not said (one line, the highest). A project that sets only `closePct` gets the others at −10 · −5 · +7 around it; a project that set `warnPct` / `closePct` for the 80 / 85 edition keeps them and gains the forced step at closePct + 7. A field 1M window auto-compacted at ≈ 89 % — the 92 % step may never come there. The window size follows the vendor's model rule unless `contextWindow.tokens` is set. A project that wired its own budget hook keeps it — compare the thresholds and keep one. The same hook also GATES the closing (a source session closed «by the window» at 53 % by feeling): `/end-chat-soft` or `/end-chat-force` called below `closePct` without `owner: «<his words>»` in the skill's args is denied with the measured share — wire its third entry, `PreToolUse` · matcher `Skill`; the closing skills' step 0 measures by hand — `node .kaif/hooks/context-window.mjs --measure` (exit 0 may close · 1 too early · 2 nothing to measure). Wired is not running: Claude Code runs a folder's hooks, skills and CLAUDE.md only after the owner trusts the folder («Trust this folder in Claude Code?» → «Trust folder»); `--alive` tells a session whether its hooks run.",
+    "THE WINDOW SPEAKS IN FOUR STEPS — 75 · 80 · 85 · 92 (2.10, epic PT; origin ticket #188 and its comment — two field deployments carried their own budget hook; one agent read a warning that spoke of closing as the closure and stopped working with 30 % of the window left; the steps — the KAIF owner's decision, rendered from Russian: \"at 75 % a warning that the end of the window is near; at 80 % bring the work to a logical cut; at 85 % start the soft closure; at 92 % finish the soft closure quickly if it is running, or start the forced one\"): the refresh-hooks module ships a ninth script, `.kaif/hooks/context-window.mjs` — on the owner's prompt and after each tool result it reads the session's used share of the window and says each step once: `contextWindow.warnPct` (75) a warning with no closing word · `cutPct` (80) bring the work in hand to a logical cut · `closePct` (85) start /end-chat-soft · `forcePct` (92) finish the soft closure quickly, or start /end-chat-force; a step jumped over is not said (one line, the highest). A project that sets only `closePct` gets the others at −10 · −5 · +7 around it; a project that set `warnPct` / `closePct` for the 80 / 85 edition keeps them and gains the forced step at closePct + 7. A field 1M window auto-compacted at ≈ 89 % — the 92 % step may never come there. The window size follows the vendor's model rule unless `contextWindow.tokens` is set. A project that wired its own budget hook keeps it — compare the thresholds and keep one. The same hook also GATES the closing (a source session closed «by the window» at 53 % by feeling): `/end-chat-soft` or `/end-chat-force` called below `closePct` without `owner: «<his words>»` in the skill's args is denied with the measured share — wire its third entry, `PreToolUse` · matcher `Skill`; the closing skills' step 0 measures by hand — `node .kaif/hooks/context-window.mjs --measure` (exit 0 may close · 1 too early · 2 nothing to measure). Wired is not running: Claude Code runs a folder's hooks, skills and CLAUDE.md only after the owner trusts the folder («Trust this folder in Claude Code?» → «Trust folder»); `--alive` tells a session whether its hooks run. KIMI CLOSURE IS LATCHED (bugs/150; owner decision №166): above closePct/forcePct every ordinary PreToolUse is refused until the required closing skill is entered, a new owner prompt re-arms an unfinished closure, and PostCompact alone clears it — a one-time order had let a real session continue into compaction.",
     "THE AGENT WRITES THE FAREWELL ITSELF, THE HOOK ONLY REPEATS IT (2.10; a source chat in a folder without trust ended and its last words never reached the next chat — the Stop hook was the only writer): `/end-chat-soft` step 5 and `/end-chat-force` step 3 write the farewell into `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` before printing it, and `/resume` step 0 tells a session whose hooks do not run (`--alive` exit 1) to do the same for the message that ends the chat — a closing farewell or a report that sends the owner to a new chat. Nothing to migrate: the rule acts from the next closing.",
     "THE COMMIT FLOW STAGES BY NAME AND CHECKS THE STAGED SET (2.10, epic UB, step UB5; a sweeping `git add -A` after the `git diff --stat` check carried two owner files into origin): `/end-chat-soft`, `/end-chat-force`, the default `<COMMIT_COMMAND>` of a fresh install and `/release` step 6 say «git add each path you mean to ship by name — new, changed, deleted, and both names of a move (git status --short lists them; never -A) — check the staged set with git diff --cached --stat» before the commit; `/release` no longer says `git commit -am`. What an earlier install froze stays yours until you change it: the value of `<COMMIT_COMMAND>` in the loop skills (`/autoloop` · `/dayloop` · `/nightloop` · `/release` · `/report-bug` · `/propose-idea`) reads `git add -A`, `git commit` and `git push` chained into one command, or «git add -A, then …», and the commit line your agent wrote into the closing skills when it filled their slot may stage everything too — put your commit tool there, or the by-name form. Closing skills that carry your own commit line get their module «Commit and push» handed over with a diff: keep your line, take the rest. A `/release` whose step 6 you rewrote gets that module too, and `update-verify` lists the template lines your own flow does not carry («promised upstream line not found») — keep your flow, take the by-name staging, and say so in the judge verdict. `update-verify` no longer names a promised line «not found» only because it still carries a placeholder your agent filled (the co-author line `<YOUR AGENT/MODEL>`).",
     "RED IS A CLAIM TOO, AND THE POSITIVE SMOKE RUNS FIRST (2.10, epic HC; origin tickets #87 · #173 — two QA deployments: a red produced by the measuring rig was no class anywhere; a feature was moved to Done with its main action never pressed): `TESTING_FRAMEWORK.md` gains the section \"Red is a claim too — earn it like green\" (before the verdict \"broken\" print the stand — language and locale · starting state · data · what changed since the last green; many reds sharing one condition are one error of measurement until ruled out), the activities chain step 4 runs the `smoke` rows first, and marker rule 7 makes a feature marker and any \"done / tested\" illegal while a `smoke` row is not `pass`; `/fable-judge` hunts both. The section \"How this composes\" is shortened by merged bullets, nothing dropped. A localized deployment carries the new section in the owner's language.",
@@ -45,7 +45,8 @@
     "A SIBLING WORKING FOLDER IS NOT THE PROJECT (2.10; origin ticket #194 — a field session with additional working directories ran a command in a sibling folder, and the refresh timer ordered a marker re-stamped in THAT folder on every prompt while the project's own marker was fresh): `prompt-refresh-timer.mjs` · `prompt-resume-word.mjs` · `session-start-refresh.mjs` · `stop-status-guard.mjs` walk up from the event's cwd to the folder holding `.kaif/kaif.json` and, when none holds it, take the agent system's project directory (`CLAUDE_PROJECT_DIR`) before the cwd; `subagent-preamble.mjs` takes the project directory first — from a sibling cwd it read no /resume list and gave the subagent no preamble at all. MIGRATION — agent work: none; a stray `.kaif/refresh-marker.json` an agent stamped in a sibling folder can be deleted.",
     "EVERY INSTRUCTION SLOT STANDS ON LINES OF ITS OWN (2.10, epic UB; a source judge found that the slot of /end-chat-soft step 3 closed in the middle of a line — «…README.pdf.>` If a build fails, stop …» — so `update-verify` read the heading and the judge rule of step 4 as the field's own slot text and never asked for them, since 2.9): `update-verify` reads a slot that opens on a line starting with «`<» and closes on a line ending in «>`». Five slots of the payload were in another form and are rewrapped — /end-chat-soft step 3, /release step 2, the test-harness slot of `AGENT_GUIDE.md`, the archaeology form in `KAIF_REFERENCE.md`, the board opt-out in the team constitution template; the words did not change, only where the lines break. MIGRATION — agent work: in a module that comes with a diff for one of these places, keep the project's own slot text and put the template's next sentence on the next line («If a build fails, stop and show the errors — don't commit broken state.» · «Grow this tooling over time; …»); a line that already stands in the file, joined to the slot text, is found as it is.",
     "THE CLOCK NAMES A WRONG PLACEHOLDER AND LEAVES A QUOTED ONE ALONE (2.10; origin ticket #197 pp. 1 and 3 — a field agent wrote the moment placeholder with ASCII brackets and it stayed letters with no word from the hook, and a placeholder quoted in a code span of a report got the time instead of itself; the source's own session did both): `.kaif/hooks/clock-now.mjs` prints the exact characters in its prompt line («the word NOW between the white square brackets U+27E6 and U+27E7, never ASCII [NOW]»); in a markdown file a placeholder inside an inline code span or a fenced block stays literal; a write of a markdown file that brings the ASCII form outside code gets one line to the agent with the tool result (the text is not changed, no permission is taken). MIGRATION — agent work: none; a moment already left as ASCII letters in a document is fixed by hand where it is found.",
-    "TWO DOCUMENTS WITH ONE FILE NAME KEEP TWO VERDICTS (2.10; origin ticket #199 — a field project had two mock-up pictures `compare.webp` in two folders, and the second verdict would have replaced the owner's first in the decision record the queue, the debt list and the page read): the contour named the decision record (`<decisionsDir>/<name>.decision.json`) and the page lock by the document's BARE file name. Now a document keeps the bare name while it is free or already its own; a document whose bare name ANOTHER document holds (the record's `document`, the lock's `doc`) gets `<name>--<8 hex of its path>.decision.json` and keeps it; a write over another document's record is refused before the source is touched, and such a record is never read as this one's. No record moves: every existing record still resolves to its own file. MIGRATION — agent work: none; a project that carried the local guard of the ticket (`recordDecision` refuses a foreign record, `readDecision` returns null for one) gets it as part of the shipped contour — the next update replaces the edited `core.mjs` with this one."
+    "TWO DOCUMENTS WITH ONE FILE NAME KEEP TWO VERDICTS (2.10; origin ticket #199 — a field project had two mock-up pictures `compare.webp` in two folders, and the second verdict would have replaced the owner's first in the decision record the queue, the debt list and the page read): the contour named the decision record (`<decisionsDir>/<name>.decision.json`) and the page lock by the document's BARE file name. Now a document keeps the bare name while it is free or already its own; a document whose bare name ANOTHER document holds (the record's `document`, the lock's `doc`) gets `<name>--<8 hex of its path>.decision.json` and keeps it; a write over another document's record is refused before the source is touched, and such a record is never read as this one's. No record moves: every existing record still resolves to its own file. MIGRATION — agent work: none; a project that carried the local guard of the ticket (`recordDecision` refuses a foreign record, `readDecision` returns null for one) gets it as part of the shipped contour — the next update replaces the edited `core.mjs` with this one.",
+    "THE CANONICAL SKILLS MOVE TO A NEUTRAL HOME (2.10; interview №051 Q1 = B): `.kaif/skills-canonical/` is the single source; every selected agent system, Claude Code included, receives its own copy from it. The update carries local skill edits and remaps the deploy manifest. When the update ran under the previous core, `update-verify` finishes the move against the previous release's templates (`--baseline <dir|url>` supplies them offline); a Kimi-only tree no longer creates `.claude/skills/`. MIGRATION — agent work: point local documentation and tools that edit the canon at the neutral path; mirrors still follow `node .kaif/kaif-core.mjs sync`."
   ],
   "templateNotesByVersion": {
     "1.5": [
@@ -125,10 +126,10 @@
       "A CALL THE OWNER ASKED FOR IS NOT SILENCED WHILE HE IS AT THE CHAT (2.10, epic TK; origin ticket #193 — the KAIF owner on a field project, rendered from Russian: \"but I asked\" — a call he ordered at 07:57 was dropped by the quiet hours 00:00–08:00): the clock hook marks the owner's own prompt in `.kaif/owner-presence.json`, and the contour lifts its quiet hours while that mark is younger than `contour.ownerActiveMinutes` (default 60); the windows he names call-free in `contour.noCalls` never yield. Without the hook the quiet hours hold as before.",
       "THE MACHINE'S CLOCK WRITES THE MOMENT (2.10, epic PT; origin tickets #170 · #172 — two field deployments carried their own clock hook): the refresh-hooks module ships a fifth script, `.kaif/hooks/clock-now.mjs`, and `wire-hooks` wires it for Claude Code on `UserPromptSubmit` (one context line with the machine's local moment on every prompt) and on `PreToolUse` with the matcher `Write|Edit|MultiEdit`: a time placeholder in what the agent writes — the word NOW, NOW-ISO, DATE or TIME between white square brackets (U+27E6 / U+27E7) — is filled by the clock through `updatedInput` (`content`, `new_string`, `edits[].new_string`; `old_string` never; a placeholder the write only CARRIES — one already standing in the Edit's `old_string` or in the file a Write replaces — stays literal), with no permission decision and never a stop; a backslash keeps a placeholder literal; a write without one gets no answer. The stamp rule of the agent guide says: where the hook is wired, write the placeholder; elsewhere, the `date` probe. MIGRATION — agent work: run `node .kaif/kaif-core.mjs wire-hooks` (the install and update tasks say so); a project that carried its own clock hook (a local `tools/hooks/clock-now.mjs`) keeps one of the two wired, not both — two hooks would answer the same write.",
       "THE CLOSING CHAT'S FAREWELL REACHES THE NEXT CHAT (2.10, epic PT; origin ticket #181 — the owner of a field project copied every farewell into the next chat by hand): the refresh-hooks module ships a seventh script, `.kaif/hooks/stop-farewell-capture.mjs`, and `wire-hooks` wires it for Claude Code on `Stop` next to the STATUS guard: on the stop of a turn that ran `/end-chat-soft` or `/end-chat-force` the turn's last message replaces `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (the last stop of the closing turn wins — a one-line answer to another hook's block or to a neighbour session excepted, and a background task's notification does not open a new turn; never a block); `/resume` gains Step 0 — on the chat's first entry read that file before the canon, and if it is older than the newest commit say so and trust `STATUS.md`. Both files join the ignore-first set. MIGRATION — agent work: if your project carries its own farewell hook, keep one — the shipped one or yours — never both writing the same file.",
-      "A SUBAGENT ENTERS THE PROJECT FIRST (2.10, epic PT; origin tickets #166 · #168 — a field deployment carried its own preamble hook): the refresh-hooks module ships a sixth script, `.kaif/hooks/subagent-preamble.mjs`, and `wire-hooks` wires it for Claude Code on `PreToolUse` with the matcher `Agent|Task`: every subagent task gets a marked preamble in front of it — read in full the documents of step 1 of `/resume` (read from `.claude/skills/resume/SKILL.md` by the step's number, existing files only), quote one canon line bearing on the task first in the report, no subagents of its own, no commit, no push — through `updatedInput`, with no permission decision; a task already marked is left as it is; each firing appends one line to `.kaif/subagent-preamble.jsonl` (now in the ignore-first set). The guide's fable-loop section gains the rule \"A brief to a subagent has five parts\" (context · bounds · role · report · the main agent's duty after) with the skeleton `.kaif/_subagent-brief-template.md`, and the judge hunts \"subagent result relayed unverified\". MIGRATION — agent work: none; `wire-hooks` adds the group, `\"hooks\": \"off\"` keeps it out.",
+      "A SUBAGENT ENTERS THE PROJECT FIRST (2.10, epic PT; origin tickets #166 · #168 — a field deployment carried its own preamble hook): the refresh-hooks module ships a sixth script, `.kaif/hooks/subagent-preamble.mjs`, and `wire-hooks` wires it for Claude Code on `PreToolUse` with the matcher `Agent|Task`: every subagent task gets a marked preamble in front of it — read in full the documents of step 1 of `/resume` (read from `.kaif/skills-canonical/resume/SKILL.md` by the step's number, existing files only), quote one canon line bearing on the task first in the report, no subagents of its own, no commit, no push — through `updatedInput`, with no permission decision; a task already marked is left as it is; each firing appends one line to `.kaif/subagent-preamble.jsonl` (now in the ignore-first set). The guide's fable-loop section gains the rule \"A brief to a subagent has five parts\" (context · bounds · role · report · the main agent's duty after) with the skeleton `.kaif/_subagent-brief-template.md`, and the judge hunts \"subagent result relayed unverified\". MIGRATION — agent work: none; `wire-hooks` adds the group, `\"hooks\": \"off\"` keeps it out.",
       "A FINDING IS WRITTEN WHERE IT LIVES, IN THE SAME TURN (2.10, epic MM; origin tickets #160 · #159 — the KAIF owner on a field project, rendered from Russian: \"something changed? the knowledge documents say otherwise? you MUST edit them\"): the closing rituals (`/end-chat-soft`, `/end-chat-force` step 1) and the loops (`/autoloop` step 9, `/dayloop` and `/nightloop` step 5) say a `KNOWLEDGE:` line — what was understood anew or found stale and the document it is written in now, or «nothing new»; the checklist line «Check the map & blast radius» and the footnotes of both maps ask for the line in the same turn, not on a commit; `/fable-judge` hunts «Learned, not recorded». Nothing to migrate: the rule acts from the next session.",
       "THE KNOWLEDGE HOOK SPEAKS AT THE MOMENTS A MEMORY IS WRITTEN (2.10, epic MM; origin tickets #160 · #159 · #186 — a field deployment carried its own knowledge hook, whose one ten-minute window swallowed every novelty moment): the refresh-hooks module ships an eighth script, `.kaif/hooks/knowledge-moment.mjs` — on the owner's prompt, a failed tool call, a Read of a knowledge document and the first touch of a component with `NOTES.md`, and on the first Read of a project source file (quoting what the docs say of it, or ordering one line into the map when no doc names it), it puts one line into the context: write what you understood into the project document where it lives, in this turn; plain tool results add weight and it speaks once per twelve. It never blocks and never stops a turn; its state is `.kaif/knowledge-moment.json` (ignored). `wire-hooks` wires it under UserPromptSubmit, PostToolUse and PostToolUseFailure; Claude Code only.",
-      "THE WINDOW SPEAKS IN FOUR STEPS — 75 · 80 · 85 · 92 (2.10, epic PT; origin ticket #188 and its comment — two field deployments carried their own budget hook; one agent read a warning that spoke of closing as the closure and stopped working with 30 % of the window left; the steps — the KAIF owner's decision, rendered from Russian: \"at 75 % a warning that the end of the window is near; at 80 % bring the work to a logical cut; at 85 % start the soft closure; at 92 % finish the soft closure quickly if it is running, or start the forced one\"): the refresh-hooks module ships a ninth script, `.kaif/hooks/context-window.mjs` — on the owner's prompt and after each tool result it reads the session's used share of the window and says each step once: `contextWindow.warnPct` (75) a warning with no closing word · `cutPct` (80) bring the work in hand to a logical cut · `closePct` (85) start /end-chat-soft · `forcePct` (92) finish the soft closure quickly, or start /end-chat-force; a step jumped over is not said (one line, the highest). A project that sets only `closePct` gets the others at −10 · −5 · +7 around it; a project that set `warnPct` / `closePct` for the 80 / 85 edition keeps them and gains the forced step at closePct + 7. A field 1M window auto-compacted at ≈ 89 % — the 92 % step may never come there. The window size follows the vendor's model rule unless `contextWindow.tokens` is set. A project that wired its own budget hook keeps it — compare the thresholds and keep one. The same hook also GATES the closing (a source session closed «by the window» at 53 % by feeling): `/end-chat-soft` or `/end-chat-force` called below `closePct` without `owner: «<his words>»` in the skill's args is denied with the measured share — wire its third entry, `PreToolUse` · matcher `Skill`; the closing skills' step 0 measures by hand — `node .kaif/hooks/context-window.mjs --measure` (exit 0 may close · 1 too early · 2 nothing to measure). Wired is not running: Claude Code runs a folder's hooks, skills and CLAUDE.md only after the owner trusts the folder («Trust this folder in Claude Code?» → «Trust folder»); `--alive` tells a session whether its hooks run.",
+      "THE WINDOW SPEAKS IN FOUR STEPS — 75 · 80 · 85 · 92 (2.10, epic PT; origin ticket #188 and its comment — two field deployments carried their own budget hook; one agent read a warning that spoke of closing as the closure and stopped working with 30 % of the window left; the steps — the KAIF owner's decision, rendered from Russian: \"at 75 % a warning that the end of the window is near; at 80 % bring the work to a logical cut; at 85 % start the soft closure; at 92 % finish the soft closure quickly if it is running, or start the forced one\"): the refresh-hooks module ships a ninth script, `.kaif/hooks/context-window.mjs` — on the owner's prompt and after each tool result it reads the session's used share of the window and says each step once: `contextWindow.warnPct` (75) a warning with no closing word · `cutPct` (80) bring the work in hand to a logical cut · `closePct` (85) start /end-chat-soft · `forcePct` (92) finish the soft closure quickly, or start /end-chat-force; a step jumped over is not said (one line, the highest). A project that sets only `closePct` gets the others at −10 · −5 · +7 around it; a project that set `warnPct` / `closePct` for the 80 / 85 edition keeps them and gains the forced step at closePct + 7. A field 1M window auto-compacted at ≈ 89 % — the 92 % step may never come there. The window size follows the vendor's model rule unless `contextWindow.tokens` is set. A project that wired its own budget hook keeps it — compare the thresholds and keep one. The same hook also GATES the closing (a source session closed «by the window» at 53 % by feeling): `/end-chat-soft` or `/end-chat-force` called below `closePct` without `owner: «<his words>»` in the skill's args is denied with the measured share — wire its third entry, `PreToolUse` · matcher `Skill`; the closing skills' step 0 measures by hand — `node .kaif/hooks/context-window.mjs --measure` (exit 0 may close · 1 too early · 2 nothing to measure). Wired is not running: Claude Code runs a folder's hooks, skills and CLAUDE.md only after the owner trusts the folder («Trust this folder in Claude Code?» → «Trust folder»); `--alive` tells a session whether its hooks run. KIMI CLOSURE IS LATCHED (bugs/150; owner decision №166): above closePct/forcePct every ordinary PreToolUse is refused until the required closing skill is entered, a new owner prompt re-arms an unfinished closure, and PostCompact alone clears it — a one-time order had let a real session continue into compaction.",
       "THE AGENT WRITES THE FAREWELL ITSELF, THE HOOK ONLY REPEATS IT (2.10; a source chat in a folder without trust ended and its last words never reached the next chat — the Stop hook was the only writer): `/end-chat-soft` step 5 and `/end-chat-force` step 3 write the farewell into `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` before printing it, and `/resume` step 0 tells a session whose hooks do not run (`--alive` exit 1) to do the same for the message that ends the chat — a closing farewell or a report that sends the owner to a new chat. Nothing to migrate: the rule acts from the next closing.",
       "THE COMMIT FLOW STAGES BY NAME AND CHECKS THE STAGED SET (2.10, epic UB, step UB5; a sweeping `git add -A` after the `git diff --stat` check carried two owner files into origin): `/end-chat-soft`, `/end-chat-force`, the default `<COMMIT_COMMAND>` of a fresh install and `/release` step 6 say «git add each path you mean to ship by name — new, changed, deleted, and both names of a move (git status --short lists them; never -A) — check the staged set with git diff --cached --stat» before the commit; `/release` no longer says `git commit -am`. What an earlier install froze stays yours until you change it: the value of `<COMMIT_COMMAND>` in the loop skills (`/autoloop` · `/dayloop` · `/nightloop` · `/release` · `/report-bug` · `/propose-idea`) reads `git add -A`, `git commit` and `git push` chained into one command, or «git add -A, then …», and the commit line your agent wrote into the closing skills when it filled their slot may stage everything too — put your commit tool there, or the by-name form. Closing skills that carry your own commit line get their module «Commit and push» handed over with a diff: keep your line, take the rest. A `/release` whose step 6 you rewrote gets that module too, and `update-verify` lists the template lines your own flow does not carry («promised upstream line not found») — keep your flow, take the by-name staging, and say so in the judge verdict. `update-verify` no longer names a promised line «not found» only because it still carries a placeholder your agent filled (the co-author line `<YOUR AGENT/MODEL>`).",
       "RED IS A CLAIM TOO, AND THE POSITIVE SMOKE RUNS FIRST (2.10, epic HC; origin tickets #87 · #173 — two QA deployments: a red produced by the measuring rig was no class anywhere; a feature was moved to Done with its main action never pressed): `TESTING_FRAMEWORK.md` gains the section \"Red is a claim too — earn it like green\" (before the verdict \"broken\" print the stand — language and locale · starting state · data · what changed since the last green; many reds sharing one condition are one error of measurement until ruled out), the activities chain step 4 runs the `smoke` rows first, and marker rule 7 makes a feature marker and any \"done / tested\" illegal while a `smoke` row is not `pass`; `/fable-judge` hunts both. The section \"How this composes\" is shortened by merged bullets, nothing dropped. A localized deployment carries the new section in the owner's language.",
@@ -144,7 +145,8 @@
       "A SIBLING WORKING FOLDER IS NOT THE PROJECT (2.10; origin ticket #194 — a field session with additional working directories ran a command in a sibling folder, and the refresh timer ordered a marker re-stamped in THAT folder on every prompt while the project's own marker was fresh): `prompt-refresh-timer.mjs` · `prompt-resume-word.mjs` · `session-start-refresh.mjs` · `stop-status-guard.mjs` walk up from the event's cwd to the folder holding `.kaif/kaif.json` and, when none holds it, take the agent system's project directory (`CLAUDE_PROJECT_DIR`) before the cwd; `subagent-preamble.mjs` takes the project directory first — from a sibling cwd it read no /resume list and gave the subagent no preamble at all. MIGRATION — agent work: none; a stray `.kaif/refresh-marker.json` an agent stamped in a sibling folder can be deleted.",
       "EVERY INSTRUCTION SLOT STANDS ON LINES OF ITS OWN (2.10, epic UB; a source judge found that the slot of /end-chat-soft step 3 closed in the middle of a line — «…README.pdf.>` If a build fails, stop …» — so `update-verify` read the heading and the judge rule of step 4 as the field's own slot text and never asked for them, since 2.9): `update-verify` reads a slot that opens on a line starting with «`<» and closes on a line ending in «>`». Five slots of the payload were in another form and are rewrapped — /end-chat-soft step 3, /release step 2, the test-harness slot of `AGENT_GUIDE.md`, the archaeology form in `KAIF_REFERENCE.md`, the board opt-out in the team constitution template; the words did not change, only where the lines break. MIGRATION — agent work: in a module that comes with a diff for one of these places, keep the project's own slot text and put the template's next sentence on the next line («If a build fails, stop and show the errors — don't commit broken state.» · «Grow this tooling over time; …»); a line that already stands in the file, joined to the slot text, is found as it is.",
       "THE CLOCK NAMES A WRONG PLACEHOLDER AND LEAVES A QUOTED ONE ALONE (2.10; origin ticket #197 pp. 1 and 3 — a field agent wrote the moment placeholder with ASCII brackets and it stayed letters with no word from the hook, and a placeholder quoted in a code span of a report got the time instead of itself; the source's own session did both): `.kaif/hooks/clock-now.mjs` prints the exact characters in its prompt line («the word NOW between the white square brackets U+27E6 and U+27E7, never ASCII [NOW]»); in a markdown file a placeholder inside an inline code span or a fenced block stays literal; a write of a markdown file that brings the ASCII form outside code gets one line to the agent with the tool result (the text is not changed, no permission is taken). MIGRATION — agent work: none; a moment already left as ASCII letters in a document is fixed by hand where it is found.",
-      "TWO DOCUMENTS WITH ONE FILE NAME KEEP TWO VERDICTS (2.10; origin ticket #199 — a field project had two mock-up pictures `compare.webp` in two folders, and the second verdict would have replaced the owner's first in the decision record the queue, the debt list and the page read): the contour named the decision record (`<decisionsDir>/<name>.decision.json`) and the page lock by the document's BARE file name. Now a document keeps the bare name while it is free or already its own; a document whose bare name ANOTHER document holds (the record's `document`, the lock's `doc`) gets `<name>--<8 hex of its path>.decision.json` and keeps it; a write over another document's record is refused before the source is touched, and such a record is never read as this one's. No record moves: every existing record still resolves to its own file. MIGRATION — agent work: none; a project that carried the local guard of the ticket (`recordDecision` refuses a foreign record, `readDecision` returns null for one) gets it as part of the shipped contour — the next update replaces the edited `core.mjs` with this one."
+      "TWO DOCUMENTS WITH ONE FILE NAME KEEP TWO VERDICTS (2.10; origin ticket #199 — a field project had two mock-up pictures `compare.webp` in two folders, and the second verdict would have replaced the owner's first in the decision record the queue, the debt list and the page read): the contour named the decision record (`<decisionsDir>/<name>.decision.json`) and the page lock by the document's BARE file name. Now a document keeps the bare name while it is free or already its own; a document whose bare name ANOTHER document holds (the record's `document`, the lock's `doc`) gets `<name>--<8 hex of its path>.decision.json` and keeps it; a write over another document's record is refused before the source is touched, and such a record is never read as this one's. No record moves: every existing record still resolves to its own file. MIGRATION — agent work: none; a project that carried the local guard of the ticket (`recordDecision` refuses a foreign record, `readDecision` returns null for one) gets it as part of the shipped contour — the next update replaces the edited `core.mjs` with this one.",
+      "THE CANONICAL SKILLS MOVE TO A NEUTRAL HOME (2.10; interview №051 Q1 = B): `.kaif/skills-canonical/` is the single source; every selected agent system, Claude Code included, receives its own copy from it. The update carries local skill edits and remaps the deploy manifest. When the update ran under the previous core, `update-verify` finishes the move against the previous release's templates (`--baseline <dir|url>` supplies them offline); a Kimi-only tree no longer creates `.claude/skills/`. MIGRATION — agent work: point local documentation and tools that edit the canon at the neutral path; mirrors still follow `node .kaif/kaif-core.mjs sync`."
     ],
     "2.9": [
       "NO HOOK STOPS THE AGENT ON THE OWNER'S WORD ANY MORE (2.9; origin ticket #144 — the KAIF owner on a field project, rendered from Russian: \"Remove this! Out of KAIF entirely!\" · \"I don't like that you stop on this!\" — five short remarks of the owner were five stops): the hook `.kaif/hooks/pretool-owner-word.mjs` (2.8; refused the next tool call after a mid-turn word) is RETIRED, and its pre-release `Stop` companion with the `⏩ <next step>` line never ships. The update removes an untouched copy of the script; `node .kaif/kaif-core.mjs wire-hooks` now also REMOVES the entries that run a retired hook from `.claude/settings.json` (the owner's other entries and their order stay, the values are proven before the write) — the update task names the item; `check` names an entry still left (in `.claude/settings.local.json` too, which the machinery never edits). \"The owner's word mid-turn\" now says: answer at once as text, then WORK ON in the same turn — never end the turn just to answer, and the turn's closing message repeats the answer; \"stop\" is still a stop. MIGRATION — agent work: if your own texts (STATUS, house rules, experience) tell the agent to end an answer with `⏩`, drop that rule.",
@@ -415,52 +417,6 @@
     "url": "https://raw.githubusercontent.com/MikalaiKryvusha/KAIF/v2.10/AUTHOR_STYLOMETRY.md"
   },
   "sources": {
-    ".claude/skills/autoloop/SKILL.md": "framework/skills/autoloop/SKILL.md",
-    ".claude/skills/bug-research/SKILL.md": "framework/skills/bug-research/SKILL.md",
-    ".claude/skills/check-backlog/SKILL.md": "framework/skills/check-backlog/SKILL.md",
-    ".claude/skills/code-revision/references/audit-report-template.md": "framework/skills/code-revision/references/audit-report-template.md",
-    ".claude/skills/code-revision/SKILL.md": "framework/skills/code-revision/SKILL.md",
-    ".claude/skills/dayloop/SKILL.md": "framework/skills/dayloop/SKILL.md",
-    ".claude/skills/derive-styleguide/SKILL.md": "framework/skills/derive-styleguide/SKILL.md",
-    ".claude/skills/end-chat-force/SKILL.md": "framework/skills/end-chat-force/SKILL.md",
-    ".claude/skills/end-chat-soft/SKILL.md": "framework/skills/end-chat-soft/SKILL.md",
-    ".claude/skills/experience/SKILL.md": "framework/skills/experience/SKILL.md",
-    ".claude/skills/fable-domain/SKILL.md": "framework/skills/fable-domain/SKILL.md",
-    ".claude/skills/fable-judge/SKILL.md": "framework/skills/fable-judge/SKILL.md",
-    ".claude/skills/fable-loop/SKILL.md": "framework/skills/fable-loop/SKILL.md",
-    ".claude/skills/fable-method/references/examples.md": "framework/skills/fable-method/references/examples.md",
-    ".claude/skills/fable-method/references/failure-modes.md": "framework/skills/fable-method/references/failure-modes.md",
-    ".claude/skills/fable-method/references/flowcharts.md": "framework/skills/fable-method/references/flowcharts.md",
-    ".claude/skills/fable-method/SKILL.md": "framework/skills/fable-method/SKILL.md",
-    ".claude/skills/fix-vision/SKILL.md": "framework/skills/fix-vision/SKILL.md",
-    ".claude/skills/guarded-loop/SKILL.md": "framework/skills/guarded-loop/SKILL.md",
-    ".claude/skills/help-kaif/SKILL.md": "framework/skills/help-kaif/SKILL.md",
-    ".claude/skills/interview/SKILL.md": "framework/skills/interview/SKILL.md",
-    ".claude/skills/kaif-fork/SKILL.md": "framework/skills/kaif-fork/SKILL.md",
-    ".claude/skills/kaif-go/SKILL.md": "framework/skills/kaif-go/SKILL.md",
-    ".claude/skills/kaif-remove/SKILL.md": "framework/skills/kaif-remove/SKILL.md",
-    ".claude/skills/kaif-switch-origin/SKILL.md": "framework/skills/kaif-switch-origin/SKILL.md",
-    ".claude/skills/kaif-update/SKILL.md": "framework/skills/kaif-update/SKILL.md",
-    ".claude/skills/kaif-version/SKILL.md": "framework/skills/kaif-version/SKILL.md",
-    ".claude/skills/nightloop/SKILL.md": "framework/skills/nightloop/SKILL.md",
-    ".claude/skills/owner-reviews/SKILL.md": "framework/skills/owner-reviews/SKILL.md",
-    ".claude/skills/owner-voice/SKILL.md": "framework/skills/owner-voice/SKILL.md",
-    ".claude/skills/pause/SKILL.md": "framework/skills/pause/SKILL.md",
-    ".claude/skills/plan-epic/SKILL.md": "framework/skills/plan-epic/SKILL.md",
-    ".claude/skills/plan-task/SKILL.md": "framework/skills/plan-task/SKILL.md",
-    ".claude/skills/propose-idea/SKILL.md": "framework/skills/propose-idea/SKILL.md",
-    ".claude/skills/refresh-context/SKILL.md": "framework/skills/refresh-context/SKILL.md",
-    ".claude/skills/release/SKILL.md": "framework/skills/release/SKILL.md",
-    ".claude/skills/report-bug/SKILL.md": "framework/skills/report-bug/SKILL.md",
-    ".claude/skills/resume/SKILL.md": "framework/skills/resume/SKILL.md",
-    ".claude/skills/revision/SKILL.md": "framework/skills/revision/SKILL.md",
-    ".claude/skills/team-deployment/references/team-adopt.md": "framework/skills/team-deployment/references/team-adopt.md",
-    ".claude/skills/team-deployment/references/team-ci-template.md": "framework/skills/team-deployment/references/team-ci-template.md",
-    ".claude/skills/team-deployment/references/team-constitution-template.md": "framework/skills/team-deployment/references/team-constitution-template.md",
-    ".claude/skills/team-deployment/references/team-roles-library.md": "framework/skills/team-deployment/references/team-roles-library.md",
-    ".claude/skills/team-deployment/references/team-status-board-template.md": "framework/skills/team-deployment/references/team-status-board-template.md",
-    ".claude/skills/team-deployment/SKILL.md": "framework/skills/team-deployment/SKILL.md",
-    ".claude/skills/what-next/SKILL.md": "framework/skills/what-next/SKILL.md",
     ".kaif/_explain-page-template.html": "framework/templates/_explain-page-template.html",
     ".kaif/_house-rules-template.md": "framework/templates/_house-rules-template.md",
     ".kaif/_owner-voice-template.md": "framework/templates/_owner-voice-template.md",
@@ -488,6 +444,52 @@
     ".kaif/hooks/test-after-code.mjs": "framework/hooks/test-after-code.mjs",
     ".kaif/INTERACTIVE_CONTOUR_SPEC.md": "framework/templates/_interactive-contour-spec.md",
     ".kaif/KAIF_REFERENCE.md": "framework/KAIF_REFERENCE.md",
+    ".kaif/skills-canonical/autoloop/SKILL.md": "framework/skills/autoloop/SKILL.md",
+    ".kaif/skills-canonical/bug-research/SKILL.md": "framework/skills/bug-research/SKILL.md",
+    ".kaif/skills-canonical/check-backlog/SKILL.md": "framework/skills/check-backlog/SKILL.md",
+    ".kaif/skills-canonical/code-revision/references/audit-report-template.md": "framework/skills/code-revision/references/audit-report-template.md",
+    ".kaif/skills-canonical/code-revision/SKILL.md": "framework/skills/code-revision/SKILL.md",
+    ".kaif/skills-canonical/dayloop/SKILL.md": "framework/skills/dayloop/SKILL.md",
+    ".kaif/skills-canonical/derive-styleguide/SKILL.md": "framework/skills/derive-styleguide/SKILL.md",
+    ".kaif/skills-canonical/end-chat-force/SKILL.md": "framework/skills/end-chat-force/SKILL.md",
+    ".kaif/skills-canonical/end-chat-soft/SKILL.md": "framework/skills/end-chat-soft/SKILL.md",
+    ".kaif/skills-canonical/experience/SKILL.md": "framework/skills/experience/SKILL.md",
+    ".kaif/skills-canonical/fable-domain/SKILL.md": "framework/skills/fable-domain/SKILL.md",
+    ".kaif/skills-canonical/fable-judge/SKILL.md": "framework/skills/fable-judge/SKILL.md",
+    ".kaif/skills-canonical/fable-loop/SKILL.md": "framework/skills/fable-loop/SKILL.md",
+    ".kaif/skills-canonical/fable-method/references/examples.md": "framework/skills/fable-method/references/examples.md",
+    ".kaif/skills-canonical/fable-method/references/failure-modes.md": "framework/skills/fable-method/references/failure-modes.md",
+    ".kaif/skills-canonical/fable-method/references/flowcharts.md": "framework/skills/fable-method/references/flowcharts.md",
+    ".kaif/skills-canonical/fable-method/SKILL.md": "framework/skills/fable-method/SKILL.md",
+    ".kaif/skills-canonical/fix-vision/SKILL.md": "framework/skills/fix-vision/SKILL.md",
+    ".kaif/skills-canonical/guarded-loop/SKILL.md": "framework/skills/guarded-loop/SKILL.md",
+    ".kaif/skills-canonical/help-kaif/SKILL.md": "framework/skills/help-kaif/SKILL.md",
+    ".kaif/skills-canonical/interview/SKILL.md": "framework/skills/interview/SKILL.md",
+    ".kaif/skills-canonical/kaif-fork/SKILL.md": "framework/skills/kaif-fork/SKILL.md",
+    ".kaif/skills-canonical/kaif-go/SKILL.md": "framework/skills/kaif-go/SKILL.md",
+    ".kaif/skills-canonical/kaif-remove/SKILL.md": "framework/skills/kaif-remove/SKILL.md",
+    ".kaif/skills-canonical/kaif-switch-origin/SKILL.md": "framework/skills/kaif-switch-origin/SKILL.md",
+    ".kaif/skills-canonical/kaif-update/SKILL.md": "framework/skills/kaif-update/SKILL.md",
+    ".kaif/skills-canonical/kaif-version/SKILL.md": "framework/skills/kaif-version/SKILL.md",
+    ".kaif/skills-canonical/nightloop/SKILL.md": "framework/skills/nightloop/SKILL.md",
+    ".kaif/skills-canonical/owner-reviews/SKILL.md": "framework/skills/owner-reviews/SKILL.md",
+    ".kaif/skills-canonical/owner-voice/SKILL.md": "framework/skills/owner-voice/SKILL.md",
+    ".kaif/skills-canonical/pause/SKILL.md": "framework/skills/pause/SKILL.md",
+    ".kaif/skills-canonical/plan-epic/SKILL.md": "framework/skills/plan-epic/SKILL.md",
+    ".kaif/skills-canonical/plan-task/SKILL.md": "framework/skills/plan-task/SKILL.md",
+    ".kaif/skills-canonical/propose-idea/SKILL.md": "framework/skills/propose-idea/SKILL.md",
+    ".kaif/skills-canonical/refresh-context/SKILL.md": "framework/skills/refresh-context/SKILL.md",
+    ".kaif/skills-canonical/release/SKILL.md": "framework/skills/release/SKILL.md",
+    ".kaif/skills-canonical/report-bug/SKILL.md": "framework/skills/report-bug/SKILL.md",
+    ".kaif/skills-canonical/resume/SKILL.md": "framework/skills/resume/SKILL.md",
+    ".kaif/skills-canonical/revision/SKILL.md": "framework/skills/revision/SKILL.md",
+    ".kaif/skills-canonical/team-deployment/references/team-adopt.md": "framework/skills/team-deployment/references/team-adopt.md",
+    ".kaif/skills-canonical/team-deployment/references/team-ci-template.md": "framework/skills/team-deployment/references/team-ci-template.md",
+    ".kaif/skills-canonical/team-deployment/references/team-constitution-template.md": "framework/skills/team-deployment/references/team-constitution-template.md",
+    ".kaif/skills-canonical/team-deployment/references/team-roles-library.md": "framework/skills/team-deployment/references/team-roles-library.md",
+    ".kaif/skills-canonical/team-deployment/references/team-status-board-template.md": "framework/skills/team-deployment/references/team-status-board-template.md",
+    ".kaif/skills-canonical/team-deployment/SKILL.md": "framework/skills/team-deployment/SKILL.md",
+    ".kaif/skills-canonical/what-next/SKILL.md": "framework/skills/what-next/SKILL.md",
     ".kaif/spheres/_index.md": "framework/spheres/_index.md",
     ".kaif/spheres/_template.md": "framework/spheres/_template.md",
     ".kaif/spheres/business.md": "framework/spheres/business.md",
@@ -613,12 +615,6 @@
   "sectionsNew": {
     "prev": "v2.9",
     "files": {
-      ".claude/skills/end-chat-soft/SKILL.md": [
-        "## Step 0. Who closes — the owner's word or a MEASURED window"
-      ],
-      ".claude/skills/resume/SKILL.md": [
-        "## Step 0. The chat's FIRST `/resume` — read the previous chat's farewell"
-      ],
       ".kaif/KAIF_REFERENCE.md": [
         "### `TESTING_FRAMEWORK.md` → Red is a claim too — earn it like green"
       ],
@@ -928,7 +924,7 @@ task type ("writing into the owner's artifact"), not by external truth.
 
 ### Task execution discipline — the fable loop
 
-Any non-trivial task is executed by the **fable-method** loop (`.claude/skills/fable-method/`): classify the ask → define done → gather
+Any non-trivial task is executed by the **fable-method** loop (`.kaif/skills-canonical/fable-method/`): classify the ask → define done → gather
 evidence → decide → act surgically → verify by observation → report outcome-first, with its gates and **forced artifacts** (`INTENT:` /
 `AUTH:` / `TWINS:` / `PENDING:` lines at decision points — rules at decision points, not rules in lists, are what weak sessions actually
 follow; and the one carve-out of the `AUTH:` gate stands IN ITS OWN LINE, not in a paragraph elsewhere: a ticket about a defect of KAIF
@@ -3166,7 +3162,7 @@ losing it. It is not code; it is *process captured as files an agent reads*.
 | `STATUS.md` | The living state — updated after every significant task. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | The external & internal maps. |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | The knowledge directories (each has its own README). |
-| `.claude/skills/` (or this agent's equivalent) | The repeatable rituals (`/resume`, `/pause`, loops, …). |
+| `.kaif/skills-canonical/` (or this agent's equivalent) | The repeatable rituals (`/resume`, `/pause`, loops, …). |
 | `.kaif/kaif.json` | The deploy marker: version, sphere, agent, tracking. |
 
 ## Deployment record
@@ -3363,7 +3359,7 @@ project's working language); **OTHER KAIF documents** — the project's local "h
 
 ## 6. The skill system
 
-Thirty-seven skills — the verbs of project work — deploy to `.claude/skills/` (canonical) and are
+Thirty-seven skills — the verbs of project work — deploy to `.kaif/skills-canonical/` (canonical) and are
 mirrored into every declared agent system (§7.3). Groups:
 
 - **Session:** `resume` (read ALL canon documents, pick one main thing) · `pause` (soft-park the
@@ -3430,7 +3426,7 @@ gates (§7.5) and self-cleans the installer.
 ### 7.3 Agent systems
 
 Declared via `--agents` (default: claude-code, codex, kimi-code, grok-build, cline, zoo-code). The canonical
-skill set lives in `.claude/skills/`; mirrors derive from it mechanically (`sync` command;
+skill set lives in `.kaif/skills-canonical/`; mirrors derive from it mechanically (`sync` command;
 `update-verify` re-syncs automatically). Kimi Code reads native `AGENTS.md` and receives
 `.kimi-code/skills/<name>/SKILL.md`: descriptions become folded YAML blocks (safe for `: ` and localized
 alias tails), invocations become `/skill:<name>`, resources use `${KIMI_SKILL_DIR}`, and references travel
@@ -3851,7 +3847,9 @@ against the window size by the vendor's model rule or the project's `contextWind
 `contextWindow.warnPct` (75) one warning line with no closing word, at `cutPct` (80) «bring the work in hand to a logical cut», at
 `closePct` (85) «start `/end-chat-soft`», at `forcePct` (92) «finish the soft closure quickly, or start `/end-chat-force`»; a project that
 sets only `closePct` gets the others at −10 · −5 · +7; once per step (a jump says one line, the highest step), the steps re-armed when a
-compaction lowers the share; state in `.kaif/context-window.json`; never a block, a forced closure only at the forced step — Claude Code only),
+compaction lowers the share; state in `.kaif/context-window.json`; never a block, a forced closure only at the forced step — Claude Code only.
+Under Kimi, an ordinary `PreToolUse` at or above a closing level is refused REPEATEDLY until the required closing skill is entered; a new
+owner prompt re-arms an unfinished closure and `PostCompact` clears it — bugs/150),
 `test-after-code.mjs` (2.10, epic HC; origin tickets #175 · #176: a write of a file that changes the product — the project's kinds in
 `.kaif/kaif.json` → `testHook`, else a source file, configs excluded — is a test debt; only a run of its own kind clears it (for a source
 file — an interpreter with the file as its script; its name elsewhere in a command is not a run), a build, a linter, `--check`, `--help`
@@ -4367,7 +4365,7 @@ outlive the session. KAIF lifecycle reports (update/install) are mandatory and s
 Reports are records — never `DONE`-tagged, never rewritten (append corrections instead).
 ``````
 
-> **FILE: `.claude/skills/autoloop/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/autoloop/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -4491,7 +4489,7 @@ and why, what to propose next. The commits along the way guarantee no progress i
 - Read only FRESH logs (verify by timestamp).
 ``````
 
-> **FILE: `.claude/skills/bug-research/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/bug-research/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -4561,7 +4559,7 @@ coding pass. Do NOT start fixing within this skill — it ends with a ready know
 - The skill's goal: turn "it won't work, I'm poking blindly" into "I understand the cause, I have a plan".
 ``````
 
-> **FILE: `.claude/skills/check-backlog/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/check-backlog/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -4626,7 +4624,7 @@ Relies on the `DONE`-tag-in-filename convention (see `AGENT_GUIDE.md` → "Backl
 - If human-level questions surface — file in `interviews/` + mark `STATUS.md`, don't decide blindly.
 ``````
 
-> **FILE: `.claude/skills/code-revision/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/code-revision/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -4788,7 +4786,7 @@ not work.
   named for the executor, who runs it announced.
 ``````
 
-> **FILE: `.claude/skills/code-revision/references/audit-report-template.md`** — verbatim
+> **FILE: `.kaif/skills-canonical/code-revision/references/audit-report-template.md`** — verbatim
 
 ``````md
 # The audit report — the output contract of `/code-revision`
@@ -4988,7 +4986,7 @@ reproduction: command and output>`; never "plausible".
 ```
 ``````
 
-> **FILE: `.claude/skills/dayloop/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/dayloop/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -5110,7 +5108,7 @@ pause and don't wait**, keep working:
 - The global goal and vision live in `STATUS.md`/`plans/`/`AGENT_GUIDE.md`/`PHILOSOPHY.md`. Keep checking against them.
 ``````
 
-> **FILE: `.claude/skills/derive-styleguide/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/derive-styleguide/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -5177,7 +5175,7 @@ go into the linter the same day (a rule without its guard is a wish, not a rule)
   model's work — that split is the point.
 ``````
 
-> **FILE: `.claude/skills/end-chat-force/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/end-chat-force/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -5193,6 +5191,8 @@ closure that loses the essentials is not fast, it is destructive. Three steps, m
 **Who closes:** the owner's word (his words verbatim in the skill's args, `owner: «…»`) or a window MEASURED at or above the closing level
 — `node .kaif/hooks/context-window.mjs --measure` exits 0 (1 — too early, keep working · 2 — nothing to measure: then only the owner's word
 closes) — never «the window feels full»; with hooks running, the context-window gate measures at the skill's call too.
+At the measured forced level, enter this skill instead of continuing ordinary work. A new owner message does not clear an unfinished
+closure while the window remains above the level; only a completed compaction reopens ordinary work in the same chat.
 
 ## Step 1. The handover — only what must not be lost
 
@@ -5254,7 +5254,7 @@ print it: the Stop hook `stop-farewell-capture.mjs` only repeats the write, and 
   just because the session ran long.
 ``````
 
-> **FILE: `.claude/skills/end-chat-soft/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/end-chat-soft/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -5276,6 +5276,8 @@ or above the project's closing level: `node .kaif/hooks/context-window.mjs --mea
 Run the closing as the skill where the agent system knows it — with hooks running, the context-window gate measures at the call and
 denies an early one; an agent system can withhold the project's hooks and skills from a session (a folder it does not trust), and then
 this step IS the gate. «The window feels full» is not a measurement: a session closed «by the window» at 53 % (KAIF 2.10).
+Once the measured window reaches the closing level, do not take another task in this chat: enter this closure and finish it. A new owner
+message does not clear that obligation while the window remains above the level; only a completed compaction reopens ordinary work here.
 
 ## Phase A. The advance order — keep working to a natural cut
 
@@ -5430,7 +5432,7 @@ place and its missing retraction command instead of answering `none`.
 - Generated artifacts that are gitignored (e.g. build outputs) won't be committed — that's fine.
 ``````
 
-> **FILE: `.claude/skills/experience/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/experience/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -5544,7 +5546,7 @@ default** — it's cheap and prevents repeated mistakes.
   and periodically prune stale entries (like grooming a backlog) so the file stays greppable.
 ``````
 
-> **FILE: `.claude/skills/fable-domain/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/fable-domain/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -5629,7 +5631,7 @@ flowchart TD
 - **Small-model boundary, measured not guessed.** Generation quality tracks the model (Sonnet 9-10, Haiku 6 on the round-12 bar; a Haiku run also generated a redundant adapter for the coding default before the Stage 1 scope stop existed). Run the maker on a mid-tier model or better, or attended; the refusal gates hold at the weak tier, generation quality does not.
 ``````
 
-> **FILE: `.claude/skills/fable-judge/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/fable-judge/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -5731,7 +5733,7 @@ Standing rules: judging changes nothing (read and run only; fixes happen only if
 For each scenario in `eval/scenarios/`: create a fresh copy in a scratch directory, run an executor subagent with the target configuration on that scenario's task (tasks and ground truths live in `eval/workflow.js` and `eval/README.md`), then judge the run exactly as the default mode judges work: by diff and execution against the scenario's ground truth, never by the executor's report alone. Deliver per-scenario scores and which traps triggered. One seed per scenario is a smoke test, not a benchmark; multiply seeds for confidence, and say which was done.
 ``````
 
-> **FILE: `.claude/skills/fable-loop/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/fable-loop/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -5742,12 +5744,12 @@ description: End-to-end orchestrated workflow that runs a task the way Fable ran
 > **Vendored into KAIF from [fable-method](https://github.com/Sahir619/fable-method) v1.4.0 — © Sahir619, MIT.**
 > Kept verbatim except marked KAIF patches: (1) upstream's "GSD workflow" references are mapped to KAIF's
 > own cycles (`/autoloop`/`/dayloop`/`/nightloop`) — the cycle owns picking backlog items, this loop owns
-> executing ONE item; (2) the install-path note reflects KAIF's `.claude/skills/` layout. Sync ritual:
+> executing ONE item; (2) the install-path note reflects KAIF's `.kaif/skills-canonical/` layout. Sync ritual:
 > before a KAIF release, diff against upstream and port changes verbatim (see `plans/13`).
 
 # The Fable Loop
 
-This skill orchestrates the fable-method: read its SKILL.md first; its rules govern every stage. It is installed alongside this skill (`.claude/skills/fable-method/`). The method says WHAT to check; this loop says WHO does the work: what runs in the main thread, what fans out to subagents, and what gets attacked before delivery.
+This skill orchestrates the fable-method: read its SKILL.md first; its rules govern every stage. It is installed alongside this skill (`.kaif/skills-canonical/fable-method/`). The method says WHAT to check; this loop says WHO does the work: what runs in the main thread, what fans out to subagents, and what gets attacked before delivery.
 
 **Gate first.** Trivial per the method's triviality gate: just do it, verify with the one obvious check, report in two sentences. No stages, no subagents. Everything else runs the four stages below in order.
 
@@ -5793,7 +5795,7 @@ This skill orchestrates the fable-method: read its SKILL.md first; its rules gov
 The loop is model-agnostic. Evidence and attacker subagents are cheap-model-friendly; keep the main thread (deciding, editing) on the strongest model available, and give attackers higher effort than gatherers when a choice exists.
 ``````
 
-> **FILE: `.claude/skills/fable-method/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/fable-method/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -5945,7 +5947,7 @@ Step 0: assessment; change nothing. Step 1: done = a cause backed by observation
 **report** - apply the Step 6 checklist to the answer you were about to send: outcome in the first sentence, load-bearing quotes only, caveats present, follow-ups only if they emerged from the work, hostile-reviewer reread done. Rewrite it, do not send the original.
 ``````
 
-> **FILE: `.claude/skills/fable-method/references/examples.md`** — verbatim
+> **FILE: `.kaif/skills-canonical/fable-method/references/examples.md`** — verbatim
 
 ``````md
 # Worked examples: one per ask shape
@@ -5992,7 +5994,7 @@ If the rename turned out to cross files (search shows 14 call sites in 6 files),
 - **Deliver the plan. Stop.** Steps 4-6 happen only after approval, and then the execution is surgical: precise edits per project, a measured before/after, and a report that includes what was intentionally left alone and why.
 ``````
 
-> **FILE: `.claude/skills/fable-method/references/failure-modes.md`** — verbatim
+> **FILE: `.kaif/skills-canonical/fable-method/references/failure-modes.md`** — verbatim
 
 ``````md
 # Failure modes: symptom → step
@@ -6027,7 +6029,7 @@ A step marked **skipped** creates the risk in its row. A step marked **faked** i
 The three failures that cost the most in practice are 1 (unprompted fixing destroys user trust), 13 (retry thrash burns time and tokens with no exit), and 14 (verification theater ships broken work labeled as done). If an audit can only check three things, check those.
 ``````
 
-> **FILE: `.claude/skills/fable-method/references/flowcharts.md`** — verbatim
+> **FILE: `.kaif/skills-canonical/fable-method/references/flowcharts.md`** — verbatim
 
 ``````md
 # The workflow, drawn
@@ -6179,7 +6181,7 @@ These charts began as introspection and were then checked against observed behav
 Round 11 repeated the protocol for chart 5: the gates were drafted first, then bare Fable 5 ran the new trap fixtures (one of two bare runs took the unauthorized deploy after reading the same evidence as the run that refused, which is why the gate lives at the decision point and why docs-are-not-authorization is spelled out), and the first Haiku transfer runs showed the mid-tier failure is silently dropping the documented follow-up rather than taking it, which added the deliberately-not-taken caveat rule to the report step. The fable-domain skill's process is itself a distilled trace: `eval/results/round11-observed-traces.json`.
 ``````
 
-> **FILE: `.claude/skills/fix-vision/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/fix-vision/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -6228,7 +6230,7 @@ open an `/interview` for fateful forks.
 - This is a hygiene skill — cheap to run; prefer running it at `/pause` if the owner wrote a lot.
 ``````
 
-> **FILE: `.claude/skills/guarded-loop/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/guarded-loop/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -6348,7 +6350,7 @@ escalated.
   and the clock decides, not the agent's estimate of how long the ceremonies will take.
 ``````
 
-> **FILE: `.claude/skills/help-kaif/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/help-kaif/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -6374,7 +6376,7 @@ well-structured explanation they can read and act on.
   structure, conventions, documents, directories, and skills.
 - Write in the operator's working language. Keep `/command` names and file names canonical.
 - Base it on the deployed reality of *this* project (the reference + `KAIF_FRAMEWORK.md`,
-  `AGENT_GUIDE.md`, the actual `.claude/skills/` inventory — never a hardcoded list) — not a
+  `AGENT_GUIDE.md`, the actual `.kaif/skills-canonical/` inventory — never a hardcoded list) — not a
   generic pitch. Adapt terminology to the project's sphere.
 
 ## What to output (structure the chat message like this)
@@ -6423,7 +6425,7 @@ well-structured explanation they can read and act on.
   offer the full manual.
 ``````
 
-> **FILE: `.claude/skills/interview/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/interview/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -6713,7 +6715,7 @@ Sequence:
 - The skill's goal — minimize bothering the owner, but do NOT make their fateful decisions for them.
 ``````
 
-> **FILE: `.claude/skills/kaif-fork/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/kaif-fork/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -6740,7 +6742,7 @@ some point the user wants to **own that evolution**: keep developing and version
 > unworkable origin.)
 
 1. **Gather the current KAIF.** Everything that constitutes the deployed framework in this project
-   (guidance docs, `.claude/skills/` or the agent's equivalent, `.kaif/` machinery and manifests) —
+   (guidance docs, `.kaif/skills-canonical/` and its per-system copies, `.kaif/` machinery and manifests) —
    **not** the user's project files and **not** the content artifacts (those stay in the project).
    The transient `KAIF.md` does NOT exist in a deployed project — the fork's copy of the three
    machinery artifacts comes from the CURRENT origin release (`gh release download` from the
@@ -6776,7 +6778,7 @@ some point the user wants to **own that evolution**: keep developing and version
   from the deployed tree.
 ``````
 
-> **FILE: `.claude/skills/kaif-go/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/kaif-go/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -6857,7 +6859,7 @@ point and ask there. A kick met with silence on a vision fork is how a guess bec
   observed done (`TESTING_FRAMEWORK.md`), and a task called complete still faces `/fable-judge`.
 ``````
 
-> **FILE: `.claude/skills/kaif-remove/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/kaif-remove/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -6902,7 +6904,7 @@ intact and working — we only remove what KAIF added, surgically.
 2. **Identify KAIF-owned items** from `.kaif/kaif.json` and the known layout:
    - **Core/wrapper (removed in both modes):** the key docs (`AGENT_GUIDE.md`, `PHILOSOPHY.md`,
      `BUG_FIXING_FRAMEWORK.md`, `STATUS.md`, `GOAL.md`, `MASTER_PLAN.md`, the two maps, `KAIF_FRAMEWORK.md`),
-     the deployed skills (`.claude/skills/` or the agent's equivalent), the `kaif` tools,
+     the canonical skills (`.kaif/skills-canonical/`) and their per-system copies, the `kaif` tools,
      `KAIF.md`/`framework/` if present, `.kaif/`, and the KAIF additions to the auto-loaded context file
      (`CLAUDE.md`/`AGENTS.md`).
    - **Content artifacts (kept in partial, removed in full):** the house-rules file `HOUSE_RULES.md` and the voice portrait
@@ -6928,7 +6930,7 @@ intact and working — we only remove what KAIF added, surgically.
   they choose to rewrite it (we don't rewrite history without an explicit request).
 ``````
 
-> **FILE: `.claude/skills/kaif-switch-origin/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/kaif-switch-origin/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -6965,7 +6967,7 @@ official origin (`MikalaiKryvusha/KAIF`), reconciling the two lineages respectfu
 - As always: respectful — the project stays whole and working throughout.
 ``````
 
-> **FILE: `.claude/skills/kaif-update/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/kaif-update/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -7087,7 +7089,7 @@ diverged places. Your cognitive work is that task, not the migration.
 - A heavily diverged project may be better served by a fork (`/kaif-fork`) than by tracking origin.
 ``````
 
-> **FILE: `.claude/skills/kaif-version/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/kaif-version/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -7139,7 +7141,7 @@ version is in the project and whether a newer one exists upstream.
   `reports/KAIF_UPDATES/` — mention any unreported ones when reporting the version.
 ``````
 
-> **FILE: `.claude/skills/nightloop/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/nightloop/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -7241,7 +7243,7 @@ Until one fires — don't stop, don't wait for confirmations, work.
 - The global goal and vision live in `STATUS.md`/`plans/`/`AGENT_GUIDE.md`/`PHILOSOPHY.md`. Keep checking against them.
 ``````
 
-> **FILE: `.claude/skills/owner-reviews/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/owner-reviews/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -8004,7 +8006,7 @@ server that outlives the silence threshold → red.
 - Interviews without the contour keep working exactly as before — the sugar never becomes a duty.
 ``````
 
-> **FILE: `.claude/skills/owner-voice/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/owner-voice/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -8233,7 +8235,7 @@ fix → look again → … → satisfied → report. Green checks are not a hand
   pass strictly by the critic checklist, forbidden to look at its own rationale.
 ``````
 
-> **FILE: `.claude/skills/pause/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/pause/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -8283,7 +8285,7 @@ Then stop. No further actions, no background work.
   `git log` as usual.
 ``````
 
-> **FILE: `.claude/skills/plan-epic/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/plan-epic/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -8371,7 +8373,7 @@ directory listing without opening a single document. (`/plan-task` writes these 
 - Swallow owner forks into defaults — vision-level forks go to `/interview`, visibly.
 ``````
 
-> **FILE: `.claude/skills/plan-task/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/plan-task/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -8458,7 +8460,7 @@ cannot anchor in the parent is scope drift, caught before the diff.
 - Skip the plan because "the task is clear" — clear to THIS session; the plan is for the next one.
 ``````
 
-> **FILE: `.claude/skills/propose-idea/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/propose-idea/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -8538,7 +8540,7 @@ status "awaiting approval" and is **NOT implemented until the human approves it*
   ideas (`ls ideas/`) so you don't duplicate.
 ``````
 
-> **FILE: `.claude/skills/refresh-context/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/refresh-context/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -8606,7 +8608,7 @@ restores it quickly and forms a current backlog.
 - In autoloops, call this once every few iterations, not every iteration.
 ``````
 
-> **FILE: `.claude/skills/release/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/release/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -8832,7 +8834,7 @@ Report to the human: the version, the release link, what was attached. Done.
 - Don't release in autonomous mode — only on the human's explicit request.
 ``````
 
-> **FILE: `.claude/skills/report-bug/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/report-bug/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -9068,7 +9070,7 @@ language's headings and labels — `node .kaif/tools/kaif-testrun-lint.mjs bug -
 - If a bug resists (≥3 blind fix attempts) — switch to `/bug-research` (investigation without code) on the same doc.
 ``````
 
-> **FILE: `.claude/skills/resume/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/resume/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -9191,7 +9193,7 @@ Do the work the scope gave — the owner's task, or with a bare `resume` the dir
 - Don't re-derive what the docs already state; trust `STATUS.md` and the plans, then verify by doing.
 ``````
 
-> **FILE: `.claude/skills/revision/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/revision/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -9239,7 +9241,7 @@ to fill it, and pause. The master plan is derived from the goal, never guessed i
   Keep it flowing that way — don't let the plan drift from the goal.
 ``````
 
-> **FILE: `.claude/skills/team-deployment/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/team-deployment/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -9442,7 +9444,7 @@ this skill exists as distillation rather than theory:
   local constitution's wording survives byte-wise except the approved additions.
 ``````
 
-> **FILE: `.claude/skills/team-deployment/references/team-adopt.md`** — verbatim
+> **FILE: `.kaif/skills-canonical/team-deployment/references/team-adopt.md`** — verbatim
 
 ``````md
 # team-adopt — the adopt path for a team that ALREADY runs
@@ -9528,7 +9530,7 @@ names that carry the owner's word stay legitimate under a note in the constituti
 - **Silent adoption** — applying bring-to-canon items because "the canon says so".
 ``````
 
-> **FILE: `.claude/skills/team-deployment/references/team-ci-template.md`** — verbatim
+> **FILE: `.kaif/skills-canonical/team-deployment/references/team-ci-template.md`** — verbatim
 
 ``````md
 # team-ci — the CI workflow that ships with the team
@@ -9581,7 +9583,7 @@ jobs:
 claim the check did not apply to it.
 ``````
 
-> **FILE: `.claude/skills/team-deployment/references/team-constitution-template.md`** — verbatim
+> **FILE: `.kaif/skills-canonical/team-deployment/references/team-constitution-template.md`** — verbatim
 
 ``````md
 # TEAM_CONSTITUTION — <team name> operating canon
@@ -9805,7 +9807,7 @@ work returns to the backlog.
 *(paste here the contracts of the seats your Team Design took, from `team-roles-library.md`)*
 ``````
 
-> **FILE: `.claude/skills/team-deployment/references/team-roles-library.md`** — verbatim
+> **FILE: `.kaif/skills-canonical/team-deployment/references/team-roles-library.md`** — verbatim
 
 ``````md
 # Team roles library — reusable role contracts and team archetypes
@@ -9988,7 +9990,7 @@ the device (a zone cut so that every task needs the singleton — re-cut to devi
 a device claim with no journal behind it (the verifier has nothing to verify).
 ``````
 
-> **FILE: `.claude/skills/team-deployment/references/team-status-board-template.md`** — verbatim
+> **FILE: `.kaif/skills-canonical/team-deployment/references/team-status-board-template.md`** — verbatim
 
 ``````md
 # TEAM_STATUS — <team name> status board
@@ -10101,7 +10103,7 @@ Suggested command surface (adapt names to the project):
 ```
 ``````
 
-> **FILE: `.claude/skills/what-next/SKILL.md`** — replace the command placeholders with the project's real commands
+> **FILE: `.kaif/skills-canonical/what-next/SKILL.md`** — replace the command placeholders with the project's real commands
 
 ``````md
 ---
@@ -20505,6 +20507,8 @@ process.exit(0);
 // spacing around it (−10 · −5 · +7); a derived step that does not climb above the step before it is dropped. A field session saw a 1M
 // window auto-compact at ≈ 89 % (887 621 tokens, origin #188) — the 92 % step may never come there; a project whose sessions compact
 // earlier sets its own steps. After a compaction the steps re-arm (keptLevels).
+// Kimi addition (bugs/150, decision №166): above close/force, EVERY ordinary PreToolUse is refused until the required closing skill is entered;
+// a new owner prompt re-arms an unfinished closure, PostCompact clears it. A one-time notice let a real session work into compaction.
 // The window size: no hook event carries it (vendor hooks reference); the rule — the project's `.kaif/kaif.json` → `contextWindow.tokens`
 // wins; else `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` → 200 000; else the model of the record: a `[1m]` suffix, or a family the vendor runs
 // with 1M by default (Fable 5 and later, Sonnet 5 and later, Haiku 5.5, Opus 4.7 and later — code.claude.com/docs/en/model-config) →
@@ -20514,8 +20518,10 @@ process.exit(0);
 // window is below closePct and without the owner's word in the skill's args (`owner: «<his words asking to close>»`) is denied with the
 // measured share; the agent keeps working. Origin: the source's session 100 closed «by the window» at 53 % by feeling, and a field deployment
 // carried the same gate after closing at 68 % «by the feeling of the limit» (its owner: you closed the chat too early again — fix the hook);
-// nothing to measure (no transcript, no usage) — the gate does not block. It never stops a turn otherwise. Any internal error → exit 0
-// silently. Lines are English: the agent reads them.
+// nothing to measure (no transcript, no usage) — the gate does not block. The Claude branch never stops a turn otherwise; Kimi's repeated
+// closure refusal is the named exception above. Any internal error → exit 0 silently. Lines are English: the agent reads them.
+// [TESTED: 2026-11-22 · bugs/150 hygiene only — closureRequirement boundaries, repeated PreToolUse, closure entry, owner-prompt re-arm,
+//  PostCompact reset, forced level; mutants K4/K5 red on exactly their cases; deployed hook green in s14. Live refill after the fix: NOT observed]
 // [TESTED: 2026-11-17 · the gate, `--measure` and `--alive` — hygiene: --selftest all ok, mutants G1–G6 of tools/sandbox/probes/gate-close-mutant.mjs
 //  red on exactly their cases, s14 on the deployed hook; functional: `--measure` and `--alive` LIVE in a session whose hooks the agent system
 //  withheld (54 %, exit 1 · «NOT running … by session id», exit 1); the gate at a live skill call — NOT observed: the origin's folder had no
@@ -20726,7 +20732,7 @@ export function decide(used, win, cfg, said = []) {
 // The closing gate — pure: (event, used, window, thresholds) → the hook's deny answer or null. A closing skill below closePct passes only
 // with the owner's own words in its args; a subagent never closes the chat, so its calls are not judged.
 export const OWNER_WORD = /owner:\s*[«"“][^»"”]+[»"”]/;
-export function closeGate(ev, used, win, cfg = {}) {
+export function closingCall(ev) {
   if (!ev || ev.hook_event_name !== 'PreToolUse' || ev.tool_name !== 'Skill' || fromSubagent(ev)) return null;
   const ti = ev.tool_input || {};
   // the name as Claude Code runs it (judge of session 101): it trims the name and drops a leading «/», a plugin or folder prefix ends at «:» —
@@ -20734,13 +20740,32 @@ export function closeGate(ev, used, win, cfg = {}) {
   // up and would not run such a skill (re-judge, N1); the gate still reads them as args — the safe direction, nothing passes by them
   const [name, ...rest] = String(ti.skill || ti.name || '').trim().replace(/^\/+/, '').split(/\s+/);
   const m = /^(?:[^\s:]+:)?end-chat-(soft|force)$/.exec(name || '');
-  if (!m || OWNER_WORD.test(`${ti.args || ''} ${rest.join(' ')}`) || !(used > 0) || !(win > 0)) return null;
+  return m ? { kind: m[1], args: `${ti.args || ''} ${rest.join(' ')}` } : null;
+}
+export function closeGate(ev, used, win, cfg = {}) {
+  const call = closingCall(ev);
+  if (!call || OWNER_WORD.test(call.args) || !(used > 0) || !(win > 0)) return null;
   const closePct = Number(cfg.closePct) > 0 ? Number(cfg.closePct) : DEFAULTS.closePct;
   const pct = Math.floor((used / win) * 100);
   if (pct >= closePct) return null;
   return { hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: 'deny', permissionDecisionReason:
     `KAIF context: the window is ${pct} % full (${used} of ${win} tokens) — below the closing level ${closePct} %: it is too early to close ` +
     `the chat by the window; keep working. Closing at the owner's word — pass his words verbatim in the skill's args: owner: «<his words>».` } };
+}
+
+// bugs/150: a one-time order is not a closure contour. Above the threshold ordinary work is refused on EVERY Kimi PreToolUse until the
+// matching closing skill is entered; a new owner prompt re-arms the requirement, and only PostCompact clears it for the same chat.
+export function closureRequirement(used, win, cfg = {}) {
+  if (!(used > 0) || !(win > 0)) return null;
+  const pct = Math.floor((used / win) * 100), L = levelsOf(cfg);
+  if (pct >= atOf(L, 'force')) return 'force';
+  if (pct >= atOf(L, 'close')) return 'soft';
+  return null;
+}
+export function closureDemand(kind, used, win, cfg = {}) {
+  const L = levelsOf(cfg), pct = Math.floor((used / win) * 100), lineKind = kind === 'soft' ? 'close' : kind;
+  return LINES[lineKind](pct, used, win, L).replaceAll('/end-chat-soft', '/skill:end-chat-soft').replaceAll('/end-chat-force', '/skill:end-chat-force') +
+    ' Ordinary work is refused until this closing skill is entered; after entering it, finish the closure and take no new task.';
 }
 
 // The agent's own measurement (session 101, bugs/138): an agent system may withhold the project's hooks and skills from a session (Claude Code
@@ -20939,23 +20964,41 @@ if (process.argv[2] === '--selftest') {
       const run = (event, extra = {}) => spawnSync(process.execPath, [fileURLToPath(import.meta.url), '--kimi'], {
         input: JSON.stringify({ hook_event_name: event, session_id: 'session_live', cwd: root, ...extra }),
         env: { ...process.env, KIMI_CODE_HOME: home }, encoding: 'utf8', timeout: 20000 });
+      ok(closureRequirement(757000, 891289, {}) === null && closureRequirement(760000, 891289, {}) === 'soft'
+        && closureRequirement(825330, 891289, {}) === 'force' && closureRequirement(0, 891289, {}) === null,
+        'Kimi closure requirement: below 85 % — none; at 85 % — soft; at 92 % — force; nothing measured — none');
       // 760 000 of Kimi's point 891 289 = 85 % — the soft closure, found on PostToolUse (whose text reaches nobody in Kimi)
       const post = run('PostToolUse'), pre = run('PreToolUse', { tool_name: 'Read' }), again = run('PreToolUse', { tool_name: 'Read' });
       ok(post.status === 0 && post.stdout === '' && pre.status === 2 && /\/skill:end-chat-soft/.test(pre.stderr)
-        && /it compacts at 891289 of 1048576 tokens\) is 85 % full \(760000 of 891289 tokens\)/.test(pre.stderr)
-        && again.status === 0 && again.stderr === '',
-      `Kimi: 85 % of Kimi's own compaction point waits after PostToolUse and goes out once as a PreToolUse block — ${JSON.stringify({ post: post.stdout, pre: pre.stderr.slice(0, 200), again: again.stderr })}`);
+        && /85 % full \(760000 of 891289 tokens\)/.test(pre.stderr)
+        && again.status === 2 && /Ordinary work is refused/.test(again.stderr),
+      `Kimi closure latch at 85 %: every ordinary PreToolUse is refused until the soft closure is entered — ${JSON.stringify({ post: post.stdout, pre: pre.stderr.slice(0, 200), again: again.stderr.slice(0, 200) })}`);
+      const enter = run('PreToolUse', { tool_name: 'Skill', tool_input: { skill: 'end-chat-soft' } });
+      const closureWork = run('PreToolUse', { tool_name: 'Read' });
+      ok(enter.status === 0 && closureWork.status === 0,
+        'Kimi closure latch: entering end-chat-soft opens the tools of the closure itself');
+      const newPrompt = run('UserPromptSubmit', { prompt: 'resume\nnew work' });
+      const rearmed = run('PreToolUse', { tool_name: 'Read' });
+      ok(newPrompt.status === 0 && /\/skill:end-chat-soft/.test(newPrompt.stdout) && rearmed.status === 2,
+        'Kimi closure latch: a new owner prompt re-arms an unfinished closure instead of allowing new work');
+      run('PreToolUse', { tool_name: 'Skill', tool_input: { skill: 'end-chat-soft' } });
       writeFileSync(tp, usage + '\n' + at(760000) + '\n' + compacted + '\n');
       const pc = run('PostCompact'), stale = run('PostToolUse'), quiet = run('PreToolUse', { tool_name: 'Read' });
       writeFileSync(tp, usage + '\n' + at(760000) + '\n' + compacted + '\n' + at(715000) + '\n');
       const refill = run('PostToolUse'), prompt = run('UserPromptSubmit', { prompt: 'go on' });
       ok(pc.stdout === '' && stale.stdout === '' && quiet.status === 0 && refill.stdout === ''
         && /80 % full \(715000 of 891289 tokens\)/.test(prompt.stdout) && /logical cut/.test(prompt.stdout),
-        `Kimi after a compaction: old counts stay silent; a fresh 80 % of the point waits and is said on the next prompt — ${JSON.stringify({ pc: pc.stdout, stale: stale.stdout, prompt: prompt.stdout.slice(0, 200) })}`);
+        `Kimi after a compaction: old counts and the closure latch stay cleared; a fresh 80 % of the point waits and is said on the next prompt — ${JSON.stringify({ pc: pc.stdout, stale: stale.stdout, prompt: prompt.stdout.slice(0, 200) })}`);
       const stop = spawnSync(process.execPath, [fileURLToPath(import.meta.url), '--kimi'], {
         input: JSON.stringify({ hook_event_name: 'Stop', session_id: 'session_stop', cwd: root, usage: { inputOther: 760000, inputCacheRead: 0, inputCacheCreation: 0 } }),
         env: { ...process.env, KIMI_CODE_HOME: home }, encoding: 'utf8', timeout: 20000 });
       ok(stop.status === 2 && /\/skill:end-chat-soft/.test(stop.stderr), 'Kimi Stop at 85 % of the point: exit 2 — a continuation turn with the soft closure');
+      const forceUsage = { inputOther: 825330, inputCacheRead: 0, inputCacheCreation: 0 };
+      const forceStop = run('Stop', { session_id: 'session_force', usage: forceUsage });
+      const forcePre = run('PreToolUse', { tool_name: 'Read', usage: forceUsage, session_id: 'session_force' });
+      const forceEnter = run('PreToolUse', { tool_name: 'Skill', tool_input: { skill: 'end-chat-force' }, usage: forceUsage, session_id: 'session_force' });
+      ok(forceStop.status === 2 && /\/skill:end-chat-force/.test(forceStop.stderr) && forcePre.status === 2 && forceEnter.status === 0,
+        'Kimi closure latch at 92 %: Stop and ordinary work require end-chat-force; entering it passes');
     } finally { rmSync(dir, { recursive: true, force: true }); }
   }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
@@ -21057,7 +21100,8 @@ if (process.argv[2] === '--kimi') {
     const st = all[id] || { said: [], seen: 0 };
     if (typeof ev.model === 'string' && ev.model) st.model = ev.model;
     const evn = ev.hook_event_name;
-    if (evn === 'PostCompact') { st.said = []; st.seen = 0; delete st.pending; }
+    if (evn === 'PostCompact') { st.said = []; st.seen = 0; delete st.pending; delete st.closing; }
+    if (evn === 'UserPromptSubmit') delete st.closing;
     const direct = kimiUsedOf(ev.usage);
     const tp = kimiWireOf(id);
     const observed = tp ? lastKimiContext(tailOf(tp)) : null;
@@ -21084,16 +21128,20 @@ if (process.argv[2] === '--kimi') {
         st.said = [...new Set([...st.said, ...d.levels])];
       }
     }
+    const required = closureRequirement(used, win, cw), closing = closingCall(ev);
+    if (required && closing) { st.closing = closing.kind; delete st.pending; }
+    const demand = required && !st.closing ? closureDemand(required, used, win, cw) : '';
     // Delivery (researches/50 §6): Kimi gives the model a hook's text on UserPromptSubmit only, and a PreToolUse or Stop block carries its
-    // reason into the context; PostToolUse, PostCompact and a Stop that does not block reach nobody. A step found there waits as `pending`
-    // and goes out once — on the next prompt as text, or on the next tool call as a one-time block (the agent repeats that call).
-    const stopBlocks = d && (d.kind === 'close' || d.kind === 'force') && evn === 'Stop';
-    if (d && evn !== 'UserPromptSubmit' && !stopBlocks) st.pending = d.line;
-    if (stopBlocks || (d && evn === 'UserPromptSubmit')) delete st.pending;
-    let say = d && evn === 'UserPromptSubmit' ? d.line : '';
-    let block = stopBlocks ? d.line : '';
-    if (!d && st.pending && evn === 'UserPromptSubmit') { say = st.pending; delete st.pending; }
-    if (!d && st.pending && evn === 'PreToolUse') { block = `${st.pending} (KAIF delivered this before your tool call; the call was not run — repeat it after you have read this.)`; delete st.pending; }
+    // reason into the context; PostToolUse, PostCompact and a Stop that does not block reach nobody. A step found there waits as `pending`.
+    // Above a closing level the refusal is NOT one-time (bugs/150): every ordinary call gets it until the closing skill is entered.
+    const stopBlocks = evn === 'Stop' && (demand || (d && (d.kind === 'close' || d.kind === 'force')));
+    if (d && evn !== 'UserPromptSubmit' && !stopBlocks && !demand) st.pending = d.line;
+    if (stopBlocks || (d && evn === 'UserPromptSubmit') || demand) delete st.pending;
+    let say = evn === 'UserPromptSubmit' ? demand || (d ? d.line : '') : '';
+    let block = evn === 'Stop' ? demand || (stopBlocks ? d.line : '') : '';
+    if (!d && !demand && st.pending && evn === 'UserPromptSubmit') { say = st.pending; delete st.pending; }
+    if (demand && evn === 'PreToolUse') block = demand;
+    else if (!d && st.pending && evn === 'PreToolUse') { block = `${st.pending} (KAIF delivered this before your tool call; the call was not run — repeat it after you have read this.)`; delete st.pending; }
     all[id] = { ...st, at: new Date().toISOString() };
     const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
     const kept = {}; for (const k of ids) kept[k] = all[k];
@@ -22025,7 +22073,7 @@ lacking them.
 | `clock-now.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PreToolUse`, matcher `Write\|Edit\|MultiEdit` | prompt: none — one short line is the point; write: the tool input holds a time placeholder (below) | on every prompt; on every write that holds a placeholder | prompt: one context line with the machine's local moment, and — on the owner's OWN prompt (not a task notification, a harness text or a subagent's hand-back) — the presence mark `.kaif/owner-presence.json`, by which the contour lifts its quiet hours for `contour.ownerActiveMinutes` (2.10, #193); write: `updatedInput` with the placeholders filled by the clock — no permission decision, never a stop; silent on a write without a placeholder |
 | `stop-farewell-capture.mjs` (2.10, epic PT) | `Stop` | the turn ran `/end-chat-soft` or `/end-chat-force` (a Skill call or the owner's slash command), and this closure has not written yet | once per closure — a later stop of the same closure (another Stop hook blocked) writes nothing | writes the turn's last message WHOLE into `FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md` at the project root (temporary file + rename); never blocks, never speaks |
 | `subagent-preamble.mjs` (2.10, epic PT) | `PreToolUse`, matcher `Agent\|Task` | the launch carries a task without the preamble's marker | once per launch — a second pass over a marked task changes nothing | `updatedInput` with a marked preamble in front of the subagent's task: read step 1 of `/resume` (read from the skill, existing files only), quote one canon line first in the report, no nested subagents, no commit, no push; one journal line in `.kaif/subagent-preamble.jsonl` — no permission decision, never a stop |
-| `context-window.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PostToolUse`, matcher `*`; `PreToolUse`, matcher `Skill` — the closing gate: `/end-chat-soft` · `/end-chat-force` below `closePct` without `owner: «…»` in the skill's args is denied with the measured share; by hand — `node .kaif/hooks/context-window.mjs --measure` (exit 0 may close · 1 too early · 2 nothing to measure), the closing skills' step 0 where the agent system withholds the project's hooks | the session's used share of the window — the last main-thread usage of the transcript (input + cache_creation + cache_read tokens) against the window size (the project's `contextWindow.tokens`, else the vendor's rule for the model) — reaches a step — `contextWindow.warnPct` (75) · `cutPct` (80) · `closePct` (85) · `forcePct` (92); decision №161 of the origin | once per step (a jump says one line, the highest), re-armed after a compaction | one `additionalContext` line: at 75 % a WARNING without a closing word (keep the pace, tell the owner once by voice), at 80 % «bring the work in hand to a logical cut», at 85 % «start `/end-chat-soft`», at 92 % «finish the soft closure quickly, or start `/end-chat-force`» — never a block; state in `.kaif/context-window.json` |
+| `context-window.mjs` (2.10, epic PT) | `UserPromptSubmit`; `PostToolUse`, matcher `*`; `PreToolUse`, matcher `Skill` — the closing gate: `/end-chat-soft` · `/end-chat-force` below `closePct` without `owner: «…»` in the skill's args is denied with the measured share; by hand — `node .kaif/hooks/context-window.mjs --measure` (exit 0 may close · 1 too early · 2 nothing to measure), the closing skills' step 0 where the agent system withholds the project's hooks | the session's used share of the window — the last main-thread usage of the transcript (input + cache_creation + cache_read tokens) against the window size (the project's `contextWindow.tokens`, else the vendor's rule for the model) — reaches a step — `contextWindow.warnPct` (75) · `cutPct` (80) · `closePct` (85) · `forcePct` (92); decision №161 of the origin | once per notice step; under Kimi the closing refusal repeats on EVERY ordinary call until closure is entered, re-arms on a new owner prompt and clears on compaction (bugs/150) | one `additionalContext` line: at 75 % a WARNING without a closing word (keep the pace, tell the owner once by voice), at 80 % «bring the work in hand to a logical cut», at 85 % «start `/end-chat-soft`», at 92 % «finish the soft closure quickly, or start `/end-chat-force`»; state in `.kaif/context-window.json` |
 | `knowledge-moment.mjs` (2.10, epic MM) | `UserPromptSubmit`; `PostToolUse` and `PostToolUseFailure`, matcher `*` | STRONG moments speak at once — the owner's own prompt (a background task's notification is not), a failed tool call, a Read of a knowledge document (maps, `STATUS.md`, `EXPERIENCE.md`, `HOUSE_RULES.md`, `plans/`, `researches/`), the first touch in a session of a file whose component has `NOTES.md`, the first Read in a session of a project source file — a config file (`package.json`, `*.yaml`, `*.toml`) is not one, a generic name (`index`, `utils`, `main` …) is looked up by its full path only (the docs that name it are quoted — «does the code say the same?»; named nowhere — «before you answer, add one line to the map»); every other tool result adds weight 1, and the hook speaks at 12 | per moment; the weight resets after each line; component notes — once per session | one `additionalContext` line: write what you understood into the project document where it lives, in this turn — never a block, never a stop, never a document body; state per session in `.kaif/knowledge-moment.json` |
 | `test-after-code.mjs` (2.10, epic HC) | `PostToolUse`, matcher `*`; `Stop` | a write of a product file (the project's kinds in `.kaif/kaif.json` → `testHook`, else a source file, configs excluded); a shell command that is a RUN of its kind clears it — a build, a linter, `--check`, `--help`, a heredoc body never do | per write; the stop is refused once per debt signature, a repeated stop with nothing new written passes | the order «run it before you stop», the list of what was not run; state in `.kaif/test-debt.json`; `--waive "<why>"` · `--status` · `--selftest` |
 
@@ -22058,8 +22106,8 @@ PURPOSE where repeating is the point — a reminder that goes away unobeyed teac
 ignored, so the timer repeats until the marker is re-stamped, and every message that opens with
 the resume word is a separate order; injections are ORDERS to re-read, never document bodies
 (the output cap is 10 000 characters, and pasting docs would spend the context the refresh
-restores); the one blocking hook is `stop-status-guard.mjs`, at most once per session — no hook of this module stops the agent on
-the owner's word (2.9: the two that did are retired — "Retired in 2.9" below). A hook never breaks the session: on any internal
+restores); `stop-status-guard.mjs` blocks at most once per session, while Kimi's context-window closure gate repeats by design until closure
+is entered (bugs/150) — no hook of this module stops the agent on the owner's word (2.9: the two that did are retired — "Retired in 2.9" below). A hook never breaks the session: on any internal
 error it exits 0 silently.
 
 **The hooks judge the project, not the folder the agent went into** (2.9, epic HK; origin ticket #94). The event's `cwd` follows
@@ -22190,7 +22238,7 @@ input-rewrite contract was not read.
 **The subagent hook — `subagent-preamble.mjs` (2.10, epic PT) — is wired for Claude Code only.** A subagent starts with an empty
 context and only the brief the main agent wrote; a brief that forgets the canon sends it to work blind. The hook puts a marked
 preamble in front of the task of every `Agent` launch (`Task` before Claude Code 2.1.63): read IN FULL the documents of step 1 of
-`/resume` — the list is read from `.claude/skills/resume/SKILL.md` by the step's number, so a skill in the owner's language works the
+`/resume` — the list is read from `.kaif/skills-canonical/resume/SKILL.md` by the step's number, so a skill in the owner's language works the
 same, and only files that exist are named — quote one canon line bearing on the task first in the report, and keep three bounds a
 brief may lack: no subagents of its own, no commit, no push. The rest of the brief stays the main agent's job (AGENT_GUIDE.md →
 "Brief to a subagent — five parts"). The answer carries `updatedInput` and no `permissionDecision`; a field deployment observed the
@@ -23065,7 +23113,7 @@ process.exit(0);
 //
 // What it does: a subagent starts with an empty context and the brief the main agent wrote — and a brief that forgets the project's canon
 // sends it to work blind (the field: subagents edited code against rules they never read). This hook PREPENDS a marked preamble to the
-// subagent's task: read the project's canon in full — exactly the list of step 1 of `/resume`, READ from `.claude/skills/resume/SKILL.md`
+// subagent's task: read the project's canon in full — exactly the list of step 1 of `/resume`, READ from `.kaif/skills-canonical/resume/SKILL.md`
 // (one copy of the fact; the step is found by its number, so a skill in the owner's language works the same) and only files that exist —
 // quote one canon line bearing on the task first in the report, and keep the bounds a brief may lack: no nested subagents, no commit, no
 // push. A task that already carries the marker is left as it is. Each firing appends one JSON line to `.kaif/subagent-preamble.jsonl`
@@ -23085,7 +23133,7 @@ import { readFileSync, existsSync, mkdirSync, appendFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 export const MARKER = '[KAIF subagent preamble v1]';
-const RESUME_SKILL = join('.claude', 'skills', 'resume', 'SKILL.md');
+const RESUME_SKILL = join('.kaif', 'skills-canonical', 'resume', 'SKILL.md');
 const LOG = join('.kaif', 'subagent-preamble.jsonl');
 const SUBAGENT_TOOLS = new Set(['Agent', 'Task']);
 
@@ -24344,7 +24392,7 @@ markdown واصطلاحات المجلدات ومهارات شرطة مائلة 
 | `STATUS.md` | الحالة الحية — تُحدَّث بعد كل مهمة مهمة. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | الخريطتان الخارجية والداخلية. |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | مجلدات المعرفة (لكلٍّ منها README خاص). |
-| `.claude/skills/` (أو مكافئه في نظام وكيلك) | الطقوس القابلة للتكرار (`/resume`، `/pause`، الحلقات، …). |
+| `.kaif/skills-canonical/` (أو مكافئه في نظام وكيلك) | الطقوس القابلة للتكرار (`/resume`، `/pause`، الحلقات، …). |
 | `.kaif/kaif.json` | علامة النشر: الإصدار، المجال، الوكيل، التتبع. |
 
 ## سجلّ النشر
@@ -24668,7 +24716,7 @@ in klaren Grenzen arbeitet und Wissen ansammelt, statt es zu verlieren. Es ist k
 | `STATUS.md` | Der lebende Zustand — nach jeder bedeutenden Aufgabe aktualisiert. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Die externe und interne Karte. |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | Die Wissensverzeichnisse (jedes mit eigenem README). |
-| `.claude/skills/` (oder das Äquivalent Ihres Agentensystems) | Die wiederholbaren Rituale (`/resume`, `/pause`, Loops, …). |
+| `.kaif/skills-canonical/` (oder das Äquivalent Ihres Agentensystems) | Die wiederholbaren Rituale (`/resume`, `/pause`, Loops, …). |
 | `.kaif/kaif.json` | Der Deploy-Marker: Version, Sphäre, Agent, Tracking. |
 
 ## Deployment-Protokoll
@@ -24997,7 +25045,7 @@ de forma autónoma dentro de límites claros y acumula conocimiento en lugar de 
 | `STATUS.md` | El estado vivo — actualizado tras cada tarea significativa. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Los mapas externo e interno. |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | Los directorios de conocimiento (cada uno con su README). |
-| `.claude/skills/` (o el equivalente de su sistema de agente) | Los rituales repetibles (`/resume`, `/pause`, ciclos, …). |
+| `.kaif/skills-canonical/` (o el equivalente de su sistema de agente) | Los rituales repetibles (`/resume`, `/pause`, ciclos, …). |
 | `.kaif/kaif.json` | El marcador de despliegue: versión, esfera, agente, tracking. |
 
 ## Registro del despliegue
@@ -25329,7 +25377,7 @@ perdre. Ce n'est pas du code ; c'est *un processus capturé sous forme de fichie
 | `STATUS.md` | L'état vivant — mis à jour après chaque tâche significative. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Les cartes externe et interne. |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | Les répertoires de connaissance (chacun avec son README). |
-| `.claude/skills/` (ou l'équivalent de votre système d'agent) | Les rituels répétables (`/resume`, `/pause`, boucles, …). |
+| `.kaif/skills-canonical/` (ou l'équivalent de votre système d'agent) | Les rituels répétables (`/resume`, `/pause`, boucles, …). |
 | `.kaif/kaif.json` | Le marqueur de déploiement : version, sphère, agent, tracking. |
 
 ## Journal de déploiement
@@ -25648,7 +25696,7 @@ KAIF (Krinik AI Framework) एक **संदर्भ-हानि के प�
 | `STATUS.md` | जीवित स्थिति — हर महत्वपूर्ण कार्य के बाद अपडेट। |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | बाहरी और आंतरिक नक्शे। |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | ज्ञान डायरेक्टरियाँ (हर एक का अपना README)। |
-| `.claude/skills/` (या आपके एजेंट सिस्टम का समकक्ष) | दोहराने योग्य अनुष्ठान (`/resume`, `/pause`, लूप, …)। |
+| `.kaif/skills-canonical/` (या आपके एजेंट सिस्टम का समकक्ष) | दोहराने योग्य अनुष्ठान (`/resume`, `/pause`, लूप, …)। |
 | `.kaif/kaif.json` | डिप्लॉय मार्कर: संस्करण, क्षेत्र, एजेंट, ट्रैकिंग। |
 
 ## डिप्लॉयमेंट रिकॉर्ड
@@ -25969,7 +26017,7 @@ KAIF (Krinik AI Framework) は、**コンテキスト喪失に強く、自律を
 | `STATUS.md` | 生きた状態 — 重要なタスクごとに更新。 |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | 外部マップと内部マップ。 |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | 知識ディレクトリ（各自の README 付き）。 |
-| `.claude/skills/`（またはご使用のエージェントシステムの同等物） | 繰り返し可能な儀式（`/resume`、`/pause`、ループ等）。 |
+| `.kaif/skills-canonical/`（またはご使用のエージェントシステムの同等物） | 繰り返し可能な儀式（`/resume`、`/pause`、ループ等）。 |
 | `.kaif/kaif.json` | デプロイマーカー：バージョン、領域、エージェント、トラッキング。 |
 
 ## デプロイ記録
@@ -26291,7 +26339,7 @@ forma autônoma dentro de limites claros e acumula conhecimento em vez de perdê
 | `STATUS.md` | O estado vivo — atualizado após cada tarefa significativa. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Os mapas externo e interno. |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | Os diretórios de conhecimento (cada um com seu README). |
-| `.claude/skills/` (ou o equivalente do seu sistema de agente) | Os rituais repetíveis (`/resume`, `/pause`, ciclos, …). |
+| `.kaif/skills-canonical/` (ou o equivalente do seu sistema de agente) | Os rituais repetíveis (`/resume`, `/pause`, ciclos, …). |
 | `.kaif/kaif.json` | O marcador de implantação: versão, esfera, agente, tracking. |
 
 ## Registro da implantação
@@ -26611,7 +26659,7 @@ KAIF (Krinik AI Framework) — **устойчивый к потере конте
 | `STATUS.md` | Живое состояние — обновляется после каждой значимой задачи. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Внешняя и внутренняя карты. |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | Директории знаний (в каждой свой README). |
-| `.claude/skills/` (или эквивалент вашей агентской системы) | Повторяемые ритуалы (`/resume`, `/pause`, циклы, …). |
+| `.kaif/skills-canonical/` (или эквивалент вашей агентской системы) | Повторяемые ритуалы (`/resume`, `/pause`, циклы, …). |
 | `.kaif/kaif.json` | Маркер развёртывания: версия, сфера, агент, трекинг. |
 
 ## Запись о развёртывании
@@ -26911,7 +26959,7 @@ KAIF (Krinik AI Framework) 是一个**抗上下文丢失、自治受纪律约束
 | `STATUS.md` | 活的状态 —— 每个重要任务后更新。 |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | 外部与内部地图。 |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | 知识目录（各有自己的 README）。 |
-| `.claude/skills/`（或您代理系统的等价物） | 可重复的例行程序（`/resume`、`/pause`、循环等）。 |
+| `.kaif/skills-canonical/`（或您代理系统的等价物） | 可重复的例行程序（`/resume`、`/pause`、循环等）。 |
 | `.kaif/kaif.json` | 部署标记：版本、领域、代理、跟踪。 |
 
 ## 部署记录

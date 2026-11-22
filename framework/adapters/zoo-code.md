@@ -24,7 +24,7 @@ spaces→dashes). YAML frontmatter fields (all optional): `description` (shown i
 `argument-hint`, `mode` (mode slug to switch to). `.md` only. Project commands override global ones;
 built-in commands cannot be overridden.
 
-**Mechanical translation from a KAIF skill** (`.claude/skills/<name>/SKILL.md`):
+**Mechanical translation from a KAIF skill** (`.kaif/skills-canonical/<name>/SKILL.md`):
 1. Write `.roo/commands/<name>.md`.
 2. Drop the `name:` frontmatter field (the filename carries it); keep `description:` verbatim.
 3. Copy the skill body unchanged.

@@ -70,8 +70,8 @@ const PH = ['<PROJECT_NAME>', '<SHORT_NAME>', '<AUTHOR>', '<REPO_URL>', '<LOCAL_
 const fill = (p) => { if (!existsSync(p)) return; let t = readFileSync(p, 'utf8'); for (const ph of PH) t = t.split(ph).join('X'); writeFileSync(p, t); };
 const fillCanon = (dir, { spheres = true } = {}) => {
   fill(join(dir, 'AGENT_GUIDE.md'));
-  if (existsSync(join(dir, '.claude', 'skills'))) for (const n of readdirSync(join(dir, '.claude', 'skills')))
-    fill(join(dir, '.claude', 'skills', n, 'SKILL.md'));
+  if (existsSync(join(dir, '.kaif', 'skills-canonical'))) for (const n of readdirSync(join(dir, '.kaif', 'skills-canonical')))
+    fill(join(dir, '.kaif', 'skills-canonical', n, 'SKILL.md'));
   if (spheres && existsSync(join(dir, '.kaif', 'spheres'))) for (const n of readdirSync(join(dir, '.kaif', 'spheres')))
     if (n.endsWith('.md')) fill(join(dir, '.kaif', 'spheres', n));
 };

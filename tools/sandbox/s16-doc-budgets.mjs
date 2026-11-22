@@ -85,7 +85,7 @@ const own = (doc, extra, head) => {
   writeFileSync(p, `${cur}\n\n## ${head}\n\n${body}\n`);
 };
 const skill = (name, body) => {
-  const d = join(S, '.claude', 'skills', name);
+  const d = join(S, '.kaif', 'skills-canonical', name);
   mkdirSync(d, { recursive: true });
   writeFileSync(join(d, 'SKILL.md'), `---\nname: ${name}\ndescription: fixture\n---\n\n# ${name}\n\n${body}\n`, 'utf8');
 };
@@ -466,7 +466,7 @@ ok(Boolean(mNo) && Number(mNo[1]) === lines('AGENT_GUIDE.md'),
 // стрижка вынесла живую справку, лежало вне охвата линта по умолчанию. Навык закрытия, развёрнутый в проект, обязан назвать
 // прогон линта авторства МЕЖДУ стрижкой и дверью бюджета и явный путь для директории вне охвата.
 console.log('\n=== s16: стрижка бонсая повторяет линт авторства (K17) ===');
-const ecs = readFileSync(join(S, '.claude', 'skills', 'end-chat-soft', 'SKILL.md'), 'utf8');
+const ecs = readFileSync(join(S, '.kaif', 'skills-canonical', 'end-chat-soft', 'SKILL.md'), 'utf8');
 const trimAt = ecs.indexOf('**The bonsai trim'), doorAt = ecs.indexOf('**Then the budget DOOR');
 const trimPart = trimAt >= 0 && doorAt > trimAt ? ecs.slice(trimAt, doorAt) : '';
 ok(/node \.kaif\/tools\/kaif-attribution-lint\.mjs check`/.test(trimPart),
@@ -494,7 +494,7 @@ const tokensOf = (docs) => docs.reduce((t, d) => {
 // он грепается) и сам файл навыка; пересчёт свода — по тому же правилу, независимо от ядра. Группы: 1 ядро · 2 домашние · 3–4 сверх ядра ·
 // 5 навык · 6 тысячи · 7 доля.
 const ENTRY = /ℹ entry cost: \/resume reads (\d+) re-read core document\(s\)( \+ HOUSE_RULES\.md)?(?: \+ (\d+) more of its step 1 \(([^)]*)\))?( \+ the skill itself)? ~ (\d+)k tokens — (\d+) % of a 1M-token model window \(reference, never a stop/;
-const SKILL_R = '.claude/skills/resume/SKILL.md';
+const SKILL_R = '.kaif/skills-canonical/resume/SKILL.md';
 const stepOneExtra = () => existsSync(join(S, SKILL_R))
   ? [...new Set([...readFileSync(join(S, SKILL_R), 'utf8').matchAll(/^\s*- `([A-Za-z0-9_./-]+\.md)`/gm)].map((m) => m[1]))]
     .filter((d) => !CORE9.includes(d) && d !== 'HOUSE_RULES.md' && d !== 'EXPERIENCE.md' && existsSync(join(S, d))) : [];

@@ -77,7 +77,7 @@ export function failed(e, { root, cwd, args }) {
 // Свод, которому НУЖНЫ старые тексты, передаёт свой `--baseline` сам — его раннер не трогает. Это и митигация, и опыт
 // над гипотезой: вернётся крах при герметичном полигоне — сеть ни при чём. Выключатель для намеренного онлайн-прогона —
 // `KAIF_SANDBOX_NETWORK=1`.
-const REACHES_NETWORK_RE = /^\s*(?:update|install|diff)(?:\s|$)/;
+const REACHES_NETWORK_RE = /^\s*(?:update|update-verify|sync|install|diff)(?:\s|$)/;
 const HAS_BASELINE_RE = /(?:^|\s)--baseline(?:\s|=|$)/;
 export function hermeticArgs(root, args) {
   if (process.env.KAIF_SANDBOX_NETWORK === '1' || !REACHES_NETWORK_RE.test(args) || HAS_BASELINE_RE.test(args)) return args;

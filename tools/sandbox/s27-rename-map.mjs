@@ -112,7 +112,7 @@ const writeSource = (dir, bundleText, version) => {
   writeFileSync(join(dir, 'kaif-manifest.json'), JSON.stringify(man, null, 2) + '\n');
 };
 
-const SKILL = '.claude/skills/end-chat-soft/SKILL.md';
+const SKILL = '.kaif/skills-canonical/end-chat-soft/SKILL.md';
 // Заголовок БЕРЁТСЯ ИЗ БАНДЛА, а не пишется константой: под швом `KAIF_DIST` на ядре 2.6 тот же
 // раздел называется словом `baton`, и константа уронила бы свод ИСКЛЮЧЕНИЕМ вместо вердикта
 // (урок EXP-0127: красный обязан быть ассертом). Слово роли не играет — свод судит МЕХАНИЗМ.
@@ -280,8 +280,9 @@ ok(/RENAMES_BY_VERSION\s*=\s*\{[\s\S]*?'2\.7'/.test(builder), 'D сборщик 
 ok(builder.includes("['### Step 1. Record status & the baton in STATUS.md', '### Step 1. Record status & the handover in STATUS.md']"),
   'D пара end-chat-soft объявлена дословно');
 const metaLive = JSON.parse(readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8').match(blockRe('kaif-bundle-manifest.json'))[2]);
-ok(!!(metaLive.renamesByVersion && metaLive.renamesByVersion['2.7'] && metaLive.renamesByVersion['2.7'][SKILL]),
-  'D карта доехала в мета-блок бандла');
+ok(!!(metaLive.renamesByVersion && metaLive.renamesByVersion['2.7']
+    && metaLive.renamesByVersion['2.7']['.claude/skills/end-chat-soft/SKILL.md']),
+  'D историческая пара 2.7 доехала в мета-блок под исходным путём');
 
 console.log(failures
   ? `\n❌ s27 rename-map: ${failures} из ${checks} проверок красные — класс открыт (корень прогона оставлен: ${ROOT})`

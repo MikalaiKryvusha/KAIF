@@ -22,7 +22,7 @@ some point the user wants to **own that evolution**: keep developing and version
 > unworkable origin.)
 
 1. **Gather the current KAIF.** Everything that constitutes the deployed framework in this project
-   (guidance docs, `.claude/skills/` or the agent's equivalent, `.kaif/` machinery and manifests) —
+   (guidance docs, `.kaif/skills-canonical/` and its per-system copies, `.kaif/` machinery and manifests) —
    **not** the user's project files and **not** the content artifacts (those stay in the project).
    The transient `KAIF.md` does NOT exist in a deployed project — the fork's copy of the three
    machinery artifacts comes from the CURRENT origin release (`gh release download` from the

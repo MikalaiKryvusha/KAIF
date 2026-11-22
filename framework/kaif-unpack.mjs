@@ -47,7 +47,7 @@ const manifest = []; // [{ path, content }]
 for (let m; (m = blockRe.exec(text)); ) manifest.push({ path: m[1], content: m[2].replace(/\r\n/g, '\n') + '\n' });
 if (manifest.length === 0) { console.error('✖ no FILE: blocks found — is this the KAIF.md core?'); process.exit(1); }
 
-const skillName = (p) => (p.match(/^\.claude\/skills\/([^/]+)\/SKILL\.md$/) || [])[1] || null;
+const skillName = (p) => (p.match(/^\.kaif\/skills-canonical\/([^/]+)\/SKILL\.md$/) || [])[1] || null;
 const skipped = (p) => ANON && ORIGIN_TIED.includes(skillName(p) || '');
 const okOnDisk = (p) => existsSync(p) && statSync(p).size > 0;
 
@@ -62,7 +62,7 @@ if (!CHECK_ONLY) {
   }
 
   // Zoo Code (ex-Roo Code) — mechanical skill translation, verified 2026-07-03:
-  // .claude/skills/<name>/SKILL.md → .roo/commands/<name>.md (drop `name:`, keep
+  // .kaif/skills-canonical/<name>/SKILL.md → .roo/commands/<name>.md (drop `name:`, keep
   // `description:` + body; the filename carries the command name), plus AGENTS.md
   // and .roo/rules/kaif.md so the key docs are auto-loaded.
   if (AGENT === 'zoo-code' || AGENT === 'roo-code') {

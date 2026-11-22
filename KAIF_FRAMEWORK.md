@@ -44,7 +44,7 @@ markdown-документов, соглашения о директориях, �
 | Пояснительная записка `KAIF_REFERENCE.md` | Авторитетный справочник устройства фреймворка. **Особый случай истока:** источник — `framework/KAIF_REFERENCE.md`; корневая `KAIF_REFERENCE.md` — СГЕНЕРИРОВАННАЯ копия (страж расхождения в check-framework); развёрнутым проектам едет в `.kaif/KAIF_REFERENCE.md`. В собственном `.kaif/` истока нет `tools/` — исходники tool-модулей лежат в `framework/tools/` (DRY: исток не держит рукописных копий своей поставки). |
 | `.kaif/INTERACTIVE_CONTOUR_SPEC.md` | Контракт интерактивного контура поставки (2.6, эпик IC, №101): одна страница — формы вариантов, предполёт (код 3), три записи и факт показа, исходы и коды выхода. **Особый случай истока:** страница здесь — своя же поставка, и исток ЕСТ её (IC5 `plans/93`): `tools/review.mjs` — обёртка ≤ 60 строк над `framework/tools/contour/review.mjs` (окружение голоса + реэкспорт), `tools/lib/review-core.mjs` — шим над `framework/tools/contour/core.mjs`; параметры контура истока — блок `contour` в `.kaif/kaif.json`. |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | Директории знаний (в каждой свой README). |
-| `.claude/skills/` | Повторяемые ритуалы (`/resume`, `/pause`, циклы, `/revision`, …). |
+| `.kaif/skills-canonical/` + посистемные копии | Повторяемые ритуалы (`/resume`, `/pause`, циклы, `/revision`, …). |
 | `.kaif/kaif.json` | Маркер развёртывания: версия, сфера, агент, tracking. |
 
 ## Запись о развёртывании

@@ -113,7 +113,7 @@ const writeSource = (dir, bundleText, version, coreSuffix = '') => {
   writeFileSync(join(dir, 'kaif-manifest.json'), JSON.stringify(man, null, 2) + '\n');
 };
 const FROM = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8')).version;   // «старая» версия = текущая сборка
-const CB = '.claude/skills/check-backlog/SKILL.md';
+const CB = '.kaif/skills-canonical/check-backlog/SKILL.md';
 // Кандидат wholesale: тело И заголовки check-backlog переведены → вердикт frozen (фикстура s18 U2).
 const translateCB = (dir) => {
   const p = join(dir, CB); const t = readFileSync(p, 'utf8'); const pre = t.slice(0, t.search(/^# /m));
@@ -126,17 +126,17 @@ const marker = (dir) => JSON.parse(readFileSync(join(dir, '.kaif', 'kaif.json'),
 const bundle0 = readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8');
 let bundle99 = bundle0.replace(/"version": "[^"]+"/, '"version": "9.9"');   // мета-блок: версию install читает отсюда (s18 U13)
 bundle99 = editBundleModule(bundle99, CB, 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (check-backlog)'));
-bundle99 = editBundleModule(bundle99, '.claude/skills/autoloop/SKILL.md', /^## The cycle/, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (autoloop)'));
-bundle99 = editBundleModule(bundle99, '.claude/skills/nightloop/SKILL.md', /^## 🔁 The cycle/, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (nightloop)'));
+bundle99 = editBundleModule(bundle99, '.kaif/skills-canonical/autoloop/SKILL.md', /^## The cycle/, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (autoloop)'));
+bundle99 = editBundleModule(bundle99, '.kaif/skills-canonical/nightloop/SKILL.md', /^## 🔁 The cycle/, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (nightloop)'));
 bundle99 = editBundleModule(bundle99, 'TESTING_FRAMEWORK.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (testing)'));
-bundle99 += '\n> **FILE: `.claude/skills/new-skill/SKILL.md`** — a NEW skill of 9.9 (English by construction)\n\n' +
+bundle99 += '\n> **FILE: `.kaif/skills-canonical/new-skill/SKILL.md`** — a NEW skill of 9.9 (English by construction)\n\n' +
   FENCE + 'md\n---\nname: new-skill\ndescription: A NEW skill arriving in 9.9 — English by construction.\n---\n\n' +
   '# /new-skill — a new skill\n\n## What it does\n\nEnglish body of the new skill.\n' + FENCE + '\n';
 // /dayloop упразднён в 9.9 с преемником (по образцу s04 S14d / s18 U10: ЗАМЕНА ключа deprecations в мете)
 const depKeyRe = /"deprecations": \[[\s\S]*?\],/;
 if (!depKeyRe.test(bundle99)) throw new Error('s21 fixture: ключ deprecations не найден в мете бандла');
-bundle99 = bundle99.replace(depKeyRe, '"deprecations": [{"path": ".claude/skills/dayloop/SKILL.md", "reason": "retired in test", "successor": "/guarded-loop (.claude/skills/guarded-loop/SKILL.md)"}],');
-bundle99 = dropBlock(bundle99, '.claude/skills/dayloop/SKILL.md');
+bundle99 = bundle99.replace(depKeyRe, '"deprecations": [{"path": ".kaif/skills-canonical/dayloop/SKILL.md", "reason": "retired in test", "successor": "/guarded-loop (.kaif/skills-canonical/guarded-loop/SKILL.md)"}],');
+bundle99 = dropBlock(bundle99, '.kaif/skills-canonical/dayloop/SKILL.md');
 const SRC99 = join(ROOT, 'src-9.9'); writeSource(SRC99, bundle99, '9.9');
 const SRC99M = join(ROOT, 'src-9.9-marked'); writeSource(SRC99M, bundle99, '9.9', '\n// s21: marked core of 9.9\n');
 // A4: входящий шаблон MASTER_PLAN.md БЕЗ кириллицы — только так документ владельца, переведённый целиком, читается
@@ -206,7 +206,7 @@ ok(!k1.includes('MASTER_PLAN.md'), 'A4: документ владельца — 
 console.log('\n=== B (#48 R2/R3): «шаблон + заполнения» = нетронут — механическая замена, депрекация, update-verify, fills в манифесте ===');
 const TB = join(ROOT, 'b1'); mkdirSync(TB); seed(TB);
 must(run, TB, 'install');   // без package.json: <BUILD_COMMAND>/<TEST_HARNESS> остаются литералами — их заполняет рука в задании адаптации
-const AL = join(TB, '.claude/skills/autoloop/SKILL.md'), DL = join(TB, '.claude/skills/dayloop/SKILL.md'), NL = join(TB, '.claude/skills/nightloop/SKILL.md');
+const AL = join(TB, '.kaif/skills-canonical/autoloop/SKILL.md'), DL = join(TB, '.kaif/skills-canonical/dayloop/SKILL.md'), NL = join(TB, '.kaif/skills-canonical/nightloop/SKILL.md');
 ok(readFileSync(AL, 'utf8').includes('<BUILD_COMMAND>'), 'B фикстура: слот <BUILD_COMMAND> литералом в /autoloop после установки без scripts');
 const fillByHand = (p) => writeFileSync(p, readFileSync(p, 'utf8').split('<BUILD_COMMAND>').join('npm run build').split('<TEST_HARNESS>').join('npm test'));
 fillByHand(AL); fillByHand(DL); fillByHand(NL);
@@ -224,8 +224,8 @@ ok(!/autoloop\/SKILL\.md/.test(taskB), 'B2 (критерий 2 — `fills: /auto
 const alAfter = readFileSync(AL, 'utf8');
 ok(alAfter.includes('UPSTREAM ADDITION 9.9 (autoloop)'), 'B2: апстримная правка /autoloop приехала механически');
 ok((alAfter.match(/npm run build/g) || []).length === 1 && !alAfter.includes('<BUILD_COMMAND>'), 'B2: заполнение сохранено ровно один раз, литерала слота нет', `npm run build ×${(alAfter.match(/npm run build/g) || []).length}`);
-ok(/replaced \.claude\/skills\/autoloop\/SKILL\.md \(fills kept\)/.test(r.out), 'B2: лог — «replaced … (fills kept)»', r.out.split('\n').filter((l) => /autoloop/.test(l)).join(' | ').slice(0, 300));
-ok(!existsSync(DL) && /retired \.claude\/skills\/dayloop\/SKILL\.md/.test(r.out), 'B3: упразднённый /dayloop «шаблон + заполнения» убран МАШИНЕРИЕЙ, не «carries local edits»', r.out.split('\n').filter((l) => /dayloop|deprecated/.test(l)).join(' | ').slice(0, 300));
+ok(/replaced \.kaif\/skills-canonical\/autoloop\/SKILL\.md \(fills kept\)/.test(r.out), 'B2: лог — «replaced … (fills kept)»', r.out.split('\n').filter((l) => /autoloop/.test(l)).join(' | ').slice(0, 300));
+ok(!existsSync(DL) && /retired \.kaif\/skills-canonical\/dayloop\/SKILL\.md/.test(r.out), 'B3: упразднённый /dayloop «шаблон + заполнения» убран МАШИНЕРИЕЙ, не «carries local edits»', r.out.split('\n').filter((l) => /dayloop|deprecated/.test(l)).join(' | ').slice(0, 300));
 ok(/nightloop\/SKILL\.md/.test(taskB), 'B фикстура: /nightloop с правкой владельца — в задании (реально диверджен, дифф на руку)');
 const manB = JSON.parse(readFileSync(join(TB, '.kaif', 'deploy-manifest.json'), 'utf8'));
 ok(manB.fills && manB.fills['<BUILD_COMMAND>'] === 'npm run build' && manB.fills['<TEST_HARNESS>'] === 'npm test', 'B5: манифест несёт `fills` (кэш выведенного; отсутствие = вывести заново)', JSON.stringify(manB.fills));
@@ -240,7 +240,7 @@ ok(!/promised upstream line not found[^\n]*(<BUILD_COMMAND>|<TEST_HARNESS>)/.tes
 // (без якоря, отрезок `\S.*?`): B9h1 — строка соавтора УДАЛЕНА, а строка слота поля её поминает — должна остаться «not found»; B9h4 — новая
 // строка апстрима с заглушкой, на диске её вариант с перевёрнутым смыслом внутри отрезка — не молчание. Красный — на ядре 3057175 (KAIF_DIST).
 {
-  const ECS = '.claude/skills/end-chat-soft/SKILL.md';
+  const ECS = '.kaif/skills-canonical/end-chat-soft/SKILL.md';
   const SIGN = 'Sign every tag as <YOUR AGENT/MODEL> after the judge passes.';
   const b9 = editBundleModule(bundle0.replace(/"version": "[^"]+"/, '"version": "9.9"'), ECS, /^### Step 4\. Commit and push/,
     (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (end-chat-soft)', '', SIGN));
@@ -282,14 +282,14 @@ ok(!/promised upstream line not found[^\n]*(<BUILD_COMMAND>|<TEST_HARNESS>)/.tes
 // До 2.8 захват исключал `<` и `>`: заполнение не выводилось, навык шёл ручным слиянием каждый интервал.
 const TB7 = join(ROOT, 'b7'); mkdirSync(TB7); seed(TB7);
 must(run, TB7, 'install');
-const AL7 = join(TB7, '.claude/skills/autoloop/SKILL.md');
+const AL7 = join(TB7, '.kaif/skills-canonical/autoloop/SKILL.md');
 const PACK_FILL = 'pwsh tools/build.ps1 -PackDir <pack>';
 writeFileSync(AL7, readFileSync(AL7, 'utf8').split('<BUILD_COMMAND>').join(PACK_FILL).split('<TEST_HARNESS>').join('npm test'));
 const packBefore = (readFileSync(AL7, 'utf8').match(/-PackDir <pack>/g) || []).length;
 r = run(TB7, `update --source ${SRC99} --baseline ${OLD}`);
 const al7 = readFileSync(AL7, 'utf8');
 const man7 = JSON.parse(readFileSync(join(TB7, '.kaif', 'deploy-manifest.json'), 'utf8'));
-ok(r.code === 0 && /replaced \.claude\/skills\/autoloop\/SKILL\.md \(fills kept\)/.test(r.out) && al7.includes('UPSTREAM ADDITION 9.9 (autoloop)')
+ok(r.code === 0 && /replaced \.kaif\/skills-canonical\/autoloop\/SKILL\.md \(fills kept\)/.test(r.out) && al7.includes('UPSTREAM ADDITION 9.9 (autoloop)')
    && (al7.match(/-PackDir <pack>/g) || []).length === packBefore && packBefore > 0 && !al7.includes('<BUILD_COMMAND>') && !/autoloop\/SKILL\.md/.test(readTask(TB7))
    && man7.fills && man7.fills['<BUILD_COMMAND>'] === PACK_FILL,
    'B7 (#73): заполнение со скобками («-PackDir <pack>») выведено — /autoloop заменён механически, заполнение цело, в задании его нет, fills в манифесте',
@@ -297,7 +297,7 @@ ok(r.code === 0 && /replaced \.claude\/skills\/autoloop\/SKILL\.md \(fills kept\
 
 // N1 (2.8, эпик UP, тикет origin #92 · Q-R4 · K-R2a · суд F-F2): update-verify сверяет КАЖДЫЙ раздел, новый в выпуске, с диском — не только
 // то, что несло задание. Раздел доехал — тишина; раздела нет на диске — КРАСНЫЙ поимённо (прежний шаблон его не имел — это не удаление владельца).
-const AUTOLOOP = '.claude/skills/autoloop/SKILL.md';
+const AUTOLOOP = '.kaif/skills-canonical/autoloop/SKILL.md';
 const NEW_SEC = '## A section new in 9.9';
 const bundle99n = editBundleModule(bundle99, AUTOLOOP, /^## The cycle/, (m) => m.lines.push('', NEW_SEC, '', 'The body of the section new in 9.9.'));
 const SRC99N = join(ROOT, 'src-9.9n'); writeSource(SRC99N, bundle99n, '9.9');
@@ -354,6 +354,8 @@ ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
   const snPaths = Object.keys(sn.files || {});
   if (!b27 || !c27) console.log('⏭ E: SKIPPED — git или тег предыдущего выпуска недоступны (артефакты релиза не извлечь)');
   else {
+    const BASE_PREV = join(ROOT, 'baseline-previous-release'); mkdirSync(BASE_PREV);
+    writeFileSync(join(BASE_PREV, 'KAIF-CORE-BUNDLE.md'), b27);
     ok(sn.prev === wantPrev, 'E фикстура: мета бандла несёт sectionsNew против старшего тега выпуска, не своего (' + wantPrev + ', ' + snPaths.length + ' файл(ов))', JSON.stringify(sn).slice(0, 200));
     const TE = join(ROOT, 'e27'); mkdirSync(join(TE, '.kaif', 'install'), { recursive: true });
     writeFileSync(join(TE, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'), b27); writeFileSync(join(TE, '.kaif', 'kaif-core.mjs'), c27);
@@ -365,17 +367,17 @@ ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
     // 2.9 (№143 — the owner: the fix of the entry skill must reach the projects that update to 2.9): the update run by the previous
     // release's core leaves the NEW /resume Step 2 (the owner's message sets the scope) and the new order of the resume-word hook on disk.
     const rdE = (p) => { try { return readFileSync(join(TE, p), 'utf8'); } catch { return ''; } };
-    ok(rdE('.claude/skills/resume/SKILL.md').includes("**The owner's message sets the scope**"),
-       'E (№143): после update ' + prevVer + ' → 9.9 развёрнутый /resume несёт правило «объём задаёт сообщение владельца»', rdE('.claude/skills/resume/SKILL.md').slice(0, 120));
+    ok(rdE('.kaif/skills-canonical/resume/SKILL.md').includes("**The owner's message sets the scope**"),
+       'E (№143): после update ' + prevVer + ' → 9.9 развёрнутый /resume несёт правило «объём задаёт сообщение владельца»', rdE('.kaif/skills-canonical/resume/SKILL.md').slice(0, 120));
     ok(rdE('.kaif/hooks/prompt-resume-word.mjs').includes('it sets the scope'),
        'E (№143): после update ' + prevVer + ' → 9.9 хук слова resume говорит, что объём задаёт текст под словом', rdE('.kaif/hooks/prompt-resume-word.mjs').length + ' символов');
-    let vE = run(TE, 'update-verify');
+    let vE = run(TE, `update-verify --baseline ${BASE_PREV}`);
     const vEIssues = issuesOf(vE.out);
     ok(!/section of this release did not arrive/.test(vE.out), 'E: доставленное ядро в update-verify молчит о разделах, новых с ' + prevVer + ', — проход ядра прошлого выпуска их принёс', vE.out.split('\n').filter((l) => /section/.test(l)).join(' | ').slice(0, 300));
-    const pE = snPaths.find((p) => existsSync(join(TE, p)) && /\.claude\/skills\//.test(p)) || snPaths.find((p) => existsSync(join(TE, p)));
+    const pE = snPaths.find((p) => existsSync(join(TE, p)) && /\.kaif\/skills-canonical\//.test(p)) || snPaths.find((p) => existsSync(join(TE, p)));
     const sE = pE ? sn.files[pE][0] : null;
     if (pE && sE) writeFileSync(join(TE, pE), joinModules(splitModules(readFileSync(join(TE, pE), 'utf8').replace(/\r\n/g, '\n')).filter((m) => m.signature !== sE)));
-    vE = run(TE, 'update-verify');
+    vE = run(TE, `update-verify --baseline ${BASE_PREV}`);
     if (!snPaths.length) console.log('⏭ E: половина «раздела нет на диске» — SKIPPED: в этой сборке нет ни одного раздела, нового с ' + wantPrev + ' (sectionsNew пуст) — доказывать нечего; случай оживёт с первым новым разделом');
     else ok(!!pE && vE.code !== 0 && issuesOf(vE.out) === vEIssues + 1 && vE.out.includes('a section of this release did not arrive: ' + pE + ' :: ' + sE),
        'E: раздела, нового с 2.7, на диске нет — доставленное ядро КРАСНОЕ поимённо (счёт провалов +1), хотя квитанцию писало старое ядро', vE.out.split('\n').filter((l) => /section|✖/.test(l)).join(' | ').slice(0, 400));
@@ -406,6 +408,8 @@ ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
     const b26 = gitShowAt('v2.6', 'dist/KAIF-CORE-BUNDLE.md'), c26 = gitShowAt('v2.6', 'dist/KAIF-CORE.mjs');
     if (!b26 || !c26) console.log('⏭ U2: SKIPPED — тег v2.6 недоступен');
     else {
+      const BASE26 = join(ROOT, 'baseline-2.6'); mkdirSync(BASE26);
+      writeFileSync(join(BASE26, 'KAIF-CORE-BUNDLE.md'), b26);
       const TU = join(ROOT, 'u2-26'); mkdirSync(join(TU, '.kaif', 'install'), { recursive: true });
       writeFileSync(join(TU, '.kaif', 'install', 'KAIF-CORE-BUNDLE.md'), b26); writeFileSync(join(TU, '.kaif', 'kaif-core.mjs'), c26);
       must(run, TU, 'install');
@@ -419,11 +423,11 @@ ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
       ok(['AGENTS.md', '.clinerules/kaif.md', '.roo/rules/kaif.md'].every((p) => rcU.out.includes(`↻ replaced ${p} — an untouched pointer of an earlier KAIF`))
          && /⚠ pointers — CLAUDE\.md — the context pointer\(s\) carry local edits and no resume rule/.test(rcU.out) && rdU('CLAUDE.md').includes('Owner note: the build runs on the lab machine.'),
          'U2 (критерий 17): recheck свежего ядра заменяет три нетронутых указателя и называет правленый CLAUDE.md со строкой правила; текст владельца цел', rcU.out.split('\n').filter((l) => /pointer/.test(l)).join(' | ').slice(0, 500));
-      let vU = run(TU, 'update-verify');
+      let vU = run(TU, `update-verify --baseline ${BASE26}`);
       ok(vU.code !== 0 && /update-verify REFUSED — CLAUDE\.md — the context pointer\(s\) carry local edits and no resume rule/.test(vU.out),
          'U2: update-verify отказывает, пока в правленом указателе нет правила resume — файл и строка названы', vU.out.slice(-300));
       writeFileSync(join(TU, 'CLAUDE.md'), rdU('CLAUDE.md') + '\nA message that opens with the word `resume` is an ORDER to run /resume in full first.\n');
-      vU = run(TU, 'update-verify');
+      vU = run(TU, `update-verify --baseline ${BASE26}`);
       ok(!/update-verify REFUSED — .*context pointer/.test(vU.out) && PTRS.every((p) => (rdU(p).match(/\bresume\b/g) || []).length >= 1),
          'U2 (критерий 17): после строки владельца update-verify не отказывает об указателях; `grep -c resume` в каждом из четырёх ≥ 1', PTRS.map((p) => p + ':' + (rdU(p).match(/\bresume\b/g) || []).length).join(' · ') + ' | ' + vU.out.slice(-200));
     }
@@ -436,7 +440,7 @@ ok(r.code === 0 && !readTask(TD3).includes('proposed by the PREVIOUS update'),
     r = run(TE2, `update --source ${SRC_NOW}`);
     ok(r.code === 0, 'E2 update 2.7 → 9.9 (ядро 2.7, переведённое развёртывание) exit 0', r.out.slice(-300));
     if (pE && sE) writeFileSync(join(TE2, pE), joinModules(splitModules(readFileSync(join(TE2, pE), 'utf8').replace(/\r\n/g, '\n')).filter((m) => m.signature !== sE)));
-    const vE2 = run(TE2, 'update-verify');
+    const vE2 = run(TE2, `update-verify --baseline ${BASE_PREV}`);
     if (!snPaths.length) console.log('⏭ E2: SKIPPED — нового раздела с ' + wantPrev + ' в этой сборке нет, недоехавший раздел изобразить нечем');
     else ok(r.code === 0 && !!pE && issuesOf(vE2.out) === vEIssues + 1 && vE2.out.includes('a section of this release did not arrive: ' + pE + ' :: ' + sE) && !vE2.out.includes('check it by hand (the file is translated; its English signature cannot be matched): ' + pE),
        'E2 (F7): переведённое развёртывание, квитанция ядра 2.7 — английский файл без нового раздела КРАСНЫЙ, не «проверь руками»', vE2.out.split('\n').filter((l) => /section|✖|⚠/.test(l)).join(' | ').slice(0, 400));

@@ -39,7 +39,7 @@ in klaren Grenzen arbeitet und Wissen ansammelt, statt es zu verlieren. Es ist k
 | `STATUS.md` | Der lebende Zustand — nach jeder bedeutenden Aufgabe aktualisiert. |
 | `PROJECT_STRUCTURE_EXTERNAL_MAP.md` / `PROJECT_ARCHITECTURE_INTERNAL_MAP.md` | Die externe und interne Karte. |
 | `plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/` | Die Wissensverzeichnisse (jedes mit eigenem README). |
-| `.claude/skills/` (oder das Äquivalent Ihres Agentensystems) | Die wiederholbaren Rituale (`/resume`, `/pause`, Loops, …). |
+| `.kaif/skills-canonical/` (oder das Äquivalent Ihres Agentensystems) | Die wiederholbaren Rituale (`/resume`, `/pause`, Loops, …). |
 | `.kaif/kaif.json` | Der Deploy-Marker: Version, Sphäre, Agent, Tracking. |
 
 ## Deployment-Protokoll

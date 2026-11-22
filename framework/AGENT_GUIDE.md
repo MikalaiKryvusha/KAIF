@@ -293,7 +293,7 @@ task type ("writing into the owner's artifact"), not by external truth.
 
 ### Task execution discipline — the fable loop
 
-Any non-trivial task is executed by the **fable-method** loop (`.claude/skills/fable-method/`): classify the ask → define done → gather
+Any non-trivial task is executed by the **fable-method** loop (`.kaif/skills-canonical/fable-method/`): classify the ask → define done → gather
 evidence → decide → act surgically → verify by observation → report outcome-first, with its gates and **forced artifacts** (`INTENT:` /
 `AUTH:` / `TWINS:` / `PENDING:` lines at decision points — rules at decision points, not rules in lists, are what weak sessions actually
 follow; and the one carve-out of the `AUTH:` gate stands IN ITS OWN LINE, not in a paragraph elsewhere: a ticket about a defect of KAIF

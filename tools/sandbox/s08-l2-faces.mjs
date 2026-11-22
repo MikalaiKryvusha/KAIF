@@ -121,13 +121,13 @@ let bundle = readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8');
 // отсеялся фильтром нулевой дельты), what-next: description + тело (для F5 — противоречие
 // «тело перемержено, description старый»). pause и BUG_FIXING_FRAMEWORK НЕ трогаем — нулевая дельта.
 bundle = editBundleModule(bundle, 'PHILOSOPHY.md', 2, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (philosophy)'));
-bundle = editBundleModule(bundle, '.claude/skills/kaif-remove/SKILL.md', 2, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (kaif-remove)'));
-bundle = editBundleModule(bundle, '.claude/skills/what-next/SKILL.md', 0, (m) => {
+bundle = editBundleModule(bundle, '.kaif/skills-canonical/kaif-remove/SKILL.md', 2, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (kaif-remove)'));
+bundle = editBundleModule(bundle, '.kaif/skills-canonical/what-next/SKILL.md', 0, (m) => {
   m.lines = m.lines.map((l) => l.startsWith('description:') ? l.replace(/\s*$/, '') + ' UPDATED DESCRIPTION 9.9 (what-next).' : l);
 });
-bundle = editBundleModule(bundle, '.claude/skills/what-next/SKILL.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (what-next body)'));
+bundle = editBundleModule(bundle, '.kaif/skills-canonical/what-next/SKILL.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (what-next body)'));
 // изоляторы F6/F7: правки для навыка с RU-телом под флагом и для файла с владельческим удалением
-bundle = editBundleModule(bundle, '.claude/skills/check-backlog/SKILL.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (check-backlog)'));
+bundle = editBundleModule(bundle, '.kaif/skills-canonical/check-backlog/SKILL.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (check-backlog)'));
 bundle = editBundleModule(bundle, 'AGENT_GUIDE.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (agent-guide)'));
 // изолятор F8: НОВЫЙ файл релиза (в прошлом релизе его не было)
 bundle += `\n> **FILE: \`NEW_DOC_9.9.md\`**\n\n${FENCE}\n# New doc shipped in 9.9\n\nUPSTREAM NEW FILE CONTENT 9.9.\n${FENCE}\n`;
@@ -146,25 +146,26 @@ ok(r.code === 0, 'A install --lang ru exit 0', r.out);
 const mkA = JSON.parse(readFileSync(join(A, '.kaif', 'kaif.json'), 'utf8'));
 mkA.i18n = 'translated';
 writeFileSync(join(A, '.kaif', 'kaif.json'), JSON.stringify(mkA, null, 2) + '\n');
-const PAUSE = join(A, '.claude/skills/pause/SKILL.md');
+const PAUSE = join(A, '.kaif/skills-canonical/pause/SKILL.md');
 const pauseSigs = translateWholesale(PAUSE, { h1: '# /pause — мягкая парковка' });
 const pauseSize = statSync(PAUSE).size;
 const philASigs = translateWholesale(join(A, 'PHILOSOPHY.md'), { h1: '# Философия проекта' });
 const bffSigs = translateWholesale(join(A, 'BUG_FIXING_FRAMEWORK.md'), { h1: '# Как здесь чинят дефекты' });
 // F6-фикстура (изолятор bodyLocalized): НАВЫК с русской правкой ТЕЛА при целых EN-заголовках —
 // слепой whole-file тест видит алиасы с обеих сторон и считает файл «не переводом»
-const CBA = join(A, '.claude/skills/check-backlog/SKILL.md');
+const CBA = join(A, '.kaif/skills-canonical/check-backlog/SKILL.md');
 const cbaMods = splitModules(readFileSync(CBA, 'utf8').replace(/\r\n/g, '\n'));
 cbaMods[2].lines.push('', 'Русская локальная правка тела навыка — файл несёт письменность владельца.');
 writeFileSync(CBA, cbaMods.map(modText).join('\n') + '\n');
 r = run(A, `update --source ${SRC} --baseline ${DIST}`);
 ok(r.code === 0, 'A update →9.9 exit 0', r.out);
 const pauseBack = hasAnySig(PAUSE, pauseSigs);
+if (pauseBack.length) console.log(r.out);
 ok(pauseBack.length === 0, `F1a (bugs/31): в переведённый pause не вставлен ни один EN-модуль (вернулось: ${pauseBack.length})`, pauseBack.join(' · '));
 ok(statSync(PAUSE).size <= pauseSize * 1.3, `F1a: pause не разбух (${pauseSize} → ${statSync(PAUSE).size} байт)`);
 ok(!/merged \d+ module\(s\) into \.claude\/skills\/pause/.test(r.out), 'F1b (NDim гр.1): лог не рапортует «merged» на переведённом файле с нулевой дельтой');
 const taskA = readFileSync(join(A, 'KAIF_UPDATE_TASK.md'), 'utf8');
-ok(!taskA.includes('.claude/skills/pause/SKILL.md'), 'F1c (bugs/32): файл с НУЛЕВОЙ дельтой шаблона не появляется в задании вовсе');
+ok(!taskA.includes('.kaif/skills-canonical/pause/SKILL.md'), 'F1c (bugs/32): файл с НУЛЕВОЙ дельтой шаблона не появляется в задании вовсе');
 ok(/### PHILOSOPHY\.md/.test(taskA) && taskA.includes('+ UPSTREAM ADDITION 9.9 (philosophy)'),
    'F2a (KLAS D12): wholesale-файл с реальной дельтой получает НАСТОЯЩИЙ дифф шаблонов в задании');
 ok(!taskA.includes('BUG_FIXING_FRAMEWORK.md'), 'F2b (bugs/32): wholesale-файл без дельты шаблона не числится в merge-diverged');
@@ -188,7 +189,7 @@ const philBMods = splitModules(readFileSync(PHIL_B, 'utf8').replace(/\r\n/g, '\n
 const keepB = [philBMods[3].signature, philBMods[10].signature];
 const philBSigs = translateWholesale(PHIL_B, { keep: keepB, h1: '# Философия' });
 const philBSize = statSync(PHIL_B).size;
-const KR = join(B, '.claude/skills/kaif-remove/SKILL.md');
+const KR = join(B, '.kaif/skills-canonical/kaif-remove/SKILL.md');
 const krSigs = translateWholesale(KR, { h1: '# /kaif-remove — уважительное удаление' });
 // F7-фикстура (изолятор гейта вставки): владелец УДАЛИЛ модуль из AGENT_GUIDE (шаблон этого
 // модуля апстрим не менял) — обновление не должно воскресить удалённое
@@ -235,7 +236,7 @@ ok(/### NEW_DOC_9\.9\.md/.test(taskB) && taskB.includes('(new file in this relea
    'F8b: задание несёт пункт «(new file in this release)» с полным «+»-диффом шаблона (не пустой пункт)');
 // F4b/F4c: «двухголовые» файлы — check обязан краснеть (детектор >1 H1; критерий эпика №2);
 // F4c — КОРНЕВОЙ док (повреждение KLAS: два документа в одной PHILOSOPHY) — находка судьи L2
-appendFileSync(join(B, '.claude/skills/report-bug/SKILL.md'), '\n# /report-bug — duplicate English head\n\nEnglish procedure inserted by a broken merge.\n');
+appendFileSync(join(B, '.kaif/skills-canonical/report-bug/SKILL.md'), '\n# /report-bug — duplicate English head\n\nEnglish procedure inserted by a broken merge.\n');
 r = run(B, 'check');
 ok(r.code !== 0 && /report-bug/.test(r.out), 'F4b: check КРАСЕН на двухголовом SKILL.md и называет файл', r.out.slice(-200));
 appendFileSync(join(B, 'PHILOSOPHY.md'), '\n# Duplicate English head (root doc)\n\nSecond document left by a broken merge.\n');
@@ -248,7 +249,7 @@ console.log('\n=== C (KCam, bugs/43): дрейф алиас-хвоста — des
 const C = join(ROOT, 'c'); mkdirSync(C); seed(C);
 r = run(C, 'install --lang ru');
 ok(r.code === 0, 'C install --lang ru exit 0', r.out);
-const WN = join(C, '.claude/skills/what-next/SKILL.md');
+const WN = join(C, '.kaif/skills-canonical/what-next/SKILL.md');
 // полевое состояние: алиас-хвост на диске отличается от того, что построит синтетический
 // baseline (пакет прошлой версии ≠ пакет текущей) — преамбула «вечно diverged»
 writeFileSync(WN, readFileSync(WN, 'utf8').replace(/Trigger aliases \(ru\): [^\n]*/, 'Trigger aliases (ru): что-дальше, старый-набор-алиасов'));

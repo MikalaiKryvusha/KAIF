@@ -230,7 +230,8 @@ if (!process.exitCode) {
 ├── REQUIREMENTS_FRAMEWORK.md · GOAL.md · STATUS.md · PROJECT_HISTORY.md
 ├── EXPERIENCE.md · MASTER_PLAN.md · the two project maps · KAIF_FRAMEWORK.md (last)
 ├── plans/ ideas/ bugs/ researches/ interviews/ homeworks/ reports/   (each with its README)
-├── .claude/skills/  .agents/skills/  .grok/skills/  .cline/skills/  .roo/commands/
+├── .kaif/skills-canonical/  (the single canonical skill set)
+├── .claude/skills/  .kimi-code/skills/  .agents/skills/  .grok/skills/  .cline/skills/  .roo/commands/
 ├── AGENTS.md · CLAUDE.md · .clinerules/ · .roo/rules/          (context pointers)
 └── .kaif/  (kaif.json marker · kaif-core.mjs — backs the kaif:* npm handles · spheres/ ·
              KAIF_REFERENCE.md — the reference)
@@ -244,4 +245,4 @@ The framework then runs on its skills: `/resume`, `/pause`, the autonomous loops
 
 MIT License — © 2026 **Mikalai Kryvusha (KOT KRINIK)**. The execution-discipline skills (`fable-*`) are
 vendored from [fable-method](https://github.com/Sahir619/fable-method) © Sahir619, MIT.
-v2.10 · released 2026-11-21 · origin https://github.com/MikalaiKryvusha/KAIF
+v2.10 · released 2026-11-22 · origin https://github.com/MikalaiKryvusha/KAIF

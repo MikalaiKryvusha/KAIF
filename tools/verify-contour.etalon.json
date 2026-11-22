@@ -248,5 +248,10 @@
     "questions": 1,
     "parsedOptions": 3,
     "candidateLines": 3
+  },
+  "interviews/interview_051_kimi_canonical_claude_skills.md": {
+    "questions": 1,
+    "parsedOptions": 2,
+    "candidateLines": 2
   }
 }

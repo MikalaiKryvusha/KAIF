@@ -63,14 +63,14 @@ function editBundleModule(bundleText, filePath, moduleIndex, mutate) {
 }
 const SRC = join(ROOT, 'src-9.9'); mkdirSync(SRC);
 let bundle = readFileSync(join(DIST, 'KAIF-CORE-BUNDLE.md'), 'utf8');
-bundle = editBundleModule(bundle, '.claude/skills/check-backlog/SKILL.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (check-backlog)'));
+bundle = editBundleModule(bundle, '.kaif/skills-canonical/check-backlog/SKILL.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (check-backlog)'));
 bundle = editBundleModule(bundle, 'PHILOSOPHY.md', 2, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (philosophy)'));
 bundle = editBundleModule(bundle, 'TESTING_FRAMEWORK.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (testing)', '', 'Historical note: this discipline entered the canon in KAIF 2.0.'));
 bundle = editBundleModule(bundle, 'bugs/README.md', 0, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (bugs-readme)'));
 bundle = editBundleModule(bundle, 'AGENT_GUIDE.md', 1, (m) => m.lines.push('', 'UPSTREAM ADDITION 9.9 (agent-guide)'));
 // Д3 (bugs/28): апстрим-правка привозит НОВЫЙ незаполняемый слот в модуль end-chat-soft —
 // update-задание обязано получить пункт placeholders (а не узнать о нём падением финального гейта)
-bundle = editBundleModule(bundle, '.claude/skills/end-chat-soft/SKILL.md', 1, (m) => m.lines.push('', 'Sign as <YOUR AGENT/MODEL>.'));
+bundle = editBundleModule(bundle, '.kaif/skills-canonical/end-chat-soft/SKILL.md', 1, (m) => m.lines.push('', 'Sign as <YOUR AGENT/MODEL>.'));
 writeFileSync(join(SRC, 'KAIF-CORE-BUNDLE.md'), bundle);
 copy(join(DIST, 'KAIF-CORE.mjs'), join(SRC, 'KAIF-CORE.mjs'));
 const man = JSON.parse(readFileSync(join(DIST, 'kaif-manifest.json'), 'utf8'));
@@ -89,7 +89,7 @@ console.log('\n=== T1 (K1): файл переведён вместе с заго
 const T1 = join(ROOT, 't1'); mkdirSync(T1); seed(T1);
 let r = run(T1, 'install --lang ru');
 ok(r.code === 0, 'T1 install --lang ru exit 0', r.out);
-const CB = join(T1, '.claude/skills/check-backlog/SKILL.md');
+const CB = join(T1, '.kaif/skills-canonical/check-backlog/SKILL.md');
 const cbOrig = readFileSync(CB, 'utf8');
 // «перевод целиком»: фронтматтер (преамбула) сохранён байт в байт, все заголовки и тексты — русские
 const cbPre = cbOrig.slice(0, cbOrig.search(/^# /m));
@@ -113,12 +113,12 @@ const cbTxt = readFileSync(CB, 'utf8');
 ok(!/^# \/check-backlog — [A-Za-z]/m.test(cbTxt), 'K1: английский H1 шаблона НЕ вставлен рядом с русским (нет удвоения)');
 ok(cbTxt.includes('ревизия беклога'), 'K1: русский текст владельца цел');
 ok(statSync(CB).size <= cbLenBefore * 1.5, `K1: файл не разбух (${cbLenBefore} → ${statSync(CB).size} байт)`);
-ok(!new RegExp('merged \\d+ module\\(s\\) into \\.claude/skills/check-backlog').test(r.out), 'K1: лог не рапортует «merged» на переведённом файле');
+ok(!new RegExp('merged \\d+ module\\(s\\) into \\.kaif/skills-canonical/check-backlog').test(r.out), 'K1: лог не рапортует «merged» на переведённом файле');
 const task1 = readFileSync(join(T1, 'KAIF_UPDATE_TASK.md'), 'utf8');
 ok(/check-backlog\/SKILL\.md/.test(task1) && /translated wholesale/.test(task1), 'K1: задание называет файл «translated wholesale» в diverged');
 // UT4 (2.9; GoD R3 — пересказанный канон, ни одного общего заголовка): у файла с baseFound 0 пункт называет второй путь — принять
 // рендер целиком и перенести факты, с готовой командой рендера ЭТОГО файла; иначе поле сливает руками десятки диффов в пересказ
-ok(/check-backlog\/SKILL\.md \(translated wholesale(?:(?! · )[^\n])*baseFound 0 of \d+\) — a second road: take this release's render whole \(`node \.kaif\/kaif-core\.mjs diff --source <the receipt's source> --render \.claude\/skills\/check-backlog\/SKILL\.md`/.test(task1),
+ok(/check-backlog\/SKILL\.md \(translated wholesale(?:(?! · )[^\n])*baseFound 0 of \d+\) — a second road: take this release's render whole \(`node \.kaif\/kaif-core\.mjs diff --source <the receipt's source> --render \.kaif\/skills-canonical\/check-backlog\/SKILL\.md`/.test(task1),
    'UT4 (GoD R3): пересказанный файл (baseFound 0) — пункт называет второй путь: рендер целиком и перенос фактов', (task1.match(/[^\n]*check-backlog\/SKILL\.md \(translated wholesale[^\n]*/) || [''])[0].slice(0, 600));
 console.log('\n=== T4 (K5): журналы прошлого не считаются протухшими утверждениями ===');
 ok(!task1.includes('researches/15_kaif_20_note.md'), 'K5: researches/ не в stale-claims');
@@ -162,7 +162,7 @@ ok(task2.includes('## Module diffs') && task2.includes('+ UPSTREAM ADDITION 9.9 
 ok(readFileSync(join(T2, 'TESTING_FRAMEWORK.md'), 'utf8').includes('UPSTREAM ADDITION 9.9 (testing)'),
    'K2: нетронутый чисто-EN файл обновлён механически несмотря на флаг',
    'sha до=' + tfShaBefore.slice(0, 12));
-ok(readFileSync(join(T2, '.claude/skills/check-backlog/SKILL.md'), 'utf8').includes('UPSTREAM ADDITION 9.9 (check-backlog)'),
+ok(readFileSync(join(T2, '.kaif/skills-canonical/check-backlog/SKILL.md'), 'utf8').includes('UPSTREAM ADDITION 9.9 (check-backlog)'),
    'K2: EN-навык с машинными алиасами — не «перевод», под флагом обновляется механически');
 
 // ---------------------------------------------------------------- T9: незавершённое задание не затирается (bugs/25)
@@ -273,8 +273,8 @@ const fillCanon = (dir, skipPh = []) => {
     const p = join(dir, doc);
     if (existsSync(p)) writeFileSync(p, readFileSync(p, 'utf8').replace(/<(?:The |Where |Describe |Why )[\s\S]*?>/g, 'X').replace(/<[^>\n]+>/g, 'X'));
   }
-  for (const n of readdirSync(join(dir, '.claude', 'skills')))
-    if (existsSync(join(dir, '.claude', 'skills', n, 'SKILL.md'))) fill(join(dir, '.claude', 'skills', n, 'SKILL.md'));
+  for (const n of readdirSync(join(dir, '.kaif', 'skills-canonical')))
+    if (existsSync(join(dir, '.kaif', 'skills-canonical', n, 'SKILL.md'))) fill(join(dir, '.kaif', 'skills-canonical', n, 'SKILL.md'));
   if (existsSync(join(dir, '.kaif', 'spheres')))
     for (const n of readdirSync(join(dir, '.kaif', 'spheres')))
       if (n.endsWith('.md')) fill(join(dir, '.kaif', 'spheres', n));
@@ -345,7 +345,7 @@ console.log('\n=== T11 (bugs/66 №3): латинский язык (de) — пе
 const T11 = join(ROOT, 't11'); mkdirSync(T11); seed(T11);
 r = run(T11, 'install --lang de');
 ok(r.code === 0, 'T11 install --lang de exit 0', r.out);
-const CB11 = join(T11, '.claude/skills/check-backlog/SKILL.md');
+const CB11 = join(T11, '.kaif/skills-canonical/check-backlog/SKILL.md');
 const cb11 = readFileSync(CB11, 'utf8');
 // «перевод целиком» по-немецки: преамбула байт в байт, все заголовки и тексты — немецкие
 writeFileSync(CB11, cb11.slice(0, cb11.search(/^# /m)) +
