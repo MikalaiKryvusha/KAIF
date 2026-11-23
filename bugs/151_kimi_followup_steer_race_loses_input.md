@@ -1,6 +1,6 @@
 # Bug 151 — follow-up на границе завершения Kimi-хода исчезает без отправки
 
-**Status:** 🔴 OPEN — наблюдение владельца зафиксировано; граничный отказ ещё не воспроизведён на стенде
+**Status:** 🔧 FIX PENDING FULL LIVE ACCEPTANCE — automatic steer, dedicated idle fallback и composer/media rollback реализованы; red→green store coverage и изолированный VSIX startup зелёные. Баг остаётся открытым до живой гонки и визуальной приёмки F4
 **Version/build:** Kimi Code 2.7.2, VS Code, Windows 11; reference implementation gxgleo67 extension 0.9.23 · **When/context:** 2026-11-23 00:34 +03:00, проектирование автоматического steer в `plans/144`
 **Severity:** S2 — теряется введённое пользователем сообщение и требуется его повторный ввод
 **Fixing:** фаза F3 `plans/144`; R&D-контроль проектируется в F1 `plans/145`
@@ -70,9 +70,21 @@ void bridge.steerChat(content)
 5. Автоматический Enter во время running turn использует тот же hardened path, queue остаётся пустой. Добавить мутанты: потерянный rollback, двойной fallback, media loss, recursive fallback, reorder.
 6. В F3/F4 прогнать unit + реальный Extension Host + живой путь владельца; DONE только после прочитанных событий и экрана для трёх исходов.
 
+## Fix evidence — 2026-11-23 12:46 +03:00
+
+- `chat.store.ts`: обычный running Enter идёт через `steerNow`; idle send вынесен в отдельный `sendIdle`. Разрешённый `ok:false` запускает этот путь ровно один раз без toast и без повторного automatic steer.
+- Rejected Promise оставляет ошибку видимой и ставит `pendingInput.restore=true`; `InputArea` возвращает текст, store сохраняет ready media. Accepted steer удаляет только подтверждённые ready IDs, не трогая uploading item.
+- `test/webview/chat-store.test.ts`: исходный RED — 5/6 против queue; после реализации — 6/6: accepted, idle, turn-ended exactly once, rejected rollback, media ack lifecycle, три сообщения по порядку. `test/settings-store.test.ts` — 29/29 после перевода старого queue-ожидания на automatic steer.
+- VSIX `mikalai-kryvusha.kimi-code-kaif` 0.9.1 собрана и запущена в изолированном VS Code 1.123.0; 10 команд и webview прочитаны. Полный extension test — 416 passed + 3 pristine Windows baseline failure.
+- Граница: это store/component repro, не живая running→idle гонка владельца. DONE не ставить до F4: живая ошибка/rollback, медиа и экран должны быть прочитаны.
+
+TWINS: searched `sendMessage(text)` fallback, `draftMedia: []`, `steerChat(content)` across `apps/vscode` — reference-only fallback потерян media исключён из нашего переноса; generic queue остаётся для старых элементов, новых running follow-up queue=0. Других наших steer fallback нет.
+
 ## Decisions made without the owner
 
-Пока none. Требование «не терять follow-up» дано владельцем; конкретная structured outcome форма будет выбрана по коду в F2/F3 и записана здесь.
+- `[ИИ]` Resolved `{ok:false}` трактуется как turn-ended, rejected Promise — как фактическая ошибка: это вся форма результата официального `SteerChat`, новых error codes не выдумано.
+- `[ИИ]` Откат composer помечен отдельным `restore`, чтобы обычный in-flight `pendingInput` не возвращался в поле немедленно.
+- `[ИИ]` Страryе queue-элементы не мигрируются; требование «сразу steer» применяется только к новым running follow-up.
 
 ## Links
 

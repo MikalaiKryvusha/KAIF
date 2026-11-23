@@ -9,7 +9,7 @@
   "version": "2.10",
   "released": "2026-11-22",
   "build": {
-    "sourceTree": "3ad9db4cf739845fecd7c30991fd752b0e3756f03875d7f17d5a69cb403b5729",
+    "sourceTree": "a8297ab35775eb2c4e07248591a9a9e2bb5fd3264b5c9ac5e977da2414f008b5",
     "prerelease": null
   },
   "templateNotes": [
@@ -20607,8 +20607,8 @@ export function kimiConfiguredWindow(model, configText) {
 // Kimi compacts the context BY ITSELF before every step once used ≥ ratio · window OR used + reserved ≥ window (agent-core-v2
 // fullCompaction/strategy.ts:18-28, 118-134; the same code in the installed 2.7.2 bundle): ratio = [loop_control] compaction_trigger_ratio
 // (0.5..0.99, default 0.85), reserved = [loop_control] reserved_context_size (default 50 000). The KAIF steps under Kimi are counted against
-// that point, not the whole window — the cut and the soft closure come before Kimi's own compaction; Kimi's trigger is never changed
-// (the KAIF owner, decision №164 of the origin, D1). Pure: (window, Kimi config text) → the token count where Kimi compacts.
+// that point, not the whole window — the cut and the soft closure come before stock Kimi's compaction. This hook only reads the
+// trigger; the later hard prohibition (decision №168) belongs to the engine's `auto_compact = false`, not to observation-only PreCompact. Pure: (window, Kimi config text) → the token count where Kimi compacts.
 export const KIMI_COMPACTION = { ratio: 0.85, reserved: 50000 };
 export function kimiCompactionPoint(win, configText = '') {
   const lc = String(configText).split(/(?=^\[)/m).find((s) => /^\[loop_control\]\s*$/m.test(s.split('\n')[0])) || '';

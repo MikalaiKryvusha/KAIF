@@ -73,4 +73,13 @@
 
 ## 7. Вердикт
 
-**partial** — исполняемые engine/hook контуры и текущие живые 70/75/80 подтверждены; полный KAIF полигон на момент первой записи выполняется, а VSIX, changeset и полное живое закрытие остаются открытыми воротами.
+**F2 — VERIFIED WITH CAVEATS; epic — partial.** Исполняемые engine/hook контуры, живые 70/75/80/90 и путь до прощания подтверждены; VSIX, changeset и F3/F4 остаются открытыми воротами. Повторный суд — `reports/KAIF_AUDIT/2026-11-23_epic144-f2-repeat-judge.md`.
+
+## 8. Дочтение фоновых задач и повторный суд — 2026-11-23 11:52 +03:00
+
+- `bash-p5tmlfdi` завершился кодом 0; `output.log:1962` — `sandbox suite: all 28 suites green`.
+- Структурный разбор живого wire после 2474: soft на 80 %, force на 90 %, записанное прощание и `turn.ended`; новый `context.apply_compaction` — 0.
+- Повторные прогоны: engine 7/7 · goal 146/146 · typecheck 0 · полный compaction 134 passed + те же 2 Windows baseline failure · KAIF selftest · мутанты K1/K3–K7 · build + deployed s14 — зелёные.
+- Полный `pnpm lint` не зелёный: `guards` остановился на перестановке двух одинаковых `jsPlugins`; конфиги и baseline не менялись, snapshot не переписывался. `ratchet` и `instructions` зелёные отдельно.
+- `agent-snc1ic48` не выполнил вычитку голоса: его output говорит только об отсутствии правок и `--waive`; как независимый голосовой гейт не засчитано.
+- Ранние DONE/compaction 0 в двух старых отчётах отозваны строкой RETRACTION/REFUTED BY LATER LIVE EVIDENCE и прочитаны обратно. `bugs/150–151` остаются открытыми до F3/F4.

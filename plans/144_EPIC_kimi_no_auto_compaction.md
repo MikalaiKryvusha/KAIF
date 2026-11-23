@@ -2,7 +2,7 @@
 
 > **Создан:** 2026-11-23 00:34 +03:00.
 > **Родитель:** `bugs/150` рецидив · `researches/51_kimi_no_auto_compaction.md` · `plans/136` критерии 18–19, 38 · `plans/143` KA9 · решения №161, №164, №166–168.
-> **Статус:** 🟡 F2 FIX PENDING FULL LIVE ACCEPTANCE — engine `auto_compact=false` запушен в fork `b42e17e46`; KAIF steps/latch реализованы, selftest/мутанты/s14 зелёные. F1 baseline caveats: 2 Windows tests и VSIX bare `uuid`; F3/F4, changeset и Release впереди.
+> **Статус:** 🟡 F3 VERIFIED WITH CAVEATS 2026-11-23 12:46 +03:00 — F2 повторно принят судом; F3 `testcases/reports/2026-11-23_epic144-f3-quotas-steer-background.md`: квоты, hardened automatic steer и sidebar background реализованы, VSIX `mikalai-kryvusha.kimi-code-kaif` 0.9.1 собрана и запущена в изолированном VS Code 1.123.0. Полный extension test 416 passed + 3 pristine Windows baseline failure; полный lint остановлен на перестановке `jsPlugins`. Четыре F3 changeset подтверждены владельцем; F2 changeset ждёт. F4 — live quotas, computed background, steer race, полная closure и визуальная приёмка; `bugs/150–151` открыты.
 > **Вовне:** владелец разрешил публичный репозиторий в своём GitHub, установку нашей сборки в VS Code и GitHub Release VSIX с принятыми фичами (№172). README/релиз — EN + RU в стиле репозиториев владельца после вывода стайлгайда. Marketplace/upstream PR и публикация KAIF 2.10 отдельно не разрешены.
 
 **Вектор цели:** **Avoid + Achieve.** Исключить автоматическую подмену живого контекста сводкой Kimi; до исчерпания окна завершать чат через `/skill:end-chat-soft`, а при затягивании — через `/skill:end-chat-force`. Поставить в VS Code расширение из нашего форка со свежим движком и отображением пятичасового и длительного окон квоты.
@@ -21,6 +21,7 @@
 10. **Проверка независима.** Scale: вердикт и отчёты. Meter: `/skill:fable-judge` повторяет engine/KAIF гигиену и функциональный VS Code путь. Target: **VERIFIED** либо эпик остаётся открытым с названными незакрытыми сценариями.
 11. **Каждый follow-up во время running turn уходит сразу через steer.** Scale: доставка и очередь в реальном Extension Host. Meter: при активном ходе отправить текстовый и media follow-up обычным Enter, затем повторить в момент завершения хода. Target: `SteerInput` предшествует terminal event, новые элементы queue = **0**, содержимое и порядок сохранены; при гонке завершения сообщение запускает новый ход ровно **1** раз; при фактической ошибке текст и media возвращаются в composer, а ошибка видна.
 12. **Фон совпадает с тёмной боковой панелью VS Code.** Scale: цвет пустого фона webview и читаемость поверхностей. Meter: наш VSIX в тёмной теме владельца, computed style + снимок рядом с sidebar. Target: body/root используют `var(--vscode-sideBar-background)` с editor fallback, RGB пустого фона равен sidebar **(ΔRGB = 0)**; карточки, поля и текст различимы; владелец принимает снимок глазами.
+13. **Вопросы и ошибки привлекают внимание звуком и голосом.** Scale: звуковые и речевые вызовы при новом `ApprovalRequest`, `QuestionRequest` и `error`, без повторов при replay. Meter: webview unit с записанным Web Audio/speechSynthesis и изолированный Extension Host. Target: каждый новый запрос внимания вызывает короткий звуковой сигнал и произнесение сообщения; replay истории = 0 оповещений; одинаковое сообщение не повторяется чаще 5 секунд.
 
 ## Фазы и зависимости
 
