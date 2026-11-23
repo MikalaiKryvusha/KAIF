@@ -83,30 +83,17 @@ event = "PostToolUseFailure"
 command = "node .kaif/hooks/knowledge-moment.mjs --kimi"
 timeout = 5
 
+# ONE sequential Stop entry: Kimi otherwise runs these producers in parallel and delivers only the first exit-2 reason in config order.
+# The multiplexer runs STATUS → farewell → testing → context-window with the same event and returns every block reason together (bugs/156).
 [[hooks]]
 event = "Stop"
-command = "node .kaif/hooks/stop-status-guard.mjs --kimi"
-timeout = 10
-
-[[hooks]]
-event = "Stop"
-command = "node .kaif/hooks/stop-farewell-capture.mjs --kimi"
-timeout = 10
+command = "node .kaif/hooks/kimi-stop.mjs --kimi"
+timeout = 40
 
 # A turn that dies of a provider error (the 5-hour quota) runs no closing ritual: the farewell file names the error and the last words.
 [[hooks]]
 event = "StopFailure"
 command = "node .kaif/hooks/stop-farewell-capture.mjs --kimi"
-timeout = 10
-
-[[hooks]]
-event = "Stop"
-command = "node .kaif/hooks/test-after-code.mjs --kimi"
-timeout = 10
-
-[[hooks]]
-event = "Stop"
-command = "node .kaif/hooks/context-window.mjs --kimi"
 timeout = 10
 
 [[hooks]]

@@ -7,6 +7,9 @@
 //   K5 «a new owner prompt does not re-arm the closure»                      → «a new owner prompt re-arms»
 //   K6 «soft satisfies force again»                                          → soft-to-force escalation only
 //   K7 «force entry opens ordinary work again»                               → post-force contour only
+//   K8 «main-wire records again require agentId»                              → old/new main-wire shapes only
+//   K9 «rebase recovery is removed»                                           → handover allow cases only
+//   K10 «the old prefix predicate returns»                                    → handover and refusal cases
 // A mutation that does not apply, or a selftest that dies, is BAD (EXP-0158). Exit 0 — every mutant red on exactly its cases.
 import { readFileSync, writeFileSync, mkdtempSync, rmSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
@@ -19,6 +22,7 @@ const SRC = readFileSync(join(ROOT, 'framework', 'hooks', 'context-window.mjs'),
 const C1 = 'Kimi closure latch at 85 %', C2 = 'Kimi after a compaction', C3 = 'Kimi Stop at 85 % of the point';
 const C4 = 'Kimi closure latch: a new owner prompt re-arms', C5 = 'Kimi closure latch at 92 %';
 const C6 = 'Kimi soft-to-force escalation', C7 = 'Kimi post-force contour';
+const C8 = 'Kimi main-wire shapes (bugs/153)', C9 = 'post-force Bash handover (bugs/154)', C10 = 'post-force Bash refusals (bugs/154)';
 const MUTANTS = [
   ['K1', 'const win = kimiCompactionPoint(full, configText);', 'const win = full;', [C1, C2, C3, C4, C5, C6, C7]],
   ['K3', "if (!d && !demand && st.pending && evn === 'UserPromptSubmit')", 'if (false)', [C2]],
@@ -26,6 +30,10 @@ const MUTANTS = [
   ['K5', "if (evn === 'UserPromptSubmit') delete st.closing;", '', [C4]],
   ['K6', 'const demand = required && !closureSatisfied(required, st.closing)', 'const demand = required && !st.closing', [C6]],
   ['K7', "const forceRestriction = st.closing === 'force' && evn === 'PreToolUse' && !closing && !forceClosureTool(ev);", 'const forceRestriction = false;', [C7]],
+  ['K8', "if (r.agentId !== undefined && r.agentId !== 'main') continue;", "if (r.agentId !== 'main') continue;", [C8]],
+  ['K9', '|git pull --rebase|node tools\\/commit\\.mjs', '|node tools\\/commit\\.mjs', [C9, C7]],
+  ['K10', "const raw = String(input.command || '');\n  if (!raw.trim() || /[\\x00-\\x1F\\x7F;&|`$<>]/.test(raw)) return false;\n  const command = raw.trim();\n  return /^(?:git status(?: --short)?|git diff(?: --cached)?(?: --stat)?|git log(?: --oneline -[1-9]\\d*)?|git (?:add|commit|push)(?: .+)?|git pull --rebase|node tools\\/commit\\.mjs(?: .+)?|date(?: .+)?)$/.test(command);",
+    "const command = String(input.command || '').trim();\n  if (!command || /[;&|]/.test(command)) return false;\n  return /^(?:git\\s+(?:status|diff|log|add|commit|push)(?:\\s|$)|node\\s+tools\\/commit\\.mjs(?:\\s|$)|date(?:\\s|$))/.test(command);", [C9, C10, C7]],
 ];
 let bad = 0;
 const run = (text) => {

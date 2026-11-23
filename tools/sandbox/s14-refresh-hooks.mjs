@@ -69,7 +69,8 @@ const HOOK_FILES = ['session-start-refresh.mjs', 'prompt-refresh-timer.mjs', 'st
                     'sample-codex-hooks.json', 'sample-cursor-hooks.json',
                     'sample-copilot-hooks.json', 'sample-antigravity-hooks.json',
                     'kimi-permission-call.mjs', 'kimi-config-fragment.toml',
-                    'kimi-hook.mjs'];         // 2.10, plans/143 KA2: один диспетчер хуков Kimi на пользователя
+                    'kimi-hook.mjs',           // 2.10, plans/143 KA2: один диспетчер хуков Kimi на пользователя
+                    'kimi-stop.mjs'];          // bugs/156: один последовательный Stop-мультиплексор собирает ВСЕ причины exit 2
 for (const f of HOOK_FILES)
   ok(existsSync(join(S, '.kaif', 'hooks', f)), `s14 деплой: .kaif/hooks/${f} доехал`);
 r = run(S, 'check');
@@ -1078,8 +1079,23 @@ const runKimi = (script, input, args = [], env = process.env) => spawnSync(proce
   ok(x.status === 0 && readFileSync(join(S, 'FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md'), 'utf8').includes('Farewell from Kimi.'),
     's14 Kimi farewell: Stop читает wire.jsonl и пишет файл эстафеты', `${x.status} ${x.stderr}`.slice(0, 300));
   const fragmentK = readFileSync(join(S, '.kaif', 'hooks', 'kimi-config-fragment.toml'), 'utf8');
-  ok(['SessionStart', 'PostCompact', 'UserPromptSubmit', 'PreToolUse', 'PostToolUse', 'PostToolUseFailure', 'Stop', 'PermissionRequest']
-    .every((ev) => fragmentK.includes(`event = "${ev}"`)), 's14 Kimi config: все нужные события имеют проводку');
+  const entriesK = fragmentK.split(/^\[\[hooks\]\]\s*$/m).slice(1);
+  const stopsK = entriesK.filter((e) => /event = "Stop"/.test(e));
+  const failuresK = entriesK.filter((e) => /event = "StopFailure"/.test(e));
+  ok(['SessionStart', 'PostCompact', 'UserPromptSubmit', 'PreToolUse', 'PostToolUse', 'PostToolUseFailure', 'Stop', 'StopFailure', 'PermissionRequest']
+    .every((ev) => fragmentK.includes(`event = "${ev}"`)), 's14 Kimi config: все нужные события имеют проводку, StopFailure отдельно');
+  ok(stopsK.length === 1 && stopsK[0].includes('command = "node .kaif/hooks/kimi-stop.mjs --kimi"')
+    && !/stop-status-guard|stop-farewell-capture|test-after-code|context-window/.test(stopsK[0]),
+  's14 bugs/156: ровно ОДИН Stop entry — последовательный мультиплексор; четырёх параллельных producers с first-only доставкой больше нет', stopsK);
+  ok(failuresK.length === 1 && failuresK[0].includes('stop-farewell-capture.mjs --kimi'),
+    's14 bugs/156: StopFailure остаётся отдельным observation-only прощанием', failuresK);
+  const muxSelf = spawnSync(process.execPath, [join(S, '.kaif', 'hooks', 'kimi-stop.mjs'), '--selftest'], { encoding: 'utf8', timeout: 60000 });
+  ok(muxSelf.status === 0 && /kimi-stop selftest: all ok/.test(muxSelf.stdout || ''),
+    's14 bugs/156: развёрнутый мультиплексор — порядок, одинаковый event, farewell ровно один раз, тихий replay', `${muxSelf.status} ${muxSelf.stdout} ${muxSelf.stderr}`.slice(-600));
+  const muxRegression = spawnSync(process.execPath, [join(REPO, 'tools', 'sandbox', 'probes', 'bugs156-kimi-stop-multiplexer.mjs'), join(S, '.kaif', 'hooks')], { encoding: 'utf8', timeout: 120000 });
+  ok(muxRegression.status === 0 && /all as named/.test(muxRegression.stdout || ''),
+    's14 bugs/156: STATUS+testing+window доставлены ВМЕСТЕ; после починки только STATUS testing debt снова блокирует до прогона кода',
+    `${muxRegression.status} ${muxRegression.stdout} ${muxRegression.stderr}`.slice(-900));
 }
 
 console.log('\n=== s14: KA2 — хуки Kimi через один диспетчер пользователя (2.10, plans/143) ===');

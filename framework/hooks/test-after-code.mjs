@@ -3,15 +3,17 @@
 // refresh-hooks module, deployed to .kaif/hooks/). Claude Code events: PostToolUse (writes · shell) · Stop.
 //
 // What it does: every write of a file that changes the product the user runs becomes a TEST DEBT; only a RUN of its own kind clears it;
-// the stop of a turn with debt is refused ONCE with the order and the list (a repeated stop with nothing new written passes — no endless
-// loop, in this turn or a later one; the debt stays — in `--status` and in the line of the next write). Two field deployments of one owner converged on this shape (recon — origin researches/43);
+// the stop of a turn with debt is refused ONCE per debt signature under Claude (a repeated stop with nothing new written passes — no endless
+// loop, in this turn or a later one; the debt stays — in `--status` and in the line of the next write). Under Kimi an ordinary later Stop
+// repeats unresolved debt: Kimi's own engine already suppresses the second Stop of one continuation (bugs/156, researches/50 §14).
+// Two field deployments of one owner converged on this shape (recon — origin researches/43);
 // the owner's word there, rendered: «the agent wrote code → the hook ORDERS it tested» · «the agent does not ask the owner's permission».
 //   PostToolUse Write · Edit · MultiEdit · NotebookEdit of a product file → the file enters the debt {path: {kind, at}}; the first entry
 //     after a clean debt carries the full order (the steps of TESTING_FRAMEWORK.md), later ones a short line with the count;
 //   PostToolUse Bash · PowerShell → a command that is a RUN of a kind clears that kind's debt; hygiene (`--check`, `--help`, `--version`,
 //     `py_compile`, `compileall`, a linter, a build) never clears; the body of a heredoc is data, never a command (field: a test case
 //     appended by heredoc named the game launcher and cleared the debt); a deploy command is debt of its own kind;
-//   Stop with debt → {"decision":"block","reason": …} once per debt signature; the same signature again — in this turn or a later one → silence.
+//   Claude Stop with debt → {"decision":"block","reason": …} once per debt signature; the same signature again — in this turn or a later one → silence.
 //   A RUN of the default kind: an interpreter in the command and the file as the first word after its flags; the file's name elsewhere
 //   (`git add`, `cat`, `grep`, a commit tool's `--only`) is not a run.
 // Kinds and patterns are the PROJECT's data (`.kaif/kaif.json` → `testHook`, shape below); the mechanism is the framework's. Without data
@@ -141,12 +143,15 @@ export function runsFile(cmd, rel) {
 const listOf = (debt) => { const ks = Object.keys(debt); return ks.slice(0, LIST_MAX).join(', ') + (ks.length > LIST_MAX ? ` and ${ks.length - LIST_MAX} more` : ''); };
 const signature = (debt) => { const ks = Object.keys(debt).sort(); return ks.join('|') + '@' + ks.map((k) => debt[k].at).sort().pop(); };
 
-// The decision — (event, state, root, rules, now) → { out | null, state }; pure apart from the clock passed in
-export function handle(ev, st, root, rules, now) {
+// The decision — (event, state, root, rules, now, options) → { out | null, state }; pure apart from the clock passed in.
+// Claude suppresses a repeated debt signature. Kimi instead suppresses the SECOND Stop of the same continuation in its engine, so its
+// next ordinary Stop must still deliver an unresolved debt (bugs/156); `options.kimi` selects that engine contract.
+export function handle(ev, st, root, rules, now, { kimi = false } = {}) {
   const s = { debt: { ...((st && st.debt) || {}) }, waivers: [...((st && st.waivers) || [])], lastStop: (st && st.lastStop) || '' };
   const name = String(ev.hook_event_name || ''), tool = String(ev.tool_name || '');
   if (name === 'Stop') {
     if (!Object.keys(s.debt).length) { s.lastStop = ''; return { out: null, state: s }; }
+    if (kimi) s.lastStop = ''; // a later ORDINARY Kimi Stop repeats the debt; Kimi's engine suppresses only the continuation replay
     const sig = signature(s.debt);
     // asked already for this very debt — in this turn or an earlier one — and nothing new written: pass (criterion 28 «a repeated stop
     // with nothing new written passes»; a turn that only answers the owner is not refused again by an old debt — light judge, session 98)
@@ -250,6 +255,7 @@ if (argv[0] === '--selftest') {
     ok(s.debt['src/app.mjs'], 'a continued line (`\\` · PowerShell backtick) is ONE segment: «node src/app.mjs ⏎ --help» is --help, not a run (light judge, s98)');
     s = session(D); s.edit('src/app.mjs'); s.stop(false);
     ok(s.stop(false) === null && s.debt['src/app.mjs'], 'a later turn with the same debt is not refused again (once per debt signature); the debt stays');
+    // The Kimi later-ordinary-Stop case lives in bugs156-kimi-stop-multiplexer.mjs with the real multiplexer and all producers.
     s = session(D);
     ok(s.stop(false) === null, 'no debt → the stop passes');
     s = session(D); s.edit('src/app.mjs'); s.stop(false); s.stop(true); s.edit('src/app.mjs', T2);
@@ -290,7 +296,7 @@ try {
     const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(ev.cwd);
     const kimi = process.argv.includes('--kimi') || process.argv.includes('kimi');
     if (kimi && !existsSync(join(root, DEPLOYMENT))) process.exit(0);
-    const r = handle(ev, load(root), root, rulesOf(configOf(root)), new Date().toISOString());
+    const r = handle(ev, load(root), root, rulesOf(configOf(root)), new Date().toISOString(), { kimi });
     save(root, r.state);
     if (r.out && kimi && r.out.decision === 'block') { console.error(r.out.reason); process.exit(2); }
     if (r.out && !kimi) process.stdout.write(JSON.stringify(r.out));

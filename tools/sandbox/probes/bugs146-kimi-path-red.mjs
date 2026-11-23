@@ -4,6 +4,7 @@
 //   B · the same hook of <rev> (default HEAD before the fix: 8ef671e)                        — no debt (the blind spot)
 //   C · clock-now of this tree, a Kimi PreToolUse Write {path: notes.md}, a placeholder only in a code span — exit 0 (markdown seen)
 //   D · clock-now of <rev>, the same write — exit 2 (the path unread: markdown taken for code) · E — a plain placeholder: both exit 2
+//   F · bugs/156 replacement contract: the fragment has exactly one Stop entry, the sequential kimi-stop.mjs multiplexer.
 // Each hook runs as Kimi runs it (`--kimi`, the event on stdin, cwd a temp KAIF project). Exit 0 — all as named, 1 — any difference.
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from 'node:fs';
 import { execFileSync, spawnSync } from 'node:child_process';
@@ -40,6 +41,10 @@ try {
   check(d.status === 2, `D · ${rev}: the path unread, notes.md taken for code — the code-span placeholder refused`, { status: d.status, err: d.stderr });
   const e = run(join(ROOT, 'framework', 'hooks', 'clock-now.mjs'), plain), f = run(join(old, 'clock-now.mjs'), plain);
   check(e.status === 2 && f.status === 2, 'E · a plain placeholder: refused by both, with the cure', { e: e.status, f: f.status });
+  const fragment = readFileSync(join(ROOT, 'framework', 'hooks', 'kimi-config-fragment.toml'), 'utf8');
+  const stops = fragment.split(/^\[\[hooks\]\]\s*$/m).slice(1).filter((entry) => /event = "Stop"/.test(entry));
+  check(stops.length === 1 && stops[0].includes('kimi-stop.mjs --kimi'),
+    'F · bugs/156 replacement contract: Kimi has one sequential Stop multiplexer, so the Write debt reason cannot be hidden behind STATUS', stops);
 } finally { rmSync(P, { recursive: true, force: true }); }
 console.log(bad ? `bugs146-kimi-path-red: ${bad} BAD` : 'bugs146-kimi-path-red: all as named');
 process.exit(bad ? 1 : 0);

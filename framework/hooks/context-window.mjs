@@ -32,7 +32,10 @@
 // measured share; the agent keeps working. Origin: the source's session 100 closed «by the window» at 53 % by feeling, and a field deployment
 // carried the same gate after closing at 68 % «by the feeling of the limit» (its owner: you closed the chat too early again — fix the hook);
 // nothing to measure (no transcript, no usage) — the gate does not block. The Claude branch never stops a turn otherwise; Kimi's repeated
-// closure refusal is the named exception above. Any internal error → exit 0 silently. Lines are English: the agent reads them.
+// closure refusal is the named exception above. Unrelated internal errors → exit 0 silently; a computed closure refusal still goes out if state
+// persistence fails. Lines are English: the agent reads them.
+// [TESTED: 2026-11-23 · bugs/153,154,155,158 hygiene — focused selftests/probes and K8–K10 mutants; live current-session --measure printed tokens;
+//  evidence in the four bug docs. Live overlapping Kimi delivery and post-force shell execution were not run]
 // [TESTED: 2026-11-22 · bugs/150 hygiene only — closureRequirement boundaries, repeated PreToolUse, closure entry, owner-prompt re-arm,
 //  PostCompact reset, forced level; mutants K4/K5 red on exactly their cases; deployed hook green in s14. Live refill after the fix: NOT observed]
 // [TESTED: 2026-11-17 · the gate, `--measure` and `--alive` — hygiene: --selftest all ok, mutants G1–G6 of tools/sandbox/probes/gate-close-mutant.mjs
@@ -138,7 +141,7 @@ export function lastKimiContext(text) {
     if (!/token_counting\.measured|usage\.record|context\.apply_compaction/.test(lines[i])) continue;
     try {
       const r = JSON.parse(lines[i]);
-      if (r.agentId !== 'main') continue;
+      if (r.agentId !== undefined && r.agentId !== 'main') continue;
       if (r.type === 'context.apply_compaction') return null;
       if (r.type === 'token_counting.measured' && Number(r.tokens) > 0) return { used: Number(r.tokens), model: '' };
       if (r.type === 'usage.record' && kimiUsedOf(r.usage) > 0) return { used: kimiUsedOf(r.usage), model: String(r.model || '') };
@@ -173,7 +176,7 @@ export function latestKimiSession(root, home = process.env.KIMI_CODE_HOME || joi
     for (const workdir of readdirSync(base)) {
       for (const id of readdirSync(join(base, workdir))) {
         const dir = join(base, workdir, id), wire = join(dir, 'agents', 'main', 'wire.jsonl'), state = readJson(join(dir, 'state.json'));
-        if (!state || !state.cwd || !same(state.cwd, root) || !existsSync(wire)) continue;
+        if (!state || !state.cwd || !same(projectRoot(state.cwd), root) || !existsSync(wire)) continue;
         const mtimeMs = statSync(wire).mtimeMs;
         if (!found || mtimeMs > found.mtimeMs || (mtimeMs === found.mtimeMs && id > found.id)) found = { id, path: wire, mtimeMs };
       }
@@ -286,9 +289,10 @@ export function forceClosureTool(ev) {
     return FORCE_FILES.has(basename(String(input.path || '').replaceAll('\\', '/')).toLowerCase());
   }
   if (ev.tool_name !== 'Bash') return false;
-  const command = String(input.command || '').trim();
-  if (!command || /[;&|]/.test(command)) return false;
-  return /^(?:git\s+(?:status|diff|log|add|commit|push)(?:\s|$)|node\s+tools\/commit\.mjs(?:\s|$)|date(?:\s|$))/.test(command);
+  const raw = String(input.command || '');
+  if (!raw.trim() || /[\x00-\x1F\x7F;&|`$<>]/.test(raw)) return false;
+  const command = raw.trim();
+  return /^(?:git status(?: --short)?|git diff(?: --cached)?(?: --stat)?|git log(?: --oneline -[1-9]\d*)?|git (?:add|commit|push)(?: .+)?|git pull --rebase|node tools\/commit\.mjs(?: .+)?|date(?: .+)?)$/.test(command);
 }
 export const FORCE_WORK_REFUSAL = 'KAIF force closure: only STATUS.md, FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md, date and the git/commit commands of the handover are allowed. Ordinary work is refused; finish /skill:end-chat-force now.';
 export function closureDemand(kind, used, win, cfg = {}) {
@@ -352,6 +356,34 @@ function tailOf(p) {
     readSync(fd, buf, 0, n, size - n);
     return buf.toString('utf8');
   } finally { closeSync(fd); }
+}
+// bugs/155: mkdir is the cross-process mutex; each writer owns a pid-unique temp. A stale lock cannot disable refusals:
+// its owner falls back to an unsaved decision, and the caller still emits any computed denial.
+// [TESTED: 2026-11-23 · hygiene only — direct-event overlap/persistence/retention probe, evidence bugs/155; live Kimi overlap not observed]
+const STATE_LOCK_TIMEOUT = 2000, STATE_LOCK_STALE = 10000, STATE_LOCK_POLL = 20;
+function acquireStateLock(root) {
+  const lock = join(root, STATE) + '.lock';
+  mkdirSync(dirname(lock), { recursive: true });
+  const until = Date.now() + STATE_LOCK_TIMEOUT;
+  while (Date.now() < until) {
+    try {
+      mkdirSync(lock);
+      return () => { try { rmSync(lock, { recursive: true, force: true }); } catch { /* another cleanup already removed it */ } };
+    } catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+      try {
+        if (Date.now() - statSync(lock).mtimeMs > STATE_LOCK_STALE) rmSync(lock, { recursive: true, force: true });
+      } catch { /* the owner released it, or another waiter is collecting it */ }
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, STATE_LOCK_POLL);
+    }
+  }
+  return null;
+}
+function writeContextState(root, kept) {
+  const p = join(root, STATE), tmp = `${p}.${process.pid}.tmp`;
+  mkdirSync(dirname(p), { recursive: true });
+  try { writeFileSync(tmp, JSON.stringify(kept)); renameSync(tmp, p); }
+  finally { try { rmSync(tmp, { force: true }); } catch { /* a failed rename leaves nothing durable to clean */ } }
 }
 
 if (process.argv[2] === '--selftest') {
@@ -462,6 +494,28 @@ if (process.argv[2] === '--selftest') {
     const lu = lastKimiContext([usage, measured].join('\n'));
     ok(lu && lu.used === 891655 && lastKimiContext([usage, measured, compacted].join('\n')) === null,
       'Kimi: token_counting.measured wins; records before a compaction are stale');
+    // bugs/153: both real main-wire shapes occur in the field; an explicit non-main id is still rejected.
+    const newUsage = JSON.stringify({ type: 'usage.record', model: 'kimi-code/k3.1-pro', usage: { inputOther: 5486, inputCacheRead: 633066, inputCacheCreation: 0 } });
+    const newMeasured = JSON.stringify({ type: 'token_counting.measured', tokens: 638552 });
+    const nonMain = JSON.stringify({ type: 'token_counting.measured', agentId: 'agent-7', tokens: 999999 });
+    const newCompacted = JSON.stringify({ type: 'context.apply_compaction', tokensAfter: 23531 });
+    const oldShape = lastKimiContext([usage, measured].join('\n')), newShape = lastKimiContext([newUsage, newMeasured, nonMain].join('\n'));
+    ok(oldShape && oldShape.used === 891655 && newShape && newShape.used === 638552
+      && lastKimiContext([newUsage, newMeasured, newCompacted].join('\n')) === null,
+      'Kimi main-wire shapes (bugs/153): old agentId=main and new absent id count; explicit non-main is skipped and absent-id compaction invalidates');
+    // bugs/154: the post-force shell contour accepts whole handover commands only, including its prescribed rebase recovery.
+    const forceBash = (command) => forceClosureTool({ hook_event_name: 'PreToolUse', tool_name: 'Bash', tool_input: { command } });
+    const forceAllowed = ['git status', 'git status --short', 'git diff --cached --stat', 'git log --oneline -1',
+      'git add STATUS.md', 'git commit -m "wip: handover"', 'git push', 'node tools/commit.mjs "wip: handover"',
+      "date '+%Y-%m-%d %H:%M %z'", 'git pull --rebase'];
+    const forceDenied = ['git status --short\nnode tools/build-framework.mjs', 'git status --short\rgit push',
+      'git status --short-extra', 'git status --short && git push', 'git status --short$(node tools/build-framework.mjs)',
+      'git status --short`node tools/build-framework.mjs`', 'git pull', 'git pull --rebase --autostash', 'git merge main',
+      'node tools/build-framework.mjs', 'node tools/commit.mjs.evil', 'git push origin main\nnode tools/build-framework.mjs',
+      'git status --short\n', '\ngit status --short', 'git status --short\r', '\tgit status', 'git status\u0000 --short'];
+    ok(forceAllowed.every(forceBash), 'post-force Bash handover (bugs/154): complete existing commands and exact git pull --rebase pass');
+    ok(forceDenied.every((command) => !forceBash(command)),
+      'post-force Bash refusals (bugs/154): CR/LF/control syntax, prefix suffixes, generic pull/merge/build and substitutions fail');
 
     // Kimi's own compaction point (№164, D1): 0.85 · window or window − 50 000, whichever is lower; [loop_control] moves it
     ok(kimiCompactionPoint(1048576, '') === 891289 && kimiCompactionPoint(262144, '') === 212144
@@ -545,12 +599,14 @@ if (process.argv[2] === '--selftest') {
       const statusRead = run('PreToolUse', { tool_name: 'Read', tool_input: { path: 'STATUS.md' }, usage: forceUsage, session_id: 'session_force' });
       const ordinaryRead = run('PreToolUse', { tool_name: 'Read', tool_input: { path: 'README.md' }, usage: forceUsage, session_id: 'session_force' });
       const gitStatus = run('PreToolUse', { tool_name: 'Bash', tool_input: { command: 'git status --short' }, usage: forceUsage, session_id: 'session_force' });
+      const rebase = run('PreToolUse', { tool_name: 'Bash', tool_input: { command: 'git pull --rebase' }, usage: forceUsage, session_id: 'session_force' });
+      const multiline = run('PreToolUse', { tool_name: 'Bash', tool_input: { command: 'git status --short\nnode tools/build-framework.mjs' }, usage: forceUsage, session_id: 'session_force' });
       const build = run('PreToolUse', { tool_name: 'Bash', tool_input: { command: 'node tools/build-framework.mjs' }, usage: forceUsage, session_id: 'session_force' });
       ok(forceStop.status === 2 && /\/skill:end-chat-force/.test(forceStop.stderr) && forcePre.status === 2 && forceEnter.status === 0,
         'Kimi closure latch at 92 %: Stop and ordinary work require end-chat-force; entering it passes');
-      ok(statusRead.status === 0 && gitStatus.status === 0 && ordinaryRead.status === 2 && build.status === 2
+      ok(statusRead.status === 0 && gitStatus.status === 0 && rebase.status === 0 && ordinaryRead.status === 2 && multiline.status === 2 && build.status === 2
         && /only STATUS\.md/.test(ordinaryRead.stderr) && /Ordinary work is refused/.test(build.stderr),
-        'Kimi post-force contour: STATUS and git handover pass; README and build are refused');
+        'Kimi post-force contour: STATUS, git handover and exact rebase pass; README, multiline shell and build are refused');
     } finally { rmSync(dir, { recursive: true, force: true }); }
   }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
@@ -640,6 +696,7 @@ if (process.argv[2] === '--measure') {
   process.exit(m.may ? 0 : 1);
 }
 
+let releaseState = null, kimiExit = 0;
 if (process.argv[2] === '--kimi') {
   try {
     const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
@@ -648,8 +705,10 @@ if (process.argv[2] === '--kimi') {
     if (!existsSync(join(root, DEPLOYMENT))) process.exit(0);
     const marker = readJson(join(root, DEPLOYMENT)) || {};
     const cw = (marker.contextWindow && typeof marker.contextWindow === 'object') ? marker.contextWindow : {};
-    const cfg = kimiThresholds(cw);
-    const id = ev.session_id, all = readJson(join(root, STATE)) || {};
+    const cfg = kimiThresholds(cw), id = ev.session_id;
+    let locked = false;
+    try { releaseState = acquireStateLock(root); locked = Boolean(releaseState); } catch { /* compute from the last durable state; do not write without the lock */ }
+    const all = readJson(join(root, STATE)) || {};
     const st = all[id] || { said: [], seen: 0 };
     if (typeof ev.model === 'string' && ev.model) st.model = ev.model;
     const evn = ev.hook_event_name;
@@ -669,43 +728,47 @@ if (process.argv[2] === '--kimi') {
     const full = windowOf({ tokens: cw.tokens || configured, seen: Math.max(st.seen || 0, used) });
     const win = kimiCompactionPoint(full, configText);   // the steps count up to Kimi's own compaction (№164, D1)
     const gate = closeGate(ev, used, win, cfg);
-    if (gate) { process.stdout.write(JSON.stringify(gate)); process.exit(0); }
-    let d = null;
-    if (measured > 0 && evn !== 'PreToolUse') {
-      st.seen = Math.max(st.seen || 0, measured);
-      st.said = keptLevels(measured, win, st.said || []);
-      d = decide(measured, win, cfg, st.said);
-      if (d) {
-        d = { ...d, line: d.line.replaceAll('/end-chat-soft', '/skill:end-chat-soft').replaceAll('/end-chat-force', '/skill:end-chat-force')
-          .replace('the window is', `the room before Kimi's own compaction (it compacts at ${win} of ${full} tokens) is`) };
-        st.said = [...new Set([...st.said, ...d.levels])];
+    if (gate) process.stdout.write(JSON.stringify(gate));
+    else {
+      let d = null;
+      if (measured > 0 && evn !== 'PreToolUse') {
+        st.seen = Math.max(st.seen || 0, measured);
+        st.said = keptLevels(measured, win, st.said || []);
+        d = decide(measured, win, cfg, st.said);
+        if (d) {
+          d = { ...d, line: d.line.replaceAll('/end-chat-soft', '/skill:end-chat-soft').replaceAll('/end-chat-force', '/skill:end-chat-force')
+            .replace('the window is', `the room before Kimi's own compaction (it compacts at ${win} of ${full} tokens) is`) };
+          st.said = [...new Set([...st.said, ...d.levels])];
+        }
       }
+      const required = closureRequirement(used, win, cfg), closing = closingCall(ev);
+      if (closing && (!required || closureSatisfied(required, closing.kind))) { st.closing = closing.kind; delete st.pending; }
+      const demand = required && !closureSatisfied(required, st.closing) ? closureDemand(required, used, win, cfg) : '';
+      const forceRestriction = st.closing === 'force' && evn === 'PreToolUse' && !closing && !forceClosureTool(ev);
+      // Delivery (researches/50 §6): Kimi gives the model a hook's text on UserPromptSubmit only, and a PreToolUse or Stop block carries its
+      // reason into the context; PostToolUse, PostCompact and a Stop that does not block reach nobody. A step found there waits as `pending`.
+      // Above a closing level the refusal is NOT one-time (bugs/150): every ordinary call gets it until the closing skill is entered.
+      const stopBlocks = evn === 'Stop' && (demand || (d && (d.kind === 'close' || d.kind === 'force')));
+      if (d && evn !== 'UserPromptSubmit' && !stopBlocks && !demand) st.pending = d.line;
+      if (stopBlocks || (d && evn === 'UserPromptSubmit') || demand) delete st.pending;
+      let say = evn === 'UserPromptSubmit' ? demand || (d ? d.line : '') : '';
+      let block = evn === 'Stop' ? demand || (stopBlocks ? d.line : '') : '';
+      if (!d && !demand && st.pending && evn === 'UserPromptSubmit') { say = st.pending; delete st.pending; }
+      if (forceRestriction) block = FORCE_WORK_REFUSAL;
+      else if (demand && evn === 'PreToolUse') block = demand;
+      else if (!d && st.pending && evn === 'PreToolUse') { block = `${st.pending} (KAIF delivered this before your tool call; the call was not run — repeat it after you have read this.)`; delete st.pending; }
+      all[id] = { ...st, at: new Date().toISOString() };
+      const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
+      const kept = {}; for (const k of ids) kept[k] = all[k];
+      if (locked) {
+        try { writeContextState(root, kept); } catch { /* persistence must not swallow a computed refusal */ }
+      }
+      if (block) { console.error(block); kimiExit = 2; }
+      if (say) process.stdout.write(say);
     }
-    const required = closureRequirement(used, win, cfg), closing = closingCall(ev);
-    if (closing && (!required || closureSatisfied(required, closing.kind))) { st.closing = closing.kind; delete st.pending; }
-    const demand = required && !closureSatisfied(required, st.closing) ? closureDemand(required, used, win, cfg) : '';
-    const forceRestriction = st.closing === 'force' && evn === 'PreToolUse' && !closing && !forceClosureTool(ev);
-    // Delivery (researches/50 §6): Kimi gives the model a hook's text on UserPromptSubmit only, and a PreToolUse or Stop block carries its
-    // reason into the context; PostToolUse, PostCompact and a Stop that does not block reach nobody. A step found there waits as `pending`.
-    // Above a closing level the refusal is NOT one-time (bugs/150): every ordinary call gets it until the closing skill is entered.
-    const stopBlocks = evn === 'Stop' && (demand || (d && (d.kind === 'close' || d.kind === 'force')));
-    if (d && evn !== 'UserPromptSubmit' && !stopBlocks && !demand) st.pending = d.line;
-    if (stopBlocks || (d && evn === 'UserPromptSubmit') || demand) delete st.pending;
-    let say = evn === 'UserPromptSubmit' ? demand || (d ? d.line : '') : '';
-    let block = evn === 'Stop' ? demand || (stopBlocks ? d.line : '') : '';
-    if (!d && !demand && st.pending && evn === 'UserPromptSubmit') { say = st.pending; delete st.pending; }
-    if (forceRestriction) block = FORCE_WORK_REFUSAL;
-    else if (demand && evn === 'PreToolUse') block = demand;
-    else if (!d && st.pending && evn === 'PreToolUse') { block = `${st.pending} (KAIF delivered this before your tool call; the call was not run — repeat it after you have read this.)`; delete st.pending; }
-    all[id] = { ...st, at: new Date().toISOString() };
-    const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
-    const kept = {}; for (const k of ids) kept[k] = all[k];
-    const p = join(root, STATE); mkdirSync(dirname(p), { recursive: true });
-    writeFileSync(p + '.tmp', JSON.stringify(kept)); renameSync(p + '.tmp', p);
-    if (block) { console.error(block); process.exit(2); }
-    if (say) process.stdout.write(say);
   } catch { /* a hook never breaks the session */ }
-  process.exit(0);
+  finally { if (releaseState) releaseState(); }
+  process.exit(kimiExit);
 }
 
 try {
@@ -738,8 +801,7 @@ try {
     all[id] = { ...st, at: new Date().toISOString() };
     const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
     const kept = {}; for (const k of ids) kept[k] = all[k];
-    const p = join(root, STATE); mkdirSync(dirname(p), { recursive: true });
-    writeFileSync(p + '.tmp', JSON.stringify(kept)); renameSync(p + '.tmp', p);
+    writeContextState(root, kept);
     if (d) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: ev.hook_event_name, additionalContext: d.line } }));
   }
 } catch { /* a hook never breaks the session */ }
