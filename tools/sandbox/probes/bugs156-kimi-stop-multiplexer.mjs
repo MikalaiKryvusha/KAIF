@@ -3,15 +3,16 @@
 // must return STATUS + testing + context-window reasons together; a later ordinary Stop after only STATUS is resolved must still
 // refuse the unresolved test debt. Usage: node tools/sandbox/probes/bugs156-kimi-stop-multiplexer.mjs [hooks-directory]
 // [NOT-TESTED]
-import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, utimesSync, readdirSync, cpSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync, rmSync, existsSync, utimesSync, cpSync } from 'node:fs';
 import { spawn, spawnSync, execFileSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { tempRoot } from '../../lib/temp-root.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const HOOKS = process.argv[2] ? resolve(process.argv[2]) : join(ROOT, 'framework', 'hooks');
-const P = mkdtempSync(join(tmpdir(), 'kaif-b156-'));
+const P = tempRoot('bugs156-kimi-stop-multiplexer');
 const HOME = join(P, 'kimi-home');
 const sessionIds = ['bugs156-legacy', 'bugs156-multiplexed'];
 let bad = 0;
@@ -98,8 +99,9 @@ try {
   check(false, 'probe completed without an exception', String(error && error.stack || error));
 } finally {
   rmSync(P, { recursive: true, force: true });
-  for (const name of readdirSync(tmpdir())) {
-    if (sessionIds.some((id) => name === `kaif-status-guard-${id}`)) rmSync(join(tmpdir(), name), { force: true });
+  for (const id of sessionIds) {
+    const candidate = join(tmpdir(), `kaif-status-guard-${id}`);
+    if (existsSync(candidate)) rmSync(candidate, { recursive: true, force: true });
   }
 }
 console.log(bad ? `bugs156-kimi-stop-multiplexer: ${bad} BAD` : 'bugs156-kimi-stop-multiplexer: all as named');

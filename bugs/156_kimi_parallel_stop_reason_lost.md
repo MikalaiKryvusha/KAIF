@@ -1,6 +1,6 @@
 # Bug 156 — параллельные Kimi Stop-хуки расходуют one-shot без доставки приказа
 
-**Status:** 🔧 FIXED IN SOURCE — focused hygiene green; live Kimi acceptance and regenerated dist pending
+**Status:** 🔧 SOURCE+DIST DEPLOYED — focused hygiene, s14 multiplexer contract and deployed selftest green; live Kimi Stop continuation pending
 **Version/build:** KAIF 2.10 RC, Kimi 2.7.2 · **When/context:** 2026-11-23 16:34 +03:00
 **Severity:** S2 — написанный код остаётся незапущенным, а тестовый долг молча теряет последнее напоминание
 **Fixing:** эта сессия
@@ -52,6 +52,12 @@ TWINS: `context-window` — поздний blocking Stop producer с собст�
 TWINS: searched `event = "Stop"` в TOML, direct Kimi producer commands, parallel producer launches и JSON Stop arrays — других живых Kimi source sites нет; найдены только старая generated копия в `dist/KAIF-CORE-BUNDLE.md` (намеренно не тронута), legacy hand-merge fixtures в `s14` (проверяют миграцию) и Claude `settings-fragment.json` (намеренно сохранён).
 TWINS-MECH: один fan-out event с несколькими stateful handlers и consumer, доставляющим один результат; проверены формы repeated TOML entries, JSON hook arrays и parallel process launches.
 AFTER-WORK: `lastStop` очищается только в памяти перед Kimi-решением; смерть до save оставляет прежнее disk state, смерть после save, но до aggregate delivery — прежний риск границы процесса. STATUS cooldown, context `said` и farewell memory не менялись; все завершённые exit-2 reasons собираются до выхода multiplexer.
+
+## Deployed evidence — 2026-11-25
+
+- Fresh dist: 196 file blocks and 846 modules, check-framework OK. `install --bundle` added `kimi-stop.mjs`; deployed selftest passes all three contracts. Deployed manifest: 114 files + 38 agent artifacts, `pnpm lint` 0.
+- s14 confirms exactly one Stop multiplexer and simultaneous reasons with separate StopFailure. `update-verify` passed after merge/pointer/review/wire/recheck/judge/field-report checkpoints. Field report: https://github.com/MikalaiKryvusha/KAIF/issues/205.
+- `npm run test:core` remains red on one unrelated S9 #146 assertion and two context-window cases; no live owner Stop continuation was run. Local License intentionally retains the monorepo/extension split rather than the upstream MIT-only line.
 
 ## Decisions made without the owner
 

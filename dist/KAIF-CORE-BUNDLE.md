@@ -9,7 +9,7 @@
   "version": "2.10",
   "released": "2026-11-22",
   "build": {
-    "sourceTree": "a8297ab35775eb2c4e07248591a9a9e2bb5fd3264b5c9ac5e977da2414f008b5",
+    "sourceTree": "40a046eebf68b9ab2037cfb6b28730aafa925b9c3d126ca6b606a0f89ebc89a2",
     "prerelease": null
   },
   "templateNotes": [
@@ -428,6 +428,7 @@
     ".kaif/hooks/kimi-config-fragment.toml": "framework/hooks/kimi-config-fragment.toml",
     ".kaif/hooks/kimi-hook.mjs": "framework/hooks/kimi-hook.mjs",
     ".kaif/hooks/kimi-permission-call.mjs": "framework/hooks/kimi-permission-call.mjs",
+    ".kaif/hooks/kimi-stop.mjs": "framework/hooks/kimi-stop.mjs",
     ".kaif/hooks/knowledge-moment.mjs": "framework/hooks/knowledge-moment.mjs",
     ".kaif/hooks/prompt-refresh-timer.mjs": "framework/hooks/prompt-refresh-timer.mjs",
     ".kaif/hooks/prompt-resume-word.mjs": "framework/hooks/prompt-resume-word.mjs",
@@ -20523,7 +20524,10 @@ process.exit(0);
 // measured share; the agent keeps working. Origin: the source's session 100 closed «by the window» at 53 % by feeling, and a field deployment
 // carried the same gate after closing at 68 % «by the feeling of the limit» (its owner: you closed the chat too early again — fix the hook);
 // nothing to measure (no transcript, no usage) — the gate does not block. The Claude branch never stops a turn otherwise; Kimi's repeated
-// closure refusal is the named exception above. Any internal error → exit 0 silently. Lines are English: the agent reads them.
+// closure refusal is the named exception above. Unrelated internal errors → exit 0 silently; a computed closure refusal still goes out if state
+// persistence fails. Lines are English: the agent reads them.
+// [TESTED: 2026-11-23 · bugs/153,154,155,158 hygiene — focused selftests/probes and K8–K10 mutants; live current-session --measure printed tokens;
+//  evidence in the four bug docs. Live overlapping Kimi delivery and post-force shell execution were not run]
 // [TESTED: 2026-11-22 · bugs/150 hygiene only — closureRequirement boundaries, repeated PreToolUse, closure entry, owner-prompt re-arm,
 //  PostCompact reset, forced level; mutants K4/K5 red on exactly their cases; deployed hook green in s14. Live refill after the fix: NOT observed]
 // [TESTED: 2026-11-17 · the gate, `--measure` and `--alive` — hygiene: --selftest all ok, mutants G1–G6 of tools/sandbox/probes/gate-close-mutant.mjs
@@ -20629,7 +20633,7 @@ export function lastKimiContext(text) {
     if (!/token_counting\.measured|usage\.record|context\.apply_compaction/.test(lines[i])) continue;
     try {
       const r = JSON.parse(lines[i]);
-      if (r.agentId !== 'main') continue;
+      if (r.agentId !== undefined && r.agentId !== 'main') continue;
       if (r.type === 'context.apply_compaction') return null;
       if (r.type === 'token_counting.measured' && Number(r.tokens) > 0) return { used: Number(r.tokens), model: '' };
       if (r.type === 'usage.record' && kimiUsedOf(r.usage) > 0) return { used: kimiUsedOf(r.usage), model: String(r.model || '') };
@@ -20664,7 +20668,7 @@ export function latestKimiSession(root, home = process.env.KIMI_CODE_HOME || joi
     for (const workdir of readdirSync(base)) {
       for (const id of readdirSync(join(base, workdir))) {
         const dir = join(base, workdir, id), wire = join(dir, 'agents', 'main', 'wire.jsonl'), state = readJson(join(dir, 'state.json'));
-        if (!state || !state.cwd || !same(state.cwd, root) || !existsSync(wire)) continue;
+        if (!state || !state.cwd || !same(projectRoot(state.cwd), root) || !existsSync(wire)) continue;
         const mtimeMs = statSync(wire).mtimeMs;
         if (!found || mtimeMs > found.mtimeMs || (mtimeMs === found.mtimeMs && id > found.id)) found = { id, path: wire, mtimeMs };
       }
@@ -20777,9 +20781,10 @@ export function forceClosureTool(ev) {
     return FORCE_FILES.has(basename(String(input.path || '').replaceAll('\\', '/')).toLowerCase());
   }
   if (ev.tool_name !== 'Bash') return false;
-  const command = String(input.command || '').trim();
-  if (!command || /[;&|]/.test(command)) return false;
-  return /^(?:git\s+(?:status|diff|log|add|commit|push)(?:\s|$)|node\s+tools\/commit\.mjs(?:\s|$)|date(?:\s|$))/.test(command);
+  const raw = String(input.command || '');
+  if (!raw.trim() || /[\x00-\x1F\x7F;&|`$<>]/.test(raw)) return false;
+  const command = raw.trim();
+  return /^(?:git status(?: --short)?|git diff(?: --cached)?(?: --stat)?|git log(?: --oneline -[1-9]\d*)?|git (?:add|commit|push)(?: .+)?|git pull --rebase|node tools\/commit\.mjs(?: .+)?|date(?: .+)?)$/.test(command);
 }
 export const FORCE_WORK_REFUSAL = 'KAIF force closure: only STATUS.md, FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md, date and the git/commit commands of the handover are allowed. Ordinary work is refused; finish /skill:end-chat-force now.';
 export function closureDemand(kind, used, win, cfg = {}) {
@@ -20843,6 +20848,34 @@ function tailOf(p) {
     readSync(fd, buf, 0, n, size - n);
     return buf.toString('utf8');
   } finally { closeSync(fd); }
+}
+// bugs/155: mkdir is the cross-process mutex; each writer owns a pid-unique temp. A stale lock cannot disable refusals:
+// its owner falls back to an unsaved decision, and the caller still emits any computed denial.
+// [TESTED: 2026-11-23 · hygiene only — direct-event overlap/persistence/retention probe, evidence bugs/155; live Kimi overlap not observed]
+const STATE_LOCK_TIMEOUT = 2000, STATE_LOCK_STALE = 10000, STATE_LOCK_POLL = 20;
+function acquireStateLock(root) {
+  const lock = join(root, STATE) + '.lock';
+  mkdirSync(dirname(lock), { recursive: true });
+  const until = Date.now() + STATE_LOCK_TIMEOUT;
+  while (Date.now() < until) {
+    try {
+      mkdirSync(lock);
+      return () => { try { rmSync(lock, { recursive: true, force: true }); } catch { /* another cleanup already removed it */ } };
+    } catch (error) {
+      if (error.code !== 'EEXIST') throw error;
+      try {
+        if (Date.now() - statSync(lock).mtimeMs > STATE_LOCK_STALE) rmSync(lock, { recursive: true, force: true });
+      } catch { /* the owner released it, or another waiter is collecting it */ }
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, STATE_LOCK_POLL);
+    }
+  }
+  return null;
+}
+function writeContextState(root, kept) {
+  const p = join(root, STATE), tmp = `${p}.${process.pid}.tmp`;
+  mkdirSync(dirname(p), { recursive: true });
+  try { writeFileSync(tmp, JSON.stringify(kept)); renameSync(tmp, p); }
+  finally { try { rmSync(tmp, { force: true }); } catch { /* a failed rename leaves nothing durable to clean */ } }
 }
 
 if (process.argv[2] === '--selftest') {
@@ -20953,6 +20986,28 @@ if (process.argv[2] === '--selftest') {
     const lu = lastKimiContext([usage, measured].join('\n'));
     ok(lu && lu.used === 891655 && lastKimiContext([usage, measured, compacted].join('\n')) === null,
       'Kimi: token_counting.measured wins; records before a compaction are stale');
+    // bugs/153: both real main-wire shapes occur in the field; an explicit non-main id is still rejected.
+    const newUsage = JSON.stringify({ type: 'usage.record', model: 'kimi-code/k3.1-pro', usage: { inputOther: 5486, inputCacheRead: 633066, inputCacheCreation: 0 } });
+    const newMeasured = JSON.stringify({ type: 'token_counting.measured', tokens: 638552 });
+    const nonMain = JSON.stringify({ type: 'token_counting.measured', agentId: 'agent-7', tokens: 999999 });
+    const newCompacted = JSON.stringify({ type: 'context.apply_compaction', tokensAfter: 23531 });
+    const oldShape = lastKimiContext([usage, measured].join('\n')), newShape = lastKimiContext([newUsage, newMeasured, nonMain].join('\n'));
+    ok(oldShape && oldShape.used === 891655 && newShape && newShape.used === 638552
+      && lastKimiContext([newUsage, newMeasured, newCompacted].join('\n')) === null,
+      'Kimi main-wire shapes (bugs/153): old agentId=main and new absent id count; explicit non-main is skipped and absent-id compaction invalidates');
+    // bugs/154: the post-force shell contour accepts whole handover commands only, including its prescribed rebase recovery.
+    const forceBash = (command) => forceClosureTool({ hook_event_name: 'PreToolUse', tool_name: 'Bash', tool_input: { command } });
+    const forceAllowed = ['git status', 'git status --short', 'git diff --cached --stat', 'git log --oneline -1',
+      'git add STATUS.md', 'git commit -m "wip: handover"', 'git push', 'node tools/commit.mjs "wip: handover"',
+      "date '+%Y-%m-%d %H:%M %z'", 'git pull --rebase'];
+    const forceDenied = ['git status --short\nnode tools/build-framework.mjs', 'git status --short\rgit push',
+      'git status --short-extra', 'git status --short && git push', 'git status --short$(node tools/build-framework.mjs)',
+      'git status --short`node tools/build-framework.mjs`', 'git pull', 'git pull --rebase --autostash', 'git merge main',
+      'node tools/build-framework.mjs', 'node tools/commit.mjs.evil', 'git push origin main\nnode tools/build-framework.mjs',
+      'git status --short\n', '\ngit status --short', 'git status --short\r', '\tgit status', 'git status\u0000 --short'];
+    ok(forceAllowed.every(forceBash), 'post-force Bash handover (bugs/154): complete existing commands and exact git pull --rebase pass');
+    ok(forceDenied.every((command) => !forceBash(command)),
+      'post-force Bash refusals (bugs/154): CR/LF/control syntax, prefix suffixes, generic pull/merge/build and substitutions fail');
 
     // Kimi's own compaction point (№164, D1): 0.85 · window or window − 50 000, whichever is lower; [loop_control] moves it
     ok(kimiCompactionPoint(1048576, '') === 891289 && kimiCompactionPoint(262144, '') === 212144
@@ -21036,12 +21091,14 @@ if (process.argv[2] === '--selftest') {
       const statusRead = run('PreToolUse', { tool_name: 'Read', tool_input: { path: 'STATUS.md' }, usage: forceUsage, session_id: 'session_force' });
       const ordinaryRead = run('PreToolUse', { tool_name: 'Read', tool_input: { path: 'README.md' }, usage: forceUsage, session_id: 'session_force' });
       const gitStatus = run('PreToolUse', { tool_name: 'Bash', tool_input: { command: 'git status --short' }, usage: forceUsage, session_id: 'session_force' });
+      const rebase = run('PreToolUse', { tool_name: 'Bash', tool_input: { command: 'git pull --rebase' }, usage: forceUsage, session_id: 'session_force' });
+      const multiline = run('PreToolUse', { tool_name: 'Bash', tool_input: { command: 'git status --short\nnode tools/build-framework.mjs' }, usage: forceUsage, session_id: 'session_force' });
       const build = run('PreToolUse', { tool_name: 'Bash', tool_input: { command: 'node tools/build-framework.mjs' }, usage: forceUsage, session_id: 'session_force' });
       ok(forceStop.status === 2 && /\/skill:end-chat-force/.test(forceStop.stderr) && forcePre.status === 2 && forceEnter.status === 0,
         'Kimi closure latch at 92 %: Stop and ordinary work require end-chat-force; entering it passes');
-      ok(statusRead.status === 0 && gitStatus.status === 0 && ordinaryRead.status === 2 && build.status === 2
+      ok(statusRead.status === 0 && gitStatus.status === 0 && rebase.status === 0 && ordinaryRead.status === 2 && multiline.status === 2 && build.status === 2
         && /only STATUS\.md/.test(ordinaryRead.stderr) && /Ordinary work is refused/.test(build.stderr),
-        'Kimi post-force contour: STATUS and git handover pass; README and build are refused');
+        'Kimi post-force contour: STATUS, git handover and exact rebase pass; README, multiline shell and build are refused');
     } finally { rmSync(dir, { recursive: true, force: true }); }
   }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
@@ -21131,6 +21188,7 @@ if (process.argv[2] === '--measure') {
   process.exit(m.may ? 0 : 1);
 }
 
+let releaseState = null, kimiExit = 0;
 if (process.argv[2] === '--kimi') {
   try {
     const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
@@ -21139,8 +21197,10 @@ if (process.argv[2] === '--kimi') {
     if (!existsSync(join(root, DEPLOYMENT))) process.exit(0);
     const marker = readJson(join(root, DEPLOYMENT)) || {};
     const cw = (marker.contextWindow && typeof marker.contextWindow === 'object') ? marker.contextWindow : {};
-    const cfg = kimiThresholds(cw);
-    const id = ev.session_id, all = readJson(join(root, STATE)) || {};
+    const cfg = kimiThresholds(cw), id = ev.session_id;
+    let locked = false;
+    try { releaseState = acquireStateLock(root); locked = Boolean(releaseState); } catch { /* compute from the last durable state; do not write without the lock */ }
+    const all = readJson(join(root, STATE)) || {};
     const st = all[id] || { said: [], seen: 0 };
     if (typeof ev.model === 'string' && ev.model) st.model = ev.model;
     const evn = ev.hook_event_name;
@@ -21160,43 +21220,47 @@ if (process.argv[2] === '--kimi') {
     const full = windowOf({ tokens: cw.tokens || configured, seen: Math.max(st.seen || 0, used) });
     const win = kimiCompactionPoint(full, configText);   // the steps count up to Kimi's own compaction (№164, D1)
     const gate = closeGate(ev, used, win, cfg);
-    if (gate) { process.stdout.write(JSON.stringify(gate)); process.exit(0); }
-    let d = null;
-    if (measured > 0 && evn !== 'PreToolUse') {
-      st.seen = Math.max(st.seen || 0, measured);
-      st.said = keptLevels(measured, win, st.said || []);
-      d = decide(measured, win, cfg, st.said);
-      if (d) {
-        d = { ...d, line: d.line.replaceAll('/end-chat-soft', '/skill:end-chat-soft').replaceAll('/end-chat-force', '/skill:end-chat-force')
-          .replace('the window is', `the room before Kimi's own compaction (it compacts at ${win} of ${full} tokens) is`) };
-        st.said = [...new Set([...st.said, ...d.levels])];
+    if (gate) process.stdout.write(JSON.stringify(gate));
+    else {
+      let d = null;
+      if (measured > 0 && evn !== 'PreToolUse') {
+        st.seen = Math.max(st.seen || 0, measured);
+        st.said = keptLevels(measured, win, st.said || []);
+        d = decide(measured, win, cfg, st.said);
+        if (d) {
+          d = { ...d, line: d.line.replaceAll('/end-chat-soft', '/skill:end-chat-soft').replaceAll('/end-chat-force', '/skill:end-chat-force')
+            .replace('the window is', `the room before Kimi's own compaction (it compacts at ${win} of ${full} tokens) is`) };
+          st.said = [...new Set([...st.said, ...d.levels])];
+        }
       }
+      const required = closureRequirement(used, win, cfg), closing = closingCall(ev);
+      if (closing && (!required || closureSatisfied(required, closing.kind))) { st.closing = closing.kind; delete st.pending; }
+      const demand = required && !closureSatisfied(required, st.closing) ? closureDemand(required, used, win, cfg) : '';
+      const forceRestriction = st.closing === 'force' && evn === 'PreToolUse' && !closing && !forceClosureTool(ev);
+      // Delivery (researches/50 §6): Kimi gives the model a hook's text on UserPromptSubmit only, and a PreToolUse or Stop block carries its
+      // reason into the context; PostToolUse, PostCompact and a Stop that does not block reach nobody. A step found there waits as `pending`.
+      // Above a closing level the refusal is NOT one-time (bugs/150): every ordinary call gets it until the closing skill is entered.
+      const stopBlocks = evn === 'Stop' && (demand || (d && (d.kind === 'close' || d.kind === 'force')));
+      if (d && evn !== 'UserPromptSubmit' && !stopBlocks && !demand) st.pending = d.line;
+      if (stopBlocks || (d && evn === 'UserPromptSubmit') || demand) delete st.pending;
+      let say = evn === 'UserPromptSubmit' ? demand || (d ? d.line : '') : '';
+      let block = evn === 'Stop' ? demand || (stopBlocks ? d.line : '') : '';
+      if (!d && !demand && st.pending && evn === 'UserPromptSubmit') { say = st.pending; delete st.pending; }
+      if (forceRestriction) block = FORCE_WORK_REFUSAL;
+      else if (demand && evn === 'PreToolUse') block = demand;
+      else if (!d && st.pending && evn === 'PreToolUse') { block = `${st.pending} (KAIF delivered this before your tool call; the call was not run — repeat it after you have read this.)`; delete st.pending; }
+      all[id] = { ...st, at: new Date().toISOString() };
+      const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
+      const kept = {}; for (const k of ids) kept[k] = all[k];
+      if (locked) {
+        try { writeContextState(root, kept); } catch { /* persistence must not swallow a computed refusal */ }
+      }
+      if (block) { console.error(block); kimiExit = 2; }
+      if (say) process.stdout.write(say);
     }
-    const required = closureRequirement(used, win, cfg), closing = closingCall(ev);
-    if (closing && (!required || closureSatisfied(required, closing.kind))) { st.closing = closing.kind; delete st.pending; }
-    const demand = required && !closureSatisfied(required, st.closing) ? closureDemand(required, used, win, cfg) : '';
-    const forceRestriction = st.closing === 'force' && evn === 'PreToolUse' && !closing && !forceClosureTool(ev);
-    // Delivery (researches/50 §6): Kimi gives the model a hook's text on UserPromptSubmit only, and a PreToolUse or Stop block carries its
-    // reason into the context; PostToolUse, PostCompact and a Stop that does not block reach nobody. A step found there waits as `pending`.
-    // Above a closing level the refusal is NOT one-time (bugs/150): every ordinary call gets it until the closing skill is entered.
-    const stopBlocks = evn === 'Stop' && (demand || (d && (d.kind === 'close' || d.kind === 'force')));
-    if (d && evn !== 'UserPromptSubmit' && !stopBlocks && !demand) st.pending = d.line;
-    if (stopBlocks || (d && evn === 'UserPromptSubmit') || demand) delete st.pending;
-    let say = evn === 'UserPromptSubmit' ? demand || (d ? d.line : '') : '';
-    let block = evn === 'Stop' ? demand || (stopBlocks ? d.line : '') : '';
-    if (!d && !demand && st.pending && evn === 'UserPromptSubmit') { say = st.pending; delete st.pending; }
-    if (forceRestriction) block = FORCE_WORK_REFUSAL;
-    else if (demand && evn === 'PreToolUse') block = demand;
-    else if (!d && st.pending && evn === 'PreToolUse') { block = `${st.pending} (KAIF delivered this before your tool call; the call was not run — repeat it after you have read this.)`; delete st.pending; }
-    all[id] = { ...st, at: new Date().toISOString() };
-    const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
-    const kept = {}; for (const k of ids) kept[k] = all[k];
-    const p = join(root, STATE); mkdirSync(dirname(p), { recursive: true });
-    writeFileSync(p + '.tmp', JSON.stringify(kept)); renameSync(p + '.tmp', p);
-    if (block) { console.error(block); process.exit(2); }
-    if (say) process.stdout.write(say);
   } catch { /* a hook never breaks the session */ }
-  process.exit(0);
+  finally { if (releaseState) releaseState(); }
+  process.exit(kimiExit);
 }
 
 try {
@@ -21229,8 +21293,7 @@ try {
     all[id] = { ...st, at: new Date().toISOString() };
     const ids = Object.keys(all).sort((a, b) => String(all[b].at).localeCompare(String(all[a].at))).slice(0, SESSIONS_KEPT);
     const kept = {}; for (const k of ids) kept[k] = all[k];
-    const p = join(root, STATE); mkdirSync(dirname(p), { recursive: true });
-    writeFileSync(p + '.tmp', JSON.stringify(kept)); renameSync(p + '.tmp', p);
+    writeContextState(root, kept);
     if (d) process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: ev.hook_event_name, additionalContext: d.line } }));
   }
 } catch { /* a hook never breaks the session */ }
@@ -21325,30 +21388,17 @@ event = "PostToolUseFailure"
 command = "node .kaif/hooks/knowledge-moment.mjs --kimi"
 timeout = 5
 
+# ONE sequential Stop entry: Kimi otherwise runs these producers in parallel and delivers only the first exit-2 reason in config order.
+# The multiplexer runs STATUS → farewell → testing → context-window with the same event and returns every block reason together (bugs/156).
 [[hooks]]
 event = "Stop"
-command = "node .kaif/hooks/stop-status-guard.mjs --kimi"
-timeout = 10
-
-[[hooks]]
-event = "Stop"
-command = "node .kaif/hooks/stop-farewell-capture.mjs --kimi"
-timeout = 10
+command = "node .kaif/hooks/kimi-stop.mjs --kimi"
+timeout = 40
 
 # A turn that dies of a provider error (the 5-hour quota) runs no closing ritual: the farewell file names the error and the last words.
 [[hooks]]
 event = "StopFailure"
 command = "node .kaif/hooks/stop-farewell-capture.mjs --kimi"
-timeout = 10
-
-[[hooks]]
-event = "Stop"
-command = "node .kaif/hooks/test-after-code.mjs --kimi"
-timeout = 10
-
-[[hooks]]
-event = "Stop"
-command = "node .kaif/hooks/context-window.mjs --kimi"
 timeout = 10
 
 [[hooks]]
@@ -21571,6 +21621,97 @@ function main() {
 if (process.argv.includes('--selftest')) process.exit(selftest());
 else {
   try { main(); } catch { /* Kimi hooks fail open: a voice failure never blocks permission. */ }
+}
+``````
+
+> **FILE: `.kaif/hooks/kimi-stop.mjs`** — refresh-hooks module — verbatim; wired by the install/update task (`kaif-core wire-hooks`, Claude Code), "hooks": "off" opts out (.kaif/hooks/README.md)
+
+``````js
+#!/usr/bin/env node
+// kimi-stop.mjs — Kimi's ONE Stop entry: run the project's Stop handlers sequentially, with the same event, and aggregate every exit-2
+// reason into the single continuation Kimi delivers. Kimi runs matching hooks in parallel and chooses only the first block in config order;
+// independent producers therefore consumed one-shot state for reasons the agent never saw (bugs/156). Claude keeps its own wiring unchanged.
+// Order is the former fragment order: STATUS, farewell observation, testing debt, context window. StopFailure remains a separate farewell entry.
+// Kimi permits only one Stop continuation per agent turn (researches/50 §14): unresolved debt may block a later ordinary Stop again without
+// creating an infinite continuation loop. Any missing/failed handler fails open, as the dispatcher and the individual hooks do.
+// [NOT-TESTED]
+import { spawnSync } from 'node:child_process';
+import { readFileSync, writeFileSync, mkdtempSync, mkdirSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { projectRoot, scriptOf } from './kimi-hook.mjs';
+
+export const STOP_HANDLERS = ['stop-status-guard.mjs', 'stop-farewell-capture.mjs', 'test-after-code.mjs', 'context-window.mjs'];
+
+export function runStop(raw, root) {
+  const reasons = [];
+  let stdout = '', stderr = '';
+  for (const name of STOP_HANDLERS) {
+    const script = scriptOf(root, name);
+    if (!script) continue;                 // an older project may not carry a newer optional handler
+    const r = spawnSync(process.execPath, [script, '--kimi'], { input: raw, cwd: root, encoding: 'utf8' });
+    stdout += r.stdout || '';
+    if (r.status === 2) {
+      const reason = String(r.stderr || '').trim();
+      if (reason) reasons.push(reason);
+    } else stderr += r.stderr || '';       // fail-open diagnostics stay visible; only exit 2 is a block
+  }
+  return { code: reasons.length ? 2 : 0, stdout, stderr: reasons.length ? reasons.join('\n\n') + '\n' : stderr };
+}
+
+function dispatch() {
+  const raw = readFileSync(0);
+  let event = {};
+  try { event = JSON.parse(raw.toString('utf8').replace(/^\uFEFF/, '') || '{}'); } catch { /* the handlers fail open on bad input too */ }
+  const root = projectRoot(typeof event.cwd === 'string' && event.cwd ? event.cwd : process.cwd());
+  if (!root) return 0;
+  const r = runStop(raw, root);
+  if (r.stdout) process.stdout.write(r.stdout);
+  if (r.stderr) process.stderr.write(r.stderr);
+  return r.code;
+}
+
+function selftest() {
+  let bad = 0;
+  const ok = (condition, name, detail = '') => { console.log(`${condition ? 'v' : 'x'} ${name}${condition || !detail ? '' : ' — ' + detail}`); if (!condition) bad++; };
+  const tmp = mkdtempSync(join(tmpdir(), 'kaif-kimi-stop-'));
+  const self = fileURLToPath(import.meta.url);
+  try {
+    const root = join(tmp, 'project'), hooks = join(root, '.kaif', 'hooks'), log = join(tmp, 'calls.jsonl');
+    mkdirSync(hooks, { recursive: true });
+    writeFileSync(join(root, '.kaif', 'kaif.json'), '{}');
+    const handler = (name, reason = '') => {
+      const seen = join(tmp, `${name}-seen`);
+      writeFileSync(seen, '0');
+      return `import { readFileSync, writeFileSync, appendFileSync } from 'node:fs';\n` +
+        `const raw = readFileSync(0, 'utf8'); appendFileSync(${JSON.stringify(log)}, JSON.stringify({ name: ${JSON.stringify(name)}, event: JSON.parse(raw) }) + '\\n');\n` +
+        (reason ? `const seen = ${JSON.stringify(seen)}; const n = Number(readFileSync(seen, 'utf8') || 0); writeFileSync(seen, String(n + 1));\n` +
+          `if (!n) { process.stderr.write(${JSON.stringify(reason)}); process.exit(2); }\n` : '');
+    };
+    writeFileSync(join(hooks, 'stop-status-guard.mjs'), handler('status', 'STATUS reason'));
+    writeFileSync(join(hooks, 'stop-farewell-capture.mjs'), handler('farewell'));
+    writeFileSync(join(hooks, 'test-after-code.mjs'), handler('testing', 'TESTING reason'));
+    writeFileSync(join(hooks, 'context-window.mjs'), handler('window', 'WINDOW reason'));
+    const event = { hook_event_name: 'Stop', session_id: 'kimi-stop-selftest', cwd: root, usage: { inputOther: 7 } };
+    const run = () => spawnSync(process.execPath, [self, '--kimi'], { input: JSON.stringify(event), cwd: root, encoding: 'utf8', timeout: 30000 });
+    let r = run();
+    const calls = () => readFileSync(log, 'utf8').trim().split('\n').filter(Boolean).map((l) => JSON.parse(l));
+    const first = calls();
+    ok(r.status === 2 && r.stderr === 'STATUS reason\n\nTESTING reason\n\nWINDOW reason\n', 'all exit-2 reasons aggregate in deterministic order with one exit 2', JSON.stringify(r));
+    ok(JSON.stringify(first.map((c) => c.name)) === JSON.stringify(['status', 'farewell', 'testing', 'window'])
+      && first.every((c) => JSON.stringify(c.event) === JSON.stringify(event)), 'every handler runs once, sequentially, with the identical event; observation-only farewell is not skipped', JSON.stringify(first));
+    r = run();
+    const second = calls().slice(4);
+    ok(r.status === 0 && r.stderr === '' && second.length === 4 && second.filter((c) => c.name === 'farewell').length === 1,
+      'a replay whose one-shot blocks are spent is silent; observation-only farewell runs exactly once again', JSON.stringify({ r, second }));
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
+  console.log(bad ? `x ${bad} case(s) failed` : 'v kimi-stop selftest: all ok');
+  return bad ? 1 : 0;
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  process.exitCode = process.argv[2] === '--selftest' ? selftest() : dispatch();
 }
 ``````
 
@@ -23269,15 +23410,17 @@ process.exit(0);
 // refresh-hooks module, deployed to .kaif/hooks/). Claude Code events: PostToolUse (writes · shell) · Stop.
 //
 // What it does: every write of a file that changes the product the user runs becomes a TEST DEBT; only a RUN of its own kind clears it;
-// the stop of a turn with debt is refused ONCE with the order and the list (a repeated stop with nothing new written passes — no endless
-// loop, in this turn or a later one; the debt stays — in `--status` and in the line of the next write). Two field deployments of one owner converged on this shape (recon — origin researches/43);
+// the stop of a turn with debt is refused ONCE per debt signature under Claude (a repeated stop with nothing new written passes — no endless
+// loop, in this turn or a later one; the debt stays — in `--status` and in the line of the next write). Under Kimi an ordinary later Stop
+// repeats unresolved debt: Kimi's own engine already suppresses the second Stop of one continuation (bugs/156, researches/50 §14).
+// Two field deployments of one owner converged on this shape (recon — origin researches/43);
 // the owner's word there, rendered: «the agent wrote code → the hook ORDERS it tested» · «the agent does not ask the owner's permission».
 //   PostToolUse Write · Edit · MultiEdit · NotebookEdit of a product file → the file enters the debt {path: {kind, at}}; the first entry
 //     after a clean debt carries the full order (the steps of TESTING_FRAMEWORK.md), later ones a short line with the count;
 //   PostToolUse Bash · PowerShell → a command that is a RUN of a kind clears that kind's debt; hygiene (`--check`, `--help`, `--version`,
 //     `py_compile`, `compileall`, a linter, a build) never clears; the body of a heredoc is data, never a command (field: a test case
 //     appended by heredoc named the game launcher and cleared the debt); a deploy command is debt of its own kind;
-//   Stop with debt → {"decision":"block","reason": …} once per debt signature; the same signature again — in this turn or a later one → silence.
+//   Claude Stop with debt → {"decision":"block","reason": …} once per debt signature; the same signature again — in this turn or a later one → silence.
 //   A RUN of the default kind: an interpreter in the command and the file as the first word after its flags; the file's name elsewhere
 //   (`git add`, `cat`, `grep`, a commit tool's `--only`) is not a run.
 // Kinds and patterns are the PROJECT's data (`.kaif/kaif.json` → `testHook`, shape below); the mechanism is the framework's. Without data
@@ -23407,12 +23550,15 @@ export function runsFile(cmd, rel) {
 const listOf = (debt) => { const ks = Object.keys(debt); return ks.slice(0, LIST_MAX).join(', ') + (ks.length > LIST_MAX ? ` and ${ks.length - LIST_MAX} more` : ''); };
 const signature = (debt) => { const ks = Object.keys(debt).sort(); return ks.join('|') + '@' + ks.map((k) => debt[k].at).sort().pop(); };
 
-// The decision — (event, state, root, rules, now) → { out | null, state }; pure apart from the clock passed in
-export function handle(ev, st, root, rules, now) {
+// The decision — (event, state, root, rules, now, options) → { out | null, state }; pure apart from the clock passed in.
+// Claude suppresses a repeated debt signature. Kimi instead suppresses the SECOND Stop of the same continuation in its engine, so its
+// next ordinary Stop must still deliver an unresolved debt (bugs/156); `options.kimi` selects that engine contract.
+export function handle(ev, st, root, rules, now, { kimi = false } = {}) {
   const s = { debt: { ...((st && st.debt) || {}) }, waivers: [...((st && st.waivers) || [])], lastStop: (st && st.lastStop) || '' };
   const name = String(ev.hook_event_name || ''), tool = String(ev.tool_name || '');
   if (name === 'Stop') {
     if (!Object.keys(s.debt).length) { s.lastStop = ''; return { out: null, state: s }; }
+    if (kimi) s.lastStop = ''; // a later ORDINARY Kimi Stop repeats the debt; Kimi's engine suppresses only the continuation replay
     const sig = signature(s.debt);
     // asked already for this very debt — in this turn or an earlier one — and nothing new written: pass (criterion 28 «a repeated stop
     // with nothing new written passes»; a turn that only answers the owner is not refused again by an old debt — light judge, session 98)
@@ -23516,6 +23662,7 @@ if (argv[0] === '--selftest') {
     ok(s.debt['src/app.mjs'], 'a continued line (`\\` · PowerShell backtick) is ONE segment: «node src/app.mjs ⏎ --help» is --help, not a run (light judge, s98)');
     s = session(D); s.edit('src/app.mjs'); s.stop(false);
     ok(s.stop(false) === null && s.debt['src/app.mjs'], 'a later turn with the same debt is not refused again (once per debt signature); the debt stays');
+    // The Kimi later-ordinary-Stop case lives in bugs156-kimi-stop-multiplexer.mjs with the real multiplexer and all producers.
     s = session(D);
     ok(s.stop(false) === null, 'no debt → the stop passes');
     s = session(D); s.edit('src/app.mjs'); s.stop(false); s.stop(true); s.edit('src/app.mjs', T2);
@@ -23556,7 +23703,7 @@ try {
     const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(ev.cwd);
     const kimi = process.argv.includes('--kimi') || process.argv.includes('kimi');
     if (kimi && !existsSync(join(root, DEPLOYMENT))) process.exit(0);
-    const r = handle(ev, load(root), root, rulesOf(configOf(root)), new Date().toISOString());
+    const r = handle(ev, load(root), root, rulesOf(configOf(root)), new Date().toISOString(), { kimi });
     save(root, r.state);
     if (r.out && kimi && r.out.decision === 'block') { console.error(r.out.reason); process.exit(2); }
     if (r.out && !kimi) process.stdout.write(JSON.stringify(r.out));
