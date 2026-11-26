@@ -59,6 +59,14 @@ function projectRoot(cwd) {
   }
 }
 
+function closedSession(root, event) {
+  if (typeof event.session_id !== 'string' || !event.session_id) return false;
+  try {
+    const state = JSON.parse(readFileSync(join(root, '.kaif', 'farewell-capture.json'), 'utf8').replace(/^\uFEFF/, ''));
+    return Array.isArray(state.closedSessionIds) && state.closedSessionIds.includes(event.session_id);
+  } catch { return false; }
+}
+
 // One order string, four envelopes. Keeping this table next to the writer (rather than in a
 // shared lib) keeps the module at three self-contained scripts — a fourth file would have to be
 // registered through the whole delivery circle for six lines of JSON shaping.
@@ -75,9 +83,11 @@ try {
   if (shape === 'kimi') {
     // SessionStart and PostCompact are observation-only in Kimi: carry a pending mark to the next prompt,
     // whose UserPromptSubmit contract can append agent-facing context.
+    // [TESTED: 2026-11-26 · selftest and real closing-wire replay — testcases/reports/2026-11-26_refresh_after_closure.md] farewell-capture.json → closedSessionIds suppresses these automatic events and their pending prompt.
     const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
     const root = projectRoot(ev.cwd || process.cwd());
     if (!existsSync(join(root, DEPLOYMENT))) process.exit(0);
+    if (closedSession(root, ev)) process.exit(0);
     const statePath = join(root, '.kaif', 'kimi-refresh.json');
     if (ev.hook_event_name === 'SessionStart' || ev.hook_event_name === 'PostCompact') {
       mkdirSync(dirname(statePath), { recursive: true });
@@ -96,12 +106,13 @@ try {
   }
 
   let source = '';   // unreadable event or no `source` field → the neutral wording: an unknown event is not a compaction (bug 120)
-  let cwd = process.cwd();
+  let cwd = process.cwd(), input = {};
   try {
     // A leading U+FEFF is dropped before the parse (Windows PowerShell 5.1 puts it in front of any
     // string piped into a native command; RFC 8259 §8.1 lets a parser ignore it). Unstripped, a
     // `clear` event fell back to the default and ordered the WRONG trigger stamp — origin bug 119.
-    const input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
+    const parsed = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
+    input = parsed && typeof parsed === 'object' ? parsed : {};
     if (input.source) source = String(input.source);
     if (input.cwd) cwd = String(input.cwd);
   } catch { /* unreadable stdin — the neutral wording; the order still stands */ }
@@ -109,7 +120,9 @@ try {
   // The words and the trigger value follow the ACTUAL event: a marker stamped "compaction" after a
   // /clear or on a plain session start would misreport why the refresh happened.
   const [happened, trigger] = Object.prototype.hasOwnProperty.call(WORDING, source) ? WORDING[source] : SESSION_START;
-  const markerPath = join(projectRoot(cwd), '.kaif', 'refresh-marker.json');
+  const root = projectRoot(cwd);
+  if (closedSession(root, input)) process.exit(0);
+  const markerPath = join(root, '.kaif', 'refresh-marker.json');
   const order =
     `KAIF context refresh (SessionStart${source ? ':' + source : ''}). ${happened}: ` +
     `what this session now remembers of the canon is a retelling, not the canon. BEFORE task work: ` +

@@ -100,7 +100,7 @@ const MUTANTS = [
   // 2.9, epic HK — the project root, the future stamp, the honest words, the suite judging the truth (ticket #94, bugs 118-120)
   { name: 'M22 timer: the marker read in the event cwd again (ticket #94 — "no refresh witness" after one `cd src`)',
     dest: '.kaif/hooks/prompt-refresh-timer.mjs',
-    fn: (b) => b.replace('const markerPath = join(projectRoot(cwd), MARKER);', 'const markerPath = join(cwd, MARKER);'),
+    fn: (b) => b.replace('const markerPath = join(root, MARKER);', 'const markerPath = join(cwd, MARKER);'),
     // court A-F3 (2.9): the package case reads the root marker too — the same predicate, a lawful red (EXP-0169)
     expect: ['s14 HK таймер: событие из `src/deep`', 's14 HK таймер: из `src/deep` протухший', 's14 HK таймер: приказ называет маркер ПОЛНЫМ путём', 's14 HK корень: пакет со своей `.kaif/`'] },
   // 2.9 court RL, finding A-F3: the root is the folder that holds the deployment marker, not any folder with a `.kaif/`
@@ -123,7 +123,7 @@ const MUTANTS = [
   { name: 'M26 resume-word: the root search dropped — the /resume order names a marker no hook reads',
     dest: '.kaif/hooks/prompt-resume-word.mjs',
     fn: (b) => b.replace('if (existsSync(join(d, DEPLOYMENT))) return d;', 'if (false) return d;'),
-    expect: ['s14 HK resume-word'] },
+    expect: ['s14 HK resume-word', 's14 KA2: команда из конфига через шелл из подпапки проекта'] },
   { name: 'M27 STATUS guard: STATUS.md and git read in the event cwd again (ticket #94 — the guard silent from a subfolder)',
     dest: '.kaif/hooks/stop-status-guard.mjs',
     fn: (b) => b.replace('const root = projectRoot(cwd);', 'const root = cwd;'),

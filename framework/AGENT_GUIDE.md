@@ -194,8 +194,9 @@ taxonomy above) is therefore RE-READ, not remembered, at four triggers:
 4. **Ritual points:** `/resume` (the full canon pass), `/refresh-context`, and every iteration of
    the long loops (`/autoloop` · `/dayloop` · `/nightloop` · `/guarded-loop`).
 
-A refresh is a VERIFIABLE ACTION, not a claim — recalling the rule does not prove following it.
-The witness has two parts, both mandatory:
+A COMPLETED closure closes the refresh contour too: after the farewell of `/end-chat-soft` or `/end-chat-force`, every automatic trigger above stays dormant for the rest of THAT session (later work, idle, an hour, compaction), with no canon re-read or repeated creed/prayer; new sessions refresh normally, explicit `/resume` and `/refresh-context` remain direct owner orders, and `.kaif/farewell-capture.json` → `closedSessionIds` is preserved across `StopFailure` (KAIF_REFERENCE.md §17).
+
+A refresh is a VERIFIABLE ACTION, not a claim — recalling the rule does not prove following it. The witness has two parts, both mandatory:
 
 - **The marker** — `.kaif/refresh-marker.json`: `{ "at": "<ISO timestamp>", "docs": [<what was
   re-read>], "trigger": "hour|heavy-task|compaction|ritual:<name>" }`, rewritten at the refresh,

@@ -9,7 +9,7 @@
   "version": "2.10",
   "released": "2026-11-22",
   "build": {
-    "sourceTree": "40a046eebf68b9ab2037cfb6b28730aafa925b9c3d126ca6b606a0f89ebc89a2",
+    "sourceTree": "6ff903d992fd1ed7a39ca49edd541ad46c2315e21d506287890ee8eec578bd20",
     "prerelease": null
   },
   "templateNotes": [
@@ -826,8 +826,9 @@ taxonomy above) is therefore RE-READ, not remembered, at four triggers:
 4. **Ritual points:** `/resume` (the full canon pass), `/refresh-context`, and every iteration of
    the long loops (`/autoloop` · `/dayloop` · `/nightloop` · `/guarded-loop`).
 
-A refresh is a VERIFIABLE ACTION, not a claim — recalling the rule does not prove following it.
-The witness has two parts, both mandatory:
+A COMPLETED closure closes the refresh contour too: after the farewell of `/end-chat-soft` or `/end-chat-force`, every automatic trigger above stays dormant for the rest of THAT session (later work, idle, an hour, compaction), with no canon re-read or repeated creed/prayer; new sessions refresh normally, explicit `/resume` and `/refresh-context` remain direct owner orders, and `.kaif/farewell-capture.json` → `closedSessionIds` is preserved across `StopFailure` (KAIF_REFERENCE.md §17).
+
+A refresh is a VERIFIABLE ACTION, not a claim — recalling the rule does not prove following it. The witness has two parts, both mandatory:
 
 - **The marker** — `.kaif/refresh-marker.json`: `{ "at": "<ISO timestamp>", "docs": [<what was
   re-read>], "trigger": "hour|heavy-task|compaction|ritual:<name>" }`, rewritten at the refresh,
@@ -3823,7 +3824,8 @@ A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refres
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
 agent systems with lifecycle hooks. Ten scripts speaking the Claude Code hook contract —
 `session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
-(refresh-marker age over 60 minutes → refresh order; silent while fresh),
+(refresh-marker age over 60 minutes → refresh order; silent while fresh; both automatic paths stay silent for a session id
+in `farewell-capture.json` → `closedSessionIds`, so a completed closure ends later automatic refresh in that session),
 `stop-status-guard.mjs` (a dirty worktree or a commit within 3 h while `STATUS.md` went stale → one soft block per
 session, naming what it saw), `prompt-resume-word.mjs` (2.7, epic RS: the prompt's FIRST word is `resume` or its Russian shorthand — an imperative
 before it counts, the Russian noun as a heading with a colon does not (2.8) → the order to run `/resume` in full before the work;
@@ -4057,6 +4059,11 @@ ritual opened 5 of the 9 core documents, and nothing said a word.
 
 The fourth hook of the refresh-hooks module — the order to run `/resume` when the owner's message opens with the word `resume` —
 arrived in KAIF 2.7 (epic RS).
+
+The terminal closure boundary arrived in 2.10 as field issue #207 / origin decision №178: after a farewell, automatic refresh
+would otherwise read the canon and repeat the creed/prayer in a chat the owner had already closed. The closure is recorded only
+when the farewell is written, not when the closing skill is merely entered; `closedSessionIds` scopes the suppression to each
+closed session and survives a later StopFailure.
 
 ### `AGENT_GUIDE.md` → Languages — routed by AUDIENCE, never by directory
 
@@ -21965,6 +21972,8 @@ process.exit(0);
 // only the FACT of a refresh (agent re-stamps the marker) resets the clock, so the order
 // repeats on every prompt until obeyed, by design: a reminder that goes away unobeyed teaches
 // that it can be ignored.
+// [TESTED: 2026-11-26 · selftest and real closing-wire replay — testcases/reports/2026-11-26_refresh_after_closure.md] A session id captured in farewell-capture.json → closedSessionIds is the terminal boundary:
+// this automatic order stays silent after closure, while the explicit-resume hook remains independent.
 //
 // Interval: 60 minutes (the canon's "at least once an hour"); override per project with
 // `--minutes N` in the hook's args if the owner wants a different cadence.
@@ -22023,6 +22032,14 @@ function projectRoot(cwd) {
   }
 }
 
+function closedSession(root, event) {
+  if (typeof event.session_id !== 'string' || !event.session_id) return false;
+  try {
+    const state = JSON.parse(readFileSync(join(root, '.kaif', 'farewell-capture.json'), 'utf8').replace(/^\uFEFF/, ''));
+    return Array.isArray(state.closedSessionIds) && state.closedSessionIds.includes(event.session_id);
+  } catch { return false; }
+}
+
 // Same order, different envelope per system — see the PORTABILITY note above.
 const ENVELOPES = {
   claude: (order, event) => ({ hookSpecificOutput: { hookEventName: event, additionalContext: order } }),
@@ -22037,16 +22054,18 @@ try {
   const ei = argv.indexOf('--emit');
   const shape = ei !== -1 ? String(argv[ei + 1]) : 'claude';
 
-  let cwd = process.cwd();
+  let cwd = process.cwd(), input = {};
   try {
     // A leading U+FEFF is dropped before the parse (Windows PowerShell 5.1 puts it in front of any
     // string piped into a native command; RFC 8259 §8.1 lets a parser ignore it) — origin bug 119.
-    const input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
+    const parsed = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
+    input = parsed && typeof parsed === 'object' ? parsed : {};
     if (input.cwd) cwd = String(input.cwd);
   } catch { /* unreadable stdin — fall back to process.cwd() */ }
 
   const root = projectRoot(cwd);
   if (shape === 'kimi' && !existsSync(join(root, DEPLOYMENT))) process.exit(0);
+  if (closedSession(root, input)) process.exit(0);
   const markerPath = join(root, MARKER);
   // Age of the last refresh: the marker's own `at` field is the truth; a malformed field falls
   // back to the file mtime; a missing file means "never refreshed" → infinitely stale.
@@ -22685,6 +22704,14 @@ function projectRoot(cwd) {
   }
 }
 
+function closedSession(root, event) {
+  if (typeof event.session_id !== 'string' || !event.session_id) return false;
+  try {
+    const state = JSON.parse(readFileSync(join(root, '.kaif', 'farewell-capture.json'), 'utf8').replace(/^\uFEFF/, ''));
+    return Array.isArray(state.closedSessionIds) && state.closedSessionIds.includes(event.session_id);
+  } catch { return false; }
+}
+
 // One order string, four envelopes. Keeping this table next to the writer (rather than in a
 // shared lib) keeps the module at three self-contained scripts — a fourth file would have to be
 // registered through the whole delivery circle for six lines of JSON shaping.
@@ -22701,9 +22728,11 @@ try {
   if (shape === 'kimi') {
     // SessionStart and PostCompact are observation-only in Kimi: carry a pending mark to the next prompt,
     // whose UserPromptSubmit contract can append agent-facing context.
+    // [TESTED: 2026-11-26 · selftest and real closing-wire replay — testcases/reports/2026-11-26_refresh_after_closure.md] farewell-capture.json → closedSessionIds suppresses these automatic events and their pending prompt.
     const ev = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
     const root = projectRoot(ev.cwd || process.cwd());
     if (!existsSync(join(root, DEPLOYMENT))) process.exit(0);
+    if (closedSession(root, ev)) process.exit(0);
     const statePath = join(root, '.kaif', 'kimi-refresh.json');
     if (ev.hook_event_name === 'SessionStart' || ev.hook_event_name === 'PostCompact') {
       mkdirSync(dirname(statePath), { recursive: true });
@@ -22722,12 +22751,13 @@ try {
   }
 
   let source = '';   // unreadable event or no `source` field → the neutral wording: an unknown event is not a compaction (bug 120)
-  let cwd = process.cwd();
+  let cwd = process.cwd(), input = {};
   try {
     // A leading U+FEFF is dropped before the parse (Windows PowerShell 5.1 puts it in front of any
     // string piped into a native command; RFC 8259 §8.1 lets a parser ignore it). Unstripped, a
     // `clear` event fell back to the default and ordered the WRONG trigger stamp — origin bug 119.
-    const input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
+    const parsed = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
+    input = parsed && typeof parsed === 'object' ? parsed : {};
     if (input.source) source = String(input.source);
     if (input.cwd) cwd = String(input.cwd);
   } catch { /* unreadable stdin — the neutral wording; the order still stands */ }
@@ -22735,7 +22765,9 @@ try {
   // The words and the trigger value follow the ACTUAL event: a marker stamped "compaction" after a
   // /clear or on a plain session start would misreport why the refresh happened.
   const [happened, trigger] = Object.prototype.hasOwnProperty.call(WORDING, source) ? WORDING[source] : SESSION_START;
-  const markerPath = join(projectRoot(cwd), '.kaif', 'refresh-marker.json');
+  const root = projectRoot(cwd);
+  if (closedSession(root, input)) process.exit(0);
+  const markerPath = join(root, '.kaif', 'refresh-marker.json');
   const order =
     `KAIF context refresh (SessionStart${source ? ':' + source : ''}). ${happened}: ` +
     `what this session now remembers of the canon is a retelling, not the canon. BEFORE task work: ` +
@@ -22930,6 +22962,7 @@ process.exit(0);
 //     the owner's prompt, so the farewell after it belongs to the same turn and replaces the interim line (judge of epic PT, session 96: the
 //     former «one closure writes once» froze the interim line). `stop_hook_active` is NOT the test: it is already true on the FIRST stop
 //     after the closure whenever a guard blocked earlier in the same turn. .kaif/farewell-capture.json records which closure wrote last;
+//     [TESTED: 2026-11-26 · selftest and real closing-wire replay — testcases/reports/2026-11-26_refresh_after_closure.md] closedSessionIds accumulates every closed agent session for the automatic-refresh boundary and survives StopFailure;
 //   - a turn without a closure (the owner's «thanks» after the farewell) never touches the file;
 //   - the write goes through a temporary file and a rename: a torn write never hands the next chat half a farewell.
 // The project root is the directory of .kaif/kaif.json above the event's `cwd` (twin of stop-status-guard.mjs); CLAUDE_PROJECT_DIR wins.
@@ -22943,9 +22976,11 @@ process.exit(0);
 //  (answers to a neighbour) no write; acceptance 13/13, red on the former hook at (11)–(13), mutants «quiet ignored» and «a notification is
 //  the owner» red on exactly their cases — testcases/reports/2026-10-30_s96-farewell-live-speech-scenarios.md. NOT YET live: a closing turn
 //  woken by a background task's notification]
-import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, readdirSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { readFileSync, writeFileSync, renameSync, existsSync, mkdirSync, readdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { join, dirname, resolve } from 'node:path';
-import { homedir } from 'node:os';
+import { homedir, tmpdir } from 'node:os';
+import { fileURLToPath } from 'node:url';
 
 export const FAREWELL_FILE = 'FAREWELL_MESSAGE_FROM_THE_PREVIOUS_CHAT.md';
 const MEMORY = join('.kaif', 'farewell-capture.json');
@@ -22993,7 +23028,7 @@ export function readTurn(lines) {
   for (const l of lines) { if (!l.trim()) continue; try { recs.push(JSON.parse(l)); } catch { /* a torn line */ } }
   let start = 0;
   for (let i = recs.length - 1; i >= 0; i--) if (isOwnerPrompt(recs[i])) { start = i; break; }
-  let closed = false, closureId = '', tail = [], wake = 'owner', toolsSinceWake = 0;
+  let closed = false, closureId = '', tail = [], wake = 'owner', toolsSinceWake = 0, farewellWritten = false;
   for (const rec of recs.slice(start)) {
     const bs = blocks(contentOf(rec));
     if (rec.type === 'user') {
@@ -23007,11 +23042,13 @@ export function readTurn(lines) {
     for (const b of bs) {
       if (b.type === 'tool_use') {
         if (b.name === 'Skill' && b.input && CLOSURE_SKILL.test(String(b.input.skill || '').trim())) { closed = true; closureId = String(b.id || rec.uuid || 'skill'); }
+        if (/^(?:Write|Edit|MultiEdit|StrReplaceFile)$/.test(String(b.name))
+          && String(b.input?.file_path || b.input?.path || '').endsWith(FAREWELL_FILE)) farewellWritten = true;
         tail = []; toolsSinceWake++;
       } else if (b.type === 'text' && b.text && b.text.trim()) tail.push(b.text);
     }
   }
-  return { closed, closureId, text: tail.join('\n\n').trim(), quiet: (wake === 'feedback' || wake === 'peer') && toolsSinceWake === 0 };
+  return { closed, closureId, text: tail.join('\n\n').trim(), quiet: (wake === 'feedback' || wake === 'peer') && toolsSinceWake === 0, farewellWritten };
 }
 // The decision, pure: what to write where, or null.
 export function capture(event, readFile = (p) => readFileSync(p, 'utf8')) {
@@ -23020,7 +23057,7 @@ export function capture(event, readFile = (p) => readFileSync(p, 'utf8')) {
   if (!turn.closed || turn.quiet) return null;   // no closure, or the stop only answers a block or a neighbour
   const root = process.env.CLAUDE_PROJECT_DIR || projectRoot(String(event.cwd || process.cwd()));
   const text = typeof event.last_assistant_message === 'string' && event.last_assistant_message.trim() ? event.last_assistant_message.trim() : turn.text;
-  return text ? { root, text, closureId: turn.closureId } : null;
+  return text ? { root, text, closureId: turn.closureId, farewellWritten: turn.farewellWritten } : null;
 }
 
 export function kimiWireOf(sessionId, home = process.env.KIMI_CODE_HOME || join(homedir(), '.kimi-code')) {
@@ -23043,24 +23080,34 @@ export function kimiWireOf(sessionId, home = process.env.KIMI_CODE_HOME || join(
 }
 
 export function readKimiTurn(text) {
-  let closed = false, closureId = '', lastText = '';
+  let closed = false, closureId = '', sessionClosureId = '', lastText = '', farewellWritten = false;
   for (const line of String(text).split('\n')) {
     if (!line.trim()) continue;
     let rec;
     try { rec = JSON.parse(line); } catch { continue; }
     const msg = rec.message?.message || rec.message || {};
     const role = msg.role;
-    if (role === 'user' && closed) { closed = false; closureId = ''; lastText = ''; }
+    if (role === 'user' && closed) { closed = false; closureId = ''; lastText = ''; farewellWritten = false; }
     const body = JSON.stringify(rec);
     const skill = /"skill"\s*:\s*"((?:[\w-]+:)?end-chat-(?:soft|force))"/.exec(body);
-    if (skill) { closed = true; closureId = skill[1]; lastText = ''; }
+    if (skill) { closed = true; closureId = skill[1]; sessionClosureId = skill[1]; lastText = ''; farewellWritten = false; }
+    if (sessionClosureId && /"name"\s*:\s*"(?:Write|Edit|MultiEdit|StrReplaceFile)"/.test(body) && body.includes(FAREWELL_FILE)) {
+      closed = true;
+      closureId = sessionClosureId;
+      lastText = '';
+      farewellWritten = true;
+    }
     if (role === 'assistant' && closed) {
       const content = Array.isArray(msg.content) ? msg.content : [];
       const texts = content.filter((b) => b && b.type === 'text' && String(b.text || '').trim()).map((b) => b.text.trim());
       if (texts.length) lastText = texts.join('\n');
     }
+    if (closed && rec.type === 'context.append_loop_event' && rec.event?.type === 'content.part' && rec.event.part?.type === 'text') {
+      const text = String(rec.event.part.text || '').trim();
+      if (text) lastText = text;
+    }
   }
-  return { closed, closureId, text: lastText };
+  return { closed, closureId, text: lastText, farewellWritten };
 }
 
 // A Kimi chat that dies of a provider error runs no closing ritual and leaves no farewell (plans/143 KA6 of the origin: a chat ended on the
@@ -23117,7 +23164,7 @@ export function captureKimi(event, home) {
   if (!wire) return null;
   const turn = readKimiTurn(readFileSync(wire, 'utf8'));
   if (!turn.closed || !turn.text) return null;
-  return { root: projectRoot(String(event.cwd || process.cwd())), text: turn.text, closureId: turn.closureId };
+  return { root: projectRoot(String(event.cwd || process.cwd())), text: turn.text, closureId: turn.closureId, farewellWritten: turn.farewellWritten };
 }
 
 if (process.argv[2] === '--selftest') {
@@ -23157,6 +23204,14 @@ if (process.argv[2] === '--selftest') {
     J({ type: 'agent.message.appended', message: { message: { role: 'assistant', content: [{ type: 'text', text: 'Bye from Kimi.' }] } } }),
   ].join('\n');
   ok(readKimiTurn(wire).text === 'Bye from Kimi.' && readKimiTurn(wire).closed, 'Kimi wire: a closing skill and the final assistant text are read');
+  const loopWire = [
+    J({ type: 'context.append_loop_event', event: { type: 'tool.call', name: 'Skill', args: { skill: 'end-chat-soft' } } }),
+    J({ type: 'context.append_loop_event', event: { type: 'tool.call', name: 'Write', args: { path: FAREWELL_FILE, content: 'Bye from loop.' } } }),
+    J({ type: 'context.append_loop_event', event: { type: 'content.part', part: { type: 'text', text: 'Bye from loop.' } } }),
+  ].join('\n');
+  const loopTurn = readKimiTurn(loopWire);
+  ok(loopTurn.closed && loopTurn.farewellWritten && loopTurn.text === 'Bye from loop.',
+    'Kimi context loop records: farewell tool call and content.part text are read');
   // KA6: the two live record forms of a failed Kimi turn (session 104 of the origin, the owner's machine, 2026-11-21)
   const said = J({ type: 'agent.message.appended', message: { message: { role: 'assistant', content: [{ type: 'text', text: 'Running the live check.' }] } } });
   const printFail = J({ type: 'turn.ended', agentId: 'main', turnId: 0, reason: 'failed', error: { code: 'provider.api_error',
@@ -23170,6 +23225,82 @@ if (process.argv[2] === '--selftest') {
     'Kimi failure: print-mode and TUI records of a failed turn are read (the TUI one through the session log); a turn that ended well — null');
   ok(/ended by an error before any closing ritual — APIProviderQuotaExhaustedError: You've reached/.test(failureFarewell(fp))
     && /The chat's last words:\n\nRunning the live check\./.test(failureFarewell(fp)), 'Kimi failure farewell: the error and the last words');
+  const tmp = mkdtempSync(join(tmpdir(), 'kaif-closed-refresh-'));
+  try {
+    const root = join(tmp, 'project'), home = join(tmp, 'home'), self = fileURLToPath(import.meta.url);
+    mkdirSync(join(root, '.kaif'), { recursive: true });
+    writeFileSync(join(root, '.kaif', 'kaif.json'), '{}');
+    writeFileSync(join(root, '.kaif', 'refresh-marker.json'), JSON.stringify({ at: '2000-01-01T00:00:00.000Z' }));
+    const run = (script, event, args = []) => spawnSync(process.execPath, [script, ...args], {
+      input: JSON.stringify(event), cwd: root, env: { ...process.env, KIMI_CODE_HOME: home, CLAUDE_PROJECT_DIR: root }, encoding: 'utf8', timeout: 20000,
+    });
+    const wireOf = (id) => join(home, 'sessions', 'wd', id, 'agents', 'main', 'wire.jsonl');
+    const close = (id, kind) => {
+      const wire = wireOf(id);
+      mkdirSync(dirname(wire), { recursive: true });
+      const enteredRecords = [
+        { type: 'agent.message.appended', message: { message: { role: 'assistant', content: [{ type: 'tool_use', name: 'Skill', input: { skill: kind } }] } } },
+        { type: 'agent.message.appended', message: { message: { role: 'assistant', content: [{ type: 'text', text: `Closing ${id}.` }] } } },
+        { type: 'turn.ended', reason: 'completed' },
+      ];
+      writeFileSync(wire, enteredRecords.map(J).join('\n'));
+      const entered = run(self, { hook_event_name: 'Stop', session_id: id, cwd: root }, ['--kimi']);
+      const premature = closedIds().includes(id);
+      const completedRecords = [
+        { type: 'agent.message.appended', message: { message: { role: 'user', content: [{ type: 'text', text: 'finish without the judge' }] } } },
+        { type: 'context.append_loop_event', event: { type: 'tool.call', name: 'Write', args: { path: FAREWELL_FILE, content: `Bye from ${id}.` } } },
+        { type: 'agent.message.appended', message: { message: { role: 'assistant', content: [{ type: 'text', text: `Bye from ${id}.` }] } } },
+        { type: 'turn.ended', reason: 'completed' },
+      ];
+      writeFileSync(wire, readFileSync(wire, 'utf8') + '\n' + completedRecords.map(J).join('\n'));
+      const completed = run(self, { hook_event_name: 'Stop', session_id: id, cwd: root }, ['--kimi']);
+      return { entered, premature, completed };
+    };
+    const timer = (id) => run(join(dirname(self), 'prompt-refresh-timer.mjs'), { hook_event_name: 'UserPromptSubmit', session_id: id, cwd: root }, ['--emit', 'kimi']);
+    const pendingRefresh = (id) => {
+      writeFileSync(join(root, '.kaif', 'kimi-refresh.json'), JSON.stringify({ pending: true, source: 'SessionStart' }));
+      return run(join(dirname(self), 'session-start-refresh.mjs'), { hook_event_name: 'UserPromptSubmit', session_id: id, cwd: root }, ['--emit', 'kimi']);
+    };
+    const memory = () => JSON.parse(readFileSync(join(root, '.kaif', 'farewell-capture.json'), 'utf8').replace(/^\uFEFF/, ''));
+    const closedIds = () => Array.isArray(memory().closedSessionIds) ? memory().closedSessionIds : [];
+    const first = 'session_soft', second = 'session_force';
+    const soft = close(first, 'end-chat-soft');
+    ok(soft.entered.status === 0 && !soft.premature, 'entering a closing skill without a farewell write does not close the refresh contour');
+    ok(soft.completed.status === 0 && closedIds().includes(first),
+      'a farewell write across later owner turns records the closed Kimi session');
+    ok(timer(first).stdout === '' && pendingRefresh(first).stdout === '',
+      'a completed soft closure silences hourly and pending automatic refresh in the same session');
+    const forced = close(second, 'end-chat-force');
+    ok(forced.entered.status === 0 && !forced.premature && forced.completed.status === 0
+      && [first, second].every((id) => closedIds().includes(id)),
+    'soft and forced closures accumulate independent closed session ids only after their farewell writes');
+    writeFileSync(wireOf(second), readFileSync(wireOf(second), 'utf8') + '\n' + J({ type: 'turn.ended', reason: 'failed', error: { name: 'TypeError', message: 'fetch failed' } }));
+    ok(run(self, { hook_event_name: 'StopFailure', session_id: second, cwd: root }, ['--kimi']).status === 0
+      && [first, second].every((id) => closedIds().includes(id)),
+    'StopFailure preserves every previously closed session id');
+    ok(timer(first).stdout === '' && timer(second).stdout === '' && pendingRefresh(second).stdout === '',
+      'both closed sessions stay silent after a later failure capture');
+    const freshTimer = timer('session_new');
+    ok(freshTimer.status === 0 && freshTimer.stdout.includes('KAIF context refresh (timer:'),
+      'a new session still receives the hourly refresh order');
+    const freshPending = pendingRefresh('session_new');
+    ok(freshPending.status === 0 && freshPending.stdout.includes('KAIF context refresh (SessionStart)'),
+      'a new session still receives the pending SessionStart refresh order');
+    const explicitResume = run(join(dirname(self), 'prompt-resume-word.mjs'), { hook_event_name: 'UserPromptSubmit', session_id: first, cwd: root, prompt: 'resume' }, ['--emit', 'kimi']);
+    ok(explicitResume.status === 0 && explicitResume.stdout.includes('/skill:resume'),
+      'an explicit owner resume remains independent of automatic refresh suppression');
+    const claudeId = 'claude_closed', claudeTranscript = join(tmp, 'claude.jsonl');
+    const farewellTool = J({ type: 'assistant', message: { content: [{ type: 'tool_use', id: 'farewell-tool', name: 'Write', input: { file_path: FAREWELL_FILE } }] } });
+    writeFileSync(claudeTranscript, [owner, skill, result, farewellTool, bye].join('\n'));
+    run(self, { hook_event_name: 'Stop', session_id: claudeId, transcript_path: claudeTranscript, cwd: root, last_assistant_message: 'Bye.' });
+    const claudeTimer = run(join(dirname(self), 'prompt-refresh-timer.mjs'), { hook_event_name: 'UserPromptSubmit', session_id: claudeId, cwd: root }, ['--emit', 'claude']);
+    const claudeStart = run(join(dirname(self), 'session-start-refresh.mjs'), { hook_event_name: 'SessionStart', session_id: claudeId, cwd: root }, ['--emit', 'claude']);
+    ok(closedIds().includes(claudeId) && claudeTimer.stdout === '' && claudeStart.stdout === '',
+      'the generic transcript closure suppresses both generic automatic refresh paths');
+    const claudeFresh = run(join(dirname(self), 'session-start-refresh.mjs'), { hook_event_name: 'SessionStart', session_id: 'claude_new', cwd: root }, ['--emit', 'claude']);
+    ok(claudeFresh.status === 0 && claudeFresh.stdout.includes('KAIF context refresh (SessionStart)'),
+      'a new generic session still receives the SessionStart refresh order');
+  } finally { rmSync(tmp, { recursive: true, force: true }); }
   console.log(bad ? `selftest: ${bad} FAIL` : 'selftest: all ok');
   process.exit(bad ? 1 : 0);
 }
@@ -23184,7 +23315,19 @@ try {
     writeFileSync(out + '.tmp', c.text + '\n', 'utf8');
     renameSync(out + '.tmp', out);
     mkdirSync(join(c.root, '.kaif'), { recursive: true });
-    writeFileSync(join(c.root, MEMORY), JSON.stringify({ closureId: c.closureId, at: new Date().toISOString() }) + '\n');
+    const memoryPath = join(c.root, MEMORY);
+    let previous = {};
+    try {
+      const parsed = JSON.parse(readFileSync(memoryPath, 'utf8').replace(/^\uFEFF/, ''));
+      previous = parsed && typeof parsed === 'object' ? parsed : {};
+    } catch {}
+    const closedSessionIds = Array.isArray(previous.closedSessionIds)
+      ? previous.closedSessionIds.filter((id) => typeof id === 'string' && id)
+      : [];
+    if (c.farewellWritten === true && typeof event.session_id === 'string' && event.session_id && !closedSessionIds.includes(event.session_id)) {
+      closedSessionIds.push(event.session_id);
+    }
+    writeFileSync(memoryPath, JSON.stringify({ closureId: c.closureId, at: new Date().toISOString(), closedSessionIds }) + '\n');
   }
 } catch { /* a hook must never take the session down with it */ }
 process.exit(0);

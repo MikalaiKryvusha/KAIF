@@ -12,6 +12,8 @@
 // only the FACT of a refresh (agent re-stamps the marker) resets the clock, so the order
 // repeats on every prompt until obeyed, by design: a reminder that goes away unobeyed teaches
 // that it can be ignored.
+// [TESTED: 2026-11-26 · selftest and real closing-wire replay — testcases/reports/2026-11-26_refresh_after_closure.md] A session id captured in farewell-capture.json → closedSessionIds is the terminal boundary:
+// this automatic order stays silent after closure, while the explicit-resume hook remains independent.
 //
 // Interval: 60 minutes (the canon's "at least once an hour"); override per project with
 // `--minutes N` in the hook's args if the owner wants a different cadence.
@@ -70,6 +72,14 @@ function projectRoot(cwd) {
   }
 }
 
+function closedSession(root, event) {
+  if (typeof event.session_id !== 'string' || !event.session_id) return false;
+  try {
+    const state = JSON.parse(readFileSync(join(root, '.kaif', 'farewell-capture.json'), 'utf8').replace(/^\uFEFF/, ''));
+    return Array.isArray(state.closedSessionIds) && state.closedSessionIds.includes(event.session_id);
+  } catch { return false; }
+}
+
 // Same order, different envelope per system — see the PORTABILITY note above.
 const ENVELOPES = {
   claude: (order, event) => ({ hookSpecificOutput: { hookEventName: event, additionalContext: order } }),
@@ -84,16 +94,18 @@ try {
   const ei = argv.indexOf('--emit');
   const shape = ei !== -1 ? String(argv[ei + 1]) : 'claude';
 
-  let cwd = process.cwd();
+  let cwd = process.cwd(), input = {};
   try {
     // A leading U+FEFF is dropped before the parse (Windows PowerShell 5.1 puts it in front of any
     // string piped into a native command; RFC 8259 §8.1 lets a parser ignore it) — origin bug 119.
-    const input = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
+    const parsed = JSON.parse(readFileSync(0, 'utf8').replace(/^\uFEFF/, '') || '{}');
+    input = parsed && typeof parsed === 'object' ? parsed : {};
     if (input.cwd) cwd = String(input.cwd);
   } catch { /* unreadable stdin — fall back to process.cwd() */ }
 
   const root = projectRoot(cwd);
   if (shape === 'kimi' && !existsSync(join(root, DEPLOYMENT))) process.exit(0);
+  if (closedSession(root, input)) process.exit(0);
   const markerPath = join(root, MARKER);
   // Age of the last refresh: the marker's own `at` field is the truth; a malformed field falls
   // back to the file mtime; a missing file means "never refreshed" → infinitely stale.

@@ -339,8 +339,9 @@ taxonomy above) is therefore RE-READ, not remembered, at four triggers:
 4. **Ritual points:** `/resume` (the full canon pass), `/refresh-context`, and every iteration of
    the long loops (`/autoloop` · `/dayloop` · `/nightloop` · `/guarded-loop`).
 
-A refresh is a VERIFIABLE ACTION, not a claim — recalling the rule does not prove following it.
-The witness has two parts, both mandatory:
+A COMPLETED closure closes the refresh contour too: after the farewell of `/end-chat-soft` or `/end-chat-force`, every automatic trigger above stays dormant for the rest of THAT session (later work, idle, an hour, compaction), with no canon re-read or repeated creed/prayer; new sessions refresh normally, explicit `/resume` and `/refresh-context` remain direct owner orders, and `.kaif/farewell-capture.json` → `closedSessionIds` is preserved across `StopFailure` (KAIF_REFERENCE.md §17).
+
+A refresh is a VERIFIABLE ACTION, not a claim — recalling the rule does not prove following it. The witness has two parts, both mandatory:
 
 - **The marker** — `.kaif/refresh-marker.json`: `{ "at": "<ISO timestamp>", "docs": [<what was
   re-read>], "trigger": "hour|heavy-task|compaction|ritual:<name>" }`, rewritten at the refresh,
@@ -3349,7 +3350,8 @@ A sibling optional module ships to `.kaif/hooks/` (2.2, epic O) — the **refres
 mechanical injections of the context-refresh canon (`AGENT_GUIDE.md` → Context refresh) for
 agent systems with lifecycle hooks. Ten scripts speaking the Claude Code hook contract —
 `session-start-refresh.mjs` (canon order after compaction/clear), `prompt-refresh-timer.mjs`
-(refresh-marker age over 60 minutes → refresh order; silent while fresh),
+(refresh-marker age over 60 minutes → refresh order; silent while fresh; both automatic paths stay silent for a session id
+in `farewell-capture.json` → `closedSessionIds`, so a completed closure ends later automatic refresh in that session),
 `stop-status-guard.mjs` (a dirty worktree or a commit within 3 h while `STATUS.md` went stale → one soft block per
 session, naming what it saw), `prompt-resume-word.mjs` (2.7, epic RS: the prompt's FIRST word is `resume` or its Russian shorthand — an imperative
 before it counts, the Russian noun as a heading with a colon does not (2.8) → the order to run `/resume` in full before the work;
@@ -3583,6 +3585,11 @@ ritual opened 5 of the 9 core documents, and nothing said a word.
 
 The fourth hook of the refresh-hooks module — the order to run `/resume` when the owner's message opens with the word `resume` —
 arrived in KAIF 2.7 (epic RS).
+
+The terminal closure boundary arrived in 2.10 as field issue #207 / origin decision №178: after a farewell, automatic refresh
+would otherwise read the canon and repeat the creed/prayer in a chat the owner had already closed. The closure is recorded only
+when the farewell is written, not when the closing skill is merely entered; `closedSessionIds` scopes the suppression to each
+closed session and survives a later StopFailure.
 
 ### `AGENT_GUIDE.md` → Languages — routed by AUDIENCE, never by directory
 
